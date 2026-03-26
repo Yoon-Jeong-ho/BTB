@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="620" viewBox="0 0 980 620">
+<rect width="100%" height="100%" fill="white" />
+<style>
+text { font-family: Arial, sans-serif; fill: #111827; }
+.small { font-size: 12px; }
+.axis { font-size: 12px; fill: #374151; }
+.title { font-size: 20px; font-weight: bold; }
+.subtitle { font-size: 13px; fill: #4b5563; }
+.legend { font-size: 12px; }
+</style>
+<text x="90" y="35" class="title" text-anchor="start">Regional error slice</text>
+<text x="90" y="58" class="subtitle" text-anchor="start">MAE differs by latitude bucket.</text>
+<line x1="90" y1="540" x2="940" y2="540" stroke="#111827"/>
+<line x1="90" y1="80" x2="90" y2="540" stroke="#111827"/>
+<text x="515.0" y="600" class="axis" text-anchor="middle">latitude bucket</text>
+<text x="24" y="310.0" class="axis" text-anchor="middle" transform="rotate(-90 24 310.0)">MAE</text>
+<line x1="90" y1="540.0" x2="940" y2="540.0" stroke="#e5e7eb"/>
+<text x="80" y="544.0" class="axis" text-anchor="end">0.000</text>
+<line x1="90" y1="425.0" x2="940" y2="425.0" stroke="#e5e7eb"/>
+<text x="80" y="429.0" class="axis" text-anchor="end">0.102</text>
+<line x1="90" y1="310.0" x2="940" y2="310.0" stroke="#e5e7eb"/>
+<text x="80" y="314.0" class="axis" text-anchor="end">0.205</text>
+<line x1="90" y1="195.0" x2="940" y2="195.0" stroke="#e5e7eb"/>
+<text x="80" y="199.0" class="axis" text-anchor="end">0.307</text>
+<line x1="90" y1="80.0" x2="940" y2="80.0" stroke="#e5e7eb"/>
+<text x="80" y="84.0" class="axis" text-anchor="end">0.409</text>
+<rect x="111.25" y="139.99999999999994" width="99.16666666666666" height="400.00000000000006" fill="#2563eb" opacity="0.85"/>
+<text x="160.83333333333331" y="131.99999999999994" class="small" text-anchor="middle">0.356</text>
+<text x="160.83333333333331" y="568" class="axis" text-anchor="middle" transform="rotate(-25 160.83333333333331 568)">(34.085, 35.63]</text>
+<rect x="252.91666666666666" y="177.59326716623417" width="99.16666666666666" height="362.40673283376583" fill="#2563eb" opacity="0.85"/>
+<text x="302.5" y="169.59326716623417" class="small" text-anchor="middle">0.323</text>
+<text x="302.5" y="568" class="axis" text-anchor="middle" transform="rotate(-25 302.5 568)">(32.531, 34.085]</text>
+<rect x="394.5833333333333" y="182.07558348596785" width="99.16666666666666" height="357.92441651403215" fill="#2563eb" opacity="0.85"/>
+<text x="444.16666666666663" y="174.07558348596785" class="small" text-anchor="middle">0.319</text>
+<text x="444.16666666666663" y="568" class="axis" text-anchor="middle" transform="rotate(-25 444.16666666666663 568)">(37.175, 38.72]</text>
+<rect x="536.25" y="218.2888604167553" width="99.16666666666666" height="321.7111395832447" fill="#2563eb" opacity="0.85"/>
+<text x="585.8333333333334" y="210.2888604167553" class="small" text-anchor="middle">0.286</text>
+<text x="585.8333333333334" y="568" class="axis" text-anchor="middle" transform="rotate(-25 585.8333333333334 568)">(35.63, 37.175]</text>
+<rect x="677.9166666666666" y="289.4448745870102" width="99.16666666666666" height="250.5551254129898" fill="#2563eb" opacity="0.85"/>
+<text x="727.5" y="281.4448745870102" class="small" text-anchor="middle">0.223</text>
+<text x="727.5" y="568" class="axis" text-anchor="middle" transform="rotate(-25 727.5 568)">(38.72, 40.265]</text>
+<rect x="819.5833333333333" y="382.1038057613446" width="99.16666666666666" height="157.89619423865543" fill="#2563eb" opacity="0.85"/>
+<text x="869.1666666666666" y="374.1038057613446" class="small" text-anchor="middle">0.141</text>
+<text x="869.1666666666666" y="568" class="axis" text-anchor="middle" transform="rotate(-25 869.1666666666666 568)">(40.265, 41.81]</text>
+</svg>

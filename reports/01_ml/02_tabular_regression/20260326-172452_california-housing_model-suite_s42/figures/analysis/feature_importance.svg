@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="620" viewBox="0 0 980 620">
+<rect width="100%" height="100%" fill="white" />
+<style>
+text { font-family: Arial, sans-serif; fill: #111827; }
+.small { font-size: 12px; }
+.axis { font-size: 12px; fill: #374151; }
+.title { font-size: 20px; font-weight: bold; }
+.subtitle { font-size: 13px; fill: #4b5563; }
+.legend { font-size: 12px; }
+</style>
+<text x="90" y="35" class="title" text-anchor="start">Feature importance</text>
+<text x="90" y="58" class="subtitle" text-anchor="start">Permutation importance from hist_gbdt.</text>
+<line x1="90" y1="540" x2="940" y2="540" stroke="#111827"/>
+<line x1="90" y1="80" x2="90" y2="540" stroke="#111827"/>
+<text x="515.0" y="600" class="axis" text-anchor="middle">feature</text>
+<text x="24" y="310.0" class="axis" text-anchor="middle" transform="rotate(-90 24 310.0)">importance drop</text>
+<line x1="90" y1="540.0" x2="940" y2="540.0" stroke="#e5e7eb"/>
+<text x="80" y="544.0" class="axis" text-anchor="end">0.000</text>
+<line x1="90" y1="425.0" x2="940" y2="425.0" stroke="#e5e7eb"/>
+<text x="80" y="429.0" class="axis" text-anchor="end">0.222</text>
+<line x1="90" y1="310.0" x2="940" y2="310.0" stroke="#e5e7eb"/>
+<text x="80" y="314.0" class="axis" text-anchor="end">0.443</text>
+<line x1="90" y1="195.0" x2="940" y2="195.0" stroke="#e5e7eb"/>
+<text x="80" y="199.0" class="axis" text-anchor="end">0.665</text>
+<line x1="90" y1="80.0" x2="940" y2="80.0" stroke="#e5e7eb"/>
+<text x="80" y="84.0" class="axis" text-anchor="end">0.887</text>
+<rect x="105.9375" y="139.99999999999994" width="74.375" height="400.00000000000006" fill="#2563eb" opacity="0.85"/>
+<text x="143.125" y="131.99999999999994" class="small" text-anchor="middle">0.771</text>
+<text x="143.125" y="568" class="axis" text-anchor="middle" transform="rotate(-25 143.125 568)">Latitude</text>
+<rect x="212.1875" y="189.2439267294867" width="74.375" height="350.7560732705133" fill="#2563eb" opacity="0.85"/>
+<text x="249.375" y="181.2439267294867" class="small" text-anchor="middle">0.676</text>
+<text x="249.375" y="568" class="axis" text-anchor="middle" transform="rotate(-25 249.375 568)">Longitude</text>
+<rect x="318.4375" y="283.51034531861126" width="74.375" height="256.48965468138874" fill="#2563eb" opacity="0.85"/>
+<text x="355.625" y="275.51034531861126" class="small" text-anchor="middle">0.494</text>
+<text x="355.625" y="568" class="axis" text-anchor="middle" transform="rotate(-25 355.625 568)">MedInc</text>
+<rect x="424.6875" y="444.2221222136862" width="74.375" height="95.77787778631381" fill="#2563eb" opacity="0.85"/>
+<text x="461.875" y="436.2221222136862" class="small" text-anchor="middle">0.185</text>
+<text x="461.875" y="568" class="axis" text-anchor="middle" transform="rotate(-25 461.875 568)">AveOccup</text>
+<rect x="530.9375" y="505.17520042338595" width="74.375" height="34.824799576614055" fill="#2563eb" opacity="0.85"/>
+<text x="568.125" y="497.17520042338595" class="small" text-anchor="middle">0.067</text>
+<text x="568.125" y="568" class="axis" text-anchor="middle" transform="rotate(-25 568.125 568)">HouseAge</text>
+<rect x="637.1875" y="511.1072137276431" width="74.375" height="28.892786272356886" fill="#2563eb" opacity="0.85"/>
+<text x="674.375" y="503.1072137276431" class="small" text-anchor="middle">0.056</text>
+<text x="674.375" y="568" class="axis" text-anchor="middle" transform="rotate(-25 674.375 568)">AveRooms</text>
+<rect x="743.4375" y="534.4538498886743" width="74.375" height="5.546150111325687" fill="#2563eb" opacity="0.85"/>
+<text x="780.625" y="526.4538498886743" class="small" text-anchor="middle">0.011</text>
+<text x="780.625" y="568" class="axis" text-anchor="middle" transform="rotate(-25 780.625 568)">AveBedrms</text>
+<rect x="849.6875" y="535.2134147579003" width="74.375" height="4.786585242099704" fill="#2563eb" opacity="0.85"/>
+<text x="886.875" y="527.2134147579003" class="small" text-anchor="middle">0.009</text>
+<text x="886.875" y="568" class="axis" text-anchor="middle" transform="rotate(-25 886.875 568)">Population</text>
+</svg>

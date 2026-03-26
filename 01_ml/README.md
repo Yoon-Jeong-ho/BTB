@@ -11,6 +11,26 @@
 - 교차검증과 모델 선택
 - 에러 분석과 해석 가능성
 
+## 전용 conda 환경
+
+ML 트랙은 다른 단계와 의존성이 충돌할 수 있으므로 전용 환경 `btb-01-ml` 에서 실행한다.
+
+- 최소 환경 스펙: [env/environment.yml](env/environment.yml)
+- 실제 실행 환경 lock: [env/conda-linux-64.lock.txt](env/conda-linux-64.lock.txt)
+- 환경/실행 가이드: [env/README.md](env/README.md)
+- 환경 생성 스크립트: `bash 01_ml/env/create_env.sh`
+- 전체 실행 진입점: `bash 01_ml/run_ml_track.sh`
+
+## 코드 배치
+
+stage별로 바로 찾아볼 수 있게 실행 코드를 각 폴더 안에 함께 둔다.
+
+- `01_tabular_classification/run_stage.py`
+- `02_tabular_regression/run_stage.py`
+- `03_model_selection_and_interpretation/run_stage.py`
+- `04_large_scale_tabular/run_stage.py`
+- 공통 유틸/리포트 빌더: `01_ml/common.py`, `01_ml/reporting.py`
+
 이번 프로젝트에서 실제로 쓸 확정 데이터셋 표는 [00_dataset_assignments.md](00_dataset_assignments.md) 에 고정했다.
 
 ## 단계 구성

@@ -1,0 +1,5 @@
+# Local ML-only environment scratch
+.conda/
+.mamba/
+.venv/
+.env/

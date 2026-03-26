@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1040" height="310" viewBox="0 0 1040 310">
+<rect width="100%" height="100%" fill="white" />
+<style>
+text { font-family: Arial, sans-serif; fill: #111827; }
+.small { font-size: 12px; }
+.axis { font-size: 12px; fill: #374151; }
+.title { font-size: 20px; font-weight: bold; }
+.subtitle { font-size: 13px; fill: #4b5563; }
+.legend { font-size: 12px; }
+</style>
+<text x="40" y="35" class="title" text-anchor="start">Throughput bottleneck summary</text>
+<text x="40" y="58" class="subtitle" text-anchor="start">Examples/sec and memory for each large-scale model.</text>
+<rect x="40.0" y="90" width="192.0" height="34" fill="#e5e7eb" stroke="#d1d5db"/>
+<text x="48.0" y="112" class="small" text-anchor="start">model</text>
+<rect x="232.0" y="90" width="192.0" height="34" fill="#e5e7eb" stroke="#d1d5db"/>
+<text x="240.0" y="112" class="small" text-anchor="start">train ex/s</text>
+<rect x="424.0" y="90" width="192.0" height="34" fill="#e5e7eb" stroke="#d1d5db"/>
+<text x="432.0" y="112" class="small" text-anchor="start">fit sec</text>
+<rect x="616.0" y="90" width="192.0" height="34" fill="#e5e7eb" stroke="#d1d5db"/>
+<text x="624.0" y="112" class="small" text-anchor="start">pred sec</text>
+<rect x="808.0" y="90" width="192.0" height="34" fill="#e5e7eb" stroke="#d1d5db"/>
+<text x="816.0" y="112" class="small" text-anchor="start">rss MB</text>
+<rect x="40.0" y="124" width="192.0" height="34" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="48.0" y="146" class="small" text-anchor="start">sgd_linear</text>
+<rect x="232.0" y="124" width="192.0" height="34" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="240.0" y="146" class="small" text-anchor="start">204431</text>
+<rect x="424.0" y="124" width="192.0" height="34" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="432.0" y="146" class="small" text-anchor="start">2.0</text>
+<rect x="616.0" y="124" width="192.0" height="34" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="624.0" y="146" class="small" text-anchor="start">0.04</text>
+<rect x="808.0" y="124" width="192.0" height="34" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="816.0" y="146" class="small" text-anchor="start">2068</text>
+<rect x="40.0" y="158" width="192.0" height="34" fill="#f9fafb" stroke="#e5e7eb"/>
+<text x="48.0" y="180" class="small" text-anchor="start">shallow_tree</text>
+<rect x="232.0" y="158" width="192.0" height="34" fill="#f9fafb" stroke="#e5e7eb"/>
+<text x="240.0" y="180" class="small" text-anchor="start">122985</text>
+<rect x="424.0" y="158" width="192.0" height="34" fill="#f9fafb" stroke="#e5e7eb"/>
+<text x="432.0" y="180" class="small" text-anchor="start">3.3</text>
+<rect x="616.0" y="158" width="192.0" height="34" fill="#f9fafb" stroke="#e5e7eb"/>
+<text x="624.0" y="180" class="small" text-anchor="start">0.11</text>
+<rect x="808.0" y="158" width="192.0" height="34" fill="#f9fafb" stroke="#e5e7eb"/>
+<text x="816.0" y="180" class="small" text-anchor="start">4425</text>
+<rect x="40.0" y="192" width="192.0" height="34" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="48.0" y="214" class="small" text-anchor="start">hist_gbdt</text>
+<rect x="232.0" y="192" width="192.0" height="34" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="240.0" y="214" class="small" text-anchor="start">61497</text>
+<rect x="424.0" y="192" width="192.0" height="34" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="432.0" y="214" class="small" text-anchor="start">6.6</text>
+<rect x="616.0" y="192" width="192.0" height="34" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="624.0" y="214" class="small" text-anchor="start">0.16</text>
+<rect x="808.0" y="192" width="192.0" height="34" fill="#ffffff" stroke="#e5e7eb"/>
+<text x="816.0" y="214" class="small" text-anchor="start">4439</text>
+<rect x="40.0" y="226" width="192.0" height="34" fill="#f9fafb" stroke="#e5e7eb"/>
+<text x="48.0" y="248" class="small" text-anchor="start">gpu_mlp</text>
+<rect x="232.0" y="226" width="192.0" height="34" fill="#f9fafb" stroke="#e5e7eb"/>
+<text x="240.0" y="248" class="small" text-anchor="start">14028</text>
+<rect x="424.0" y="226" width="192.0" height="34" fill="#f9fafb" stroke="#e5e7eb"/>
+<text x="432.0" y="248" class="small" text-anchor="start">29.0</text>
+<rect x="616.0" y="226" width="192.0" height="34" fill="#f9fafb" stroke="#e5e7eb"/>
+<text x="624.0" y="248" class="small" text-anchor="start">0.00</text>
+<rect x="808.0" y="226" width="192.0" height="34" fill="#f9fafb" stroke="#e5e7eb"/>
+<text x="816.0" y="248" class="small" text-anchor="start">4552</text>
+</svg>

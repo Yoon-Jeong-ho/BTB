@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="620" viewBox="0 0 980 620">
+<rect width="100%" height="100%" fill="white" />
+<style>
+text { font-family: Arial, sans-serif; fill: #111827; }
+.small { font-size: 12px; }
+.axis { font-size: 12px; fill: #374151; }
+.title { font-size: 20px; font-weight: bold; }
+.subtitle { font-size: 13px; fill: #4b5563; }
+.legend { font-size: 12px; }
+</style>
+<text x="90" y="35" class="title" text-anchor="start">Slice metric by class</text>
+<text x="90" y="58" class="subtitle" text-anchor="start">Per-class recall for xgboost_gpu.</text>
+<line x1="90" y1="540" x2="940" y2="540" stroke="#111827"/>
+<line x1="90" y1="80" x2="90" y2="540" stroke="#111827"/>
+<text x="515.0" y="600" class="axis" text-anchor="middle">class</text>
+<text x="24" y="310.0" class="axis" text-anchor="middle" transform="rotate(-90 24 310.0)">recall</text>
+<line x1="90" y1="540.0" x2="940" y2="540.0" stroke="#e5e7eb"/>
+<text x="80" y="544.0" class="axis" text-anchor="end">0.000</text>
+<line x1="90" y1="425.0" x2="940" y2="425.0" stroke="#e5e7eb"/>
+<text x="80" y="429.0" class="axis" text-anchor="end">0.276</text>
+<line x1="90" y1="310.0" x2="940" y2="310.0" stroke="#e5e7eb"/>
+<text x="80" y="314.0" class="axis" text-anchor="end">0.551</text>
+<line x1="90" y1="195.0" x2="940" y2="195.0" stroke="#e5e7eb"/>
+<text x="80" y="199.0" class="axis" text-anchor="end">0.827</text>
+<line x1="90" y1="80.0" x2="940" y2="80.0" stroke="#e5e7eb"/>
+<text x="80" y="84.0" class="axis" text-anchor="end">1.102</text>
+<rect x="108.21428571428572" y="157.65475486766127" width="85.0" height="382.34524513233873" fill="#2563eb" opacity="0.85"/>
+<text x="150.71428571428572" y="149.65475486766127" class="small" text-anchor="middle">0.916</text>
+<text x="150.71428571428572" y="568" class="axis" text-anchor="middle" transform="rotate(-25 150.71428571428572 568)">0</text>
+<rect x="229.64285714285717" y="140.32658420987508" width="85.0" height="399.6734157901249" fill="#2563eb" opacity="0.85"/>
+<text x="272.14285714285717" y="132.32658420987508" class="small" text-anchor="middle">0.958</text>
+<text x="272.14285714285717" y="568" class="axis" text-anchor="middle" transform="rotate(-25 272.14285714285717 568)">1</text>
+<rect x="351.0714285714286" y="140.77081407610137" width="85.0" height="399.2291859238986" fill="#2563eb" opacity="0.85"/>
+<text x="393.5714285714286" y="132.77081407610137" class="small" text-anchor="middle">0.957</text>
+<text x="393.5714285714286" y="568" class="axis" text-anchor="middle" transform="rotate(-25 393.5714285714286 568)">2</text>
+<rect x="472.5" y="181.39300141235958" width="85.0" height="358.6069985876404" fill="#2563eb" opacity="0.85"/>
+<text x="515.0" y="173.39300141235958" class="small" text-anchor="middle">0.859</text>
+<text x="515.0" y="568" class="axis" text-anchor="middle" transform="rotate(-25 515.0 568)">3</text>
+<rect x="593.9285714285714" y="205.28989068852127" width="85.0" height="334.71010931147873" fill="#2563eb" opacity="0.85"/>
+<text x="636.4285714285714" y="197.28989068852127" class="small" text-anchor="middle">0.802</text>
+<text x="636.4285714285714" y="568" class="axis" text-anchor="middle" transform="rotate(-25 636.4285714285714 568)">4</text>
+<rect x="715.3571428571428" y="164.77490336357874" width="85.0" height="375.22509663642126" fill="#2563eb" opacity="0.85"/>
+<text x="757.8571428571428" y="156.77490336357874" class="small" text-anchor="middle">0.899</text>
+<text x="757.8571428571428" y="568" class="axis" text-anchor="middle" transform="rotate(-25 757.8571428571428 568)">5</text>
+<rect x="836.7857142857142" y="139.99999999999994" width="85.0" height="400.00000000000006" fill="#2563eb" opacity="0.85"/>
+<text x="879.2857142857142" y="131.99999999999994" class="small" text-anchor="middle">0.958</text>
+<text x="879.2857142857142" y="568" class="axis" text-anchor="middle" transform="rotate(-25 879.2857142857142 568)">6</text>
+</svg>

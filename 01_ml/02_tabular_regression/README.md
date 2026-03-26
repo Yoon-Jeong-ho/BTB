@@ -6,6 +6,8 @@
 
 ## 이번 프로젝트 기준 확정 데이터셋
 
+- 실행 코드: `run_stage.py`
+
 - Primary: `California Housing`
 - Source: scikit-learn builtin dataset
 - Load:
