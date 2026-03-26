@@ -1,0 +1,68 @@
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.ipynb_checkpoints/
+
+# Environments
+.env
+.env.*
+.venv/
+venv/
+env/
+
+# Caches
+.cache/
+.huggingface/
+hf_home/
+
+# Data directories
+data/raw/*
+!data/raw/README.md
+data/interim/*
+!data/interim/README.md
+data/processed/*
+!data/processed/README.md
+data/external/*
+!data/external/README.md
+
+# Experiment tracking and logs
+runs/*
+!runs/README.md
+wandb/
+mlruns/
+lightning_logs/
+tensorboard/
+events.out.tfevents*
+*.log
+
+# Temporary / staging artifacts
+artifacts/staging/*
+!artifacts/staging/README.md
+
+# Model files: only allow promoted small models under artifacts/promoted/
+*.pt
+*.pth
+*.ckpt
+*.bin
+*.onnx
+*.safetensors
+!artifacts/promoted/**/*.pt
+!artifacts/promoted/**/*.pth
+!artifacts/promoted/**/*.ckpt
+!artifacts/promoted/**/*.bin
+!artifacts/promoted/**/*.onnx
+!artifacts/promoted/**/*.safetensors
+
+# Package outputs
+build/
+dist/
+*.egg-info/
