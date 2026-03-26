@@ -5,6 +5,7 @@ ML 트랙 전체 실행 결과를 한 눈에 보기 위한 요약 문서다.
 ## 실행 환경
 
 - 전용 conda 환경: [`01_ml/env/README.md`](../../01_ml/env/README.md)
+- 공통 이론 문서: [`01_ml/THEORY.md`](../../01_ml/THEORY.md)
 - 실행 명령: `CUDA_VISIBLE_DEVICES=0 conda run -n btb-01-ml python scripts/01_ml/run_all.py --gpu 0`
 - 원시 산출물: `runs/01_ml/...`
 

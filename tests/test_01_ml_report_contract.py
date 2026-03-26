@@ -32,6 +32,8 @@ class TestMLReportContract(unittest.TestCase):
             self.assertGreaterEqual(len(list((latest / "figures" / "analysis").glob("*.svg"))), 3)
             summary_text = (latest / "summary.md").read_text(encoding="utf-8")
             self.assertIn("결과 요약", summary_text)
+            self.assertIn("이론 포인트", summary_text)
+            self.assertIn("THEORY.md", summary_text)
             self.assertIn("![](figures/results/", summary_text)
             self.assertIn("![](figures/analysis/", summary_text)
 

@@ -7,6 +7,7 @@
 ## 이번 프로젝트 기준 확정 데이터셋
 
 - 실행 코드: `run_stage.py`
+- 이론 문서: [THEORY.md](THEORY.md)
 
 - Primary: `mstz/covertype`
 - Source: Hugging Face Datasets

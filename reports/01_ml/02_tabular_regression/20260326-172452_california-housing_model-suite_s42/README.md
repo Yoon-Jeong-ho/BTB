@@ -7,6 +7,14 @@
 - 핵심 지표: `rmse`=0.4717, `mae`=0.3179, `r2`=0.8302
 - 해석: HistGradientBoostingRegressor가 가장 낮은 RMSE를 기록했고, 고가 주택/특정 지역에서 residual이 커졌다.
 
+## 이론 포인트
+
+- 상세 이론 문서: [02. 표형 회귀 THEORY](../../../../01_ml/02_tabular_regression/THEORY.md)
+
+- RMSE는 큰 오차에 민감하고, MAE는 평균적인 오차 크기를 직관적으로 보여 준다.
+- parity plot과 residual plot을 함께 봐야 특정 target 구간에서 systematic bias가 있는지 알 수 있다.
+- tabular 회귀에서는 선형 모델과 tree 모델의 bias 패턴 차이를 비교하는 것이 중요하다.
+
 ## 모델 비교
 
 | 모델 | RMSE | MAE | R2 | FIT_SEC |
@@ -17,6 +25,12 @@
 | ridge | 0.7329 | 0.5354 | 0.5901 | 0.04 |
 | linear_regression | 0.7329 | 0.5354 | 0.5901 | 0.01 |
 | dummy_mean | 1.1448 | 0.9031 | -0.0000 | 0.01 |
+
+## 결과 해석 / 실패 분석
+
+- 최악 예측 30개에서 평균 실제값은 3.616, 평균 예측값은 2.489 으로 전반적으로 과소추정 경향이 있었다.
+- 최악 사례 중 고가 주택(`target>4.5`) 비중은 43.3% 로, 상단 tail을 충분히 따라가지 못했다.
+- 반대로 저가 구간(`target<1.0`) 비중도 13.3% 존재해, 양끝단에서 residual이 커지는 구조가 확인됐다.
 
 ## 결과 Figure
 
