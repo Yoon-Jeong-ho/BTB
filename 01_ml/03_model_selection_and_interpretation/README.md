@@ -4,14 +4,26 @@
 
 하나의 점수보다 `재현성`, `모델 선택 근거`, `해석 가능성` 을 우선하는 실험 습관을 만든다.
 
-## 추천 데이터셋
+## 이번 프로젝트 기준 확정 데이터셋
 
-- `Adult`
-- `Wine Quality`
+- Primary: `Bike Sharing Dataset`
+- Source: UCI Machine Learning Repository
+- Load:
+
+```python
+from ucimlrepo import fetch_ucirepo
+
+bike = fetch_ucirepo(id=275)
+X = bike.data.features
+y = bike.data.targets
+```
+
+- 이유: 같은 tabular라도 시간 축이 들어오면 split 전략과 모델 선택이 달라진다는 점을 배우기 좋다.
+- Focus: `TimeSeriesSplit`, validation strategy, tuning cost, slice analysis
 
 ## 실습 파이프라인
 
-1. 교차검증 전략 설계
+1. 시간 정보를 유지하는 split 전략 설계
 2. metric 우선순위 결정
 3. 하이퍼파라미터 탐색 범위 문서화
 4. best score뿐 아니라 분산까지 기록

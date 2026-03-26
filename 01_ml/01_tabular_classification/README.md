@@ -4,10 +4,21 @@
 
 표형 분류 문제에서 `누수 없는 전처리 + baseline 비교 + 혼동행렬 해석` 을 익힌다.
 
-## 추천 데이터셋
+## 이번 프로젝트 기준 확정 데이터셋
 
-- `Breast Cancer Wisconsin (Diagnostic)`: 가장 빠른 입문용
-- `Adult`: 실제형 전처리와 범주형 처리까지 포함한 본격 실습용
+- Primary: `scikit-learn/adult-census-income`
+- Source: Hugging Face Datasets
+- Load:
+
+```python
+from datasets import load_dataset
+
+ds = load_dataset("scikit-learn/adult-census-income", split="train")
+df = ds.to_pandas()
+```
+
+- 이유: 범주형/수치형 혼합, 결측 처리, class imbalance, threshold metric까지 한 번에 연습할 수 있다.
+- Debug fallback: `Breast Cancer Wisconsin (Diagnostic)` 
 
 ## 실습 파이프라인
 

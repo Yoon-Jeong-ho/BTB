@@ -11,27 +11,26 @@
 - 교차검증과 모델 선택
 - 에러 분석과 해석 가능성
 
+이번 프로젝트에서 실제로 쓸 확정 데이터셋 표는 [00_dataset_assignments.md](00_dataset_assignments.md) 에 고정했다.
+
 ## 단계 구성
 
 | Stage | 목적 | 추천 데이터셋 | 약한 베이스라인 | 강한 베이스라인 | 남길 figure |
 | --- | --- | --- | --- | --- | --- |
-| [01_tabular_classification](01_tabular_classification/README.md) | 분류 기본기 | Breast Cancer Wisconsin, Adult | Dummy, Logistic Regression | Random Forest, GBDT | ROC/PR, confusion matrix, calibration |
-| [02_tabular_regression](02_tabular_regression/README.md) | 회귀와 residual 분석 | California Housing, Ames, Bike Sharing | Linear Regression, Ridge | Random Forest Regressor, GBDT | parity plot, residual plot, feature importance |
-| [03_model_selection_and_interpretation](03_model_selection_and_interpretation/README.md) | CV, HPO, 해석 | Adult, Wine Quality, Covertype | untuned baseline | tuned GBDT / ensemble | CV boxplot, slice metrics, permutation importance |
-| [04_large_scale_tabular](04_large_scale_tabular/README.md) | 서버 학습 전 scale-up | Covertype, HIGGS | linear / shallow tree | histogram GBDT / boosted tree pipeline | throughput, memory, metric-vs-cost |
+| [01_tabular_classification](01_tabular_classification/README.md) | 분류 기본기 | `scikit-learn/adult-census-income` | Dummy, Logistic Regression | Random Forest, GBDT | ROC/PR, confusion matrix, calibration |
+| [02_tabular_regression](02_tabular_regression/README.md) | 회귀와 residual 분석 | `California Housing` | Linear Regression, Ridge | Random Forest Regressor, GBDT | parity plot, residual plot, feature importance |
+| [03_model_selection_and_interpretation](03_model_selection_and_interpretation/README.md) | CV, HPO, 해석 | `Bike Sharing Dataset` | untuned baseline | tuned GBDT / ensemble | CV boxplot, slice metrics, permutation importance |
+| [04_large_scale_tabular](04_large_scale_tabular/README.md) | 서버 학습 전 scale-up | `mstz/covertype` | linear / shallow tree | histogram GBDT / boosted tree pipeline | throughput, memory, metric-vs-cost |
 
-## 추천 데이터셋
+## 이번 프로젝트 기준 데이터셋 라인업
 
-| Dataset | Task | 규모/형태 | 왜 좋은가 | 공식 출처 |
+| Dataset | 어느 step에서 쓰는가 | 규모/형태 | 왜 지금 단계에 적합한가 | 공식 출처 |
 | --- | --- | --- | --- | --- |
-| Adult | classification | 혼합형 tabular, 48,842 instances | 범주형/수치형 혼합, 불균형, 실제형 전처리 연습 | https://archive.ics.uci.edu/dataset/2/adult |
-| Breast Cancer Wisconsin (Diagnostic) | classification | 569 instances, 30 features | 매우 빠르게 baseline과 해석을 연습 가능 | https://archive.ics.uci.edu/dataset/17/breast+cancer+wisconsin+diagnostic |
-| California Housing | regression | 20,640 samples, 8 features | 회귀 실험과 residual 분석에 적합 | https://scikit-learn.org/stable/modules/generated/sklearn.datasets.fetch_california_housing.html |
-| Ames Housing | regression | 2,930 sales, 약 80 explanatory variables | feature engineering과 outlier 분석이 풍부하다 | https://jse.amstat.org/v19n3/decock.pdf |
-| Bike Sharing | regression / count prediction | 17,389 rows, 13 features | 시계열 split과 leakage 방지 연습에 좋다 | https://archive.ics.uci.edu/dataset/275/bike+sharing+dataset |
-| Wine Quality | regression / ordinal classification | 4,898 white wine samples | 회귀와 분류 전환 실습 둘 다 가능 | https://archive.ics.uci.edu/dataset/186/wine+quality |
-| Covertype | multiclass classification | 581,012 rows, 54 features | 서버 학습 전 대형 multiclass tabular benchmark로 좋다 | https://archive.ics.uci.edu/dataset/31/covertype |
-| HIGGS | large-scale classification | 11,000,000 rows, 28 features | 대규모 ingestion, 저장소 분리, 비용 관리까지 연습 가능 | https://archive.ics.uci.edu/dataset/280/higgs |
+| `scikit-learn/adult-census-income` | Step 01 | 32k+ rows, mixed-type binary classification | 범주형/수치형 혼합 분류에서 전처리 파이프라인을 익히기 좋다 | https://huggingface.co/datasets/scikit-learn/adult-census-income |
+| `California Housing` | Step 02 | 20,640 samples, regression | 회귀 실험과 residual 분석을 빠르게 돌리기 좋다 | https://scikit-learn.org/stable/modules/generated/sklearn.datasets.fetch_california_housing.html |
+| `Bike Sharing Dataset` | Step 03 | 17,389 rows, count regression | `TimeSeriesSplit` 과 leakage 방지를 배우기 좋다 | https://archive.ics.uci.edu/dataset/275/bike+sharing+dataset |
+| `mstz/covertype` | Step 04 | 581k+ rows급 multiclass tabular | 서버 학습 전에 scale-up과 비용 측정을 해보기 좋다 | https://huggingface.co/datasets/mstz/covertype |
+| `HIGGS` | Step 04 이후 확장 | 11M rows, binary classification | 서버 전용 대형 benchmark | https://archive.ics.uci.edu/dataset/280/higgs |
 
 ## 이 트랙에서 꼭 남길 것
 
@@ -43,9 +42,8 @@
 
 ## 선택형 확장
 
-- `Ames Housing`: Boston 대체용 회귀 입문
-- `Bike Sharing`: random split 대신 time-aware validation
-- `Covertype`: multiclass와 tree ensemble scaling
-- `HIGGS`: 서버에서 다뤄야 하는 대규모 tabular benchmark
+- `Breast Cancer Wisconsin`: 코드 디버그용 초소형 classification
+- `Ames Housing`: feature engineering 중심의 추가 회귀 실습
+- `HIGGS`: 서버에서 다뤄야 하는 최종 대규모 tabular benchmark
 
 실험 운영 규칙은 [../docs/01_experiment_playbook.md](../docs/01_experiment_playbook.md) 를 따른다.

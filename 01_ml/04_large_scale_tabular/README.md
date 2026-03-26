@@ -4,10 +4,21 @@
 
 로컬에서 익힌 tabular 실험 규약을 서버 환경으로 옮기기 전에 `대형 데이터셋`, `비용`, `throughput`, `artifact 분리` 를 연습한다.
 
-## 추천 데이터셋
+## 이번 프로젝트 기준 확정 데이터셋
 
-- `Covertype`: multiclass와 tree ensemble 확장
-- `HIGGS`: 대규모 binary classification
+- Primary: `mstz/covertype`
+- Source: Hugging Face Datasets
+- Load:
+
+```python
+from datasets import load_dataset
+
+ds = load_dataset("mstz/covertype", split="train")
+df = ds.to_pandas()
+```
+
+- 이유: Hugging Face로 바로 접근 가능하고, 로컬에서 다루기엔 크고 서버 실습용으론 아직 관리 가능한 수준이다.
+- Server extension: `HIGGS`
 
 ## 실습 파이프라인
 

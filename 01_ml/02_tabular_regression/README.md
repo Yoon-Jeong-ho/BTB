@@ -4,19 +4,28 @@
 
 회귀 문제에서 `loss`, `target scale`, `residual`, `outlier` 를 해석하는 습관을 만든다.
 
-## 추천 데이터셋
+## 이번 프로젝트 기준 확정 데이터셋
 
-- `California Housing`: 정석 회귀 실습
-- `Ames Housing`: feature engineering과 outlier를 같이 보기 좋음
-- `Bike Sharing`: time-aware validation까지 연습 가능
-- `Wine Quality`: 회귀 또는 ordinal prediction 실습
+- Primary: `California Housing`
+- Source: scikit-learn builtin dataset
+- Load:
+
+```python
+from sklearn.datasets import fetch_california_housing
+
+frame = fetch_california_housing(as_frame=True)
+df = frame.frame
+```
+
+- 이유: 설치 직후 바로 불러올 수 있고, 회귀 metric과 residual 분석을 빠르게 반복하기 좋다.
+- Extension: `Ames Housing`
 
 ## 실습 파이프라인
 
 1. target 분포와 이상치 확인
 2. baseline으로 `DummyRegressor`, `LinearRegression`, `Ridge`
 3. tree 계열 회귀 모델 추가
-4. `Bike Sharing` 이면 random split 대신 `TimeSeriesSplit` 적용
+4. 먼저 random split 기반 회귀 실험을 고정
 5. MAE, RMSE, R2 비교
 6. residual을 구간별로 분석
 7. feature importance와 error slice 분석

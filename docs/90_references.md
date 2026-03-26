@@ -4,8 +4,8 @@
 
 ## ML
 
-1. Adult dataset, UCI Machine Learning Repository  
-   https://archive.ics.uci.edu/dataset/2/adult
+1. `scikit-learn/adult-census-income`, Hugging Face Datasets  
+   https://huggingface.co/datasets/scikit-learn/adult-census-income
 2. Breast Cancer Wisconsin (Diagnostic), UCI Machine Learning Repository  
    https://archive.ics.uci.edu/dataset/17/breast+cancer+wisconsin+diagnostic
 3. Wine Quality, UCI Machine Learning Repository  
@@ -16,8 +16,8 @@
    https://jse.amstat.org/v19n3/decock.pdf
 6. Bike Sharing Dataset, UCI Machine Learning Repository  
    https://archive.ics.uci.edu/dataset/275/bike+sharing+dataset
-7. Covertype, UCI Machine Learning Repository  
-   https://archive.ics.uci.edu/dataset/31/covertype
+7. `mstz/covertype`, Hugging Face Datasets  
+   https://huggingface.co/datasets/mstz/covertype
 8. HIGGS, UCI Machine Learning Repository  
    https://archive.ics.uci.edu/dataset/280/higgs
 9. scikit-learn mixed-type `ColumnTransformer` example  
