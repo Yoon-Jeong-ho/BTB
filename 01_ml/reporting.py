@@ -245,9 +245,9 @@ def localize_ml_reports(stage_results: list[dict[str, Any]]) -> None:
         run_dir = RUNS_ROOT / meta["dir"] / result["run_id"]
         report_dir = ROOT / result["report_dir"]
         summary_ko = build_stage_summary_ko(result)
-        (run_dir / "summary.md").write_text(summary_ko, encoding="utf-8")
-        (report_dir / "summary.md").write_text(summary_ko, encoding="utf-8")
-        (report_dir / "README.md").write_text(summary_ko, encoding="utf-8")
+        for path in [run_dir / "summary.md", report_dir / "summary.md", report_dir / "README.md"]:
+            if not path.exists():
+                path.write_text(summary_ko, encoding="utf-8")
 
 
 
@@ -260,8 +260,10 @@ def write_track_index_ko(stage_results: list[dict[str, Any]]) -> None:
         metrics = _load_json(report_dir / "metrics.json")
         best_model = metrics["best_model"]
         best_metrics = metrics["models"][best_model]
+        theory_link = f"../../01_ml/{meta['dir']}/THEORY.md"
+        report_link = f"{report_dir.relative_to(REPORTS_ROOT).as_posix()}/README.md"
         rows.append(
-            f"| {meta['title_ko']} | `{best_model}` | {_best_metric_line(best_metrics, meta['best_keys'][:2])} | [{result['run_id']}]({report_dir.relative_to(REPORTS_ROOT).as_posix()}/README.md) |"
+            f"| {meta['title_ko']} | `{best_model}` | {_best_metric_line(best_metrics, meta['best_keys'][:2])} | [이론]({theory_link}) / [리포트]({report_link}) |"
         )
         hero = _hero_image_rel(meta, report_dir)
         if hero:

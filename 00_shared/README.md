@@ -12,5 +12,7 @@
 
 - `templates/run_summary_template.md`: 실험 요약 템플릿
 - `templates/model_card_template.md`: 모델 카드 템플릿
+- `templates/ml_theory_template.md`: 공부용 ML 이론 문서 템플릿
+- `templates/ml_report_template.md`: 이론-실험-해석 통합형 ML 리포트 템플릿
 
 트랙별 세부 기준은 각 트랙 README를 따르되, 요약 문서 형식은 이 폴더 템플릿을 우선한다.

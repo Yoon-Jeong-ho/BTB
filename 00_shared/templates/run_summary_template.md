@@ -1,24 +1,31 @@
 # Run Summary
 
-## 1. Problem
+## 1. Problem / Study Goal
 
 - Task:
 - Track / Stage:
 - Why this run exists:
+- Connected theory note:
 
-## 2. Hypothesis
+## 2. Theory Background
+
+- Why this theory appeared:
+- What problem it solves:
+- What to pay attention to in this run:
+
+## 3. Hypothesis
 
 - What changed from the previous run:
 - Expected effect:
 
-## 3. Dataset
+## 4. Dataset
 
 - Dataset name:
 - Split version:
 - Preprocessing:
 - Data caveats:
 
-## 4. Training Setup
+## 5. Training Setup
 
 - Model:
 - Tokenizer / Processor:
@@ -28,29 +35,39 @@
 - Epochs / steps:
 - Hardware:
 
-## 5. Best Metrics
+## 6. Metric Interpretation
+
+- Primary metric:
+- Why this metric matters:
+- Secondary metric:
+- What misreading to avoid:
+
+## 7. Best Metrics
 
 | Metric | Value |
 | --- | --- |
 | main_metric |  |
 | secondary_metric |  |
 
-## 6. Result Figures
+## 8. Result Figures
 
 - `figures/results/...`:
 - Why these matter:
+- What pattern was actually observed:
 
-## 7. Analysis Figures
+## 9. Analysis Figures
 
 - `figures/analysis/...`:
 - Key failure patterns:
+- Possible reasons:
 
-## 8. Sample Predictions
+## 10. Sample Predictions / Failure Cases
 
 - Best examples:
 - Failure examples:
+- What the failures teach us:
 
-## 9. Decision
+## 11. Decision
 
 - Promote to `reports/`? yes / no
 - Promote weights to `artifacts/promoted/` or HF Hub? yes / no

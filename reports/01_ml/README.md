@@ -13,10 +13,10 @@ ML 트랙 전체 실행 결과를 한 눈에 보기 위한 요약 문서다.
 
 | Stage | 최고 모델 | 핵심 지표 | 링크 |
 | --- | --- | --- | --- |
-| 01. 표형 분류 | `random_forest` | `auprc`=0.7834, `auroc`=0.9105 | [20260326-172429_adult-census-income_model-suite_s42](01_tabular_classification/20260326-172429_adult-census-income_model-suite_s42/README.md) |
-| 02. 표형 회귀 | `hist_gbdt` | `rmse`=0.4717, `mae`=0.3179 | [20260326-172452_california-housing_model-suite_s42](02_tabular_regression/20260326-172452_california-housing_model-suite_s42/README.md) |
-| 03. 모델 선택과 해석 | `tuned_hist_gbdt` | `rmse`=60.0516, `mae`=38.1593 | [20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42](03_model_selection_and_interpretation/20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/README.md) |
-| 04. 대규모 표형 데이터 | `xgboost_gpu` | `macro_f1`=0.9192, `accuracy`=0.9377 | [20260326-172723_covertype_large-scale-suite_s42](04_large_scale_tabular/20260326-172723_covertype_large-scale-suite_s42/README.md) |
+| 01. 표형 분류 | `random_forest` | `auprc`=0.7834, `auroc`=0.9105 | [이론](../../01_ml/01_tabular_classification/THEORY.md) / [리포트](01_tabular_classification/20260326-172429_adult-census-income_model-suite_s42/README.md) |
+| 02. 표형 회귀 | `hist_gbdt` | `rmse`=0.4717, `mae`=0.3179 | [이론](../../01_ml/02_tabular_regression/THEORY.md) / [리포트](02_tabular_regression/20260326-172452_california-housing_model-suite_s42/README.md) |
+| 03. 모델 선택과 해석 | `tuned_hist_gbdt` | `rmse`=60.0516, `mae`=38.1593 | [이론](../../01_ml/03_model_selection_and_interpretation/THEORY.md) / [리포트](03_model_selection_and_interpretation/20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/README.md) |
+| 04. 대규모 표형 데이터 | `xgboost_gpu` | `macro_f1`=0.9192, `accuracy`=0.9377 | [이론](../../01_ml/04_large_scale_tabular/THEORY.md) / [리포트](04_large_scale_tabular/20260326-172723_covertype_large-scale-suite_s42/README.md) |
 
 ## 01. 표형 분류
 
