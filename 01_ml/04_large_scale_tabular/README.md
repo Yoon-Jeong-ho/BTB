@@ -61,14 +61,14 @@
 
 실험 산출물은 이제 이 stage 안에 같이 놓는다.
 
-- 최신 artifact: [`artifacts/20260326-172723_covertype_large-scale-suite_s42/README.md`](artifacts/20260326-172723_covertype_large-scale-suite_s42/README.md)
-- 요약: [`artifacts/20260326-172723_covertype_large-scale-suite_s42/summary.md`](artifacts/20260326-172723_covertype_large-scale-suite_s42/summary.md)
-- 결과 figure: `artifacts/20260326-172723_covertype_large-scale-suite_s42/figures/results/`
-- 분석 figure: `artifacts/20260326-172723_covertype_large-scale-suite_s42/figures/analysis/`
+- 최신 artifact: [`artifacts/20260327-164831_covertype_large-scale-suite_s42/README.md`](artifacts/20260327-164831_covertype_large-scale-suite_s42/README.md)
+- 요약: [`artifacts/20260327-164831_covertype_large-scale-suite_s42/summary.md`](artifacts/20260327-164831_covertype_large-scale-suite_s42/summary.md)
+- 결과 figure: `artifacts/20260327-164831_covertype_large-scale-suite_s42/figures/results/`
+- 분석 figure: `artifacts/20260327-164831_covertype_large-scale-suite_s42/figures/analysis/`
 
 ## 읽는 순서
 
 1. [THEORY.md](THEORY.md)로 accuracy/macro metric/cost-quality trade-off 배경을 잡는다.
-2. [artifacts/20260326-172723_covertype_large-scale-suite_s42/README.md](artifacts/20260326-172723_covertype_large-scale-suite_s42/README.md)로 실제 실험 설계와 결과 해석을 본다.
+2. [artifacts/20260327-164831_covertype_large-scale-suite_s42/README.md](artifacts/20260327-164831_covertype_large-scale-suite_s42/README.md)로 실제 실험 설계와 결과 해석을 본다.
 3. summary와 figure를 보며 어떤 class boundary가 무너졌는지 확인한다.
 4. 다음 실험 가설을 스스로 문장으로 적어 본다.

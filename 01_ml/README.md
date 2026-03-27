@@ -1,7 +1,7 @@
 # 01 ML
 
 이 트랙의 목표는 `표형 데이터 -> 전처리 -> baseline -> strong baseline -> metric 해석 -> failure analysis` 흐름을 몸에 익히는 것이다.
-이제 `01_ml`은 별도 `reports/`, `runs/`, `scripts/` 폴더로 흩어져 있지 않고, **각 stage 폴더 안에 코드와 artifact가 함께 있는 구조**로 정리한다.
+이제 `01_ml`은 각 stage 폴더 안에 코드, 이론, 최신 artifact가 함께 있는 구조로 정리되어 있다.
 
 ## 어디부터 보면 좋은가
 
@@ -34,10 +34,10 @@ ML 트랙은 다른 단계와 의존성이 충돌할 수 있으므로 전용 환
 
 | Stage | 목표 | 핵심 metric | 최신 artifact |
 | --- | --- | --- | --- |
-| [01_tabular_classification](01_tabular_classification/README.md) | 분류 기본기 | AUPRC | [README](01_tabular_classification/artifacts/20260326-172429_adult-census-income_model-suite_s42/README.md) |
-| [02_tabular_regression](02_tabular_regression/README.md) | 회귀와 residual 분석 | RMSE | [README](02_tabular_regression/artifacts/20260326-172452_california-housing_model-suite_s42/README.md) |
-| [03_model_selection_and_interpretation](03_model_selection_and_interpretation/README.md) | 시간축 검증과 해석 | RMSE | [README](03_model_selection_and_interpretation/artifacts/20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/README.md) |
-| [04_large_scale_tabular](04_large_scale_tabular/README.md) | 대규모 tabular 비용-성능 비교 | Macro-F1 | [README](04_large_scale_tabular/artifacts/20260326-172723_covertype_large-scale-suite_s42/README.md) |
+| [01_tabular_classification](01_tabular_classification/README.md) | 분류 기본기 | AUPRC | [README](01_tabular_classification/artifacts/20260327-164446_adult-census-income_model-suite_s42/README.md) |
+| [02_tabular_regression](02_tabular_regression/README.md) | 회귀와 residual 분석 | RMSE | [README](02_tabular_regression/artifacts/20260327-164513_california-housing_model-suite_s42/README.md) |
+| [03_model_selection_and_interpretation](03_model_selection_and_interpretation/README.md) | 시간축 검증과 해석 | RMSE | [README](03_model_selection_and_interpretation/artifacts/20260327-164603_bike-sharing-hourly_tuned-hgbdt_s42/README.md) |
+| [04_large_scale_tabular](04_large_scale_tabular/README.md) | 대규모 tabular 비용-성능 비교 | Macro-F1 | [README](04_large_scale_tabular/artifacts/20260327-164831_covertype_large-scale-suite_s42/README.md) |
 
 ## 실행 규칙
 
@@ -52,13 +52,13 @@ ML 트랙은 다른 단계와 의존성이 충돌할 수 있으므로 전용 환
 ## 빠르게 훑는 결과 미리보기
 
 ### 01 표형 분류
-![](01_tabular_classification/artifacts/20260326-172429_adult-census-income_model-suite_s42/figures/results/pr_curve.svg)
+![](01_tabular_classification/artifacts/20260327-164446_adult-census-income_model-suite_s42/figures/results/pr_curve.svg)
 
 ### 02 표형 회귀
-![](02_tabular_regression/artifacts/20260326-172452_california-housing_model-suite_s42/figures/results/parity_plot.svg)
+![](02_tabular_regression/artifacts/20260327-164513_california-housing_model-suite_s42/figures/results/parity_plot.svg)
 
 ### 03 모델 선택과 해석
-![](03_model_selection_and_interpretation/artifacts/20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/figures/results/cv_fold_score_boxplot.svg)
+![](03_model_selection_and_interpretation/artifacts/20260327-164603_bike-sharing-hourly_tuned-hgbdt_s42/figures/results/cv_fold_score_boxplot.svg)
 
 ### 04 대규모 표형 데이터
-![](04_large_scale_tabular/artifacts/20260326-172723_covertype_large-scale-suite_s42/figures/results/metric_vs_training_time.svg)
+![](04_large_scale_tabular/artifacts/20260327-164831_covertype_large-scale-suite_s42/figures/results/metric_vs_training_time.svg)

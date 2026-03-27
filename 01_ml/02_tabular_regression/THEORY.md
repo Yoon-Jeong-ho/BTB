@@ -316,11 +316,11 @@ Permutation importance에서 상위 feature는 다음 순서였다.
 
 ### 최신 보고서와 그림
 
-- 최신 결과 보고서: [README](artifacts/20260326-172452_california-housing_model-suite_s42/README.md)
-- parity plot: [parity_plot.svg](artifacts/20260326-172452_california-housing_model-suite_s42/figures/results/parity_plot.svg)
-- residual histogram: [residual_histogram.svg](artifacts/20260326-172452_california-housing_model-suite_s42/figures/results/residual_histogram.svg)
-- residual vs target: [residual_vs_target.svg](artifacts/20260326-172452_california-housing_model-suite_s42/figures/results/residual_vs_target.svg)
-- feature importance: [feature_importance.svg](artifacts/20260326-172452_california-housing_model-suite_s42/figures/analysis/feature_importance.svg)
-- regional slice: [regional_error_slice.svg](artifacts/20260326-172452_california-housing_model-suite_s42/figures/analysis/regional_error_slice.svg)
-- income slice: [error_slice_by_income.svg](artifacts/20260326-172452_california-housing_model-suite_s42/figures/analysis/error_slice_by_income.svg)
-- worst cases: [worst_prediction_cases.svg](artifacts/20260326-172452_california-housing_model-suite_s42/figures/analysis/worst_prediction_cases.svg)
+- 최신 결과 보고서: [README](artifacts/20260327-164513_california-housing_model-suite_s42/README.md)
+- parity plot: [parity_plot.svg](artifacts/20260327-164513_california-housing_model-suite_s42/figures/results/parity_plot.svg)
+- residual histogram: [residual_histogram.svg](artifacts/20260327-164513_california-housing_model-suite_s42/figures/results/residual_histogram.svg)
+- residual vs target: [residual_vs_target.svg](artifacts/20260327-164513_california-housing_model-suite_s42/figures/results/residual_vs_target.svg)
+- feature importance: [feature_importance.svg](artifacts/20260327-164513_california-housing_model-suite_s42/figures/analysis/feature_importance.svg)
+- regional slice: [regional_error_slice.svg](artifacts/20260327-164513_california-housing_model-suite_s42/figures/analysis/regional_error_slice.svg)
+- income slice: [error_slice_by_income.svg](artifacts/20260327-164513_california-housing_model-suite_s42/figures/analysis/error_slice_by_income.svg)
+- worst cases: [worst_prediction_cases.svg](artifacts/20260327-164513_california-housing_model-suite_s42/figures/analysis/worst_prediction_cases.svg)

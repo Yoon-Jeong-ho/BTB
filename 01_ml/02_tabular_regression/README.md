@@ -37,7 +37,7 @@
 
 1. 먼저 [THEORY.md](THEORY.md)를 읽는다.
 2. 아래 실습 파이프라인으로 어떤 모델을 어떤 순서로 비교하는지 확인한다.
-3. 최신 결과는 [report](artifacts/20260326-172452_california-housing_model-suite_s42/README.md)에서 본다.
+3. 최신 결과는 [report](artifacts/20260327-164513_california-housing_model-suite_s42/README.md)에서 본다.
 4. 마지막으로 figure와 worst case를 함께 읽는다.
 
 ## 이번 프로젝트 기준 확정 데이터셋
@@ -125,7 +125,7 @@ df = frame.frame
 
 ## 최신 리포트
 
-- [최신 결과 보고서](artifacts/20260326-172452_california-housing_model-suite_s42/README.md)
+- [최신 결과 보고서](artifacts/20260327-164513_california-housing_model-suite_s42/README.md)
 
 ## 핵심 해석 메모
 
@@ -133,7 +133,7 @@ df = frame.frame
 - MAE는 평균 오차를, RMSE는 큰 오차 리스크를, R²는 평균 예측 대비 설명력을 보여 준다.
 - 회귀 실험은 숫자 하나가 아니라, **오차 구조 전체**를 읽는 연습이다.
 
-## 승격 기준
+## 이 장을 이해했는지 확인하는 질문
 
 - residual 구조를 설명할 수 있다.
 - target 구간별 성능 차이를 말할 수 있다.

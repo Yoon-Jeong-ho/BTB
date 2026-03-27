@@ -3,8 +3,8 @@
 이 문서는 **큰 표형 분류 문제를 왜 따로 공부해야 하는지**를 설명하기 위한 강의 노트다. 단순히 Covertype 점수를 외우기 위한 문서가 아니라, 대규모 tabular에서 어떤 질문이 생기고 왜 accuracy 하나로는 부족해지는지, 왜 macro 지표와 비용 지표를 같이 읽어야 하는지를 차근차근 정리한다.
 
 - 단계 안내: [README.md](README.md)
-- 최신 실험 리포트: [artifacts/20260326-172723_covertype_large-scale-suite_s42/README.md](artifacts/20260326-172723_covertype_large-scale-suite_s42/README.md)
-- 최신 요약: [artifacts/20260326-172723_covertype_large-scale-suite_s42/summary.md](artifacts/20260326-172723_covertype_large-scale-suite_s42/summary.md)
+- 최신 실험 리포트: [artifacts/20260327-164831_covertype_large-scale-suite_s42/README.md](artifacts/20260327-164831_covertype_large-scale-suite_s42/README.md)
+- 최신 요약: [artifacts/20260327-164831_covertype_large-scale-suite_s42/summary.md](artifacts/20260327-164831_covertype_large-scale-suite_s42/summary.md)
 
 ## 1. 왜 이런 이론이 필요해졌는가
 

@@ -939,7 +939,7 @@ def run_stage_01(device: str) -> dict[str, Any]:
 ## 9. Decision
 
 - 대표 artifact로 남길까? yes
-- Promote weights to `artifacts/promoted/` or HF Hub? no
+- 모델 가중치를 별도로 배포할 계획이 있는가?: no
 - Next run: threshold tuning or cost-sensitive calibration for the positive income class.
 """
     (ctx.run_paths.run_dir / "summary.md").write_text(summary, encoding="utf-8")
@@ -1112,7 +1112,7 @@ def run_stage_02(device: str) -> dict[str, Any]:
 ## 9. Decision
 
 - 대표 artifact로 남길까? yes
-- Promote weights to `artifacts/promoted/` or HF Hub? no
+- 모델 가중치를 별도로 배포할 계획이 있는가?: no
 - Next run: Add log-target experiments or capped-target aware losses.
 """
     (ctx.run_paths.run_dir / "summary.md").write_text(summary, encoding="utf-8")
@@ -1319,7 +1319,7 @@ def run_stage_03(device: str) -> dict[str, Any]:
 ## 9. Decision
 
 - 대표 artifact로 남길까? yes
-- Promote weights to `artifacts/promoted/` or HF Hub? no
+- 모델 가중치를 별도로 배포할 계획이 있는가?: no
 - Next run: explicit holiday features and fold-aware hyperparameter search expansion.
 """
     (ctx.run_paths.run_dir / "summary.md").write_text(summary, encoding="utf-8")
@@ -1506,7 +1506,7 @@ def run_stage_04(device: str) -> dict[str, Any]:
 ## 9. Decision
 
 - 대표 artifact로 남길까? yes
-- Promote weights to `artifacts/promoted/` or HF Hub? no
+- 모델 가중치를 별도로 배포할 계획이 있는가?: no
 - Next run: compare against XGBoost/LightGBM GPU variants once those dependencies are explicitly approved.
 """
     (ctx.run_paths.run_dir / "summary.md").write_text(summary, encoding="utf-8")
@@ -1564,7 +1564,7 @@ def write_track_report(stage_results: list[dict[str, Any]]) -> None:
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Run the entire 01_ml track and promote report artifacts.")
+    parser = argparse.ArgumentParser(description="Run the entire 01_ml track and refresh stage-local artifacts.")
     parser.add_argument("--gpu", type=int, default=0, help="GPU index to expose via CUDA_VISIBLE_DEVICES.")
     return parser.parse_args()
 

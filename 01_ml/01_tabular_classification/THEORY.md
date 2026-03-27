@@ -4,8 +4,8 @@
 핵심은 “분류를 했다”가 아니라 **분류 결과를 해석하는 틀을 갖추는 것**이다.
 
 - stage 가이드: [README.md](README.md)
-- 최신 artifact 리포트: [README.md](artifacts/20260326-172429_adult-census-income_model-suite_s42/README.md)
-- 최신 artifact 요약: [summary.md](artifacts/20260326-172429_adult-census-income_model-suite_s42/summary.md)
+- 최신 artifact 리포트: [README.md](artifacts/20260327-164446_adult-census-income_model-suite_s42/README.md)
+- 최신 artifact 요약: [summary.md](artifacts/20260327-164446_adult-census-income_model-suite_s42/summary.md)
 
 ---
 

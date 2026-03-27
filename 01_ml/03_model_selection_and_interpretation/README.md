@@ -32,7 +32,7 @@
 
 - 실행 코드: `run_stage.py`
 - 이론 문서: [THEORY.md](THEORY.md)
-- 최신 리포트: [20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/README.md](artifacts/20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/README.md)
+- 최신 리포트: [20260327-164603_bike-sharing-hourly_tuned-hgbdt_s42/README.md](artifacts/20260327-164603_bike-sharing-hourly_tuned-hgbdt_s42/README.md)
 
 - Primary dataset: `Bike Sharing Dataset`
 - Source: UCI Machine Learning Repository
@@ -127,16 +127,16 @@ y = bike.data.targets
 
 ## 이번 리포트에서 바로 읽어야 할 그림
 
-- [CV fold RMSE boxplot](artifacts/20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/figures/results/cv_fold_score_boxplot.svg)
-- [validation curve](artifacts/20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/figures/results/validation_curve.svg)
-- [top feature importance](artifacts/20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/figures/results/top_feature_importance.svg)
-- [subgroup metric comparison](artifacts/20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/figures/analysis/subgroup_metric_comparison.svg)
-- [prediction-bin error plot](artifacts/20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/figures/analysis/confidence_bin_plot.svg)
-- [common failure slice summary](artifacts/20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/figures/analysis/common_failure_slice_summary.svg)
+- [CV fold RMSE boxplot](artifacts/20260327-164603_bike-sharing-hourly_tuned-hgbdt_s42/figures/results/cv_fold_score_boxplot.svg)
+- [validation curve](artifacts/20260327-164603_bike-sharing-hourly_tuned-hgbdt_s42/figures/results/validation_curve.svg)
+- [top feature importance](artifacts/20260327-164603_bike-sharing-hourly_tuned-hgbdt_s42/figures/results/top_feature_importance.svg)
+- [subgroup metric comparison](artifacts/20260327-164603_bike-sharing-hourly_tuned-hgbdt_s42/figures/analysis/subgroup_metric_comparison.svg)
+- [prediction-bin error plot](artifacts/20260327-164603_bike-sharing-hourly_tuned-hgbdt_s42/figures/analysis/confidence_bin_plot.svg)
+- [common failure slice summary](artifacts/20260327-164603_bike-sharing-hourly_tuned-hgbdt_s42/figures/analysis/common_failure_slice_summary.svg)
 
 ---
 
-## 승격 기준
+## 이 장을 이해했는지 확인하는 질문
 
 다음 질문에 답할 수 있으면 이 단계를 제대로 이해한 것이다.
 
@@ -151,16 +151,16 @@ y = bike.data.targets
 ## 읽기 순서
 
 1. [THEORY.md](THEORY.md)
-2. [최신 리포트 README](artifacts/20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/README.md)
+2. [최신 리포트 README](artifacts/20260327-164603_bike-sharing-hourly_tuned-hgbdt_s42/README.md)
 3. 아래 그림들을 순서대로 확인한다.
 
 ---
 
 ## 그림 바로가기
 
-- [CV fold RMSE boxplot](artifacts/20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/figures/results/cv_fold_score_boxplot.svg)
-- [validation curve](artifacts/20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/figures/results/validation_curve.svg)
-- [top feature importance](artifacts/20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/figures/results/top_feature_importance.svg)
-- [subgroup metric comparison](artifacts/20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/figures/analysis/subgroup_metric_comparison.svg)
-- [prediction-bin error plot](artifacts/20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/figures/analysis/confidence_bin_plot.svg)
-- [common failure slice summary](artifacts/20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/figures/analysis/common_failure_slice_summary.svg)
+- [CV fold RMSE boxplot](artifacts/20260327-164603_bike-sharing-hourly_tuned-hgbdt_s42/figures/results/cv_fold_score_boxplot.svg)
+- [validation curve](artifacts/20260327-164603_bike-sharing-hourly_tuned-hgbdt_s42/figures/results/validation_curve.svg)
+- [top feature importance](artifacts/20260327-164603_bike-sharing-hourly_tuned-hgbdt_s42/figures/results/top_feature_importance.svg)
+- [subgroup metric comparison](artifacts/20260327-164603_bike-sharing-hourly_tuned-hgbdt_s42/figures/analysis/subgroup_metric_comparison.svg)
+- [prediction-bin error plot](artifacts/20260327-164603_bike-sharing-hourly_tuned-hgbdt_s42/figures/analysis/confidence_bin_plot.svg)
+- [common failure slice summary](artifacts/20260327-164603_bike-sharing-hourly_tuned-hgbdt_s42/figures/analysis/common_failure_slice_summary.svg)

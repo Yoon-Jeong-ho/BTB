@@ -15,8 +15,8 @@
 ## 먼저 어디서부터 읽으면 좋은가
 
 1. [THEORY.md](THEORY.md) — 용어, 개념, 메트릭, 모델 직관을 먼저 잡는다.
-2. [최신 artifact 리포트](artifacts/20260326-172429_adult-census-income_model-suite_s42/README.md) — 이론이 실제 숫자와 figure 에서 어떻게 드러나는지 본다.
-3. [최신 artifact 요약](artifacts/20260326-172429_adult-census-income_model-suite_s42/summary.md) — 핵심만 다시 압축해 본다.
+2. [최신 artifact 리포트](artifacts/20260327-164446_adult-census-income_model-suite_s42/README.md) — 이론이 실제 숫자와 figure 에서 어떻게 드러나는지 본다.
+3. [최신 artifact 요약](artifacts/20260327-164446_adult-census-income_model-suite_s42/summary.md) — 핵심만 다시 압축해 본다.
 4. 코드가 궁금하면 아래 stage-local Python 파일을 따라간다.
 
 ---
@@ -129,11 +129,11 @@ df = ds.to_pandas()
 
 ### 1) 결과 figure
 
-- [class_distribution.svg](artifacts/20260326-172429_adult-census-income_model-suite_s42/figures/results/class_distribution.svg)
-- [pr_curve.svg](artifacts/20260326-172429_adult-census-income_model-suite_s42/figures/results/pr_curve.svg)
-- [roc_curve.svg](artifacts/20260326-172429_adult-census-income_model-suite_s42/figures/results/roc_curve.svg)
-- [confusion_matrix.svg](artifacts/20260326-172429_adult-census-income_model-suite_s42/figures/results/confusion_matrix.svg)
-- [calibration_curve.svg](artifacts/20260326-172429_adult-census-income_model-suite_s42/figures/results/calibration_curve.svg)
+- [class_distribution.svg](artifacts/20260327-164446_adult-census-income_model-suite_s42/figures/results/class_distribution.svg)
+- [pr_curve.svg](artifacts/20260327-164446_adult-census-income_model-suite_s42/figures/results/pr_curve.svg)
+- [roc_curve.svg](artifacts/20260327-164446_adult-census-income_model-suite_s42/figures/results/roc_curve.svg)
+- [confusion_matrix.svg](artifacts/20260327-164446_adult-census-income_model-suite_s42/figures/results/confusion_matrix.svg)
+- [calibration_curve.svg](artifacts/20260327-164446_adult-census-income_model-suite_s42/figures/results/calibration_curve.svg)
 
 읽는 순서의 이유는 간단하다.
 
@@ -144,10 +144,10 @@ df = ds.to_pandas()
 
 ### 2) 분석 figure
 
-- [permutation_importance.svg](artifacts/20260326-172429_adult-census-income_model-suite_s42/figures/analysis/permutation_importance.svg)
-- [error_slice_by_sex.svg](artifacts/20260326-172429_adult-census-income_model-suite_s42/figures/analysis/error_slice_by_sex.svg)
-- [confidence_vs_correctness.svg](artifacts/20260326-172429_adult-census-income_model-suite_s42/figures/analysis/confidence_vs_correctness.svg)
-- [failure_examples.svg](artifacts/20260326-172429_adult-census-income_model-suite_s42/figures/analysis/failure_examples.svg)
+- [permutation_importance.svg](artifacts/20260327-164446_adult-census-income_model-suite_s42/figures/analysis/permutation_importance.svg)
+- [error_slice_by_sex.svg](artifacts/20260327-164446_adult-census-income_model-suite_s42/figures/analysis/error_slice_by_sex.svg)
+- [confidence_vs_correctness.svg](artifacts/20260327-164446_adult-census-income_model-suite_s42/figures/analysis/confidence_vs_correctness.svg)
+- [failure_examples.svg](artifacts/20260327-164446_adult-census-income_model-suite_s42/figures/analysis/failure_examples.svg)
 
 여기서는 “왜 그런 결과가 나왔는가”를 본다.
 
