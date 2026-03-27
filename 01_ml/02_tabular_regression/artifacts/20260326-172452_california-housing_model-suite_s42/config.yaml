@@ -1,0 +1,18 @@
+track: 01_ml
+stage: 02 Tabular Regression
+dataset: california-housing
+seed: 42
+split:
+  train: 14448
+  valid: 3096
+  test: 3096
+hardware:
+  device: cuda
+  gpu_name: NVIDIA RTX A6000
+models:
+- dummy_mean
+- linear_regression
+- ridge
+- random_forest
+- hist_gbdt
+- gpu_mlp

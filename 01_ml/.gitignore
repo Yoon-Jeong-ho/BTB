@@ -1,5 +1,16 @@
-# Local ML-only environment scratch
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# Local env scratch
 .conda/
 .mamba/
 .venv/
 .env/
+
+# Large local-only experiment byproducts
+**/artifacts/*/checkpoints/
+**/artifacts/*/logs/
+**/artifacts/*/tmp/

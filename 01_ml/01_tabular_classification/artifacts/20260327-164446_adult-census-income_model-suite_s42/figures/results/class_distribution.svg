@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="620" viewBox="0 0 980 620">
+<rect width="100%" height="100%" fill="white" />
+<style>
+text { font-family: Arial, sans-serif; fill: #111827; }
+.small { font-size: 12px; }
+.axis { font-size: 12px; fill: #374151; }
+.title { font-size: 20px; font-weight: bold; }
+.subtitle { font-size: 13px; fill: #4b5563; }
+.legend { font-size: 12px; }
+</style>
+<text x="90" y="35" class="title" text-anchor="start">Adult income class distribution</text>
+<text x="90" y="58" class="subtitle" text-anchor="start">Primary dataset class balance before split.</text>
+<line x1="90" y1="540" x2="940" y2="540" stroke="#111827"/>
+<line x1="90" y1="80" x2="90" y2="540" stroke="#111827"/>
+<text x="515.0" y="600" class="axis" text-anchor="middle">class</text>
+<text x="24" y="310.0" class="axis" text-anchor="middle" transform="rotate(-90 24 310.0)">count</text>
+<line x1="90" y1="540.0" x2="940" y2="540.0" stroke="#e5e7eb"/>
+<text x="80" y="544.0" class="axis" text-anchor="end">0.000</text>
+<line x1="90" y1="425.0" x2="940" y2="425.0" stroke="#e5e7eb"/>
+<text x="80" y="429.0" class="axis" text-anchor="end">7107.000</text>
+<line x1="90" y1="310.0" x2="940" y2="310.0" stroke="#e5e7eb"/>
+<text x="80" y="314.0" class="axis" text-anchor="end">14214.000</text>
+<line x1="90" y1="195.0" x2="940" y2="195.0" stroke="#e5e7eb"/>
+<text x="80" y="199.0" class="axis" text-anchor="end">21321.000</text>
+<line x1="90" y1="80.0" x2="940" y2="80.0" stroke="#e5e7eb"/>
+<text x="80" y="84.0" class="axis" text-anchor="end">28428.000</text>
+<rect x="153.75" y="139.99999999999994" width="297.5" height="400.00000000000006" fill="#60a5fa" opacity="0.85"/>
+<text x="302.5" y="131.99999999999994" class="small" text-anchor="middle">24720</text>
+<text x="302.5" y="568" class="axis" text-anchor="middle" transform="rotate(-25 302.5 568)">&lt;=50K</text>
+<rect x="578.75" y="413.1229773462783" width="297.5" height="126.87702265372172" fill="#2563eb" opacity="0.85"/>
+<text x="727.5" y="405.1229773462783" class="small" text-anchor="middle">7841</text>
+<text x="727.5" y="568" class="axis" text-anchor="middle" transform="rotate(-25 727.5 568)">&gt;50K</text>
+</svg>

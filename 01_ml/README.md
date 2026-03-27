@@ -1,15 +1,13 @@
 # 01 ML
 
-이 트랙의 목표는 `표형 데이터 -> 전처리 -> 베이스라인 -> 강한 베이스라인 -> 평가 -> 해석` 흐름을 몸에 익히는 것이다.
+이 트랙의 목표는 `표형 데이터 -> 전처리 -> baseline -> strong baseline -> metric 해석 -> failure analysis` 흐름을 몸에 익히는 것이다.
+이제 `01_ml`은 별도 `reports/`, `runs/`, `scripts/` 폴더로 흩어져 있지 않고, **각 stage 폴더 안에 코드와 artifact가 함께 있는 구조**로 정리한다.
 
-딥러닝으로 바로 들어가기 전에, 아래를 확실히 익힌다.
+## 어디부터 보면 좋은가
 
-- train/valid/test 분리
-- 누수 방지
-- 수치형/범주형 전처리
-- 적절한 평가 지표 선택
-- 교차검증과 모델 선택
-- 에러 분석과 해석 가능성
+1. 공통 이론: [THEORY.md](THEORY.md)
+2. 전체 결과 인덱스: [RESULTS.md](RESULTS.md)
+3. stage별 README / THEORY / 최신 artifact README
 
 ## 전용 conda 환경
 
@@ -21,56 +19,46 @@ ML 트랙은 다른 단계와 의존성이 충돌할 수 있으므로 전용 환
 - 환경 생성 스크립트: `bash 01_ml/env/create_env.sh`
 - 전체 실행 진입점: `bash 01_ml/run_ml_track.sh`
 
-## 코드 배치
+## 폴더 구조
 
-stage별로 바로 찾아볼 수 있게 실행 코드를 각 폴더 안에 함께 둔다.
+각 stage 폴더는 아래 구성으로 통일한다.
 
-- `01_tabular_classification/run_stage.py`
-- `02_tabular_regression/run_stage.py`
-- `03_model_selection_and_interpretation/run_stage.py`
-- `04_large_scale_tabular/run_stage.py`
-- 공통 유틸/리포트 빌더: `01_ml/common.py`, `01_ml/reporting.py`
-
-## 이론 문서
-
-- 트랙 공통 이론: [THEORY.md](THEORY.md)
-- 각 stage별 이론은 각 폴더의 `THEORY.md`를 본다.
-- 작성 템플릿: [../00_shared/templates/ml_theory_template.md](../00_shared/templates/ml_theory_template.md)
-- 리포트 템플릿: [../00_shared/templates/ml_report_template.md](../00_shared/templates/ml_report_template.md)
-
-이번 프로젝트에서 실제로 쓸 확정 데이터셋 표는 [00_dataset_assignments.md](00_dataset_assignments.md) 에 고정했다.
+- `README.md`: 이 stage를 어떻게 공부할지 설명하는 입구 문서
+- `THEORY.md`: 용어, 문제 정의, metric, 모델, 데이터셋, figure 읽는 법을 설명하는 이론 노트
+- `dataset.py`: stage 전용 데이터 로딩/특징 생성
+- `experiment.py`: 실제 실험 흐름, 전처리, 모델 학습, figure 생성, metric 저장
+- `run_stage.py`: stage 단일 실행 entrypoint
+- `artifacts/<run_id>/...`: metrics / config / predictions / figures / README / summary
 
 ## 단계 구성
 
-| Stage | 목적 | 추천 데이터셋 | 약한 베이스라인 | 강한 베이스라인 | 남길 figure |
-| --- | --- | --- | --- | --- | --- |
-| [01_tabular_classification](01_tabular_classification/README.md) | 분류 기본기 | `scikit-learn/adult-census-income` | Dummy, Logistic Regression | Random Forest, GBDT | ROC/PR, confusion matrix, calibration |
-| [02_tabular_regression](02_tabular_regression/README.md) | 회귀와 residual 분석 | `California Housing` | Linear Regression, Ridge | Random Forest Regressor, GBDT | parity plot, residual plot, feature importance |
-| [03_model_selection_and_interpretation](03_model_selection_and_interpretation/README.md) | CV, HPO, 해석 | `Bike Sharing Dataset` | untuned baseline | tuned GBDT / ensemble | CV boxplot, slice metrics, permutation importance |
-| [04_large_scale_tabular](04_large_scale_tabular/README.md) | 서버 학습 전 scale-up | `mstz/covertype` | linear / shallow tree | histogram GBDT / boosted tree pipeline | throughput, memory, metric-vs-cost |
+| Stage | 목표 | 핵심 metric | 최신 artifact |
+| --- | --- | --- | --- |
+| [01_tabular_classification](01_tabular_classification/README.md) | 분류 기본기 | AUPRC | [README](01_tabular_classification/artifacts/20260326-172429_adult-census-income_model-suite_s42/README.md) |
+| [02_tabular_regression](02_tabular_regression/README.md) | 회귀와 residual 분석 | RMSE | [README](02_tabular_regression/artifacts/20260326-172452_california-housing_model-suite_s42/README.md) |
+| [03_model_selection_and_interpretation](03_model_selection_and_interpretation/README.md) | 시간축 검증과 해석 | RMSE | [README](03_model_selection_and_interpretation/artifacts/20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/README.md) |
+| [04_large_scale_tabular](04_large_scale_tabular/README.md) | 대규모 tabular 비용-성능 비교 | Macro-F1 | [README](04_large_scale_tabular/artifacts/20260326-172723_covertype_large-scale-suite_s42/README.md) |
 
-## 이번 프로젝트 기준 데이터셋 라인업
+## 실행 규칙
 
-| Dataset | 어느 step에서 쓰는가 | 규모/형태 | 왜 지금 단계에 적합한가 | 공식 출처 |
-| --- | --- | --- | --- | --- |
-| `scikit-learn/adult-census-income` | Step 01 | 32k+ rows, mixed-type binary classification | 범주형/수치형 혼합 분류에서 전처리 파이프라인을 익히기 좋다 | https://huggingface.co/datasets/scikit-learn/adult-census-income |
-| `California Housing` | Step 02 | 20,640 samples, regression | 회귀 실험과 residual 분석을 빠르게 돌리기 좋다 | https://scikit-learn.org/stable/modules/generated/sklearn.datasets.fetch_california_housing.html |
-| `Bike Sharing Dataset` | Step 03 | 17,389 rows, count regression | `TimeSeriesSplit` 과 leakage 방지를 배우기 좋다 | https://archive.ics.uci.edu/dataset/275/bike+sharing+dataset |
-| `mstz/covertype` | Step 04 | 581k+ rows급 multiclass tabular | 서버 학습 전에 scale-up과 비용 측정을 해보기 좋다 | https://huggingface.co/datasets/mstz/covertype |
-| `HIGGS` | Step 04 이후 확장 | 11M rows, binary classification | 서버 전용 대형 benchmark | https://archive.ics.uci.edu/dataset/280/higgs |
-
-## 이 트랙에서 꼭 남길 것
-
-- feature 분포 요약
-- 결측치/범주형 처리 방식
-- baseline 대비 개선폭
-- calibration 여부
-- 어떤 샘플에서 반복적으로 틀리는지
-
-## 선택형 확장
-
-- `Breast Cancer Wisconsin`: 코드 디버그용 초소형 classification
-- `Ames Housing`: feature engineering 중심의 추가 회귀 실습
-- `HIGGS`: 서버에서 다뤄야 하는 최종 대규모 tabular benchmark
+- stage별 코드는 각 폴더 안에서 바로 읽히도록 유지한다.
+- 결과는 stage의 `artifacts/` 안에 바로 쌓는다.
+- 숫자만 남기지 말고, metric과 figure 해석을 반드시 함께 남긴다.
+- baseline 대비 무엇이 좋아졌는지와 어디서 틀렸는지를 같이 적는다.
 
 실험 운영 규칙은 [../docs/01_experiment_playbook.md](../docs/01_experiment_playbook.md) 를 따른다.
+
+
+## 빠르게 훑는 결과 미리보기
+
+### 01 표형 분류
+![](01_tabular_classification/artifacts/20260326-172429_adult-census-income_model-suite_s42/figures/results/pr_curve.svg)
+
+### 02 표형 회귀
+![](02_tabular_regression/artifacts/20260326-172452_california-housing_model-suite_s42/figures/results/parity_plot.svg)
+
+### 03 모델 선택과 해석
+![](03_model_selection_and_interpretation/artifacts/20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/figures/results/cv_fold_score_boxplot.svg)
+
+### 04 대규모 표형 데이터
+![](04_large_scale_tabular/artifacts/20260326-172723_covertype_large-scale-suite_s42/figures/results/metric_vs_training_time.svg)

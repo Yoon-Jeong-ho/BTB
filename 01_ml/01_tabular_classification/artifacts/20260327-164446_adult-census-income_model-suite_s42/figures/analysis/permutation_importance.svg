@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="620" viewBox="0 0 980 620">
+<rect width="100%" height="100%" fill="white" />
+<style>
+text { font-family: Arial, sans-serif; fill: #111827; }
+.small { font-size: 12px; }
+.axis { font-size: 12px; fill: #374151; }
+.title { font-size: 20px; font-weight: bold; }
+.subtitle { font-size: 13px; fill: #4b5563; }
+.legend { font-size: 12px; }
+</style>
+<text x="90" y="35" class="title" text-anchor="start">Permutation importance</text>
+<text x="90" y="58" class="subtitle" text-anchor="start">Computed with random_forest on test split.</text>
+<line x1="90" y1="540" x2="940" y2="540" stroke="#111827"/>
+<line x1="90" y1="80" x2="90" y2="540" stroke="#111827"/>
+<text x="515.0" y="600" class="axis" text-anchor="middle">feature</text>
+<text x="24" y="310.0" class="axis" text-anchor="middle" transform="rotate(-90 24 310.0)">importance drop</text>
+<line x1="90" y1="540.0" x2="940" y2="540.0" stroke="#e5e7eb"/>
+<text x="80" y="544.0" class="axis" text-anchor="end">0.000</text>
+<line x1="90" y1="425.0" x2="940" y2="425.0" stroke="#e5e7eb"/>
+<text x="80" y="429.0" class="axis" text-anchor="end">0.027</text>
+<line x1="90" y1="310.0" x2="940" y2="310.0" stroke="#e5e7eb"/>
+<text x="80" y="314.0" class="axis" text-anchor="end">0.055</text>
+<line x1="90" y1="195.0" x2="940" y2="195.0" stroke="#e5e7eb"/>
+<text x="80" y="199.0" class="axis" text-anchor="end">0.082</text>
+<line x1="90" y1="80.0" x2="940" y2="80.0" stroke="#e5e7eb"/>
+<text x="80" y="84.0" class="axis" text-anchor="end">0.109</text>
+<rect x="100.625" y="139.99999999999994" width="49.58333333333333" height="400.00000000000006" fill="#2563eb" opacity="0.85"/>
+<text x="125.41666666666666" y="131.99999999999994" class="small" text-anchor="middle">0.095</text>
+<text x="125.41666666666666" y="568" class="axis" text-anchor="middle" transform="rotate(-25 125.41666666666666 568)">workclass_Self-emp</text>
+<rect x="171.45833333333331" y="211.9211964575283" width="49.58333333333333" height="328.0788035424717" fill="#2563eb" opacity="0.85"/>
+<text x="196.24999999999997" y="203.9211964575283" class="small" text-anchor="middle">0.078</text>
+<text x="196.24999999999997" y="568" class="axis" text-anchor="middle" transform="rotate(-25 196.24999999999997 568)">hours.per.week</text>
+<rect x="242.29166666666666" y="310.8416022713717" width="49.58333333333333" height="229.1583977286283" fill="#2563eb" opacity="0.85"/>
+<text x="267.0833333333333" y="302.8416022713717" class="small" text-anchor="middle">0.054</text>
+<text x="267.0833333333333" y="568" class="axis" text-anchor="middle" transform="rotate(-25 267.0833333333333 568)">age</text>
+<rect x="313.125" y="362.1649695652569" width="49.58333333333333" height="177.8350304347431" fill="#2563eb" opacity="0.85"/>
+<text x="337.9166666666667" y="354.1649695652569" class="small" text-anchor="middle">0.042</text>
+<text x="337.9166666666667" y="568" class="axis" text-anchor="middle" transform="rotate(-25 337.9166666666667 568)">workclass_Local-go</text>
+<rect x="383.9583333333333" y="400.44185125417204" width="49.58333333333333" height="139.55814874582796" fill="#2563eb" opacity="0.85"/>
+<text x="408.75" y="392.44185125417204" class="small" text-anchor="middle">0.033</text>
+<text x="408.75" y="568" class="axis" text-anchor="middle" transform="rotate(-25 408.75 568)">workclass_Federal-</text>
+<rect x="454.79166666666663" y="421.5001195849421" width="49.58333333333333" height="118.49988041505787" fill="#2563eb" opacity="0.85"/>
+<text x="479.5833333333333" y="413.5001195849421" class="small" text-anchor="middle">0.028</text>
+<text x="479.5833333333333" y="568" class="axis" text-anchor="middle" transform="rotate(-25 479.5833333333333 568)">capital.loss</text>
+<rect x="525.625" y="444.5915866259901" width="49.58333333333333" height="95.40841337400991" fill="#2563eb" opacity="0.85"/>
+<text x="550.4166666666666" y="436.5915866259901" class="small" text-anchor="middle">0.023</text>
+<text x="550.4166666666666" y="568" class="axis" text-anchor="middle" transform="rotate(-25 550.4166666666666 568)">workclass_State-go</text>
+<rect x="596.4583333333333" y="467.9824165600727" width="49.58333333333333" height="72.01758343992731" fill="#2563eb" opacity="0.85"/>
+<text x="621.2499999999999" y="459.9824165600727" class="small" text-anchor="middle">0.017</text>
+<text x="621.2499999999999" y="568" class="axis" text-anchor="middle" transform="rotate(-25 621.2499999999999 568)">workclass_Self-emp</text>
+<rect x="667.2916666666666" y="507.61122643325643" width="49.58333333333333" height="32.388773566743566" fill="#2563eb" opacity="0.85"/>
+<text x="692.0833333333333" y="499.61122643325643" class="small" text-anchor="middle">0.008</text>
+<text x="692.0833333333333" y="568" class="axis" text-anchor="middle" transform="rotate(-25 692.0833333333333 568)">workclass_Private</text>
+<rect x="738.125" y="522.8604683756047" width="49.58333333333333" height="17.139531624395318" fill="#2563eb" opacity="0.85"/>
+<text x="762.9166666666666" y="514.8604683756047" class="small" text-anchor="middle">0.004</text>
+<text x="762.9166666666666" y="568" class="axis" text-anchor="middle" transform="rotate(-25 762.9166666666666 568)">fnlwgt</text>
+<rect x="808.9583333333333" y="531.1127208845661" width="49.58333333333333" height="8.887279115433898" fill="#2563eb" opacity="0.85"/>
+<text x="833.7499999999999" y="523.1127208845661" class="small" text-anchor="middle">0.002</text>
+<text x="833.7499999999999" y="568" class="axis" text-anchor="middle" transform="rotate(-25 833.7499999999999 568)">capital.gain</text>
+<rect x="879.7916666666666" y="531.2866961840888" width="49.58333333333333" height="8.713303815911217" fill="#2563eb" opacity="0.85"/>
+<text x="904.5833333333333" y="523.2866961840888" class="small" text-anchor="middle">0.002</text>
+<text x="904.5833333333333" y="568" class="axis" text-anchor="middle" transform="rotate(-25 904.5833333333333 568)">workclass_Without-</text>
+</svg>

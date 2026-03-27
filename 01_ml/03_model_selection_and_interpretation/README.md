@@ -32,7 +32,7 @@
 
 - 실행 코드: `run_stage.py`
 - 이론 문서: [THEORY.md](THEORY.md)
-- 최신 리포트: [20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/README.md](../../reports/01_ml/03_model_selection_and_interpretation/20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/README.md)
+- 최신 리포트: [20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/README.md](artifacts/20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/README.md)
 
 - Primary dataset: `Bike Sharing Dataset`
 - Source: UCI Machine Learning Repository
@@ -52,6 +52,14 @@ y = bike.data.targets
 > 참고: 위 로드 코드는 실제 실습에서 사용되는 데이터 로딩 형태를 보여 주는 메모다. `ucimlrepo`를 사용할 때는 문서와 환경 버전에 맞게 호출 이름을 확인해야 한다.
 
 ---
+
+
+## 코드 구조
+
+- `dataset.py`: Bike Sharing 로딩과 leakage 방지용 feature 정리
+- `experiment.py`: TimeSeriesSplit, 후보 비교, tuning, slice figure 생성
+- `report.py`: 최신 artifact 경로 보조
+- `run_stage.py`: 이 stage만 실행하는 entrypoint
 
 ## 이 데이터에서 꼭 기억할 것
 
@@ -119,12 +127,12 @@ y = bike.data.targets
 
 ## 이번 리포트에서 바로 읽어야 할 그림
 
-- [CV fold RMSE boxplot](../../reports/01_ml/03_model_selection_and_interpretation/20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/figures/results/cv_fold_score_boxplot.svg)
-- [validation curve](../../reports/01_ml/03_model_selection_and_interpretation/20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/figures/results/validation_curve.svg)
-- [top feature importance](../../reports/01_ml/03_model_selection_and_interpretation/20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/figures/results/top_feature_importance.svg)
-- [subgroup metric comparison](../../reports/01_ml/03_model_selection_and_interpretation/20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/figures/analysis/subgroup_metric_comparison.svg)
-- [prediction-bin error plot](../../reports/01_ml/03_model_selection_and_interpretation/20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/figures/analysis/confidence_bin_plot.svg)
-- [common failure slice summary](../../reports/01_ml/03_model_selection_and_interpretation/20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/figures/analysis/common_failure_slice_summary.svg)
+- [CV fold RMSE boxplot](artifacts/20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/figures/results/cv_fold_score_boxplot.svg)
+- [validation curve](artifacts/20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/figures/results/validation_curve.svg)
+- [top feature importance](artifacts/20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/figures/results/top_feature_importance.svg)
+- [subgroup metric comparison](artifacts/20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/figures/analysis/subgroup_metric_comparison.svg)
+- [prediction-bin error plot](artifacts/20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/figures/analysis/confidence_bin_plot.svg)
+- [common failure slice summary](artifacts/20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/figures/analysis/common_failure_slice_summary.svg)
 
 ---
 
@@ -143,16 +151,16 @@ y = bike.data.targets
 ## 읽기 순서
 
 1. [THEORY.md](THEORY.md)
-2. [최신 리포트 README](../../reports/01_ml/03_model_selection_and_interpretation/20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/README.md)
+2. [최신 리포트 README](artifacts/20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/README.md)
 3. 아래 그림들을 순서대로 확인한다.
 
 ---
 
 ## 그림 바로가기
 
-- [CV fold RMSE boxplot](../../reports/01_ml/03_model_selection_and_interpretation/20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/figures/results/cv_fold_score_boxplot.svg)
-- [validation curve](../../reports/01_ml/03_model_selection_and_interpretation/20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/figures/results/validation_curve.svg)
-- [top feature importance](../../reports/01_ml/03_model_selection_and_interpretation/20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/figures/results/top_feature_importance.svg)
-- [subgroup metric comparison](../../reports/01_ml/03_model_selection_and_interpretation/20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/figures/analysis/subgroup_metric_comparison.svg)
-- [prediction-bin error plot](../../reports/01_ml/03_model_selection_and_interpretation/20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/figures/analysis/confidence_bin_plot.svg)
-- [common failure slice summary](../../reports/01_ml/03_model_selection_and_interpretation/20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/figures/analysis/common_failure_slice_summary.svg)
+- [CV fold RMSE boxplot](artifacts/20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/figures/results/cv_fold_score_boxplot.svg)
+- [validation curve](artifacts/20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/figures/results/validation_curve.svg)
+- [top feature importance](artifacts/20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/figures/results/top_feature_importance.svg)
+- [subgroup metric comparison](artifacts/20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/figures/analysis/subgroup_metric_comparison.svg)
+- [prediction-bin error plot](artifacts/20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/figures/analysis/confidence_bin_plot.svg)
+- [common failure slice summary](artifacts/20260326-172503_bike-sharing-hourly_tuned-hgbdt_s42/figures/analysis/common_failure_slice_summary.svg)

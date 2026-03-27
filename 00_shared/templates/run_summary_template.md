@@ -1,74 +1,56 @@
-# Run Summary
+# Run Summary Template
 
-## 1. Problem / Study Goal
+## 0. 이번 run을 왜 남기는가
 
-- Task:
-- Track / Stage:
-- Why this run exists:
-- Connected theory note:
+- 이 run이 답하려는 질문:
+- 이전 run과 달라진 점:
+- 연결 이론 문서:
 
-## 2. Theory Background
+## 1. 문제와 데이터
 
-- Why this theory appeared:
-- What problem it solves:
-- What to pay attention to in this run:
+- Task / Stage:
+- Dataset:
+- Split 방식:
+- 이번 run에서 특히 조심한 점:
 
-## 3. Hypothesis
+## 2. 모델과 설정
 
-- What changed from the previous run:
-- Expected effect:
-
-## 4. Dataset
-
-- Dataset name:
-- Split version:
-- Preprocessing:
-- Data caveats:
-
-## 5. Training Setup
-
-- Model:
-- Tokenizer / Processor:
+- 비교 모델:
+- 핵심 하이퍼파라미터:
 - Seed:
-- Batch size:
-- Learning rate:
-- Epochs / steps:
 - Hardware:
 
-## 6. Metric Interpretation
+## 3. 메트릭 해석
 
 - Primary metric:
-- Why this metric matters:
-- Secondary metric:
-- What misreading to avoid:
+- 왜 이 metric을 먼저 보는가:
+- 함께 봐야 할 secondary metric:
+- 잘못 읽기 쉬운 포인트:
 
-## 7. Best Metrics
+## 4. 가장 중요한 결과
 
 | Metric | Value |
 | --- | --- |
 | main_metric |  |
 | secondary_metric |  |
 
-## 8. Result Figures
+## 5. figure 메모
 
-- `figures/results/...`:
-- Why these matter:
-- What pattern was actually observed:
+### 결과 figure
+- 어떤 질문에 답하는가:
+- 실제로 보인 패턴:
 
-## 9. Analysis Figures
+### 분석 figure
+- 어떤 실패를 드러내는가:
+- 다음 가설과 어떻게 이어지는가:
 
-- `figures/analysis/...`:
-- Key failure patterns:
-- Possible reasons:
+## 6. 실패 사례 메모
 
-## 10. Sample Predictions / Failure Cases
+- 대표 실패 패턴:
+- 가능한 원인:
+- 다음에 바꿔 볼 것:
 
-- Best examples:
-- Failure examples:
-- What the failures teach us:
+## 7. 결정
 
-## 11. Decision
-
-- Promote to `reports/`? yes / no
-- Promote weights to `artifacts/promoted/` or HF Hub? yes / no
-- Next run:
+- 이 run을 대표 run으로 남길지:
+- 다음 run의 목표:

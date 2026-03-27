@@ -37,7 +37,7 @@
 
 1. 먼저 [THEORY.md](THEORY.md)를 읽는다.
 2. 아래 실습 파이프라인으로 어떤 모델을 어떤 순서로 비교하는지 확인한다.
-3. 최신 결과는 [report](../../reports/01_ml/02_tabular_regression/20260326-172452_california-housing_model-suite_s42/README.md)에서 본다.
+3. 최신 결과는 [report](artifacts/20260326-172452_california-housing_model-suite_s42/README.md)에서 본다.
 4. 마지막으로 figure와 worst case를 함께 읽는다.
 
 ## 이번 프로젝트 기준 확정 데이터셋
@@ -69,6 +69,16 @@ df = frame.frame
 6. MAE, RMSE, R²를 함께 비교한다.
 7. residual을 target 구간별로 분석한다.
 8. feature importance와 regional / income slice로 실패 구조를 찾는다.
+
+
+## 코드 구조
+
+이 stage의 코드는 이제 이 폴더 안에서 바로 읽힌다.
+
+- `dataset.py`: California Housing 로딩
+- `experiment.py`: 전처리, 모델 비교, residual 분석, figure 생성
+- `report.py`: 최신 artifact 경로 보조
+- `run_stage.py`: 이 stage만 실행하는 entrypoint
 
 ## 결과를 읽을 때 봐야 할 것
 
@@ -115,7 +125,7 @@ df = frame.frame
 
 ## 최신 리포트
 
-- [최신 결과 보고서](../../reports/01_ml/02_tabular_regression/20260326-172452_california-housing_model-suite_s42/README.md)
+- [최신 결과 보고서](artifacts/20260326-172452_california-housing_model-suite_s42/README.md)
 
 ## 핵심 해석 메모
 
