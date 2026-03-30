@@ -2,25 +2,32 @@
 
 공통 템플릿과 실험 규약을 두는 공간이다.
 
-이 폴더의 템플릿은 형식을 딱딱하게 고정하려는 용도가 아니라,
-각 트랙 문서가 **공부가 되는 문서**가 되도록 최소 구조를 잡아 주는 용도다.
+## 공통 Unit Contract
 
-## 이 폴더를 왜 두는가
+기본 contract는 `README/THEORY/PREREQS/scratch/framework/analysis/reflection` 흐름이다.
+각 학습 단위는 가능하면 아래 파일을 함께 둔다.
 
-1. 트랙이 달라도 "이론 → 실험 → 결과 → 해석 → 다음 가설" 흐름은 유지하게 한다.
-2. 나중에 다시 봤을 때 숫자만 남는 문서가 아니라, 왜 그런 결과가 나왔는지 남게 한다.
-3. 로컬 실험과 서버 실험 문서의 인터페이스를 통일한다.
+- `README.md`: 왜 이 단위를 배우는지와 실습 진입점
+- `THEORY.md`: 핵심 개념, 수식, 직관
+- `PREREQS.md`: 선행 개념과 다시 볼 링크
+- `scratch_lab.py`: 바닥부터 확인하는 작은 실험
+- `framework_lab.py`: 프레임워크 기반 재현 실험
+- `analysis.md`: 결과 해설과 실패 사례
+- `reflection.md`: 학습자 관점 회고와 다음 질문
 
-## 포함 내용
+## 템플릿 목록
 
-- `templates/run_summary_template.md`: run 하나를 짧게 회고하는 템플릿
-- `templates/model_card_template.md`: 모델 카드 템플릿
-- `templates/ml_theory_template.md`: stage 이론 문서를 강의 노트처럼 쓰기 위한 템플릿
-- `templates/ml_report_template.md`: 실험 리포트를 해설 노트처럼 쓰기 위한 템플릿
+- `foundation_readme_template.md`
+- `foundation_theory_template.md`
+- `foundation_analysis_template.md`
+- `foundation_reflection_template.md`
+- `ml_theory_template.md`
+- `ml_report_template.md`
+- `run_summary_template.md`
+- `model_card_template.md`
 
 ## 사용 원칙
 
-- 템플릿 문구를 그대로 복붙하지 않는다.
-- 각 stage의 데이터셋, metric, figure에 맞게 문장을 다시 쓴다.
-- 표를 넣더라도 반드시 해설 문장을 함께 남긴다.
-- 최신 artifact 링크를 문서 안에서 바로 따라갈 수 있게 둔다.
+- 템플릿은 복붙 종착점이 아니라 초안 시작점으로 쓴다.
+- 표나 수치를 넣으면 반드시 해설 문장을 붙인다.
+- runtime 관측이 있는 단위는 GPU/CPU 메모리와 시간 차이를 함께 남긴다.

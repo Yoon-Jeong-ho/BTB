@@ -14,28 +14,27 @@ YYYYMMDD-HHMMSS_<dataset>_<model>_s<seed>
 20260326-221500_nsmc_klue-roberta-base_s42
 ```
 
-## 2. 모든 실험이 남겨야 하는 파일
+## 2. 모든 실험/학습 단위가 남겨야 하는 파일
+
+### 학습 단위 contract
+
+아래 블록은 unit 기본 골격이다. 3절부터는 run/report artifact 승격 규약으로 읽는다.
 
 ```text
-runs/<track>/<stage>/<run_id>/
-├── config.yaml
-├── metrics.json
-├── summary.md
-├── logs/
-├── figures/
-│   ├── results/
-│   └── analysis/
-├── predictions/
-└── checkpoints/
+<unit>/
+├── lesson.yaml
+├── scratch_lab.py
+├── framework_lab.py
+├── analysis.md
+├── reflection.md
+└── artifacts/
 ```
 
-필수 파일 의미:
-
-- `config.yaml`: 데이터 경로, 모델, seed, optimizer, scheduler
-- `metrics.json`: 최종 score와 best checkpoint 기준 score
-- `summary.md`: 가설, 결과, 실패 원인, 다음 실험
-- `figures/results/`: 최종 성능을 보여주는 그림
-- `figures/analysis/`: 왜 그런 결과가 나왔는지 설명하는 그림
+- `lesson.yaml`: 목표, 선행 개념, 출력 계약, 분석 질문
+- `analysis.md`: 결과 해설 문서
+- `reflection.md`: 학습자 관점 회고
+- runtime 관련 실습은 GPU/CPU 관측치를 함께 남긴다.
+- runtime observations는 숫자만 적지 말고 원인 해석까지 붙인다.
 
 ## 3. 결과 figure와 분석 figure 구분
 
