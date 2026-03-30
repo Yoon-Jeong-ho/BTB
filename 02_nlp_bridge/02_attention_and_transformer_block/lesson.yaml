@@ -1,0 +1,25 @@
+objective: attention weight, sequence mixing, padding/causal mask, transformer block의 shape 보존을 한국어 예제로 구체적으로 이해한다.
+prereqs:
+  - batch/seq/dim shape 읽기
+  - dot product와 softmax 기본 감각
+  - embedding과 padding mask 기초
+key_terms:
+  - self-attention
+  - query
+  - key
+  - value
+  - attention weights
+  - padding mask
+  - causal mask
+  - transformer block
+  - residual connection
+  - feed-forward network
+required_outputs:
+  - scratch attention metrics json
+  - framework attention metrics json
+  - analysis markdown
+  - observed analysis report
+analysis_questions:
+  - attention output이 왜 value들의 가중합이라고 말할 수 있는가?
+  - padding mask와 causal mask는 각각 무엇을 막는가?
+  - transformer block 안에서 shape는 유지되는데 표현은 어떻게 달라지는가?
