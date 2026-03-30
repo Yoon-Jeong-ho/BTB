@@ -1,0 +1,24 @@
+objective: activation이 표현을 어떻게 바꾸고, loss가 오차를 어떻게 scalar 학습 신호로 압축하는지 이해한다.
+prereqs:
+  - tensor shape와 batch 차원 읽기
+  - logits와 probability 구분
+  - 분류 target 형식의 차이
+key_terms:
+  - activation
+  - relu
+  - sigmoid
+  - tanh
+  - softmax
+  - logits
+  - binary cross entropy
+  - cross entropy
+required_outputs:
+  - scratch metrics json
+  - scratch svg figure
+  - framework metrics json
+  - stable analysis markdown
+  - observed analysis report
+analysis_questions:
+  - 어떤 activation이 입력 분포를 가장 강하게 잘랐는가?
+  - BCE와 cross entropy는 각각 어떤 target 형식을 기대하는가?
+  - logits를 바로 loss에 넣는 이유를 실행 결과와 함께 설명할 수 있는가?

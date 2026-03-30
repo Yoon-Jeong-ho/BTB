@@ -1,20 +1,30 @@
 from __future__ import annotations
 
+import importlib.util
 import json
 import subprocess
 import sys
 import unittest
 from pathlib import Path
 
+import numpy as np
+
 ROOT = Path(__file__).resolve().parents[1]
 FOUNDATIONS = ROOT / '00_foundations'
 TENSOR_UNIT = FOUNDATIONS / '01_tensor_shapes'
+ACTIVATION_UNIT = FOUNDATIONS / '02_activation_and_loss'
 GPU_UNIT = FOUNDATIONS / '05_gpu_memory_runtime'
 TENSOR_ARTIFACTS = TENSOR_UNIT / 'artifacts'
+ACTIVATION_ARTIFACTS = ACTIVATION_UNIT / 'artifacts'
 GPU_ARTIFACTS = GPU_UNIT / 'artifacts'
 TENSOR_SCRATCH_METRICS = TENSOR_ARTIFACTS / 'scratch-manual' / 'metrics.json'
 TENSOR_FRAMEWORK_METRICS = TENSOR_ARTIFACTS / 'framework-manual' / 'metrics.json'
 TENSOR_ANALYSIS_MD = TENSOR_UNIT / 'analysis.md'
+ACTIVATION_SCRATCH_METRICS = ACTIVATION_ARTIFACTS / 'scratch-manual' / 'metrics.json'
+ACTIVATION_SCRATCH_FIGURE = ACTIVATION_ARTIFACTS / 'scratch-manual' / 'activation_curves.svg'
+ACTIVATION_FRAMEWORK_METRICS = ACTIVATION_ARTIFACTS / 'framework-manual' / 'metrics.json'
+ACTIVATION_OBSERVED_REPORT = ACTIVATION_ARTIFACTS / 'analysis-manual' / 'latest_report.md'
+ACTIVATION_ANALYSIS_MD = ACTIVATION_UNIT / 'analysis.md'
 GPU_SCRATCH_METRICS = GPU_ARTIFACTS / 'scratch-manual' / 'metrics.json'
 GPU_FRAMEWORK_METRICS = GPU_ARTIFACTS / 'framework-manual' / 'metrics.json'
 GPU_OBSERVED_REPORT = GPU_ARTIFACTS / 'analysis-manual' / 'latest_report.md'
@@ -30,6 +40,11 @@ REQUIRED = [
     'analysis.md',
     'reflection.md',
     'artifacts',
+]
+ACTIVATION_GENERATED_DIRS = [
+    ACTIVATION_ARTIFACTS / 'scratch-manual',
+    ACTIVATION_ARTIFACTS / 'framework-manual',
+    ACTIVATION_ARTIFACTS / 'analysis-manual',
 ]
 GPU_GENERATED_DIRS = [
     GPU_ARTIFACTS / 'scratch-manual',
@@ -55,6 +70,17 @@ class TestFoundationsUnitContract(unittest.TestCase):
             if path.exists():
                 path.unlink()
 
+    def _cleanup_activation_generated_artifacts(self) -> None:
+        self._cleanup_generated_outputs(
+            ACTIVATION_SCRATCH_METRICS,
+            ACTIVATION_SCRATCH_FIGURE,
+            ACTIVATION_FRAMEWORK_METRICS,
+            ACTIVATION_OBSERVED_REPORT,
+        )
+        for directory in ACTIVATION_GENERATED_DIRS:
+            if directory.exists() and not any(directory.iterdir()):
+                directory.rmdir()
+
     def _cleanup_gpu_generated_artifacts(self) -> None:
         self._cleanup_generated_outputs(
             GPU_SCRATCH_METRICS,
@@ -65,20 +91,90 @@ class TestFoundationsUnitContract(unittest.TestCase):
             if directory.exists() and not any(directory.iterdir()):
                 directory.rmdir()
 
+    def _load_activation_scratch_module(self):
+        spec = importlib.util.spec_from_file_location(
+            'activation_scratch_lab',
+            ACTIVATION_UNIT / 'scratch_lab.py',
+        )
+        module = importlib.util.module_from_spec(spec)
+        assert spec.loader is not None
+        spec.loader.exec_module(module)
+        return module
+
+    def test_foundations_readme_lists_progressive_units(self) -> None:
+        text = (FOUNDATIONS / 'README.md').read_text(encoding='utf-8')
+        self.assertIn('02_activation_and_loss', text)
+        self.assertIn('03_optimizer_and_backprop', text)
+        self.assertIn('04_tokenization_and_embeddings', text)
+        self.assertIn('05_gpu_memory_runtime', text)
+
     def test_tensor_shapes_unit_has_required_files(self) -> None:
         for rel in REQUIRED:
             self.assertTrue((TENSOR_UNIT / rel).exists(), rel)
+
+    def test_activation_and_loss_unit_has_required_files(self) -> None:
+        for rel in REQUIRED:
+            self.assertTrue((ACTIVATION_UNIT / rel).exists(), rel)
 
     def test_tensor_shapes_metadata_mentions_outputs(self) -> None:
         text = (TENSOR_UNIT / 'lesson.yaml').read_text(encoding='utf-8')
         self.assertIn('required_outputs:', text)
         self.assertIn('analysis_questions:', text)
 
+    def test_activation_metadata_mentions_figure_and_outputs(self) -> None:
+        lesson_text = (ACTIVATION_UNIT / 'lesson.yaml').read_text(encoding='utf-8')
+        self.assertIn('scratch svg figure', lesson_text)
+        self.assertIn('analysis_questions:', lesson_text)
+
+        readme_text = (ACTIVATION_UNIT / 'README.md').read_text(encoding='utf-8')
+        theory_text = (ACTIVATION_UNIT / 'THEORY.md').read_text(encoding='utf-8')
+        self.assertIn('실행 결과 예시', readme_text)
+        self.assertIn('activation_curves.svg', readme_text)
+        self.assertIn('실행 결과 예시', theory_text)
+        self.assertIn('CrossEntropyLoss', theory_text)
+
     def test_artifacts_gitkeep_is_locked(self) -> None:
-        for unit_artifacts in (TENSOR_ARTIFACTS, GPU_ARTIFACTS):
+        for unit_artifacts in (TENSOR_ARTIFACTS, ACTIVATION_ARTIFACTS, GPU_ARTIFACTS):
             gitkeep = unit_artifacts / '.gitkeep'
             self.assertTrue(gitkeep.exists(), f'{unit_artifacts}/.gitkeep')
             self.assertEqual('', gitkeep.read_text(encoding='utf-8'))
+
+    def test_activation_scratch_helpers_handle_batched_softmax_and_extreme_logits(self) -> None:
+        scratch_lab = self._load_activation_scratch_module()
+
+        batched_logits = np.array([[1000.0, 1001.0, 1002.0], [1.0, 2.0, 3.0]])
+        batched_probabilities = scratch_lab.softmax(batched_logits)
+
+        self.assertEqual((2, 3), batched_probabilities.shape)
+        np.testing.assert_allclose(
+            batched_probabilities.sum(axis=-1),
+            np.array([1.0, 1.0]),
+            rtol=0.0,
+            atol=1e-12,
+        )
+        np.testing.assert_allclose(
+            batched_probabilities[0],
+            batched_probabilities[1],
+            rtol=0.0,
+            atol=1e-12,
+        )
+
+        probability, loss = scratch_lab.binary_cross_entropy_from_logit(1000.0, 1.0)
+        self.assertTrue(np.isfinite(probability))
+        self.assertTrue(np.isfinite(loss))
+        self.assertAlmostEqual(1.0, probability, places=12)
+        self.assertAlmostEqual(0.0, loss, places=12)
+
+    def test_activation_analysis_requires_metrics_with_actionable_error(self) -> None:
+        self.addCleanup(self._cleanup_activation_generated_artifacts)
+        self._cleanup_activation_generated_artifacts()
+
+        result = self._run('00_foundations/02_activation_and_loss/analysis.py')
+
+        self.assertNotEqual(0, result.returncode)
+        error_text = result.stdout + result.stderr
+        self.assertIn('필수 metrics 파일이 없습니다', error_text)
+        self.assertIn('먼저 scratch_lab.py와 framework_lab.py를 실행하세요', error_text)
 
     def test_gpu_analysis_requires_metrics_with_actionable_error(self) -> None:
         self.addCleanup(self._cleanup_gpu_generated_artifacts)
@@ -100,6 +196,53 @@ class TestFoundationsUnitContract(unittest.TestCase):
         self.assertIn('runtime_observation_hooks:', text)
         self.assertIn('max_memory_allocated', text)
         self.assertIn('analysis_questions:', text)
+
+    def test_activation_unit_labs_and_analysis_generate_expected_outputs(self) -> None:
+        self.addCleanup(self._cleanup_activation_generated_artifacts)
+        self._cleanup_activation_generated_artifacts()
+
+        scratch_result = self._run('00_foundations/02_activation_and_loss/scratch_lab.py')
+        self.assertEqual(0, scratch_result.returncode, scratch_result.stderr)
+        framework_result = self._run('00_foundations/02_activation_and_loss/framework_lab.py')
+        self.assertEqual(0, framework_result.returncode, framework_result.stderr)
+        analysis_result = self._run('00_foundations/02_activation_and_loss/analysis.py')
+        self.assertEqual(0, analysis_result.returncode, analysis_result.stderr)
+
+        self.assertTrue(ACTIVATION_SCRATCH_METRICS.exists(), 'activation scratch metrics missing')
+        self.assertTrue(ACTIVATION_SCRATCH_FIGURE.exists(), 'activation scratch figure missing')
+        self.assertTrue(ACTIVATION_FRAMEWORK_METRICS.exists(), 'activation framework metrics missing')
+        self.assertTrue(ACTIVATION_OBSERVED_REPORT.exists(), 'activation observed report missing')
+        self.assertTrue(ACTIVATION_ANALYSIS_MD.exists(), 'activation analysis.md missing')
+
+        scratch = json.loads(ACTIVATION_SCRATCH_METRICS.read_text(encoding='utf-8'))
+        framework = json.loads(ACTIVATION_FRAMEWORK_METRICS.read_text(encoding='utf-8'))
+        figure_text = ACTIVATION_SCRATCH_FIGURE.read_text(encoding='utf-8')
+        observed_text = ACTIVATION_OBSERVED_REPORT.read_text(encoding='utf-8')
+        analysis_text = ACTIVATION_ANALYSIS_MD.read_text(encoding='utf-8')
+
+        self.assertEqual(0.555556, scratch['relu_zero_fraction'])
+        self.assertEqual(0.5, scratch['sigmoid_midpoint'])
+        self.assertEqual(0.0, scratch['tanh_midpoint'])
+        self.assertEqual(1.0, scratch['softmax_probability_sum'])
+        self.assertEqual('artifacts/scratch-manual/activation_curves.svg', scratch['figure_path'])
+        self.assertGreater(scratch['binary_cross_entropy'], 0.0)
+        self.assertGreater(scratch['cross_entropy'], 0.0)
+
+        self.assertEqual([2, 3], framework['class_logits_shape'])
+        self.assertEqual([1.0, 1.0], framework['row_probability_sums'])
+        self.assertGreater(framework['cross_entropy_loss'], 0.0)
+        self.assertGreater(framework['binary_cross_entropy_loss'], 0.0)
+
+        self.assertIn('<svg', figure_text)
+        self.assertIn('Activation curves (scratch)', figure_text)
+        self.assertIn('# 02 Activation and Loss 실행 관측', observed_text)
+        self.assertIn('## 한국어 해석', observed_text)
+        self.assertIn('activation_curves.svg', observed_text)
+        self.assertIn('latest_report.md', analysis_text)
+        self.assertIn('반복 실행 시 불필요한 diff', analysis_text)
+        self.assertIn('## 관련 이론', analysis_text)
+        self.assertIn('[THEORY.md](./THEORY.md)', analysis_text)
+        self.assertNotIn(f'`{framework["cross_entropy_loss"]}`', analysis_text)
 
     def test_gpu_unit_labs_and_analysis_generate_expected_outputs(self) -> None:
         self.addCleanup(self._cleanup_gpu_generated_artifacts)
