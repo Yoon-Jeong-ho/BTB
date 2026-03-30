@@ -1,0 +1,17 @@
+objective: 텐서 shape, broadcasting, batch 차원, matmul 흐름을 몸으로 익힌다.
+prereqs:
+  - 벡터와 행렬 표기
+  - 행렬 곱의 조건
+key_terms:
+  - tensor
+  - shape
+  - broadcasting
+  - batch dimension
+  - matrix multiplication
+required_outputs:
+  - scratch metrics json
+  - framework metrics json
+  - analysis markdown
+analysis_questions:
+  - 어떤 연산에서 shape mismatch가 났는가?
+  - broadcasting이 편하지만 위험한 이유는 무엇인가?

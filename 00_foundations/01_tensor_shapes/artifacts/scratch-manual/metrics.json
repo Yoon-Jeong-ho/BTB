@@ -1,0 +1,23 @@
+{
+  "a_shape": [
+    2,
+    3
+  ],
+  "b_shape": [
+    3,
+    4
+  ],
+  "matmul_shape": [
+    2,
+    4
+  ],
+  "broadcast_source_shape": [
+    2,
+    1
+  ],
+  "broadcast_result_shape": [
+    2,
+    3
+  ],
+  "mismatch_error": "operands could not be broadcast together with shapes (2,3) (4,) "
+}

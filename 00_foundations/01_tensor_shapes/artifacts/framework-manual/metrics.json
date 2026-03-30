@@ -1,0 +1,27 @@
+{
+  "batch_shape": [
+    4,
+    8
+  ],
+  "weight_shape": [
+    3,
+    8
+  ],
+  "bias_shape": [
+    3
+  ],
+  "logits_shape": [
+    4,
+    3
+  ],
+  "probs_shape": [
+    4,
+    3
+  ],
+  "row_probability_sums": [
+    1.0,
+    1.0,
+    1.0,
+    1.0
+  ]
+}
