@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="280" viewBox="0 0 560 280">
+  <rect width="100%" height="100%" fill="#ffffff" />
+  <text x="24" y="28" font-size="20" font-family="Arial, sans-serif">Contrastive alignment heatmap</text>
+  <text x="20" y="110.0" font-size="13" font-family="Arial, sans-serif">붉은 원 ↔ red circle</text>
+  <text x="215.0" y="48" text-anchor="middle" font-size="13" font-family="Arial, sans-serif">붉은 원 ↔ red circle</text>
+  <text x="20" y="200.0" font-size="13" font-family="Arial, sans-serif">푸른 사각형 ↔ blue square</text>
+  <text x="305.0" y="48" text-anchor="middle" font-size="13" font-family="Arial, sans-serif">푸른 사각형 ↔ blue square</text>
+  <text x="20" y="290.0" font-size="13" font-family="Arial, sans-serif">초록 삼각형 ↔ green triangle</text>
+  <text x="395.0" y="48" text-anchor="middle" font-size="13" font-family="Arial, sans-serif">초록 삼각형 ↔ green triangle</text>
+  <rect x="170" y="60" width="90" height="90" fill="#7d4e41" stroke="#1f2937" stroke-width="3" />
+  <text x="215.0" y="110.0" text-anchor="middle" font-size="16" font-family="Arial, sans-serif" fill="#111827">0.994</text>
+  <rect x="260" y="60" width="90" height="90" fill="#b29994" stroke="#94a3b8" stroke-width="1.5" />
+  <text x="305.0" y="110.0" text-anchor="middle" font-size="16" font-family="Arial, sans-serif" fill="#111827">0.116</text>
+  <rect x="350" y="60" width="90" height="90" fill="#aa8e88" stroke="#94a3b8" stroke-width="1.5" />
+  <text x="395.0" y="110.0" text-anchor="middle" font-size="16" font-family="Arial, sans-serif" fill="#111827">0.245</text>
+  <rect x="170" y="150" width="90" height="90" fill="#af9691" stroke="#94a3b8" stroke-width="1.5" />
+  <text x="215.0" y="200.0" text-anchor="middle" font-size="16" font-family="Arial, sans-serif" fill="#111827">0.151</text>
+  <rect x="260" y="150" width="90" height="90" fill="#7d4e41" stroke="#1f2937" stroke-width="3" />
+  <text x="305.0" y="200.0" text-anchor="middle" font-size="16" font-family="Arial, sans-serif" fill="#111827">0.999</text>
+  <rect x="350" y="150" width="90" height="90" fill="#b19893" stroke="#94a3b8" stroke-width="1.5" />
+  <text x="395.0" y="200.0" text-anchor="middle" font-size="16" font-family="Arial, sans-serif" fill="#111827">0.128</text>
+  <rect x="170" y="240" width="90" height="90" fill="#b29995" stroke="#94a3b8" stroke-width="1.5" />
+  <text x="215.0" y="290.0" text-anchor="middle" font-size="16" font-family="Arial, sans-serif" fill="#111827">0.113</text>
+  <rect x="260" y="240" width="90" height="90" fill="#aa8d88" stroke="#94a3b8" stroke-width="1.5" />
+  <text x="305.0" y="290.0" text-anchor="middle" font-size="16" font-family="Arial, sans-serif" fill="#111827">0.248</text>
+  <rect x="350" y="240" width="90" height="90" fill="#7d4e41" stroke="#1f2937" stroke-width="3" />
+  <text x="395.0" y="290.0" text-anchor="middle" font-size="16" font-family="Arial, sans-serif" fill="#111827">0.996</text>
+  <text x="24" y="255" font-size="12" font-family="Arial, sans-serif" fill="#374151">대각선이 정답 이미지-텍스트 쌍이며, 색이 진할수록 cosine similarity가 높다.</text>
+</svg>

@@ -1,0 +1,23 @@
+objective: 이미지 임베딩과 텍스트 임베딩을 같은 공간에 놓았을 때 contrastive alignment가 무엇을 최적화하는지 한국어 예제로 이해한다.
+prereqs:
+  - cosine similarity와 dot product의 관계
+  - softmax와 cross entropy 기본 개념
+  - batch shape 읽기
+key_terms:
+  - contrastive alignment
+  - joint embedding space
+  - similarity matrix
+  - temperature
+  - hard negative
+  - bidirectional retrieval
+required_outputs:
+  - scratch metrics json
+  - scratch svg figure
+  - framework metrics json
+  - analysis markdown
+  - observed analysis report
+analysis_questions:
+  - 왜 정답 이미지-텍스트 쌍은 similarity matrix의 대각선에 놓이는가?
+  - mean positive similarity와 mean negative similarity 차이는 retrieval 난이도와 어떻게 연결되는가?
+  - temperature를 낮추면 logits와 contrastive loss 해석이 어떻게 달라지는가?
+  - image-to-text와 text-to-image를 둘 다 보는 이유는 무엇인가?
