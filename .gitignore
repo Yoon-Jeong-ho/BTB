@@ -68,4 +68,5 @@ dist/
 *.egg-info/
 .omx/
 .codex/
+.superpowers/
 AGENTS.md 

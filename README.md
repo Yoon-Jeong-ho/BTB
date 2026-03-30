@@ -2,7 +2,7 @@
 
 ## NLP 바보에서 박사
 
-이 저장소는 `기초 ML -> NLP -> Multimodal` 순서로 올라가면서, 이론을 읽고 끝내지 않고 반드시 작은 실험으로 검증하는 학습 저장소다.
+이 저장소는 `00_foundations -> 01_ml -> 02_nlp_bridge -> 03_nlp -> 04_multimodal_bridge -> 05_multimodal` 순서로 올라가면서, 이론을 읽고 끝내지 않고 반드시 작은 실험으로 검증하는 학습 저장소다.
 
 핵심 철학은 세 가지다.
 
@@ -12,9 +12,14 @@
 
 ## 학습 순서
 
-1. [01_ml/README.md](01_ml/README.md): 표형 데이터로 전처리, 평가 지표, 에러 분석, 해석 가능성을 익힌다.
-2. [02_nlp/README.md](02_nlp/README.md): 분류, NER, MRC를 통해 텍스트 표현과 전이학습을 익힌다.
-3. [03_multimodal/README.md](03_multimodal/README.md): 이미지-텍스트 정렬, 캡셔닝, VQA/추론으로 확장한다.
+1. [00_foundations](00_foundations/README.md): 텐서, gradient, attention, GPU/runtime 같은 공통 기초를 먼저 다진다.
+2. [01_ml](01_ml/README.md): 표형 데이터, metric, error analysis, experiment discipline을 익힌다.
+3. [02_nlp_bridge](02_nlp_bridge/README.md): tokenization, embedding, sequence modeling, transformer 감각을 연결한다.
+4. [03_nlp](03_nlp/README.md): 본격 NLP 실습 트랙으로 이어질 자리를 미리 고정한다.
+5. [04_multimodal_bridge](04_multimodal_bridge/README.md): alignment, retrieval vs generation, cross-attention을 멀티모달 전에 다진다.
+6. [05_multimodal](05_multimodal/README.md): 멀티모달 실습 트랙으로 이어질 자리를 미리 고정한다.
+
+현재 실제 콘텐츠는 단계적으로 재배치 중이지만, 루트 탐색 경험은 위 인덱스 사다리를 기준으로 유지한다.
 
 전체 프로그램 개요는 [docs/00_program_map.md](docs/00_program_map.md), 실험 운영 규칙은 [docs/01_experiment_playbook.md](docs/01_experiment_playbook.md) 에 정리했다.
 
@@ -22,10 +27,13 @@
 
 ```text
 BTB/
+├── 00_foundations/             # 공통 기초 트랙
 ├── 00_shared/                  # 공통 규약, 템플릿
 ├── 01_ml/                      # 기초 ML 트랙
-├── 02_nlp/                     # NLP 트랙
-├── 03_multimodal/              # 멀티모달 트랙
+├── 02_nlp_bridge/              # ML -> NLP 브리지
+├── 03_nlp/                     # NLP 트랙(재배치 대상 인덱스)
+├── 04_multimodal_bridge/       # NLP -> 멀티모달 브리지
+├── 05_multimodal/              # 멀티모달 트랙(재배치 대상 인덱스)
 ├── data/                       # raw/interim/processed/external 설명용 구조
 ├── runs/                       # 서버/로컬의 비정제 실행 산출물(기본 ignore)
 ├── reports/                    # Git에 남길 승격된 실험 결과
@@ -34,7 +42,7 @@ BTB/
 └── scripts/                    # 향후 학습/평가 스크립트 인터페이스 규약
 ```
 
-최상위 폴더와 각 단계 폴더에 인덱스를 붙여 정렬이 무너지지 않게 했다. 실험도 같은 방식으로 `01_...`, `02_...` 순서를 유지한다.
+최상위 폴더와 각 단계 폴더에 인덱스를 붙여 정렬이 무너지지 않게 했다. 문서는 한글 우선으로 쓰고, 코드/파일명/핵심 technical term만 영어를 유지한다. 실험도 같은 방식으로 `01_...`, `02_...` 순서를 유지한다.
 
 ## 실험 산출물 규약
 
@@ -64,7 +72,7 @@ Hugging Face 업로드와 Git LFS 관련 규칙은 루트의 `.gitignore`, `.git
 ## 시작 순서
 
 1. [docs/00_program_map.md](docs/00_program_map.md) 를 읽고 전체 로드맵을 본다.
-2. [01_ml/README.md](01_ml/README.md) 의 `01_tabular_classification` 부터 시작한다.
+2. [00_foundations/README.md](00_foundations/README.md) 에서 공통 기초를 확인한 뒤 [01_ml/README.md](01_ml/README.md) 의 `01_tabular_classification` 부터 시작한다.
 3. 실험을 돌릴 때는 [00_shared/templates/run_summary_template.md](00_shared/templates/run_summary_template.md) 형식으로 요약을 남긴다.
 4. 결과 중 다시 볼 가치가 있는 것만 [reports/README.md](reports/README.md) 규칙에 맞게 승격한다.
 5. 가중치를 공유할 때는 [artifacts/MODEL_REGISTRY.md](artifacts/MODEL_REGISTRY.md) 를 먼저 갱신한다.

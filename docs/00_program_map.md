@@ -2,13 +2,25 @@
 
 ## 목표
 
-`기초 ML -> NLP -> Multimodal` 순서로 올라가면서, 각 단계에서 이론을 실험으로 검증하고 재현 가능한 산출물을 남기는 것이다.
+BTB는 `00_foundations -> 01_ml -> 02_nlp_bridge -> 03_nlp -> 04_multimodal_bridge -> 05_multimodal` 순서로 올라가면서, 각 단계에서 이론을 실험으로 검증하고 재현 가능한 산출물을 남기는 한글 중심 학습 사다리다.
 
 ## 왜 이 순서인가
 
-1. `ML` 에서 데이터 분할, metric, 에러 분석, 해석의 기본기를 먼저 익힌다.
-2. `NLP` 에서 표현 학습, tokenizer, 전이학습, task-specific evaluation으로 확장한다.
-3. `Multimodal` 에서 modality alignment, 생성, reasoning까지 확장한다.
+1. `00_foundations` 에서 tensor, gradient, optimizer, GPU/runtime, attention 같은 공통 기초를 먼저 고정한다.
+2. `01_ml` 에서 데이터 분할, metric, 에러 분석, 해석의 기본기를 익힌다.
+3. `02_nlp_bridge` 에서 tokenization, embedding, sequence modeling, transformer block 감각을 연결한다.
+4. `03_nlp` 에서 task-specific NLP 실습으로 확장한다.
+5. `04_multimodal_bridge` 에서 alignment, retrieval vs generation, cross-attention 개념을 미리 연결한다.
+6. `05_multimodal` 에서 modality alignment, 생성, reasoning까지 확장한다.
+
+## 단계 구조
+
+1. `00_foundations`: 모든 상위 트랙이 공유하는 기초 개념과 runtime 감각
+2. `01_ml`: 실험 discipline과 해석 기본기
+3. `02_nlp_bridge`: ML에서 NLP로 넘어가기 위한 표현 학습 브리지
+4. `03_nlp`: 본격 NLP 실습 트랙
+5. `04_multimodal_bridge`: NLP에서 멀티모달로 넘어가기 위한 브리지
+6. `05_multimodal`: 본격 멀티모달 실습 트랙
 
 ## 단계별 산출물
 
@@ -30,6 +42,11 @@
 
 - 로컬: 자료 조사, config 작성, 결과 정리, figure 선별, 보고서 작성
 - 서버: 실제 학습, sweep, 대형 로그/체크포인트 생성
+
+## 언어 정책
+
+- README, THEORY, PREREQS, 분석/회고 문서는 한글 우선을 기본으로 한다.
+- 필요한 경우 영어 technical term를 병기하되, 설명 문장은 한국어 중심으로 유지한다.
 
 ## 최소 성공 기준
 
