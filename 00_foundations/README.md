@@ -14,7 +14,7 @@
 
 1. `01_tensor_shapes/` — 텐서 shape, broadcasting, matmul, batch 차원을 먼저 읽는 훈련
 2. `02_activation_and_loss/` — activation이 값을 어떻게 꺾고, loss가 오차를 어떻게 하나의 숫자로 압축하는지 실험
-3. `03_optimizer_and_backprop/` — 예정: gradient가 parameter update로 이어지는 흐름 정리
+3. `03_gradients_and_backpropagation/` — gradient, chain rule, finite-difference check, autograd/backprop를 숫자와 그림으로 확인
 4. `04_tokenization_and_embeddings/` — 예정: discrete token이 dense vector로 바뀌는 최소 배경
 5. `05_gpu_memory_runtime/` — GPU/CPU runtime, dtype, training/inference 차이를 숫자로 관측
 

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import shutil
 import subprocess
 import sys
 import unittest
@@ -13,9 +14,11 @@ ROOT = Path(__file__).resolve().parents[1]
 FOUNDATIONS = ROOT / '00_foundations'
 TENSOR_UNIT = FOUNDATIONS / '01_tensor_shapes'
 ACTIVATION_UNIT = FOUNDATIONS / '02_activation_and_loss'
+GRADIENT_UNIT = FOUNDATIONS / '03_gradients_and_backpropagation'
 GPU_UNIT = FOUNDATIONS / '05_gpu_memory_runtime'
 TENSOR_ARTIFACTS = TENSOR_UNIT / 'artifacts'
 ACTIVATION_ARTIFACTS = ACTIVATION_UNIT / 'artifacts'
+GRADIENT_ARTIFACTS = GRADIENT_UNIT / 'artifacts'
 GPU_ARTIFACTS = GPU_UNIT / 'artifacts'
 TENSOR_SCRATCH_METRICS = TENSOR_ARTIFACTS / 'scratch-manual' / 'metrics.json'
 TENSOR_FRAMEWORK_METRICS = TENSOR_ARTIFACTS / 'framework-manual' / 'metrics.json'
@@ -25,6 +28,11 @@ ACTIVATION_SCRATCH_FIGURE = ACTIVATION_ARTIFACTS / 'scratch-manual' / 'activatio
 ACTIVATION_FRAMEWORK_METRICS = ACTIVATION_ARTIFACTS / 'framework-manual' / 'metrics.json'
 ACTIVATION_OBSERVED_REPORT = ACTIVATION_ARTIFACTS / 'analysis-manual' / 'latest_report.md'
 ACTIVATION_ANALYSIS_MD = ACTIVATION_UNIT / 'analysis.md'
+GRADIENT_SCRATCH_METRICS = GRADIENT_ARTIFACTS / 'scratch-manual' / 'metrics.json'
+GRADIENT_SCRATCH_FIGURE = GRADIENT_ARTIFACTS / 'scratch-manual' / 'loss_curve.svg'
+GRADIENT_FRAMEWORK_METRICS = GRADIENT_ARTIFACTS / 'framework-manual' / 'metrics.json'
+GRADIENT_OBSERVED_REPORT = GRADIENT_ARTIFACTS / 'analysis-manual' / 'latest_report.md'
+GRADIENT_ANALYSIS_MD = GRADIENT_UNIT / 'analysis.md'
 GPU_SCRATCH_METRICS = GPU_ARTIFACTS / 'scratch-manual' / 'metrics.json'
 GPU_FRAMEWORK_METRICS = GPU_ARTIFACTS / 'framework-manual' / 'metrics.json'
 GPU_OBSERVED_REPORT = GPU_ARTIFACTS / 'analysis-manual' / 'latest_report.md'
@@ -45,6 +53,11 @@ ACTIVATION_GENERATED_DIRS = [
     ACTIVATION_ARTIFACTS / 'scratch-manual',
     ACTIVATION_ARTIFACTS / 'framework-manual',
     ACTIVATION_ARTIFACTS / 'analysis-manual',
+]
+GRADIENT_GENERATED_DIRS = [
+    GRADIENT_ARTIFACTS / 'scratch-manual',
+    GRADIENT_ARTIFACTS / 'framework-manual',
+    GRADIENT_ARTIFACTS / 'analysis-manual',
 ]
 GPU_GENERATED_DIRS = [
     GPU_ARTIFACTS / 'scratch-manual',
@@ -70,6 +83,11 @@ class TestFoundationsUnitContract(unittest.TestCase):
             if path.exists():
                 path.unlink()
 
+    def _cleanup_generated_directories(self, directories: list[Path]) -> None:
+        for directory in directories:
+            if directory.exists():
+                shutil.rmtree(directory)
+
     def _cleanup_activation_generated_artifacts(self) -> None:
         self._cleanup_generated_outputs(
             ACTIVATION_SCRATCH_METRICS,
@@ -80,6 +98,9 @@ class TestFoundationsUnitContract(unittest.TestCase):
         for directory in ACTIVATION_GENERATED_DIRS:
             if directory.exists() and not any(directory.iterdir()):
                 directory.rmdir()
+
+    def _cleanup_gradient_generated_artifacts(self) -> None:
+        self._cleanup_generated_directories(GRADIENT_GENERATED_DIRS)
 
     def _cleanup_gpu_generated_artifacts(self) -> None:
         self._cleanup_generated_outputs(
@@ -104,7 +125,7 @@ class TestFoundationsUnitContract(unittest.TestCase):
     def test_foundations_readme_lists_progressive_units(self) -> None:
         text = (FOUNDATIONS / 'README.md').read_text(encoding='utf-8')
         self.assertIn('02_activation_and_loss', text)
-        self.assertIn('03_optimizer_and_backprop', text)
+        self.assertIn('03_gradients_and_backpropagation', text)
         self.assertIn('04_tokenization_and_embeddings', text)
         self.assertIn('05_gpu_memory_runtime', text)
 
@@ -115,6 +136,10 @@ class TestFoundationsUnitContract(unittest.TestCase):
     def test_activation_and_loss_unit_has_required_files(self) -> None:
         for rel in REQUIRED:
             self.assertTrue((ACTIVATION_UNIT / rel).exists(), rel)
+
+    def test_gradients_and_backpropagation_unit_has_required_files(self) -> None:
+        for rel in REQUIRED:
+            self.assertTrue((GRADIENT_UNIT / rel).exists(), rel)
 
     def test_tensor_shapes_metadata_mentions_outputs(self) -> None:
         text = (TENSOR_UNIT / 'lesson.yaml').read_text(encoding='utf-8')
@@ -133,8 +158,22 @@ class TestFoundationsUnitContract(unittest.TestCase):
         self.assertIn('실행 결과 예시', theory_text)
         self.assertIn('CrossEntropyLoss', theory_text)
 
+    def test_gradient_metadata_mentions_figure_and_outputs(self) -> None:
+        lesson_text = (GRADIENT_UNIT / 'lesson.yaml').read_text(encoding='utf-8')
+        self.assertIn('scratch svg figure', lesson_text)
+        self.assertIn('analysis_questions:', lesson_text)
+        self.assertIn('finite difference', lesson_text)
+
+        readme_text = (GRADIENT_UNIT / 'README.md').read_text(encoding='utf-8')
+        theory_text = (GRADIENT_UNIT / 'THEORY.md').read_text(encoding='utf-8')
+        self.assertIn('실행 결과 예시', readme_text)
+        self.assertIn('loss_curve.svg', readme_text)
+        self.assertIn('실행 결과 예시', theory_text)
+        self.assertIn('finite-difference gradient', theory_text)
+        self.assertIn('autograd', theory_text)
+
     def test_artifacts_gitkeep_is_locked(self) -> None:
-        for unit_artifacts in (TENSOR_ARTIFACTS, ACTIVATION_ARTIFACTS, GPU_ARTIFACTS):
+        for unit_artifacts in (TENSOR_ARTIFACTS, ACTIVATION_ARTIFACTS, GRADIENT_ARTIFACTS, GPU_ARTIFACTS):
             gitkeep = unit_artifacts / '.gitkeep'
             self.assertTrue(gitkeep.exists(), f'{unit_artifacts}/.gitkeep')
             self.assertEqual('', gitkeep.read_text(encoding='utf-8'))
@@ -170,6 +209,17 @@ class TestFoundationsUnitContract(unittest.TestCase):
         self._cleanup_activation_generated_artifacts()
 
         result = self._run('00_foundations/02_activation_and_loss/analysis.py')
+
+        self.assertNotEqual(0, result.returncode)
+        error_text = result.stdout + result.stderr
+        self.assertIn('필수 metrics 파일이 없습니다', error_text)
+        self.assertIn('먼저 scratch_lab.py와 framework_lab.py를 실행하세요', error_text)
+
+    def test_gradient_analysis_requires_metrics_with_actionable_error(self) -> None:
+        self.addCleanup(self._cleanup_gradient_generated_artifacts)
+        self._cleanup_gradient_generated_artifacts()
+
+        result = self._run('00_foundations/03_gradients_and_backpropagation/analysis.py')
 
         self.assertNotEqual(0, result.returncode)
         error_text = result.stdout + result.stderr
@@ -243,6 +293,58 @@ class TestFoundationsUnitContract(unittest.TestCase):
         self.assertIn('## 관련 이론', analysis_text)
         self.assertIn('[THEORY.md](./THEORY.md)', analysis_text)
         self.assertNotIn(f'`{framework["cross_entropy_loss"]}`', analysis_text)
+
+    def test_gradient_unit_labs_and_analysis_generate_expected_outputs(self) -> None:
+        self.addCleanup(self._cleanup_gradient_generated_artifacts)
+        self._cleanup_gradient_generated_artifacts()
+
+        scratch_result = self._run('00_foundations/03_gradients_and_backpropagation/scratch_lab.py')
+        self.assertEqual(0, scratch_result.returncode, scratch_result.stderr)
+        framework_result = self._run('00_foundations/03_gradients_and_backpropagation/framework_lab.py')
+        self.assertEqual(0, framework_result.returncode, framework_result.stderr)
+        analysis_result = self._run('00_foundations/03_gradients_and_backpropagation/analysis.py')
+        self.assertEqual(0, analysis_result.returncode, analysis_result.stderr)
+
+        self.assertTrue(GRADIENT_SCRATCH_METRICS.exists(), 'gradient scratch metrics missing')
+        self.assertTrue(GRADIENT_SCRATCH_FIGURE.exists(), 'gradient scratch figure missing')
+        self.assertTrue(GRADIENT_FRAMEWORK_METRICS.exists(), 'gradient framework metrics missing')
+        self.assertTrue(GRADIENT_OBSERVED_REPORT.exists(), 'gradient observed report missing')
+        self.assertTrue(GRADIENT_ANALYSIS_MD.exists(), 'gradient analysis.md missing')
+
+        scratch = json.loads(GRADIENT_SCRATCH_METRICS.read_text(encoding='utf-8'))
+        framework = json.loads(GRADIENT_FRAMEWORK_METRICS.read_text(encoding='utf-8'))
+        figure_text = GRADIENT_SCRATCH_FIGURE.read_text(encoding='utf-8')
+        observed_text = GRADIENT_OBSERVED_REPORT.read_text(encoding='utf-8')
+        analysis_text = GRADIENT_ANALYSIS_MD.read_text(encoding='utf-8')
+
+        self.assertEqual(0.125, scratch['loss'])
+        self.assertEqual(0.75, scratch['grad_w'])
+        self.assertEqual(0.5, scratch['grad_b'])
+        self.assertEqual(0.75, scratch['finite_diff_grad_w'])
+        self.assertEqual(0.5, scratch['finite_diff_grad_b'])
+        self.assertLess(scratch['grad_error_w'], 1e-6)
+        self.assertLess(scratch['grad_error_b'], 1e-6)
+        self.assertLess(scratch['updated_loss'], scratch['loss'])
+        self.assertEqual('artifacts/scratch-manual/loss_curve.svg', scratch['figure_path'])
+
+        self.assertEqual([3, 2], framework['input_shape'])
+        self.assertEqual([3, 1], framework['target_shape'])
+        self.assertGreater(framework['first_layer_weight_grad_norm'], 0.0)
+        self.assertGreater(framework['second_layer_weight_grad_norm'], 0.0)
+        self.assertGreater(framework['total_grad_norm'], 0.0)
+        self.assertLess(framework['loss_after_step'], framework['loss_before_step'])
+        self.assertEqual(9, framework['parameter_count'])
+
+        self.assertIn('<svg', figure_text)
+        self.assertIn('Loss curve around w (scratch backprop)', figure_text)
+        self.assertIn('# 03 Gradients and Backpropagation 실행 관측', observed_text)
+        self.assertIn('## 한국어 해석', observed_text)
+        self.assertIn('loss_curve.svg', observed_text)
+        self.assertIn('latest_report.md', analysis_text)
+        self.assertIn('반복 실행 시 불필요한 diff', analysis_text)
+        self.assertIn('## 관련 이론', analysis_text)
+        self.assertIn('[THEORY.md](./THEORY.md)', analysis_text)
+        self.assertNotIn(f'`{framework["loss_before_step"]}`', analysis_text)
 
     def test_gpu_unit_labs_and_analysis_generate_expected_outputs(self) -> None:
         self.addCleanup(self._cleanup_gpu_generated_artifacts)

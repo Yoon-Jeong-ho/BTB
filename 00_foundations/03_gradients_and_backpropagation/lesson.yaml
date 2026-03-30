@@ -1,0 +1,23 @@
+objective: gradient가 loss 변화 방향을 어떻게 나타내고, backpropagation이 그 신호를 파라미터까지 어떻게 전달하는지 이해한다.
+prereqs:
+  - tensor shape와 batch 차원 읽기
+  - activation과 loss 구분
+  - scalar 함수의 기울기 감각
+key_terms:
+  - gradient
+  - local derivative
+  - chain rule
+  - backpropagation
+  - finite difference
+  - autograd
+  - optimizer step
+required_outputs:
+  - scratch metrics json
+  - scratch svg figure
+  - framework metrics json
+  - stable analysis markdown
+  - observed analysis report
+analysis_questions:
+  - analytic gradient와 finite-difference gradient가 얼마나 가깝게 맞았는가?
+  - backpropagation에서 어떤 local gradient들이 곱해졌는가?
+  - 한 번의 parameter update 뒤 loss는 어떻게 바뀌었는가?
