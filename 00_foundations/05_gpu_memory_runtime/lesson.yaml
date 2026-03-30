@@ -1,0 +1,25 @@
+objective: 무엇이 GPU 메모리를 차지하는지, training과 inference가 왜 다른지 이해한다.
+prereqs:
+  - tensor shape 감각
+  - dtype 기본 개념
+  - forward / backward 구분
+key_terms:
+  - vram
+  - parameter
+  - activation
+  - gradient
+  - optimizer state
+  - mixed precision
+runtime_observation_hooks:
+  - dtype
+  - device
+  - max_memory_allocated
+  - max_memory_reserved
+required_outputs:
+  - scratch metrics json
+  - framework metrics json
+  - analysis markdown
+analysis_questions:
+  - 어떤 항목이 batch size와 함께 증가했는가?
+  - training과 inference의 차이는 무엇인가?
+  - fp32와 fp16 추정 메모리 차이는 얼마나 되는가?
