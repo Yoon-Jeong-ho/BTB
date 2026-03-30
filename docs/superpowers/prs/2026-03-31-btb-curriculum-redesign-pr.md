@@ -53,7 +53,7 @@ BTB를 foundation-first 한글 학습 사다리로 재구성
 추가로 다음을 보장하도록 강화했다.
 - required outputs가 없으면 report builder가 **명시적으로 실패**함
 - generated analysis 문서가 `THEORY.md`로 **역링크(backlink)** 를 가짐
-- markdown image link의 empty alt text (`![](...)`)도 link checker가 검증함
+- empty-alt 이미지 링크도 link checker가 검증함
 
 ### 5) 첫 concrete NLP bridge unit 추가
 - `02_nlp_bridge/01_tokenization_and_embeddings`
