@@ -8,6 +8,11 @@ from _lesson_metadata import load_lesson_metadata
 
 
 ROOT = Path(__file__).resolve().parents[1]
+REQUIRED_OUTPUT_PATHS = {
+    "scratch metrics json": Path("artifacts") / "scratch-manual" / "metrics.json",
+    "framework metrics json": Path("artifacts") / "framework-manual" / "metrics.json",
+    "analysis markdown": Path("analysis.md"),
+}
 
 
 def _read_metric_keys(path: Path) -> list[str]:
@@ -22,6 +27,35 @@ def _to_display(path: Path) -> str:
         return str(path.relative_to(ROOT))
     except ValueError:
         return str(path)
+
+
+def _resolve_required_output_paths(unit_path: Path, required_outputs: object) -> list[Path]:
+    if not isinstance(required_outputs, list):
+        return []
+
+    resolved_paths: list[Path] = []
+    for output_name in required_outputs:
+        if not isinstance(output_name, str):
+            continue
+        relative_path = REQUIRED_OUTPUT_PATHS.get(output_name.strip().lower())
+        if relative_path is None:
+            continue
+        resolved_paths.append(unit_path / relative_path)
+    return resolved_paths
+
+
+def _ensure_required_outputs_exist(unit_path: Path, required_outputs: object) -> None:
+    expected_paths = _resolve_required_output_paths(unit_path, required_outputs)
+    missing_paths = [path for path in expected_paths if not path.exists()]
+    if not missing_paths:
+        return
+
+    missing_lines = "\n".join(f"- {_to_display(path)}" for path in missing_paths)
+    raise SystemExit(
+        "필수 출력이 없습니다. 아래 경로를 먼저 생성하세요:\n"
+        f"{missing_lines}\n"
+        "먼저 scratch_lab.py, framework_lab.py, analysis.py를 순서대로 실행해 결과를 만드세요."
+    )
 
 
 def main() -> int:
@@ -39,6 +73,7 @@ def main() -> int:
     scratch_metrics = artifacts_dir / "scratch-manual" / "metrics.json"
     framework_metrics = artifacts_dir / "framework-manual" / "metrics.json"
     required_outputs = metadata.get("required_outputs", [])
+    _ensure_required_outputs_exist(unit_path, required_outputs)
 
     summary_lines = [
         f"# {unit_path.name} 요약",

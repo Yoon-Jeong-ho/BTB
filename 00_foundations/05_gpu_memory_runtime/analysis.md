@@ -13,3 +13,6 @@
 - batch size를 키우면 어떤 항목이 함께 증가하는가?
 - training과 inference를 비교할 때 parameter만 보면 왜 부족한가?
 - 이번 실행에서 관측한 구체적 숫자는 `artifacts/analysis-manual/latest_report.md`에 어떻게 정리되었는가?
+
+## 관련 이론
+- [THEORY.md](./THEORY.md): VRAM 구성 요소, mixed precision, training vs inference 차이를 다시 확인한다.

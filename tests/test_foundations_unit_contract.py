@@ -145,6 +145,8 @@ class TestFoundationsUnitContract(unittest.TestCase):
         self.assertIn('training runtime', observed_text)
         self.assertIn('latest_report.md', analysis_text)
         self.assertIn('반복 실행 시 불필요한 diff', analysis_text)
+        self.assertIn('## 관련 이론', analysis_text)
+        self.assertIn('[THEORY.md](./THEORY.md)', analysis_text)
         self.assertNotIn(f'`{framework["training_runtime_ms"]} ms`', analysis_text)
 
     def test_labs_and_analysis_generate_expected_outputs(self) -> None:
@@ -177,6 +179,8 @@ class TestFoundationsUnitContract(unittest.TestCase):
         self.assertIn('# 01 Tensor Shapes 분석', analysis_text)
         self.assertIn('## 해석', analysis_text)
         self.assertIn('shape mismatch', analysis_text)
+        self.assertIn('## 관련 이론', analysis_text)
+        self.assertIn('[THEORY.md](./THEORY.md)', analysis_text)
 
     def test_analysis_requires_metrics_with_actionable_error(self) -> None:
         self._cleanup_generated_outputs(

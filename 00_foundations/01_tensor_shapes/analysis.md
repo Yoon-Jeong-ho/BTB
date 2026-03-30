@@ -16,3 +16,6 @@
 ## 실패 사례
 - mismatch 에러 메시지는 `operands could not be broadcast together with shapes (2,3) (4,) ` 였다.
 - 이 에러는 “원소 수가 달라서”가 아니라 broadcasting 규칙상 축 정렬이 맞지 않아서 생긴다.
+
+## 관련 이론
+- [THEORY.md](./THEORY.md): shape, broadcasting, batch dimension 핵심 개념을 다시 확인한다.

@@ -130,6 +130,39 @@ class TestLessonRunnerContract(unittest.TestCase):
         self.assertIn("scratch keys:", summary_text)
         self.assertIn("framework keys:", summary_text)
 
+    def test_report_builder_fails_with_actionable_missing_required_outputs(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            unit_path = Path(tmp_dir) / "tmp_unit"
+            scratch_metrics = unit_path / "artifacts" / "scratch-manual" / "metrics.json"
+            framework_metrics = unit_path / "artifacts" / "framework-manual" / "metrics.json"
+            analysis_path = unit_path / "analysis.md"
+            summary_path = unit_path / "artifacts" / "summary.md"
+
+            scratch_metrics.parent.mkdir(parents=True, exist_ok=True)
+            unit_path.joinpath("lesson.yaml").write_text(
+                "\n".join(
+                    [
+                        "objective: 임시 목표",
+                        "required_outputs:",
+                        "  - scratch metrics json",
+                        "  - framework metrics json",
+                        "  - analysis markdown",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+            scratch_metrics.write_text('{"ok": true}', encoding="utf-8")
+
+            result = self._run(str(BUILD_REPORT), "--unit", str(unit_path))
+
+            self.assertNotEqual(result.returncode, 0)
+            self.assertFalse(summary_path.exists(), "summary.md should not be created on failure")
+            error_text = result.stdout + result.stderr
+            self.assertIn("필수 출력이 없습니다", error_text)
+            self.assertIn(str(framework_metrics), error_text)
+            self.assertIn(str(analysis_path), error_text)
+            self.assertIn("analysis.py", error_text)
+
 
 if __name__ == "__main__":
     unittest.main()
