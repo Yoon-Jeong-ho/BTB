@@ -1,0 +1,22 @@
+objective: 한국어 문장이 subword token, token id, embedding tensor, padding mask로 바뀌는 흐름을 구체적으로 이해한다.
+prereqs:
+  - 문자열과 리스트의 차이
+  - 인덱스와 lookup table 개념
+  - 기본 tensor shape 읽기
+key_terms:
+  - tokenization
+  - subword
+  - vocabulary
+  - token id
+  - embedding lookup
+  - padding mask
+  - unknown token
+required_outputs:
+  - scratch metrics json
+  - framework metrics json
+  - analysis markdown
+  - observed analysis report
+analysis_questions:
+  - whitespace 단어 수보다 subword token 수가 늘어나는 이유는 무엇인가?
+  - [UNK]가 생기면 어떤 정보 손실이 생기는가?
+  - embedding lookup 이후 shape가 어떻게 바뀌며, padding mask는 어디에 쓰이는가?
