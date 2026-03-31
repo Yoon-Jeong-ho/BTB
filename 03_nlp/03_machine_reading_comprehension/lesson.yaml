@@ -1,0 +1,27 @@
+objective: 작은 한국어 독해 예제로 heuristic span extraction baseline과 tiny PyTorch QA-style model을 비교하며 span extraction과 no-answer 판단의 첫 applied NLP 감각을 만든다.
+prereqs:
+  - 기본 Python 자료구조 읽기
+  - tokenization과 padding 기초
+  - tensor shape 기초
+  - exact match와 token F1 해석
+  - 질문-문맥 결합 시퀀스 직관
+key_terms:
+  - machine reading comprehension
+  - span extraction
+  - exact match
+  - token F1
+  - answerable
+  - unanswerable
+  - no-answer threshold
+  - question-context alignment
+required_outputs:
+  - scratch metrics json
+  - scratch svg figure
+  - framework metrics json
+  - analysis markdown
+  - observed analysis report
+analysis_questions:
+  - heuristic baseline은 어떤 question-context overlap을 근거로 span extraction을 시도하는가?
+  - exact match와 token F1을 같이 볼 때 어떤 boundary error가 드러나는가?
+  - no-answer threshold는 answerable / unanswerable 균형에 어떤 영향을 주는가?
+  - tiny PyTorch QA model이 개선되었다면 그 차이는 질문 조건부 표현 때문인가?

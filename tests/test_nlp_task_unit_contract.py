@@ -54,6 +54,28 @@ UNIT_SPECS = {
             'framework_secondary_metric_min': 0.4,
         },
     },
+    'machine_reading_comprehension': {
+        'unit': ROOT / '03_nlp' / '03_machine_reading_comprehension',
+        'readme_terms': ['실행 결과 예시', 'metrics.json', 'span extraction'],
+        'theory_terms': ['실행 결과 예시', 'span extraction', 'PyTorch'],
+        'lesson_terms': ['scratch svg figure', 'analysis_questions:', 'exact match', 'span extraction'],
+        'scratch_figure': 'artifacts/scratch-manual/answerability_breakdown.svg',
+        'analysis_heading': '# 03 Machine Reading Comprehension 실행 관측',
+        'scratch_metric_keys': ['eval_exact_match', 'eval_token_f1', 'answerable_accuracy', 'no_answer_threshold', 'prediction_rows'],
+        'framework_metric_keys': ['embedding_dim', 'hidden_dim', 'loss_history_head', 'prediction_rows', 'answerable_accuracy'],
+        'numeric_checks': {
+            'scratch_train_size_min': 6,
+            'scratch_primary_metric': 'eval_exact_match',
+            'scratch_primary_metric_min': 0.5,
+            'scratch_secondary_metric': 'eval_token_f1',
+            'scratch_secondary_metric_min': 0.5,
+            'framework_train_size_min': 6,
+            'framework_primary_metric': 'eval_exact_match',
+            'framework_primary_metric_min': 0.5,
+            'framework_secondary_metric': 'eval_token_f1',
+            'framework_secondary_metric_min': 0.5,
+        },
+    },
 }
 
 REQUIRED = [
