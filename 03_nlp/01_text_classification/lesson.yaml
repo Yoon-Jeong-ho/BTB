@@ -1,0 +1,25 @@
+objective: 작은 한국어 예제로 bag-of-words baseline과 tiny PyTorch classifier를 비교하며 text classification의 첫 applied NLP 감각을 만든다.
+prereqs:
+  - 기본 Python 자료구조 읽기
+  - 간단한 확률과 빈도 해석
+  - tensor shape 기초
+  - tokenization과 embedding 기초
+key_terms:
+  - text classification
+  - bag-of-words
+  - multinomial naive bayes
+  - embedding average
+  - logits
+  - accuracy
+  - macro F1
+  - confusion matrix
+required_outputs:
+  - scratch metrics json
+  - scratch svg figure
+  - framework metrics json
+  - analysis markdown
+  - observed analysis report
+analysis_questions:
+  - bag-of-words baseline은 어떤 token을 긍정/부정 신호로 읽는가?
+  - accuracy와 macro F1을 같이 볼 때 어떤 해석 차이가 생기는가?
+  - tiny PyTorch classifier는 bag-of-words보다 무엇을 더 표현하려고 하는가?
