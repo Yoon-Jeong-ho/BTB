@@ -28,8 +28,11 @@ BTB를 foundation-first 한글 학습 사다리로 재구성
 - foundation용 템플릿 4종 추가
 - `docs/01_experiment_playbook.md`에 `lesson.yaml`, `analysis.md`, `reflection.md`, runtime observation 규칙 추가
 
-### 3) gold-standard foundations unit 2개 추가
+### 3) foundations 01→05 계단 보강
 - `00_foundations/01_tensor_shapes`
+- `00_foundations/02_activation_and_loss`
+- `00_foundations/03_gradients_and_backpropagation`
+- `00_foundations/04_regularization_and_normalization`
 - `00_foundations/05_gpu_memory_runtime`
 
 두 unit 모두 아래를 포함한다.
@@ -55,14 +58,15 @@ BTB를 foundation-first 한글 학습 사다리로 재구성
 - generated analysis 문서가 `THEORY.md`로 **역링크(backlink)** 를 가짐
 - empty-alt 이미지 링크도 link checker가 검증함
 
-### 5) 첫 concrete NLP bridge unit 추가
+### 5) concrete bridge unit 확장
 - `02_nlp_bridge/01_tokenization_and_embeddings`
+- `02_nlp_bridge/02_attention_and_transformer_block`
+- `04_multimodal_bridge/01_contrastive_alignment`
 
-이 unit은 다음을 다룬다.
-- toy vocab 기반 tokenization / subword-ish splitting
-- token id mapping
-- embedding lookup shape 변화
-- padding mask shape 감각
+이제 bridge 구간에서 다음을 직접 본다.
+- tokenization / subword-ish splitting / id mapping
+- embedding lookup / padding mask / attention / transformer block shape 변화
+- image-text contrastive alignment와 similarity heatmap
 - 한국어 analysis + theory backlink
 
 ## Main files to review
@@ -75,11 +79,17 @@ BTB를 foundation-first 한글 학습 사다리로 재구성
 
 ### Foundations units
 - `00_foundations/01_tensor_shapes/*`
+- `00_foundations/02_activation_and_loss/*`
+- `00_foundations/03_gradients_and_backpropagation/*`
+- `00_foundations/04_regularization_and_normalization/*`
 - `00_foundations/05_gpu_memory_runtime/*`
 
-### NLP bridge unit
+### Bridge units
 - `02_nlp_bridge/README.md`
 - `02_nlp_bridge/01_tokenization_and_embeddings/*`
+- `02_nlp_bridge/02_attention_and_transformer_block/*`
+- `04_multimodal_bridge/README.md`
+- `04_multimodal_bridge/01_contrastive_alignment/*`
 
 ### Automation
 - `scripts/_lesson_metadata.py`
@@ -95,6 +105,7 @@ BTB를 foundation-first 한글 학습 사다리로 재구성
 - `tests/test_lesson_runner_contract.py`
 - `tests/test_curriculum_links.py`
 - `tests/test_nlp_bridge_unit_contract.py`
+- `tests/test_multimodal_bridge_unit_contract.py`
 
 ## Validation
 
@@ -109,6 +120,7 @@ python -m unittest \
   tests/test_lesson_runner_contract.py \
   tests/test_curriculum_links.py \
   tests/test_nlp_bridge_unit_contract.py \
+  tests/test_multimodal_bridge_unit_contract.py \
   tests/test_01_ml_report_contract.py -v
 
 python scripts/check_curriculum_links.py
@@ -126,23 +138,29 @@ python scripts/check_curriculum_links.py
 - `d0fb129` reindex tracks
 - `3f9edeb` shared contract/templates
 - `3eb8c12` tensor shapes unit
+- `884f1e0` activation/loss unit
+- `a11b4a1` gradients/backpropagation unit
+- `2962ba9` regularization/normalization unit
 - `13906e1` GPU/runtime unit
 - `8a9fe15` automation scaffold
 - `835d65f` automation contract hardening
 - `e2700e6` first NLP bridge unit
+- `b49c301` attention/transformer bridge unit
+- `8ca5fef` multimodal contrastive-alignment bridge unit
 
 ## Reviewer checklist
 
 - [ ] 루트 README만 읽어도 새 학습 흐름이 이해되는가?
 - [ ] foundation/bridge/applied 구조가 번호 체계로 자연스럽게 읽히는가?
-- [ ] foundation unit 2개가 품질 기준으로 충분히 읽을 만한가?
-- [ ] NLP bridge 첫 unit가 03_nlp로 넘어가기 전 개념 다리 역할을 하는가?
+- [ ] foundations 01→05 흐름이 번호대로 자연스럽게 읽히는가?
+- [ ] activation / gradient / regularization / GPU runtime에 figure와 실행 예시가 충분한가?
+- [ ] NLP bridge 2개와 multimodal bridge 1개가 다음 트랙으로 넘어가기 전 개념 다리 역할을 하는가?
 - [ ] automation scripts가 과하게 무겁지 않고, 현재 범위에 맞게 단순한가?
 - [ ] generated docs/report가 evidence-first 원칙을 지키는가?
 
 ## Remaining follow-ups
 
 이 PR 이후 바로 이어갈 만한 작업:
-1. `02_nlp_bridge`의 다음 unit (`attention` / `transformer block`) 추가
-2. `04_multimodal_bridge` 첫 concrete unit 추가
+1. foundations 이후의 더 심화된 unit(optimizer/scheduler, data pipeline 등) 추가
+2. 03_nlp / 05_multimodal 실제 task unit들도 bridge 수준으로 실행 예시/figure를 더 보강
 3. 더 많은 unit가 생기면 `lesson.yaml` 스키마를 lint/validate하는 도구 추가
