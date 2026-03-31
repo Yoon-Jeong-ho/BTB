@@ -1,0 +1,25 @@
+objective: 작은 한국어 BIO 예제로 label alignment와 entity-level F1을 확인하며 named entity recognition의 첫 applied NLP 감각을 만든다.
+prereqs:
+  - 기본 Python 자료구조 읽기
+  - sequence tensor shape 기초
+  - tokenization과 padding 기초
+  - BIO tagging 직관
+key_terms:
+  - named entity recognition
+  - BIO tagging
+  - label alignment
+  - token classification
+  - entity-level F1
+  - token accuracy
+  - boundary error
+  - PyTorch sequence labeler
+required_outputs:
+  - scratch metrics json
+  - scratch svg figure
+  - framework metrics json
+  - analysis markdown
+  - observed analysis report
+analysis_questions:
+  - alignment 후 BIO label은 어떤 규칙으로 늘어나는가?
+  - token accuracy와 entity-level F1을 같이 보면 어떤 경계 오류가 드러나는가?
+  - tiny PyTorch sequence labeler는 scratch baseline보다 어떤 문맥 정보를 더 읽으려 하는가?
