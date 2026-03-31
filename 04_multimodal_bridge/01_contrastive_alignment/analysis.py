@@ -105,7 +105,7 @@ def run() -> None:
 
 ## 이론 다시 연결하기
 - 안정적인 해석 프레임은 `analysis.md`에 유지한다.
-- 핵심 개념 복습: [THEORY.md](./THEORY.md)
+- 핵심 개념 복습: [THEORY.md](../../THEORY.md)
 '''
 
     OBSERVED_REPORT.parent.mkdir(parents=True, exist_ok=True)

@@ -50,6 +50,25 @@ class TestMultimodalBridgeUnitContract(unittest.TestCase):
             check=False,
         )
 
+    def _preserve_path(self, path: Path) -> None:
+        existed = path.exists()
+        original = path.read_bytes() if existed else None
+
+        def cleanup() -> None:
+            if existed:
+                path.parent.mkdir(parents=True, exist_ok=True)
+                assert original is not None
+                path.write_bytes(original)
+            elif path.exists():
+                path.unlink()
+
+            current = path.parent
+            while current != ROOT and current.exists() and not any(current.iterdir()):
+                current.rmdir()
+                current = current.parent
+
+        self.addCleanup(cleanup)
+
     def _cleanup_generated_outputs(self) -> None:
         for path in (SCRATCH_METRICS, SCRATCH_FIGURE, FRAMEWORK_METRICS, OBSERVED_REPORT):
             if path.exists():
@@ -98,6 +117,8 @@ class TestMultimodalBridgeUnitContract(unittest.TestCase):
         self.assertEqual('', gitkeep.read_text(encoding='utf-8'))
 
     def test_analysis_requires_metrics_with_actionable_error(self) -> None:
+        for path in (SCRATCH_METRICS, SCRATCH_FIGURE, FRAMEWORK_METRICS, OBSERVED_REPORT):
+            self._preserve_path(path)
         self.addCleanup(self._cleanup_generated_outputs)
         self._cleanup_generated_outputs()
 
@@ -109,6 +130,7 @@ class TestMultimodalBridgeUnitContract(unittest.TestCase):
         self.assertIn('먼저 scratch_lab.py와 framework_lab.py를 실행하세요', error_text)
 
     def test_scratch_validates_batch_size_and_escapes_svg_labels(self) -> None:
+        self._preserve_path(SCRATCH_FIGURE)
         self.addCleanup(self._cleanup_generated_outputs)
         self._cleanup_generated_outputs()
         scratch_lab = self._load_module(
@@ -147,6 +169,8 @@ class TestMultimodalBridgeUnitContract(unittest.TestCase):
             )
 
     def test_labs_and_analysis_generate_expected_outputs(self) -> None:
+        for path in (SCRATCH_METRICS, SCRATCH_FIGURE, FRAMEWORK_METRICS, OBSERVED_REPORT):
+            self._preserve_path(path)
         self.addCleanup(self._cleanup_generated_outputs)
         self._cleanup_generated_outputs()
         stable_before = ANALYSIS_MD.read_text(encoding='utf-8')
@@ -187,7 +211,7 @@ class TestMultimodalBridgeUnitContract(unittest.TestCase):
 
         self.assertIn('# 01 Contrastive Alignment 실행 관측', observed_text)
         self.assertIn('## 한국어 해석', observed_text)
-        self.assertIn('[THEORY.md](./THEORY.md)', observed_text)
+        self.assertIn('[THEORY.md](../../THEORY.md)', observed_text)
         self.assertEqual(stable_before, analysis_text)
         self.assertIn('latest_report.md', analysis_text)
         self.assertIn('## 관련 이론', analysis_text)
