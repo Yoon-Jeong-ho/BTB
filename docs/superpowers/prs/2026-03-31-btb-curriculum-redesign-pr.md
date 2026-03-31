@@ -28,7 +28,7 @@ BTB를 foundation-first 한글 학습 사다리로 재구성
 - foundation용 템플릿 4종 추가
 - `docs/01_experiment_playbook.md`에 `lesson.yaml`, `analysis.md`, `reflection.md`, runtime observation 규칙 추가
 
-### 3) foundations 01→05 계단 보강
+### 3) foundations 01→05 계단 완성
 - `00_foundations/01_tensor_shapes`
 - `00_foundations/02_activation_and_loss`
 - `00_foundations/03_gradients_and_backpropagation`
@@ -69,6 +69,16 @@ BTB를 foundation-first 한글 학습 사다리로 재구성
 - image-text contrastive alignment와 similarity heatmap
 - 한국어 analysis + theory backlink
 
+### 6) 첫 applied task unit 확장
+- `03_nlp/01_text_classification`
+- `05_multimodal/01_image_text_retrieval`
+
+이제 bridge 뒤 첫 실제 task unit도 foundations/bridge와 같은 contract로 읽고 실행할 수 있다.
+- 실행 결과 예시
+- figure / metrics
+- stable analysis + observed report
+- Korean-first docs
+
 ## Main files to review
 
 ### Topology / docs
@@ -106,6 +116,8 @@ BTB를 foundation-first 한글 학습 사다리로 재구성
 - `tests/test_curriculum_links.py`
 - `tests/test_nlp_bridge_unit_contract.py`
 - `tests/test_multimodal_bridge_unit_contract.py`
+- `tests/test_nlp_task_unit_contract.py`
+- `tests/test_multimodal_task_unit_contract.py`
 
 ## Validation
 
@@ -121,6 +133,8 @@ python -m unittest \
   tests/test_curriculum_links.py \
   tests/test_nlp_bridge_unit_contract.py \
   tests/test_multimodal_bridge_unit_contract.py \
+  tests/test_nlp_task_unit_contract.py \
+  tests/test_multimodal_task_unit_contract.py \
   tests/test_01_ml_report_contract.py -v
 
 python scripts/check_curriculum_links.py
@@ -147,6 +161,8 @@ python scripts/check_curriculum_links.py
 - `e2700e6` first NLP bridge unit
 - `b49c301` attention/transformer bridge unit
 - `8ca5fef` multimodal contrastive-alignment bridge unit
+- `bc97072` first applied NLP text-classification unit
+- `860c73e` first applied multimodal retrieval unit
 
 ## Reviewer checklist
 
@@ -155,12 +171,13 @@ python scripts/check_curriculum_links.py
 - [ ] foundations 01→05 흐름이 번호대로 자연스럽게 읽히는가?
 - [ ] activation / gradient / regularization / GPU runtime에 figure와 실행 예시가 충분한가?
 - [ ] NLP bridge 2개와 multimodal bridge 1개가 다음 트랙으로 넘어가기 전 개념 다리 역할을 하는가?
+- [ ] 첫 applied NLP / multimodal unit도 bridge/foundation 수준으로 읽기 쉬운가?
 - [ ] automation scripts가 과하게 무겁지 않고, 현재 범위에 맞게 단순한가?
 - [ ] generated docs/report가 evidence-first 원칙을 지키는가?
 
 ## Remaining follow-ups
 
 이 PR 이후 바로 이어갈 만한 작업:
-1. foundations 이후의 더 심화된 unit(optimizer/scheduler, data pipeline 등) 추가
-2. 03_nlp / 05_multimodal 실제 task unit들도 bridge 수준으로 실행 예시/figure를 더 보강
+1. 03_nlp의 NER / MRC unit도 지금 수준으로 확장
+2. 05_multimodal의 captioning / VQA unit도 지금 수준으로 확장
 3. 더 많은 unit가 생기면 `lesson.yaml` 스키마를 lint/validate하는 도구 추가
