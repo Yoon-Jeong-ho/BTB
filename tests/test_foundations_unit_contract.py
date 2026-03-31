@@ -15,10 +15,12 @@ FOUNDATIONS = ROOT / '00_foundations'
 TENSOR_UNIT = FOUNDATIONS / '01_tensor_shapes'
 ACTIVATION_UNIT = FOUNDATIONS / '02_activation_and_loss'
 GRADIENT_UNIT = FOUNDATIONS / '03_gradients_and_backpropagation'
+REGULARIZATION_UNIT = FOUNDATIONS / '04_regularization_and_normalization'
 GPU_UNIT = FOUNDATIONS / '05_gpu_memory_runtime'
 TENSOR_ARTIFACTS = TENSOR_UNIT / 'artifacts'
 ACTIVATION_ARTIFACTS = ACTIVATION_UNIT / 'artifacts'
 GRADIENT_ARTIFACTS = GRADIENT_UNIT / 'artifacts'
+REGULARIZATION_ARTIFACTS = REGULARIZATION_UNIT / 'artifacts'
 GPU_ARTIFACTS = GPU_UNIT / 'artifacts'
 TENSOR_SCRATCH_METRICS = TENSOR_ARTIFACTS / 'scratch-manual' / 'metrics.json'
 TENSOR_FRAMEWORK_METRICS = TENSOR_ARTIFACTS / 'framework-manual' / 'metrics.json'
@@ -33,6 +35,11 @@ GRADIENT_SCRATCH_FIGURE = GRADIENT_ARTIFACTS / 'scratch-manual' / 'loss_curve.sv
 GRADIENT_FRAMEWORK_METRICS = GRADIENT_ARTIFACTS / 'framework-manual' / 'metrics.json'
 GRADIENT_OBSERVED_REPORT = GRADIENT_ARTIFACTS / 'analysis-manual' / 'latest_report.md'
 GRADIENT_ANALYSIS_MD = GRADIENT_UNIT / 'analysis.md'
+REGULARIZATION_SCRATCH_METRICS = REGULARIZATION_ARTIFACTS / 'scratch-manual' / 'metrics.json'
+REGULARIZATION_SCRATCH_FIGURE = REGULARIZATION_ARTIFACTS / 'scratch-manual' / 'training_dynamics.svg'
+REGULARIZATION_FRAMEWORK_METRICS = REGULARIZATION_ARTIFACTS / 'framework-manual' / 'metrics.json'
+REGULARIZATION_OBSERVED_REPORT = REGULARIZATION_ARTIFACTS / 'analysis-manual' / 'latest_report.md'
+REGULARIZATION_ANALYSIS_MD = REGULARIZATION_UNIT / 'analysis.md'
 GPU_SCRATCH_METRICS = GPU_ARTIFACTS / 'scratch-manual' / 'metrics.json'
 GPU_FRAMEWORK_METRICS = GPU_ARTIFACTS / 'framework-manual' / 'metrics.json'
 GPU_OBSERVED_REPORT = GPU_ARTIFACTS / 'analysis-manual' / 'latest_report.md'
@@ -58,6 +65,11 @@ GRADIENT_GENERATED_DIRS = [
     GRADIENT_ARTIFACTS / 'scratch-manual',
     GRADIENT_ARTIFACTS / 'framework-manual',
     GRADIENT_ARTIFACTS / 'analysis-manual',
+]
+REGULARIZATION_GENERATED_DIRS = [
+    REGULARIZATION_ARTIFACTS / 'scratch-manual',
+    REGULARIZATION_ARTIFACTS / 'framework-manual',
+    REGULARIZATION_ARTIFACTS / 'analysis-manual',
 ]
 GPU_GENERATED_DIRS = [
     GPU_ARTIFACTS / 'scratch-manual',
@@ -102,6 +114,9 @@ class TestFoundationsUnitContract(unittest.TestCase):
     def _cleanup_gradient_generated_artifacts(self) -> None:
         self._cleanup_generated_directories(GRADIENT_GENERATED_DIRS)
 
+    def _cleanup_regularization_generated_artifacts(self) -> None:
+        self._cleanup_generated_directories(REGULARIZATION_GENERATED_DIRS)
+
     def _cleanup_gpu_generated_artifacts(self) -> None:
         self._cleanup_generated_outputs(
             GPU_SCRATCH_METRICS,
@@ -126,7 +141,7 @@ class TestFoundationsUnitContract(unittest.TestCase):
         text = (FOUNDATIONS / 'README.md').read_text(encoding='utf-8')
         self.assertIn('02_activation_and_loss', text)
         self.assertIn('03_gradients_and_backpropagation', text)
-        self.assertIn('04_tokenization_and_embeddings', text)
+        self.assertIn('04_regularization_and_normalization', text)
         self.assertIn('05_gpu_memory_runtime', text)
 
     def test_tensor_shapes_unit_has_required_files(self) -> None:
@@ -140,6 +155,10 @@ class TestFoundationsUnitContract(unittest.TestCase):
     def test_gradients_and_backpropagation_unit_has_required_files(self) -> None:
         for rel in REQUIRED:
             self.assertTrue((GRADIENT_UNIT / rel).exists(), rel)
+
+    def test_regularization_and_normalization_unit_has_required_files(self) -> None:
+        for rel in REQUIRED:
+            self.assertTrue((REGULARIZATION_UNIT / rel).exists(), rel)
 
     def test_tensor_shapes_metadata_mentions_outputs(self) -> None:
         text = (TENSOR_UNIT / 'lesson.yaml').read_text(encoding='utf-8')
@@ -172,8 +191,31 @@ class TestFoundationsUnitContract(unittest.TestCase):
         self.assertIn('finite-difference gradient', theory_text)
         self.assertIn('autograd', theory_text)
 
+    def test_regularization_metadata_mentions_figure_and_outputs(self) -> None:
+        lesson_text = (REGULARIZATION_UNIT / 'lesson.yaml').read_text(encoding='utf-8')
+        self.assertIn('scratch svg figure', lesson_text)
+        self.assertIn('stable analysis markdown', lesson_text)
+        self.assertIn('analysis_questions:', lesson_text)
+        self.assertIn('weight decay', lesson_text)
+        self.assertIn('LayerNorm', lesson_text)
+
+        readme_text = (REGULARIZATION_UNIT / 'README.md').read_text(encoding='utf-8')
+        theory_text = (REGULARIZATION_UNIT / 'THEORY.md').read_text(encoding='utf-8')
+        self.assertIn('실행 결과 예시', readme_text)
+        self.assertIn('training_dynamics.svg', readme_text)
+        self.assertIn('실행 결과 예시', theory_text)
+        self.assertIn('LayerNorm', theory_text)
+        self.assertIn('weight decay', theory_text)
+        self.assertIn('dropout', theory_text)
+
     def test_artifacts_gitkeep_is_locked(self) -> None:
-        for unit_artifacts in (TENSOR_ARTIFACTS, ACTIVATION_ARTIFACTS, GRADIENT_ARTIFACTS, GPU_ARTIFACTS):
+        for unit_artifacts in (
+            TENSOR_ARTIFACTS,
+            ACTIVATION_ARTIFACTS,
+            GRADIENT_ARTIFACTS,
+            REGULARIZATION_ARTIFACTS,
+            GPU_ARTIFACTS,
+        ):
             gitkeep = unit_artifacts / '.gitkeep'
             self.assertTrue(gitkeep.exists(), f'{unit_artifacts}/.gitkeep')
             self.assertEqual('', gitkeep.read_text(encoding='utf-8'))
@@ -231,6 +273,17 @@ class TestFoundationsUnitContract(unittest.TestCase):
         self._cleanup_gpu_generated_artifacts()
 
         result = self._run('00_foundations/05_gpu_memory_runtime/analysis.py')
+
+        self.assertNotEqual(0, result.returncode)
+        error_text = result.stdout + result.stderr
+        self.assertIn('필수 metrics 파일이 없습니다', error_text)
+        self.assertIn('먼저 scratch_lab.py와 framework_lab.py를 실행하세요', error_text)
+
+    def test_regularization_analysis_requires_metrics_with_actionable_error(self) -> None:
+        self.addCleanup(self._cleanup_regularization_generated_artifacts)
+        self._cleanup_regularization_generated_artifacts()
+
+        result = self._run('00_foundations/04_regularization_and_normalization/analysis.py')
 
         self.assertNotEqual(0, result.returncode)
         error_text = result.stdout + result.stderr
@@ -345,6 +398,58 @@ class TestFoundationsUnitContract(unittest.TestCase):
         self.assertIn('## 관련 이론', analysis_text)
         self.assertIn('[THEORY.md](./THEORY.md)', analysis_text)
         self.assertNotIn(f'`{framework["loss_before_step"]}`', analysis_text)
+
+    def test_regularization_unit_labs_and_analysis_generate_expected_outputs(self) -> None:
+        self.addCleanup(self._cleanup_regularization_generated_artifacts)
+        self._cleanup_regularization_generated_artifacts()
+
+        scratch_result = self._run('00_foundations/04_regularization_and_normalization/scratch_lab.py')
+        self.assertEqual(0, scratch_result.returncode, scratch_result.stderr)
+        framework_result = self._run('00_foundations/04_regularization_and_normalization/framework_lab.py')
+        self.assertEqual(0, framework_result.returncode, framework_result.stderr)
+        analysis_result = self._run('00_foundations/04_regularization_and_normalization/analysis.py')
+        self.assertEqual(0, analysis_result.returncode, analysis_result.stderr)
+
+        self.assertTrue(REGULARIZATION_SCRATCH_METRICS.exists(), 'regularization scratch metrics missing')
+        self.assertTrue(REGULARIZATION_SCRATCH_FIGURE.exists(), 'regularization scratch figure missing')
+        self.assertTrue(REGULARIZATION_FRAMEWORK_METRICS.exists(), 'regularization framework metrics missing')
+        self.assertTrue(REGULARIZATION_OBSERVED_REPORT.exists(), 'regularization observed report missing')
+        self.assertTrue(REGULARIZATION_ANALYSIS_MD.exists(), 'regularization analysis.md missing')
+
+        scratch = json.loads(REGULARIZATION_SCRATCH_METRICS.read_text(encoding='utf-8'))
+        framework = json.loads(REGULARIZATION_FRAMEWORK_METRICS.read_text(encoding='utf-8'))
+        figure_text = REGULARIZATION_SCRATCH_FIGURE.read_text(encoding='utf-8')
+        observed_text = REGULARIZATION_OBSERVED_REPORT.read_text(encoding='utf-8')
+        analysis_text = REGULARIZATION_ANALYSIS_MD.read_text(encoding='utf-8')
+
+        self.assertEqual([20.0, 40.0, 60.0, 80.0], scratch['raw_feature_values'])
+        self.assertEqual(0.0, scratch['normalized_feature_mean'])
+        self.assertEqual(1.0, scratch['normalized_feature_std'])
+        self.assertGreater(scratch['raw_initial_grad_norm'], scratch['normalized_initial_grad_norm'])
+        self.assertGreater(scratch['raw_final_loss'], scratch['raw_initial_loss'])
+        self.assertLess(scratch['normalized_final_loss'], scratch['normalized_initial_loss'])
+        self.assertLess(scratch['normalized_l2_weight_norm'], scratch['normalized_weight_norm'])
+        self.assertEqual('artifacts/scratch-manual/training_dynamics.svg', scratch['figure_path'])
+
+        self.assertEqual([0.0, 0.0], framework['layernorm_row_means'])
+        self.assertEqual([1.0, 1.0], framework['layernorm_row_vars'])
+        self.assertEqual(0.5, framework['dropout_train_zero_fraction'])
+        self.assertTrue(framework['dropout_eval_matches_input'])
+        self.assertLess(
+            framework['weight_decay_weight_norm_after_step'],
+            framework['no_weight_decay_weight_norm_after_step'],
+        )
+
+        self.assertIn('<svg', figure_text)
+        self.assertIn('Training dynamics: normalization and regularization', figure_text)
+        self.assertIn('# 04 Regularization and Normalization 실행 관측', observed_text)
+        self.assertIn('## 한국어 해석', observed_text)
+        self.assertIn('training_dynamics.svg', observed_text)
+        self.assertIn('latest_report.md', analysis_text)
+        self.assertIn('반복 실행 시 불필요한 diff', analysis_text)
+        self.assertIn('## 관련 이론', analysis_text)
+        self.assertIn('[THEORY.md](./THEORY.md)', analysis_text)
+        self.assertNotIn(f'`{framework["weight_decay_weight_norm_after_step"]}`', analysis_text)
 
     def test_gpu_unit_labs_and_analysis_generate_expected_outputs(self) -> None:
         self.addCleanup(self._cleanup_gpu_generated_artifacts)

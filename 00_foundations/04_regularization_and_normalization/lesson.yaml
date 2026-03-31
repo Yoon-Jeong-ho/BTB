@@ -1,0 +1,24 @@
+objective: normalization이 gradient scale과 학습 안정성을 어떻게 바꾸고, regularization이 weight growth를 어떻게 억제하는지 이해한다.
+prereqs:
+  - gradient와 learning rate의 관계
+  - 평균 / 분산 / 표준편차 읽기
+  - train / eval mode 구분
+key_terms:
+  - normalization
+  - regularization
+  - z-score normalization
+  - LayerNorm
+  - dropout
+  - weight decay
+  - L2 regularization
+  - training dynamics
+required_outputs:
+  - scratch metrics json
+  - scratch svg figure
+  - framework metrics json
+  - stable analysis markdown
+  - observed analysis report
+analysis_questions:
+  - normalization이 초기 gradient scale을 어떻게 바꿨는가?
+  - weight decay는 loss 감소와 weight norm 사이 균형을 어떻게 바꿨는가?
+  - LayerNorm과 dropout은 tiny tensor에서도 어떤 규칙성을 보여주는가?
