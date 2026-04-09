@@ -1,0 +1,28 @@
+objective: 이미지와 질문을 함께 읽는 tiny VQA 예제로 answer type breakdown, shortcut bias, grounded reasoning failure를 함께 해석한다.
+prereqs:
+  - image-text grounding과 captioning failure 해석 감각
+  - softmax 분류와 answer vocabulary 읽기
+  - overall accuracy와 breakdown metric의 차이
+key_terms:
+  - visual question answering
+  - answer type
+  - grounded reasoning
+  - shortcut bias
+  - multimodal fusion
+  - count
+runtime_observation_hooks:
+  - overall accuracy
+  - answer type accuracy
+  - count accuracy
+  - shortcut-biased error count
+  - framework question accuracy
+required_outputs:
+  - scratch metrics json
+  - scratch svg figure
+  - framework metrics json
+  - stable analysis markdown
+  - observed analysis report
+analysis_questions:
+  - overall accuracy만 보면 놓치는 answer type failure는 무엇인가?
+  - scratch 규칙기는 왜 count 질문에서 shortcut bias를 보였는가?
+  - framework tiny classifier가 count answer type을 회복했다면 어떤 multimodal fusion 신호가 추가된 것인가?

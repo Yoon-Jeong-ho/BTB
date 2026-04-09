@@ -38,6 +38,17 @@ CAPTION_FRAMEWORK_METRICS = CAPTION_FRAMEWORK_DIR / 'metrics.json'
 CAPTION_OBSERVED_REPORT = CAPTION_ANALYSIS_DIR / 'latest_report.md'
 CAPTION_ANALYSIS_MD = CAPTION_UNIT / 'analysis.md'
 
+VQA_UNIT = ROOT / '05_multimodal' / '03_visual_question_answering'
+VQA_ARTIFACTS = VQA_UNIT / 'artifacts'
+VQA_SCRATCH_DIR = VQA_ARTIFACTS / 'scratch-manual'
+VQA_FRAMEWORK_DIR = VQA_ARTIFACTS / 'framework-manual'
+VQA_ANALYSIS_DIR = VQA_ARTIFACTS / 'analysis-manual'
+VQA_SCRATCH_METRICS = VQA_SCRATCH_DIR / 'metrics.json'
+VQA_SCRATCH_FIGURE = VQA_SCRATCH_DIR / 'vqa_answer_type_accuracy.svg'
+VQA_FRAMEWORK_METRICS = VQA_FRAMEWORK_DIR / 'metrics.json'
+VQA_OBSERVED_REPORT = VQA_ANALYSIS_DIR / 'latest_report.md'
+VQA_ANALYSIS_MD = VQA_UNIT / 'analysis.md'
+
 REQUIRED = [
     'README.md',
     'THEORY.md',
@@ -53,6 +64,7 @@ REQUIRED = [
 
 GENERATED_DIRS = [SCRATCH_DIR, FRAMEWORK_DIR, ANALYSIS_DIR]
 CAPTION_GENERATED_DIRS = [CAPTION_SCRATCH_DIR, CAPTION_FRAMEWORK_DIR, CAPTION_ANALYSIS_DIR]
+VQA_GENERATED_DIRS = [VQA_SCRATCH_DIR, VQA_FRAMEWORK_DIR, VQA_ANALYSIS_DIR]
 
 
 class TestMultimodalTaskUnitContract(unittest.TestCase):
@@ -480,6 +492,315 @@ class TestImageCaptioningTaskUnitContract(unittest.TestCase):
         self.assertIn('[THEORY.md](../../THEORY.md)', observed)
         self.assertIn('scratch exact match rate', observed)
         self.assertIn('framework token accuracy', observed)
+        self.assertEqual(stable_before, analysis)
+        self.assertIn('latest_report.md', analysis)
+        self.assertIn('## 관련 이론', analysis)
+        self.assertIn('[THEORY.md](./THEORY.md)', analysis)
+
+
+class TestVisualQuestionAnsweringTaskUnitContract(unittest.TestCase):
+    maxDiff = None
+
+    def _run(self, relative_path: str) -> subprocess.CompletedProcess[str]:
+        return subprocess.run(
+            [sys.executable, relative_path],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+
+    def _cleanup_generated_outputs(self) -> None:
+        for directory in VQA_GENERATED_DIRS:
+            if directory.exists():
+                shutil.rmtree(directory)
+
+    def _load_module(self, name: str, relative_path: str):
+        path = ROOT / relative_path
+        spec = importlib.util.spec_from_file_location(name, path)
+        self.assertIsNotNone(spec)
+        self.assertIsNotNone(spec.loader)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module
+
+    def _write_json(self, path: Path, payload: dict[str, object]) -> None:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding='utf-8')
+
+    def test_unit_has_required_files(self) -> None:
+        for rel in REQUIRED:
+            self.assertTrue((VQA_UNIT / rel).exists(), rel)
+
+    def test_readme_and_theory_are_korean_first_and_include_examples(self) -> None:
+        readme = (VQA_UNIT / 'README.md').read_text(encoding='utf-8')
+        theory = (VQA_UNIT / 'THEORY.md').read_text(encoding='utf-8')
+
+        self.assertRegex(readme, r'[가-힣]')
+        self.assertRegex(theory, r'[가-힣]')
+        self.assertIn('실행 결과 예시', readme)
+        self.assertIn('vqa_answer_type_accuracy.svg', readme)
+        self.assertIn('실행 결과 예시', theory)
+        self.assertIn('answer type', theory)
+        self.assertIn('PyTorch', theory)
+
+    def test_lesson_metadata_mentions_required_outputs_and_questions(self) -> None:
+        lesson = (VQA_UNIT / 'lesson.yaml').read_text(encoding='utf-8')
+        self.assertIn('required_outputs:', lesson)
+        self.assertIn('scratch svg figure', lesson)
+        self.assertIn('analysis_questions:', lesson)
+        self.assertIn('answer type', lesson)
+        self.assertIn('count', lesson)
+
+    def test_artifacts_gitkeep_is_locked(self) -> None:
+        gitkeep = VQA_ARTIFACTS / '.gitkeep'
+        self.assertTrue(gitkeep.exists())
+        self.assertEqual('', gitkeep.read_text(encoding='utf-8'))
+
+    def test_analysis_requires_metrics_with_actionable_error(self) -> None:
+        self.addCleanup(self._cleanup_generated_outputs)
+        self._cleanup_generated_outputs()
+
+        result = self._run('05_multimodal/03_visual_question_answering/analysis.py')
+
+        self.assertNotEqual(0, result.returncode)
+        error_text = result.stdout + result.stderr
+        self.assertIn('필수 metrics 파일이 없습니다', error_text)
+        self.assertIn('먼저 scratch_lab.py와 framework_lab.py를 실행하세요', error_text)
+
+    def test_analysis_fails_when_required_metric_keys_are_missing(self) -> None:
+        self.addCleanup(self._cleanup_generated_outputs)
+        self._cleanup_generated_outputs()
+
+        scratch_payload = {
+            'overall_accuracy': 0.833333,
+            'answer_type_accuracy': {'yes/no': 1.0, 'color': 1.0, 'count': 0.5},
+            'rows': [],
+            # intentionally missing figure_path
+        }
+        framework_payload = {
+            'overall_accuracy': 1.0,
+            'answer_type_accuracy': {'yes/no': 1.0, 'color': 1.0, 'count': 1.0},
+            'question_accuracy': 1.0,
+            'rows': [],
+        }
+        self._write_json(VQA_SCRATCH_METRICS, scratch_payload)
+        self._write_json(VQA_FRAMEWORK_METRICS, framework_payload)
+
+        result = self._run('05_multimodal/03_visual_question_answering/analysis.py')
+
+        self.assertNotEqual(0, result.returncode)
+        error_text = result.stdout + result.stderr
+        self.assertIn('metrics schema validation failed', error_text)
+        self.assertIn('scratch metrics missing keys', error_text)
+        self.assertIn('figure_path', error_text)
+
+    def test_analysis_fails_with_clear_error_when_nested_rows_are_malformed(self) -> None:
+        self.addCleanup(self._cleanup_generated_outputs)
+        self._cleanup_generated_outputs()
+
+        scratch_payload = {
+            'overall_accuracy': 0.833333,
+            'answer_type_accuracy': {'yes/no': 1.0, 'color': 1.0, 'count': 0.5},
+            'figure_path': 'artifacts/scratch-manual/vqa_answer_type_accuracy.svg',
+            'rows': [
+                {
+                    'image_label': '빨간 큐브 두 개',
+                    'question': '큐브는 몇 개인가?',
+                    'answer_type': 'count',
+                    'gold_answer': '2',
+                    # intentionally missing predicted_answer
+                    'is_correct': False,
+                }
+            ],
+        }
+        framework_payload = {
+            'overall_accuracy': 1.0,
+            'answer_type_accuracy': {'yes/no': 1.0, 'color': 1.0, 'count': 1.0},
+            'question_accuracy': 1.0,
+            'rows': [
+                {
+                    'image_label': '파란 공 두 개',
+                    'question': '공 색은 무엇인가?',
+                    'answer_type': 'color',
+                    'gold_answer': 'blue',
+                    'predicted_answer': 'blue',
+                    'is_correct': True,
+                }
+            ],
+        }
+        self._write_json(VQA_SCRATCH_METRICS, scratch_payload)
+        self._write_json(VQA_FRAMEWORK_METRICS, framework_payload)
+
+        result = self._run('05_multimodal/03_visual_question_answering/analysis.py')
+
+        self.assertNotEqual(0, result.returncode)
+        error_text = result.stdout + result.stderr
+        self.assertIn('metrics schema validation failed', error_text)
+        self.assertIn('scratch rows[0] missing keys', error_text)
+        self.assertIn('predicted_answer', error_text)
+
+    def test_analysis_fails_when_answer_type_accuracy_bucket_is_missing(self) -> None:
+        self.addCleanup(self._cleanup_generated_outputs)
+        self._cleanup_generated_outputs()
+
+        scratch_payload = {
+            'overall_accuracy': 0.833333,
+            'answer_type_accuracy': {'yes/no': 1.0, 'color': 1.0},
+            'figure_path': 'artifacts/scratch-manual/vqa_answer_type_accuracy.svg',
+            'rows': [],
+        }
+        framework_payload = {
+            'overall_accuracy': 1.0,
+            'answer_type_accuracy': {'yes/no': 1.0, 'color': 1.0, 'count': 1.0},
+            'question_accuracy': 1.0,
+            'rows': [],
+        }
+        VQA_SCRATCH_FIGURE.parent.mkdir(parents=True, exist_ok=True)
+        VQA_SCRATCH_FIGURE.write_text('<svg></svg>', encoding='utf-8')
+        self._write_json(VQA_SCRATCH_METRICS, scratch_payload)
+        self._write_json(VQA_FRAMEWORK_METRICS, framework_payload)
+
+        result = self._run('05_multimodal/03_visual_question_answering/analysis.py')
+
+        self.assertNotEqual(0, result.returncode)
+        error_text = result.stdout + result.stderr
+        self.assertIn('metrics schema validation failed', error_text)
+        self.assertIn('scratch answer_type_accuracy missing buckets', error_text)
+        self.assertIn('count', error_text)
+
+    def test_analysis_fails_when_figure_path_does_not_exist(self) -> None:
+        self.addCleanup(self._cleanup_generated_outputs)
+        self._cleanup_generated_outputs()
+
+        scratch_payload = {
+            'overall_accuracy': 0.833333,
+            'answer_type_accuracy': {'yes/no': 1.0, 'color': 1.0, 'count': 0.5},
+            'figure_path': 'artifacts/scratch-manual/vqa_answer_type_accuracy.svg',
+            'rows': [],
+        }
+        framework_payload = {
+            'overall_accuracy': 1.0,
+            'answer_type_accuracy': {'yes/no': 1.0, 'color': 1.0, 'count': 1.0},
+            'question_accuracy': 1.0,
+            'rows': [],
+        }
+        self._write_json(VQA_SCRATCH_METRICS, scratch_payload)
+        self._write_json(VQA_FRAMEWORK_METRICS, framework_payload)
+
+        result = self._run('05_multimodal/03_visual_question_answering/analysis.py')
+
+        self.assertNotEqual(0, result.returncode)
+        error_text = result.stdout + result.stderr
+        self.assertIn('metrics schema validation failed', error_text)
+        self.assertIn('scratch figure_path does not exist', error_text)
+        self.assertIn('vqa_answer_type_accuracy.svg', error_text)
+
+    def test_scratch_and_framework_validate_batch_size(self) -> None:
+        scratch_lab = self._load_module(
+            'multimodal_vqa_scratch_lab',
+            '05_multimodal/03_visual_question_answering/scratch_lab.py',
+        )
+
+        with self.assertRaisesRegex(ValueError, 'image/question batch size must match'):
+            scratch_lab.generate_vqa_metrics(
+                np.ones((6, 6), dtype=np.float64),
+                [{'answer_type': 'yes/no', 'question': '빨간가?'}] * 5,
+                ['yes'] * 5,
+                ['샘플'] * 6,
+            )
+
+        if torch is None:
+            self.skipTest('PyTorch not installed; skipping framework batch-size validation')
+
+        framework_lab = self._load_module(
+            'multimodal_vqa_framework_lab',
+            '05_multimodal/03_visual_question_answering/framework_lab.py',
+        )
+        with self.assertRaisesRegex(ValueError, 'image/question batch size must match'):
+            framework_lab.compute_vqa_logits(
+                torch.ones((6, 6), dtype=torch.float32),
+                torch.ones((5, 4), dtype=torch.long),
+            )
+
+    def test_answer_type_accuracy_helpers_fail_clearly_when_bucket_is_absent(self) -> None:
+        scratch_lab = self._load_module(
+            'multimodal_vqa_scratch_lab_missing_bucket',
+            '05_multimodal/03_visual_question_answering/scratch_lab.py',
+        )
+        with self.assertRaisesRegex(ValueError, 'Missing answer_type bucket for VQA accuracy: count'):
+            scratch_lab._compute_answer_type_accuracy(
+                [
+                    {'answer_type': 'yes/no', 'is_correct': True},
+                    {'answer_type': 'color', 'is_correct': False},
+                ]
+            )
+
+        framework_lab = self._load_module(
+            'multimodal_vqa_framework_lab_missing_bucket',
+            '05_multimodal/03_visual_question_answering/framework_lab.py',
+        )
+        with self.assertRaisesRegex(ValueError, 'Missing answer_type bucket for VQA accuracy: count'):
+            framework_lab._answer_type_accuracy(
+                [
+                    {'answer_type': 'yes/no', 'is_correct': True},
+                    {'answer_type': 'color', 'is_correct': True},
+                ]
+            )
+
+    @unittest.skipIf(torch is None, 'PyTorch not installed; skipping framework run contract')
+    def test_labs_and_analysis_generate_expected_outputs(self) -> None:
+        self.addCleanup(self._cleanup_generated_outputs)
+        self._cleanup_generated_outputs()
+        stable_before = VQA_ANALYSIS_MD.read_text(encoding='utf-8')
+
+        scratch_result = self._run('05_multimodal/03_visual_question_answering/scratch_lab.py')
+        self.assertEqual(0, scratch_result.returncode, scratch_result.stderr)
+        framework_result = self._run('05_multimodal/03_visual_question_answering/framework_lab.py')
+        self.assertEqual(0, framework_result.returncode, framework_result.stderr)
+        analysis_result = self._run('05_multimodal/03_visual_question_answering/analysis.py')
+        self.assertEqual(0, analysis_result.returncode, analysis_result.stderr)
+
+        self.assertTrue(VQA_SCRATCH_METRICS.exists(), 'scratch metrics missing')
+        self.assertTrue(VQA_SCRATCH_FIGURE.exists(), 'scratch figure missing')
+        self.assertTrue(VQA_FRAMEWORK_METRICS.exists(), 'framework metrics missing')
+        self.assertTrue(VQA_OBSERVED_REPORT.exists(), 'analysis observed report missing')
+        self.assertTrue(VQA_ANALYSIS_MD.exists(), 'analysis.md missing')
+
+        scratch = json.loads(VQA_SCRATCH_METRICS.read_text(encoding='utf-8'))
+        framework = json.loads(VQA_FRAMEWORK_METRICS.read_text(encoding='utf-8'))
+        figure = VQA_SCRATCH_FIGURE.read_text(encoding='utf-8')
+        observed = VQA_OBSERVED_REPORT.read_text(encoding='utf-8')
+        analysis = VQA_ANALYSIS_MD.read_text(encoding='utf-8')
+
+        self.assertEqual(6, scratch['sample_count'])
+        self.assertEqual([6, 6], scratch['image_feature_shape'])
+        self.assertEqual(0.833333, scratch['overall_accuracy'])
+        self.assertEqual(1.0, scratch['answer_type_accuracy']['yes/no'])
+        self.assertEqual(1.0, scratch['answer_type_accuracy']['color'])
+        self.assertEqual(0.5, scratch['answer_type_accuracy']['count'])
+        self.assertEqual('artifacts/scratch-manual/vqa_answer_type_accuracy.svg', scratch['figure_path'])
+        self.assertEqual(6, len(scratch['rows']))
+        self.assertEqual('1', scratch['rows'][3]['predicted_answer'])
+        self.assertEqual('count_shortcut_prior', scratch['rows'][3]['error_reason'])
+        self.assertIn('<svg', figure)
+        self.assertIn('VQA answer-type accuracy', figure)
+
+        self.assertEqual('cpu', framework['device'])
+        self.assertEqual([6, 6], framework['image_input_shape'])
+        self.assertEqual([6, 5], framework['question_token_shape'])
+        self.assertEqual(1.0, framework['question_accuracy'])
+        self.assertEqual(1.0, framework['overall_accuracy'])
+        self.assertEqual(1.0, framework['answer_type_accuracy']['count'])
+        self.assertLess(framework['loss_history_tail'][-1], framework['loss_history_head'][0])
+        self.assertEqual(6, len(framework['rows']))
+        self.assertTrue(all(row['is_correct'] for row in framework['rows']))
+
+        self.assertIn('# 03 Visual Question Answering 실행 관측', observed)
+        self.assertIn('## 한국어 해석', observed)
+        self.assertIn('[THEORY.md](../../THEORY.md)', observed)
+        self.assertIn('scratch overall accuracy', observed)
+        self.assertIn('framework question accuracy', observed)
         self.assertEqual(stable_before, analysis)
         self.assertIn('latest_report.md', analysis)
         self.assertIn('## 관련 이론', analysis)
