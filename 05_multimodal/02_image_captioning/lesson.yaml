@@ -1,0 +1,28 @@
+objective: 이미지 조건부 텍스트 생성에서 decoder-style captioning, hallucination, 자동 지표와 사람 해석의 차이를 함께 읽는다.
+prereqs:
+  - contrastive alignment와 retrieval 기본 감각
+  - teacher forcing과 greedy decoding의 차이
+  - unigram precision 같은 간단한 caption 지표 읽기
+key_terms:
+  - image captioning
+  - decoder
+  - teacher forcing
+  - greedy decoding
+  - hallucination
+  - BLEU-1
+runtime_observation_hooks:
+  - exact match rate
+  - corpus unigram precision
+  - hallucinated content tokens total
+  - generated caption length
+  - framework token accuracy
+required_outputs:
+  - scratch metrics json
+  - scratch svg figure
+  - framework metrics json
+  - stable analysis markdown
+  - observed analysis report
+analysis_questions:
+  - 왜 scratch captioner는 자동 지표가 괜찮아 보여도 hallucination 사례를 만들었는가?
+  - teacher forcing으로 학습한 decoder를 greedy decoding으로 평가할 때 무엇을 같이 봐야 하는가?
+  - BLEU-1 또는 unigram precision이 높아도 사람이 읽는 품질이 낮을 수 있는 이유는 무엇인가?
