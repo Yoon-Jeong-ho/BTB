@@ -69,11 +69,15 @@ BTB를 foundation-first 한글 학습 사다리로 재구성
 - image-text contrastive alignment와 similarity heatmap
 - 한국어 analysis + theory backlink
 
-### 6) 첫 applied task unit 확장
+### 6) applied task unit 확장
 - `03_nlp/01_text_classification`
+- `03_nlp/02_named_entity_recognition`
+- `03_nlp/03_machine_reading_comprehension`
 - `05_multimodal/01_image_text_retrieval`
+- `05_multimodal/02_image_captioning`
+- `05_multimodal/03_visual_question_answering`
 
-이제 bridge 뒤 첫 실제 task unit도 foundations/bridge와 같은 contract로 읽고 실행할 수 있다.
+이제 bridge 뒤 실제 task unit들도 foundations/bridge와 같은 contract로 읽고 실행할 수 있다.
 - 실행 결과 예시
 - figure / metrics
 - stable analysis + observed report
@@ -162,7 +166,11 @@ python scripts/check_curriculum_links.py
 - `b49c301` attention/transformer bridge unit
 - `8ca5fef` multimodal contrastive-alignment bridge unit
 - `bc97072` first applied NLP text-classification unit
+- `9af9148` applied NER unit
+- `3e027b4` applied MRC unit
 - `860c73e` first applied multimodal retrieval unit
+- `a2bccec` applied image captioning unit
+- `f0c4cc1` applied VQA unit
 
 ## Reviewer checklist
 
@@ -171,13 +179,13 @@ python scripts/check_curriculum_links.py
 - [ ] foundations 01→05 흐름이 번호대로 자연스럽게 읽히는가?
 - [ ] activation / gradient / regularization / GPU runtime에 figure와 실행 예시가 충분한가?
 - [ ] NLP bridge 2개와 multimodal bridge 1개가 다음 트랙으로 넘어가기 전 개념 다리 역할을 하는가?
-- [ ] 첫 applied NLP / multimodal unit도 bridge/foundation 수준으로 읽기 쉬운가?
+- [ ] applied NLP 3개와 applied multimodal 3개가 모두 bridge/foundation 수준으로 읽기 쉬운가?
 - [ ] automation scripts가 과하게 무겁지 않고, 현재 범위에 맞게 단순한가?
 - [ ] generated docs/report가 evidence-first 원칙을 지키는가?
 
 ## Remaining follow-ups
 
 이 PR 이후 바로 이어갈 만한 작업:
-1. 03_nlp의 NER / MRC unit도 지금 수준으로 확장
-2. 05_multimodal의 captioning / VQA unit도 지금 수준으로 확장
-3. 더 많은 unit가 생기면 `lesson.yaml` 스키마를 lint/validate하는 도구 추가
+1. 더 많은 unit가 생기면 `lesson.yaml` 스키마를 lint/validate하는 도구 추가
+2. 실제 benchmark 데이터셋/모델로 넘어가는 중간 실험 레이어를 추가
+3. 리포트 승격(worktree/PR) 자동화를 더 정교하게 다듬기
