@@ -2,11 +2,11 @@
 
 ## Suggested PR title
 
-BTB를 foundation-first 한글 학습 사다리로 재구성
+BTB를 00→05 foundations/bridge/applied 한글 학습 사다리로 재구성
 
 ## Why
 
-이 PR은 BTB를 단순 실험 저장소에서 **읽으면서 따라갈 수 있는 한글 중심 학습 레포**로 바꾸기 위한 기반 작업이다.
+이 PR은 BTB를 단순 실험 저장소에서 **읽으면서 따라갈 수 있는 한글 중심 학습 레포**로 바꾸고, 00→05 foundations/bridge/applied 사다리를 실제 unit까지 채우는 작업이다.
 
 핵심 목적은 세 가지다.
 
@@ -35,7 +35,7 @@ BTB를 foundation-first 한글 학습 사다리로 재구성
 - `00_foundations/04_regularization_and_normalization`
 - `00_foundations/05_gpu_memory_runtime`
 
-두 unit 모두 아래를 포함한다.
+각 unit는 아래를 포함한다.
 - `README.md`
 - `THEORY.md`
 - `PREREQS.md`
@@ -58,18 +58,18 @@ BTB를 foundation-first 한글 학습 사다리로 재구성
 - generated analysis 문서가 `THEORY.md`로 **역링크(backlink)** 를 가짐
 - empty-alt 이미지 링크도 link checker가 검증함
 
-### 5) concrete bridge unit 확장
+### 5) bridge rollout 확장
 - `02_nlp_bridge/01_tokenization_and_embeddings`
 - `02_nlp_bridge/02_attention_and_transformer_block`
 - `04_multimodal_bridge/01_contrastive_alignment`
 
-이제 bridge 구간에서 다음을 직접 본다.
+이제 bridge 구간이 foundations 뒤, applied 앞에서 바로 이어지는 형태로 채워져 있다.
 - tokenization / subword-ish splitting / id mapping
 - embedding lookup / padding mask / attention / transformer block shape 변화
 - image-text contrastive alignment와 similarity heatmap
 - 한국어 analysis + theory backlink
 
-### 6) applied task unit 확장
+### 6) applied rollout 확장
 - `03_nlp/01_text_classification`
 - `03_nlp/02_named_entity_recognition`
 - `03_nlp/03_machine_reading_comprehension`
@@ -77,7 +77,7 @@ BTB를 foundation-first 한글 학습 사다리로 재구성
 - `05_multimodal/02_image_captioning`
 - `05_multimodal/03_visual_question_answering`
 
-이제 bridge 뒤 실제 task unit들도 foundations/bridge와 같은 contract로 읽고 실행할 수 있다.
+이제 03_nlp/05_multimodal applied unit들도 foundations/bridge와 같은 contract로 읽고 실행할 수 있다.
 - 실행 결과 예시
 - figure / metrics
 - stable analysis + observed report

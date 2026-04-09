@@ -1,6 +1,6 @@
-# 02 NLP
+# 03 NLP
 
-이 트랙의 목표는 `텍스트 전처리 -> bag-of-words baseline -> pretrained LM finetuning -> error analysis` 흐름을 익히는 것이다.
+이 트랙은 현재 `01_text_classification`, `02_named_entity_recognition`, `03_machine_reading_comprehension` 세 unit로 채워져 있으며, `텍스트 전처리 -> bag-of-words baseline -> pretrained LM finetuning -> error analysis` 흐름을 실제 태스크로 반복한다.
 
 한국어 실습을 바로 하고 싶다면 `NSMC` 와 `KLUE` 를 중심으로 시작하고, 영어 표준 벤치마크를 병행하고 싶다면 `IMDb`, `CoNLL-2003`, `SQuAD 2.0` 을 같이 본다.
 

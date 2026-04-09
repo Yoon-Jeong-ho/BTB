@@ -15,11 +15,11 @@
 1. [00_foundations](00_foundations/README.md): 텐서, gradient, attention, GPU/runtime 같은 공통 기초를 먼저 다진다.
 2. [01_ml](01_ml/README.md): 표형 데이터, metric, error analysis, experiment discipline을 익힌다.
 3. [02_nlp_bridge](02_nlp_bridge/README.md): tokenization, embedding, sequence modeling, transformer 감각을 연결한다.
-4. [03_nlp](03_nlp/README.md): 본격 NLP 실습 트랙으로 이어질 자리를 미리 고정한다.
+4. [03_nlp](03_nlp/README.md): `text classification -> NER -> MRC` 세 unit로 NLP 적용 실습을 진행한다.
 5. [04_multimodal_bridge](04_multimodal_bridge/README.md): alignment, retrieval vs generation, cross-attention을 멀티모달 전에 다진다.
-6. [05_multimodal](05_multimodal/README.md): 멀티모달 실습 트랙으로 이어질 자리를 미리 고정한다.
+6. [05_multimodal](05_multimodal/README.md): `retrieval -> captioning -> VQA` 세 unit로 멀티모달 적용 실습을 진행한다.
 
-현재 실제 콘텐츠는 단계적으로 재배치 중이지만, 루트 탐색 경험은 위 인덱스 사다리를 기준으로 유지한다.
+현재 00→05 전 구간은 foundations/bridge/applied 흐름으로 실제 unit까지 채워져 있다.
 
 전체 프로그램 개요는 [docs/00_program_map.md](docs/00_program_map.md), 실험 운영 규칙은 [docs/01_experiment_playbook.md](docs/01_experiment_playbook.md) 에 정리했다.
 
@@ -31,9 +31,9 @@ BTB/
 ├── 00_shared/                  # 공통 규약, 템플릿
 ├── 01_ml/                      # 기초 ML 트랙
 ├── 02_nlp_bridge/              # ML -> NLP 브리지
-├── 03_nlp/                     # NLP 트랙(재배치 대상 인덱스)
+├── 03_nlp/                     # NLP 적용 트랙
 ├── 04_multimodal_bridge/       # NLP -> 멀티모달 브리지
-├── 05_multimodal/              # 멀티모달 트랙(재배치 대상 인덱스)
+├── 05_multimodal/              # 멀티모달 적용 트랙
 ├── data/                       # raw/interim/processed/external 설명용 구조
 ├── runs/                       # 서버/로컬의 비정제 실행 산출물(기본 ignore)
 ├── reports/                    # Git에 남길 승격된 실험 결과

@@ -1,6 +1,6 @@
-# 03 Multimodal
+# 05 Multimodal
 
-이 트랙의 목표는 `이미지와 텍스트를 같은 표현 공간에서 다루는 법` 과 `생성/추론 태스크에서 멀티모달 모델을 평가하는 법` 을 익히는 것이다.
+이 트랙은 현재 `01_image_text_retrieval`, `02_image_captioning`, `03_visual_question_answering` 세 unit로 채워져 있으며, `이미지와 텍스트를 같은 표현 공간에서 다루는 법` 과 `생성/추론 태스크에서 멀티모달 모델을 평가하는 법` 을 실제 태스크로 반복한다.
 
 처음부터 거대한 모델을 직접 끝까지 학습하기보다, 작은 데이터 subset 또는 parameter-efficient finetuning으로 시작하는 것을 기본 원칙으로 한다.
 

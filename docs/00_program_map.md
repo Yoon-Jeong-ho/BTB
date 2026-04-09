@@ -22,6 +22,13 @@ BTB는 `00_foundations -> 01_ml -> 02_nlp_bridge -> 03_nlp -> 04_multimodal_brid
 5. `04_multimodal_bridge`: NLP에서 멀티모달로 넘어가기 위한 브리지
 6. `05_multimodal`: 본격 멀티모달 실습 트랙
 
+## 현재 rollout 상태
+
+- `00_foundations`: 공통 기초 5 unit로 foundations 구간이 채워져 있다.
+- `01_ml`: 표형 데이터 기준의 applied ML baseline 트랙이 준비되어 있다.
+- `02_nlp_bridge -> 03_nlp`: bridge 2 unit 뒤에 applied NLP 3 unit가 바로 이어진다.
+- `04_multimodal_bridge -> 05_multimodal`: bridge 1 unit 뒤에 applied multimodal 3 unit가 바로 이어진다.
+
 ## 단계별 산출물
 
 | Track | 반드시 남길 것 | 핵심 질문 |
