@@ -1,0 +1,44 @@
+objective: benchmark를 leaderboard가 아니라 측정 계약으로 읽고, dataset contract·split hygiene·annotation QC·contamination/drift 관리를 함께 설계해 이후 연구 트랙이 정직한 비교 기준 위에서 움직이게 만드는 감각을 만든다.
+status: outlined
+prereqs:
+  - baseline, metric, acceptance gate를 먼저 고정하는 실험 설계 감각
+  - train/dev/test split과 leakage 문제에 대한 기본 이해
+  - deduplication과 contamination audit가 서로 다른 목적을 가진다는 이해
+  - annotation rubric, disagreement, adjudication이 label 품질에 미치는 영향 이해
+  - slice evaluation과 long-tail failure를 함께 읽는 평가 관점
+  - dataset versioning과 benchmark refresh의 trade-off에 대한 기본 인식
+key_terms:
+  - benchmark
+  - task contract
+  - dataset contract
+  - unit of record
+  - schema
+  - split hygiene
+  - holdout
+  - annotation rubric
+  - adjudication
+  - quality control
+  - leakage
+  - contamination
+  - benchmark gaming
+  - benchmark drift
+  - slice evaluation
+  - versioning
+  - reporting template
+required_outputs:
+  - outlined README
+  - theory note
+  - prerequisite checklist
+  - lesson metadata
+  - artifacts placeholder
+  - future benchmark card / task contract sample
+  - future dataset schema / split manifest sample
+  - future annotation rubric / QC report sample
+  - future contamination / drift audit sample
+analysis_questions:
+  - benchmark를 leaderboard가 아니라 측정 계약으로 본다면, score 외에 어떤 claim boundary까지 함께 정의해야 하는가?
+  - dataset contract에는 schema 외에 source boundary, unit of record, licensing, version freeze를 왜 같이 적어야 하는가?
+  - split hygiene는 random split을 넘어 어떤 축의 disjointness를 요구하고, 그 이유는 무엇인가?
+  - annotation disagreement는 언제 noise이고 언제 task definition weakness를 드러내는가?
+  - leakage, contamination, benchmark gaming, drift는 각각 무엇이 다르고 어떤 audit / reporting이 필요한가?
+  - 이 단위에서 만든 benchmark/dataset contract가 다음 open-ended research track의 stopping rule과 evidence 기준에 어떻게 연결되는가?
