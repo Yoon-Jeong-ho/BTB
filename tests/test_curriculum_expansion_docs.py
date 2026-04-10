@@ -27,6 +27,8 @@ class TestCurriculumExpansionDocs(unittest.TestCase):
 
         for old, new in [
             ('02_nlp_bridge', '03_nlp_bridge'),
+            ('03_nlp', '04_nlp'),
+            ('04_multimodal_bridge', '08_multimodal_bridge'),
             ('05_multimodal', '09_multimodal'),
         ]:
             self.assertIn(old, text)
