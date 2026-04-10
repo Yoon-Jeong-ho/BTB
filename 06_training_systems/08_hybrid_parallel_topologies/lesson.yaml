@@ -1,0 +1,45 @@
+objective: data parallel, tensor parallel, pipeline parallel, FSDP/state sharding을 한 장의 topology 설계 문제로 묶어 보고, 모델 규모·메모리 병목·통신 경로·하드웨어 링크 구조를 기준으로 hybrid parallel 구성을 선택하는 감각을 만든다.
+status: outlined
+prereqs:
+  - data parallel / tensor parallel / pipeline parallel / FSDP의 큰 그림
+  - global batch, microbatch, gradient accumulation 구분
+  - large Transformer의 parameter state / activation / intra-layer compute 병목 감각
+  - collective communication(all-reduce, all-gather, reduce-scatter, send/recv) 기본 직관
+  - node 내부 링크와 node 간 링크 차이에 대한 운영 감각
+  - checkpoint save/load가 topology-aware contract가 될 수 있다는 이해
+key_terms:
+  - hybrid parallelism
+  - topology
+  - device mesh
+  - data parallel
+  - tensor parallelism
+  - pipeline parallelism
+  - FSDP
+  - ZeRO
+  - state sharding
+  - global batch
+  - microbatch
+  - gradient accumulation
+  - all-reduce
+  - all-gather
+  - reduce-scatter
+  - send/recv
+  - interconnect
+  - memory budget
+  - throughput
+  - load balance
+required_outputs:
+  - outlined README
+  - theory note
+  - prerequisite checklist
+  - lesson metadata
+  - artifacts placeholder
+  - future topology candidate comparison contract
+  - future memory / communication budget sample contract
+analysis_questions:
+  - hybrid parallel topology는 왜 여러 parallelism 옵션의 단순 조합이 아니라 모델-하드웨어 배치 설계 문제로 봐야 하는가?
+  - data parallel, tensor parallel, pipeline parallel, FSDP는 각각 무엇을 나누며 어떤 병목을 완화하는가?
+  - 통신이 많은 축은 왜 더 빠른 링크 위에 두는 편이 유리하고, 그렇지 않으면 어떤 병목이 생기는가?
+  - 모델 크기, sequence length, global batch 목표가 달라지면 topology 후보 선택 기준은 어떻게 달라지는가?
+  - memory fit, throughput, checkpoint portability, implementation complexity는 왜 동시에 최적화되기 어려운가?
+  - profiling과 failure recovery로 넘어갈 때 topology 설계가 어떤 로그 / metric / failure mode 차이를 남기는가?
