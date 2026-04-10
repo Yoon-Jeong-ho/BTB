@@ -1,0 +1,41 @@
+objective: reward model, RLHF high-level loop, reasoning-oriented RL, verifier/judge interaction을 policy-shaping 관점에서 연결해 online post-training이 무엇을 추가로 가능하게 하고 무엇을 왜곡할 수 있는지 이해한다.
+status: outlined
+prereqs:
+  - supervised fine-tuning(SFT) 기본 감각
+  - preference optimization(DPO / ORPO / KTO) high-level 이해
+  - reward / policy / rollout / update 같은 RL 용어의 거친 직관
+  - offline vs online optimization 구분
+  - held-out evaluation / regression check / distribution shift 이해
+  - judge score / verifier signal / factuality / safety가 서로 다른 평가 축이라는 이해
+key_terms:
+  - RLHF
+  - reinforcement learning from human feedback
+  - reward model
+  - preference proxy
+  - online rollout
+  - policy optimization
+  - PPO family
+  - advantage
+  - reasoning RL
+  - outcome reward
+  - process reward
+  - verifier
+  - judge model
+  - reward hacking
+  - verbosity inflation
+  - over-refusal
+  - KL anchor
+required_outputs:
+  - outlined README
+  - theory markdown
+  - prereqs markdown
+  - lesson metadata
+  - artifacts placeholder
+  - future RLHF/reasoning-RL sample contract
+analysis_questions:
+  - reward model은 무엇을 근사하며, 왜 truth model과 동일시하면 안 되는가?
+  - offline preference optimization만으로 부족한 상황에서는 왜 online rollout과 policy update가 다시 필요해지는가?
+  - reasoning-oriented RL은 outcome reward와 process-aware reward를 어떤 방식으로 다르게 쓰는가?
+  - verifier와 judge는 각각 어떤 신호를 주며, 어떤 편향과 blind spot을 갖는가?
+  - RLHF에서 reward hacking, verbosity inflation, over-refusal, style bias는 어떻게 관찰되는가?
+  - 다음 retrieval/eval 단위에서 grounding과 judge-based evaluation을 더 잘 보기 위해 여기서 어떤 프레임을 남겨야 하는가?
