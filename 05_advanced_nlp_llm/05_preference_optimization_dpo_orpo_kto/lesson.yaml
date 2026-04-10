@@ -1,0 +1,38 @@
+objective: preference data와 DPO / ORPO / KTO를 policy-loss 설계 관점에서 비교해 full RL loop 없이도 post-training alignment를 어떻게 밀 수 있는지 이해한다.
+status: outlined
+prereqs:
+  - supervised fine-tuning(SFT) 기본 감각
+  - token log-probability / cross entropy / likelihood ratio 기초
+  - chosen/rejected pair와 desirable/undesirable label 차이 이해
+  - held-out evaluation과 leakage 위험 이해
+  - reference policy / KL regularization 직관
+  - alignment 평가 축(helpfulness, factuality, safety, verbosity) 구분
+key_terms:
+  - preference optimization
+  - preference data
+  - chosen rejected pair
+  - desirability label
+  - DPO
+  - direct preference optimization
+  - ORPO
+  - odds ratio preference optimization
+  - KTO
+  - Kahneman-Tversky optimization
+  - reference policy
+  - policy drift
+  - offline alignment
+  - judge win rate
+  - length bias
+required_outputs:
+  - outlined README
+  - theory markdown
+  - prereqs markdown
+  - lesson metadata
+  - artifacts placeholder
+  - future preference-objective comparison sample contract
+analysis_questions:
+  - preference data는 정답 데이터와 어떻게 다르고, chosen / rejected signal은 무엇을 보장하지 않는가?
+  - DPO / ORPO / KTO는 각각 어떤 데이터 형식과 anchor/regularization 직관을 요구하는가?
+  - reward model + PPO 없이도 policy를 업데이트한다는 말은 실제로 어떤 loss 설계를 뜻하는가?
+  - alignment 성능 향상과 함께 verbosity, refusal, factuality regression은 어떻게 같이 확인해야 하는가?
+  - offline preference objective의 한계는 무엇이며, 다음 RLHF 단위에서 online rollouts가 다시 필요해지는 이유는 무엇인가?
