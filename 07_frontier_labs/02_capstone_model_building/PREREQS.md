@@ -13,7 +13,7 @@
 - [05_advanced_nlp_llm/07_retrieval_augmented_generation_and_eval](../../05_advanced_nlp_llm/07_retrieval_augmented_generation_and_eval/README.md) — evaluation protocol, grounded evidence, failure slice 설계를 다시 묶는다.
 - [05_advanced_nlp_llm/08_alignment_safety_and_model_behavior](../../05_advanced_nlp_llm/08_alignment_safety_and_model_behavior/README.md) — behavior boundary와 safety-oriented qualitative review 감각을 capstone scope에 반영한다.
 - [06_training_systems/09_profiling_monitoring_and_failure_recovery](../../06_training_systems/09_profiling_monitoring_and_failure_recovery/README.md) — runtime budget, observability, 실패 복구를 프로젝트 milestone에 넣는 법을 복습한다.
-- [06_training_systems/09_profiling_monitoring_and_failure_recovery](../../06_training_systems/09_profiling_monitoring_and_failure_recovery/README.md) — 데이터·모델·평가를 실제 end-to-end 태스크 계약으로 묶는 감각을 다시 확인한다.
+- [07_frontier_labs/03_agentic_training_and_eval_loops](../03_agentic_training_and_eval_loops/README.md) — milestone과 failure slice를 agentic 실행 계약으로 넘기는 감각을 미리 염두에 둔다.
 
 ## 빠른 자기 점검
 - 내가 하고 싶은 capstone 아이디어를 한 문장의 problem statement와 한 문장의 non-goal로 동시에 적을 수 있는가?
