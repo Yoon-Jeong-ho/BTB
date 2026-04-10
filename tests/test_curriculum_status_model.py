@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 import unittest
 from pathlib import Path
 from typing import Any
@@ -10,6 +11,7 @@ from tests.test_curriculum_topology import CANONICAL_CURRICULUM_LADDER
 ROOT = Path(__file__).resolve().parents[1]
 EXPECTED_TRACKS = CANONICAL_CURRICULUM_LADDER
 VALID_STATUSES = {'planned', 'outlined', 'runnable'}
+UNIT_DIR_NAME_RE = re.compile(r'^\d+_')
 
 
 class TestCurriculumStatusModel(unittest.TestCase):
@@ -24,7 +26,9 @@ class TestCurriculumStatusModel(unittest.TestCase):
         return {
             child.name
             for child in track_path.iterdir()
-            if child.is_dir() and (child / 'README.md').is_file()
+            if child.is_dir()
+            and UNIT_DIR_NAME_RE.match(child.name)
+            and (child / 'README.md').is_file()
         }
 
     def test_status_file_lists_expanded_tracks(self) -> None:
