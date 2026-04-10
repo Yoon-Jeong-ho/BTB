@@ -4,8 +4,8 @@
 
 ## 선행 / 다음 단계
 
-- 선행 권장: [03_nlp](../03_nlp/README.md) 의 세 unit를 먼저 읽고 text-only 표현 학습 감각을 잡는다.
-- 다음 단계: [05_multimodal](../05_multimodal/README.md)
+- 선행 권장: [04_nlp](../04_nlp/README.md) 의 세 unit를 먼저 읽고 text-only 표현 학습 감각을 잡는다.
+- 다음 단계: [09_multimodal](../09_multimodal/README.md)
 
 ## 읽는 순서
 
