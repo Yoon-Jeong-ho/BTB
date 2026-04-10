@@ -1,95 +1,90 @@
 # 03 Domain Adaptive Pretraining
 
-> Status: outlined
+> Status: runnable
 >
-> 이 단위는 현재 문서/메타데이터만 정리된 outlined 단계다. 아래 실습 흐름과 출력 예시는 **후속 applied 단계에서 구현될 예상 구조** 이며, 아직 `scratch_lab.py`, `framework_lab.py`, `analysis.md`, `reflection.md`는 없다.
+> 이 단위는 **CPU-safe, deterministic, toy continued-pretraining comparison**만 다루는 runnable 단계다. 큰 LLM을 학습하지 않고도 domain shift가 있는 corpus를 더 먹일 때 in-domain gain과 catastrophic forgetting risk가 어떻게 함께 움직이는지 관찰한다.
 
 ## 왜 이 단위를 배우는가
-base LM이 일반 텍스트 분포를 넓게 익혔다고 해서, 곧바로 의료·법률·금융·사내 문서 같은 특정 도메인을 잘 읽거나 쓰는 것은 아니다. 실제 현장에서는 **같은 pretraining objective를 유지한 채 특정 도메인 데이터를 조금 더 먹이는 continued pretraining** 으로 분포 간극(domain shift)을 줄이려는 시도를 자주 한다. 이 단위는 DAPT(domain-adaptive pretraining)를 "그냥 데이터를 더 넣는 단계"가 아니라 **어떤 분포를 더 강하게 밀어 주고, 그 대가로 무엇을 잃을 수 있는지 판단하는 적응 설계 문제** 로 읽게 만든다.
+base LM이 일반 텍스트 분포를 넓게 익혔다고 해서 의료·법률·금융·사내 문서 같은 특정 도메인을 곧바로 잘 읽는 것은 아니다. 실제 현장에서는 같은 pretraining objective를 유지한 채 특정 domain corpus로 몇 step 더 학습하는 **continued pretraining**, 특히 **domain adaptive pretraining(DAPT)** 을 검토한다.
+
+이 단위의 목표는 DAPT를 “데이터를 더 넣는 단계”로 축소하지 않는 것이다. DAPT는 **domain shift를 줄이는 specialization gain**과 **기존 일반 분포를 덜 기억하게 되는 catastrophic forgetting cost**를 동시에 관리하는 적응 설계 문제다.
 
 ## 이번 단위에서 남길 것
-- outline 상태의 학습 안내 문서 `README.md`
-- continued pretraining intuition, forgetting trade-off, stopping concern을 정리한 `THEORY.md`
-- 선행 개념과 자기 점검 질문을 담은 `PREREQS.md`
-- 단위 목표와 핵심 질문을 고정한 `lesson.yaml`
-- 이후 산출물이 들어갈 자리 `artifacts/.gitkeep`
-- 후속 applied 단계에서 채울 예정인 출력 계약
-  - base model 대비 in-domain / general-domain validation 변화 요약
-  - pure-domain vs replay mixture 비교 표
-  - catastrophic forgetting 징후 메모
-  - data selection / stopping decision log 초안
+- scratch DAPT 비교 관측치 `artifacts/scratch-manual/metrics.json`
+- scratch trade-off SVG `artifacts/scratch-manual/dapt_tradeoff.svg`
+- 작은 deterministic PyTorch bigram LM continued-pretraining 관측치 `artifacts/framework-manual/metrics.json`
+- 실행별 관측 리포트 `artifacts/analysis-manual/latest_report.md`
+- 반복 실행에도 안정적으로 유지할 `analysis.md`
+- 학습자 회고 질문 `reflection.md`
 
 ## 실습 흐름
-현재는 outline 문서만 정리된 상태이며, 아래 흐름은 이후 runnable 승격 때 구현할 실습 순서다.
-1. 먼저 base LM이 이미 어떤 일반 분포를 배운 상태인지 가정하고, 새로 들어오는 domain corpus가 vocabulary, 문체, 문서 구조, 사실 밀도에서 무엇이 다른지 정리한다.
-2. domain corpus를 그대로 몰아 넣는 경우와 general replay를 섞는 경우를 나란히 두고, adaptation 목표를 "전문화 gain"과 "기존 능력 유지" 두 축으로 본다.
-3. continued pretraining 동안 in-domain validation loss와 general-domain validation loss를 함께 추적하며, specialization이 실제로 생기는지와 forgetting이 얼마나 빠르게 커지는지 본다.
-4. batch 구성 관점에서는 pure-domain sampling, weighted mixture, replay buffer 같은 선택이 gradient를 어떻게 바꾸는지 observation point 위주로 적는다.
-5. stopping 관점에서는 "더 오래 돌리면 무조건 좋다"가 아니라 in-domain 개선이 둔화되는 시점, general regression이 guardrail을 넘는 시점, downstream probe가 포화되는 시점을 함께 본다.
-6. 마지막에는 DAPT가 instruction tuning 이전에 왜 필요한지 정리하며, 다음 단위 `05_advanced_nlp_llm/04_instruction_tuning_and_sft`에서 "도메인 지식을 가진 base LM을 어떻게 assistant behavior로 바꿀 것인가" 로 연결한다.
+1. `scratch_lab.py`에서 base model의 in-domain/general validation loss를 고정하고, pure domain schedule과 replay mixture schedule의 toy loss trajectory를 비교한다.
+2. 같은 causal LM objective를 유지한다는 전제 아래 **domain share / general replay share**가 adaptation speed와 retention cost를 어떻게 바꾸는지 본다.
+3. `dapt_tradeoff.svg`에서 in-domain loss는 내려가지만 general retention loss가 올라갈 수 있음을 시각적으로 확인한다.
+4. `framework_lab.py`에서 작은 PyTorch bigram LM을 일반 corpus로 먼저 pretrain한 뒤, pure domain continued pretraining과 replay mixture continued pretraining을 같은 시작점에서 비교한다.
+5. metrics 안의 data selection profile을 읽으며, curated small corpus가 noisy large corpus보다 DAPT 신호가 좋을 수 있는 이유를 정리한다.
+6. `analysis.py`로 stable `analysis.md`와 실행별 observed report를 분리해, 해석 프레임과 최신 관측값을 따로 보관한다.
 
-## 이 단위에서 특히 볼 질문
-- domain adaptive pretraining은 from-scratch pretraining이나 일반 fine-tuning과 무엇이 다른가?
-- domain shift가 큰 corpus일수록 항상 DAPT 효과가 큰가, 아니면 noise·format mismatch 때문에 오히려 불안정해질 수 있는가?
-- pure-domain continued pretraining은 왜 빠르게 specialization을 주면서도 catastrophic forgetting 위험을 키우는가?
-- general replay나 mixed curriculum을 넣으면 forgetting은 줄어들 수 있는데, 그 대신 adaptation 속도는 얼마나 느려질 수 있는가?
-- domain corpus selection에서 문서 수보다 더 먼저 봐야 하는 것은 품질, 중복, 라이선스, 평가셋 오염, 최신성 중 무엇인가?
-- stop 시점은 validation loss 하나로 정하면 되는가, 아니면 retention metric과 downstream probe를 함께 봐야 하는가?
+## 이번 단위에서 특히 볼 질문
+- DAPT는 from-scratch pretraining이나 일반 fine-tuning과 무엇이 다르고, 왜 objective를 유지한 채 데이터 분포만 바꾼다고 말하는가?
+- domain shift는 vocabulary 차이 외에 문체, 문서 형식, 정보 밀도, 최신성 차이로 어떻게 나타나는가?
+- pure domain continued pretraining은 왜 빠른 specialization을 주면서 catastrophic forgetting risk도 키울 수 있는가?
+- replay mixture는 general retention을 지키는 대신 adaptation speed를 얼마나 늦출 수 있는가?
+- data selection에서는 왜 문서 수보다 품질, 중복, contamination, 라이선스, 최신성을 먼저 점검해야 하는가?
+- stopping은 왜 in-domain validation loss 하나가 아니라 general-domain retention guardrail과 함께 정해야 하는가?
+
+## 실행 방법
+```bash
+python 05_advanced_nlp_llm/03_domain_adaptive_pretraining/scratch_lab.py
+python 05_advanced_nlp_llm/03_domain_adaptive_pretraining/framework_lab.py
+python 05_advanced_nlp_llm/03_domain_adaptive_pretraining/analysis.py
+```
 
 ## 실행 결과 예시
-아래는 **아직 완료된 실행 결과가 아니라**, 후속 applied 단계에서 기대하는 출력 형태 예시다.
+아래는 이 디렉터리에서 **실제로 실행되는 command/output shape**다.
 
 ```text
-# expected output / sample shape only
 $ python 05_advanced_nlp_llm/03_domain_adaptive_pretraining/scratch_lab.py
 {
-  "status": "sample",
   "setup": {
-    "base_objective": "causal_lm",
-    "domain_name": "biomedical_ko_en",
-    "sampling_plan": {"domain": 0.75, "general_replay": 0.25},
-    "train_steps": 1800
+    "objective_kept_constant": "causal_lm",
+    "general_regression_guardrail": 0.18
   },
-  "validation": {
-    "base": {
-      "in_domain_loss": 2.91,
-      "general_loss": 2.34
-    },
-    "adapted": {
-      "in_domain_loss": 2.28,
-      "general_loss": 2.47
-    },
-    "delta": {
-      "in_domain": -0.63,
-      "general": 0.13
-    }
+  "comparison": {
+    "fastest_adapter": "pure_domain",
+    "safer_retention": "replay_mixture",
+    "balanced_recommendation": "replay_mixture"
   },
-  "stopping_signal": {
-    "recent_in_domain_gain": 0.02,
-    "general_regression_guardrail": 0.15,
-    "decision": "stop_or_increase_replay"
-  }
+  "figure_path": "artifacts/scratch-manual/dapt_tradeoff.svg"
 }
 
 $ python 05_advanced_nlp_llm/03_domain_adaptive_pretraining/framework_lab.py
 {
-  "status": "sample",
-  "batch_shape": {
-    "input_ids": [4, 2048],
-    "attention_mask": [4, 2048],
-    "labels": [4, 2048]
+  "device": "cpu",
+  "objective_kept_constant": "causal_lm_bigram_next_token",
+  "base_losses": {
+    "general": 1.758509,
+    "domain": 3.98566
   },
-  "domain_batch_share": 0.75,
-  "general_replay_share": 0.25,
-  "observation_points": [
-    "in-domain validation improves before downstream probes stabilize",
-    "general retention must be tracked in parallel",
-    "stopping is a trade-off, not a single best-loss step"
-  ]
+  "comparison": {
+    "pure_domain_adapts_faster": true,
+    "replay_preserves_general_better": true
+  }
 }
+
+$ python 05_advanced_nlp_llm/03_domain_adaptive_pretraining/analysis.py
+# 03 Domain Adaptive Pretraining 실행 관측
+- pure domain과 replay mixture의 in-domain gain / general regression / stopping signal을 한국어 리포트로 저장한다.
 ```
 
-핵심은 숫자 자체보다도 **in-domain gain과 general regression을 동시에 읽는 것**, **mixture가 실제 batch 구성에 어떻게 반영되는지 보는 것**, **언제 멈춰야 하는지를 손실 곡선 하나가 아니라 여러 guardrail로 해석하는 것** 이다.
+실행 뒤에는 `dapt_tradeoff.svg`에서 **in-domain adaptation과 General retention 선**을 함께 보고, `metrics.json`에서 pure domain schedule이 더 빠르게 적응하지만 general regression guardrail을 더 빨리 건드리는지 확인하라.
+
+## 해석 포인트 요약
+- **domain shift**: 일반 업무 문서와 임상 기록처럼 token distribution, 문서 형식, 용어 co-occurrence가 달라지는 상황이다.
+- **continued pretraining**: architecture나 objective를 바꾸는 것이 아니라 기존 base LM을 새 corpus 분포 쪽으로 더 이동시키는 과정이다.
+- **catastrophic forgetting**: 새 도메인에는 좋아지지만 general-domain validation loss가 나빠지는 trade-off로 먼저 관측한다.
+- **replay mixture**: domain data에 general replay를 섞어 forgetting을 늦추는 대신 adaptation 속도를 낮출 수 있다.
+- **data selection / stopping**: DAPT 성공 여부는 어떤 corpus를 넣고 언제 멈추는지에 크게 좌우된다.
 
 ## 다음 단위와의 연결
-이 단위에서 DAPT를 통해 base LM의 분포 감각을 특정 도메인 쪽으로 먼저 당겨 두면, 다음 단위 `05_advanced_nlp_llm/04_instruction_tuning_and_sft`에서는 그 지식을 실제 instruction-response 행동으로 바꾸는 문제를 더 분리해서 볼 수 있다. 즉 DAPT는 "무엇을 더 잘 알게 만들 것인가" 에 가깝고, SFT는 "그 지식을 어떤 형식으로 드러내게 만들 것인가" 에 더 가깝다.
+이 단위에서 DAPT로 base LM의 분포 감각을 특정 도메인 쪽으로 먼저 당겨 두면, 다음 단위 `05_advanced_nlp_llm/04_instruction_tuning_and_sft`에서는 그 지식을 실제 instruction-response 행동으로 바꾸는 문제를 더 분리해서 볼 수 있다. DAPT는 “무엇을 더 잘 알게 만들 것인가”에 가깝고, SFT는 “그 지식을 어떤 형식으로 드러내게 만들 것인가”에 가깝다.

@@ -1,18 +1,20 @@
 # 03 Domain Adaptive Pretraining 선행 개념
 
 ## 꼭 알고 오면 좋은 것
-- causal LM / masked LM / span corruption 같은 pretraining objective가 무엇을 유지한 채 적응하는지에 대한 기본 감각
+- causal LM / masked LM / span corruption 같은 pretraining objective가 무엇을 입력으로 보고 무엇을 정답으로 삼는지에 대한 기본 감각
 - corpus quality, tokenizer, mixture 설계가 실제 token stream과 학습 신호를 바꾼다는 점
 - validation loss, perplexity, held-out set이 모델 변화를 추적하는 기본 도구라는 점
-- domain shift가 vocabulary 차이만이 아니라 문체, 형식, 길이, 정보 밀도 차이까지 포함한다는 점
-- fine-tuning과 continued pretraining이 같은 적응이 아니라는 점
+- domain shift가 vocabulary 차이만이 아니라 문체, 형식, 길이, 정보 밀도, 최신성 차이까지 포함한다는 점
+- fine-tuning, instruction tuning, continued pretraining이 같은 적응 단계가 아니라는 점
 - catastrophic forgetting이 새 데이터 적응의 반대편 비용으로 나타날 수 있다는 점
+- replay mixture가 retention을 돕지만 adaptation 속도를 늦출 수 있다는 trade-off 감각
 
 ## 빠른 자기 점검
-- "같은 objective를 유지한 채 데이터를 바꿔서 계속 pretrain한다"는 말이 왜 DAPT의 핵심인지 설명할 수 있는가?
-- pure-domain continued pretraining이 빠른 specialization과 forgetting 위험을 동시에 만들 수 있는 이유를 말할 수 있는가?
-- in-domain validation 하나만 보고 stop 시점을 정하면 어떤 문제가 생길지 예를 들 수 있는가?
-- domain corpus selection에서 양보다 품질/중복/오염/최신성이 먼저 중요해질 수 있는 상황을 떠올릴 수 있는가?
+- “같은 objective를 유지한 채 데이터를 바꿔서 계속 pretrain한다”는 말이 왜 DAPT의 핵심인지 설명할 수 있는가?
+- pure-domain continued pretraining이 빠른 specialization과 forgetting risk를 동시에 만들 수 있는 이유를 말할 수 있는가?
+- replay mixture를 넣으면 general retention과 adaptation speed가 어떤 방향으로 움직일지 예상할 수 있는가?
+- in-domain validation 하나만 보고 stopping 시점을 정하면 어떤 문제가 생길지 예를 들 수 있는가?
+- data selection에서 양보다 품질/중복/contamination/최신성이 먼저 중요해질 수 있는 상황을 떠올릴 수 있는가?
 - DAPT와 instruction tuning이 각각 무엇을 바꾸는 단계인지 한두 문장으로 구분할 수 있는가?
 
 ## 먼저 다시 보면 좋은 단위
