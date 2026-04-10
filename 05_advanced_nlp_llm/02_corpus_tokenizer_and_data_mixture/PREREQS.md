@@ -14,3 +14,6 @@
 - deduplication과 contamination check가 왜 같은 작업이 아닌지 한두 문장으로 구분할 수 있는가?
 - multilingual corpus에서 shared tokenizer가 특정 언어에 불리할 수 있는 이유를 말할 수 있는가?
 - 작은 고품질 도메인 corpus를 oversample하는 것이 왜 도움이 되기도 하고 과적합/편향을 만들기도 하는지 설명할 수 있는가?
+
+## 먼저 다시 보면 좋은 단위
+- [01_language_modeling_and_pretraining_objectives](../01_language_modeling_and_pretraining_objectives/README.md) — causal / masked / span corruption objective 차이를 먼저 정리한다.

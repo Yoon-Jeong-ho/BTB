@@ -2,6 +2,7 @@ objective: corpus quality, tokenizer granularity, dedup/contamination, domain-la
 status: outlined
 prereqs:
   - tokenization과 subword/embedding 기본 감각
+  - causal / masked / span corruption objective 비교
   - next-token language modeling objective 이해
   - train/validation/test split과 leakage 개념
   - context window와 sequence length budget 읽기

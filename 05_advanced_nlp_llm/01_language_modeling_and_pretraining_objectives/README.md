@@ -2,7 +2,7 @@
 
 > Status: outlined
 >
-> 이 단위는 현재 문서/메타데이터만 정리된 outlined 단계다. 아래 실습 흐름과 출력 예시는 **후속 runnable/applied 단계에서 구현될 예상 구조** 이며, 아직 `scratch_lab.py`, `framework_lab.py`, `analysis.md`, `reflection.md`는 없다.
+> 이 단위는 현재 문서/메타데이터만 정리된 outlined 단계다. 아래 실습 흐름과 출력 예시는 **후속 runnable/applied 단계에서 구현될 예상 구조** 이며, 아직 `scratch_lab.py`, `framework_lab.py`, `analysis.py`, `analysis.md`, `reflection.md`는 없다.
 
 ## 왜 이 단위를 배우는가
 언어모델이 "언어를 안다"고 말할 때, 실제로는 **무엇을 입력으로 보고 무엇을 정답으로 맞히도록 학습했는가** 가 먼저 정해져 있다. 같은 transformer 계열 구조라도 causal LM인지, masked LM인지, span corruption인지에 따라 모델이 보는 문맥, loss가 걸리는 위치, 이후 잘하는 행동이 달라진다. 이 단위는 pretraining objective를 하나의 표면적인 용어가 아니라 **예측 타깃 설계 문제** 로 이해하게 만들어, 다음 단위의 corpus/tokenizer/data mixture 설계와 이후 domain-adaptive pretraining·instruction tuning의 출발점을 세운다.

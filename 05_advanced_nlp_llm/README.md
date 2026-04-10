@@ -1,6 +1,6 @@
 # 05 Advanced NLP + LLM
 
-이 트랙은 `03_nlp_bridge`와 `04_nlp` 다음에 들어오는 **post-pretraining / advanced NLP+LLM** 구간이다. 기본 NLP 태스크를 한 번 돌려 본 뒤, 이제는 언어모델 objective, tokenizer/data mixture, domain adaptive pretraining, instruction tuning, preference optimization, RLHF, RAG, alignment를 한 흐름으로 묶어 본다.
+이 트랙은 `03_nlp_bridge`와 `04_nlp` 다음에 들어오는 **pretraining부터 post-training까지 포괄하는 advanced NLP+LLM** 구간이다. 기본 NLP 태스크를 한 번 돌려 본 뒤, 이제는 언어모델 objective, tokenizer/data mixture, domain adaptive pretraining, instruction tuning, preference optimization, RLHF, RAG, alignment를 한 흐름으로 묶어 본다.
 
 즉 `03 → 04 → 05` 구간에서 `작은 태스크 실습`을 `대형 언어모델을 만들고 적응시키고 평가하는 파이프라인`으로 확장하는 역할을 맡는다. `06_training_systems`가 분산 시스템이라면, 이 트랙은 모델/데이터/정렬 관점의 고급 NLP·LLM 설계에 초점을 둔다.
 
