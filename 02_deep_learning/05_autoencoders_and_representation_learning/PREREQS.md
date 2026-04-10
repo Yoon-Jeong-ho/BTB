@@ -20,3 +20,8 @@
 - latent dimension을 줄이면 무엇을 얻고 무엇을 잃을 수 있는지 설명할 수 있는가?
 - noisy input으로부터 clean target을 복원하게 하는 설정이 왜 representation을 더 강하게 만들 수 있는지 이해하는가?
 - 복원 오차가 낮더라도 latent가 downstream task에서 항상 유용한 것은 아니라는 말을 받아들일 수 있는가?
+
+## 이번 runnable 실습에 들어가기 전 팁
+- scratch에서는 basis projection을 encoder/decoder 역할로 읽고, framework에서는 같은 아이디어가 PyTorch autoencoder 학습으로 어떻게 다시 나타나는지 본다.
+- noisy input과 clean target을 따로 두는 이유를 먼저 이해하면 denoising variant를 훨씬 덜 헷갈린다.
+- 숫자를 외우기보다 `latent dimension이 줄면 무엇을 잃는가?` 와 `denoising은 무엇을 지우는가?` 를 먼저 질문해도 충분하다.

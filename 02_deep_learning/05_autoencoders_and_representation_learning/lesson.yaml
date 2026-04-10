@@ -1,5 +1,5 @@
-objective: reconstruction objective, encoder-latent-decoder 역할, bottleneck 직관을 연결해 representation learning의 가장 작은 출발점을 이해한다.
-status: outlined
+objective: reconstruction objective, encoder-latent-decoder 역할, bottleneck 직관, denoising/compression variant를 CPU-safe toy autoencoder로 직접 관찰한다.
+status: runnable
 prereqs:
   - 입력/출력/latent tensor shape 읽기
   - activation과 reconstruction loss 구분
@@ -11,7 +11,6 @@ key_terms:
   - encoder
   - decoder
   - latent representation
-  - latent space
   - reconstruction objective
   - reconstruction loss
   - bottleneck
@@ -19,15 +18,22 @@ key_terms:
   - compression
   - representation learning
 required_outputs:
-  - outlined README
-  - theory markdown
-  - prereqs markdown
-  - lesson metadata
-  - artifacts placeholder
-  - future scratch/framework output contract
+  - scratch metrics json
+  - scratch svg figure
+  - framework metrics json
+  - stable analysis markdown
+  - observed analysis report
+  - reflection worksheet
 analysis_questions:
   - reconstruction objective는 label 없이도 어떤 학습 신호를 제공하는가?
   - encoder, latent, decoder는 각각 어떤 역할을 하고 어디에서 병목이 생기는가?
-  - bottleneck dimension을 줄이거나 늘리면 representation quality와 reconstruction quality는 어떻게 달라질까?
+  - bottleneck dimension을 줄이거나 늘리면 representation quality와 reconstruction quality는 어떻게 달라지는가?
   - denoising autoencoder와 compression-oriented autoencoder는 같은 구조를 어떻게 다르게 활용하는가?
-  - latent representation이 downstream retrieval, clustering, generative modeling에 도움이 되려면 무엇을 더 관찰해야 할까?
+  - latent representation이 downstream retrieval, clustering, generative modeling에 도움이 되려면 무엇을 더 관찰해야 하는가?
+datasets_or_inputs:
+  - 8차원 deterministic toy reconstruction vectors
+  - orthogonal noise가 추가된 toy denoising vectors
+models_or_tools:
+  - manual basis-projection scratch autoencoder
+  - tiny PyTorch linear autoencoder
+  - bottleneck comparison SVG visualization
