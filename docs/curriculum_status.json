@@ -15,12 +15,12 @@
     },
     "02_deep_learning": {
       "01_perceptron_and_mlp": "outlined",
-      "02_cnn_and_image_classification": "planned",
+      "02_cnn_and_image_classification": "outlined",
       "03_sequence_models_rnn_lstm_gru": "outlined",
       "04_attention_and_transformers": "outlined",
-      "05_autoencoders_and_representation_learning": "planned",
+      "05_autoencoders_and_representation_learning": "outlined",
       "06_generative_models_vae_gan": "planned",
-      "07_training_recipes_and_debugging": "planned"
+      "07_training_recipes_and_debugging": "outlined"
     },
     "03_nlp_bridge": {
       "01_tokenization_and_embeddings": "runnable",
