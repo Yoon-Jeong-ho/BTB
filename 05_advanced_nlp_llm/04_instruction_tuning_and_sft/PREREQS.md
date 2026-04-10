@@ -8,6 +8,8 @@
 - fine-tuning이 base model의 행동을 이동시키되 모든 능력을 새로 만들지는 않는다는 점
 - format adherence와 factual correctness를 구분해서 봐야 한다는 점
 
+- [03_domain_adaptive_pretraining](../03_domain_adaptive_pretraining/README.md) — 계속 pretrain된 모델을 instruction 형태로 옮길 때 무엇이 이어지는지 먼저 정리한다.
+
 ## 빠른 자기 점검
 - instruction tuning이 pretraining과 완전히 별개라기보다 instruction-formatted example 위의 supervised next-token 학습이라는 설명을 받아들일 수 있는가?
 - plain instruction-response format과 chat template가 모델에 다른 conditioning signal을 준다는 점을 설명할 수 있는가?
