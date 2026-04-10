@@ -11,7 +11,7 @@ import numpy as np
 import torch
 
 ROOT = Path(__file__).resolve().parents[1]
-BRIDGE_ROOT = ROOT / '04_multimodal_bridge'
+BRIDGE_ROOT = ROOT / '08_multimodal_bridge'
 UNIT = BRIDGE_ROOT / '01_contrastive_alignment'
 ARTIFACTS = UNIT / 'artifacts'
 SCRATCH_METRICS = ARTIFACTS / 'scratch-manual' / 'metrics.json'
@@ -122,7 +122,7 @@ class TestMultimodalBridgeUnitContract(unittest.TestCase):
         self.addCleanup(self._cleanup_generated_outputs)
         self._cleanup_generated_outputs()
 
-        result = self._run('04_multimodal_bridge/01_contrastive_alignment/analysis.py')
+        result = self._run('08_multimodal_bridge/01_contrastive_alignment/analysis.py')
 
         self.assertNotEqual(0, result.returncode)
         error_text = result.stdout + result.stderr
@@ -135,7 +135,7 @@ class TestMultimodalBridgeUnitContract(unittest.TestCase):
         self._cleanup_generated_outputs()
         scratch_lab = self._load_module(
             'multimodal_bridge_scratch_lab',
-            '04_multimodal_bridge/01_contrastive_alignment/scratch_lab.py',
+            '08_multimodal_bridge/01_contrastive_alignment/scratch_lab.py',
         )
 
         with self.assertRaisesRegex(ValueError, 'image/text batch size must match'):
@@ -158,7 +158,7 @@ class TestMultimodalBridgeUnitContract(unittest.TestCase):
     def test_framework_validates_batch_size(self) -> None:
         framework_lab = self._load_module(
             'multimodal_bridge_framework_lab',
-            '04_multimodal_bridge/01_contrastive_alignment/framework_lab.py',
+            '08_multimodal_bridge/01_contrastive_alignment/framework_lab.py',
         )
 
         with self.assertRaisesRegex(ValueError, 'image/text batch size must match'):
@@ -175,11 +175,11 @@ class TestMultimodalBridgeUnitContract(unittest.TestCase):
         self._cleanup_generated_outputs()
         stable_before = ANALYSIS_MD.read_text(encoding='utf-8')
 
-        scratch_result = self._run('04_multimodal_bridge/01_contrastive_alignment/scratch_lab.py')
+        scratch_result = self._run('08_multimodal_bridge/01_contrastive_alignment/scratch_lab.py')
         self.assertEqual(0, scratch_result.returncode, scratch_result.stderr)
-        framework_result = self._run('04_multimodal_bridge/01_contrastive_alignment/framework_lab.py')
+        framework_result = self._run('08_multimodal_bridge/01_contrastive_alignment/framework_lab.py')
         self.assertEqual(0, framework_result.returncode, framework_result.stderr)
-        analysis_result = self._run('04_multimodal_bridge/01_contrastive_alignment/analysis.py')
+        analysis_result = self._run('08_multimodal_bridge/01_contrastive_alignment/analysis.py')
         self.assertEqual(0, analysis_result.returncode, analysis_result.stderr)
 
         self.assertTrue(SCRATCH_METRICS.exists(), 'scratch metrics missing')

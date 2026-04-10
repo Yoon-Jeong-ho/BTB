@@ -8,7 +8,7 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-BRIDGE_ROOT = ROOT / '02_nlp_bridge'
+BRIDGE_ROOT = ROOT / '03_nlp_bridge'
 
 UNIT = BRIDGE_ROOT / '01_tokenization_and_embeddings'
 ARTIFACTS = UNIT / 'artifacts'
@@ -113,7 +113,7 @@ class TestNlpBridgeUnitContract(unittest.TestCase):
         self.addCleanup(self._cleanup_generated_outputs, generated_files, generated_dirs)
         self._cleanup_generated_outputs(generated_files, generated_dirs)
 
-        result = self._run('02_nlp_bridge/01_tokenization_and_embeddings/analysis.py')
+        result = self._run('03_nlp_bridge/01_tokenization_and_embeddings/analysis.py')
 
         self.assertNotEqual(0, result.returncode)
         error_text = result.stdout + result.stderr
@@ -158,7 +158,7 @@ class TestNlpBridgeUnitContract(unittest.TestCase):
             encoding='utf-8',
         )
 
-        result = self._run('02_nlp_bridge/01_tokenization_and_embeddings/analysis.py')
+        result = self._run('03_nlp_bridge/01_tokenization_and_embeddings/analysis.py')
 
         self.assertEqual(0, result.returncode, result.stderr)
         observed_text = OBSERVED_REPORT.read_text(encoding='utf-8')
@@ -206,11 +206,11 @@ class TestNlpBridgeUnitContract(unittest.TestCase):
         self.addCleanup(self._cleanup_generated_outputs, generated_files, generated_dirs)
         self._cleanup_generated_outputs(generated_files, generated_dirs)
 
-        scratch_result = self._run('02_nlp_bridge/01_tokenization_and_embeddings/scratch_lab.py')
+        scratch_result = self._run('03_nlp_bridge/01_tokenization_and_embeddings/scratch_lab.py')
         self.assertEqual(0, scratch_result.returncode, scratch_result.stderr)
-        framework_result = self._run('02_nlp_bridge/01_tokenization_and_embeddings/framework_lab.py')
+        framework_result = self._run('03_nlp_bridge/01_tokenization_and_embeddings/framework_lab.py')
         self.assertEqual(0, framework_result.returncode, framework_result.stderr)
-        analysis_result = self._run('02_nlp_bridge/01_tokenization_and_embeddings/analysis.py')
+        analysis_result = self._run('03_nlp_bridge/01_tokenization_and_embeddings/analysis.py')
         self.assertEqual(0, analysis_result.returncode, analysis_result.stderr)
 
         self.assertTrue(SCRATCH_METRICS.exists(), 'scratch metrics missing')
@@ -278,7 +278,7 @@ class TestNlpBridgeUnitContract(unittest.TestCase):
         self.addCleanup(self._cleanup_generated_outputs, generated_files, generated_dirs)
         self._cleanup_generated_outputs(generated_files, generated_dirs)
 
-        result = self._run('02_nlp_bridge/02_attention_and_transformer_block/analysis.py')
+        result = self._run('03_nlp_bridge/02_attention_and_transformer_block/analysis.py')
 
         self.assertNotEqual(0, result.returncode)
         error_text = result.stdout + result.stderr
@@ -291,11 +291,11 @@ class TestNlpBridgeUnitContract(unittest.TestCase):
         self.addCleanup(self._cleanup_generated_outputs, generated_files, generated_dirs)
         self._cleanup_generated_outputs(generated_files, generated_dirs)
 
-        scratch_result = self._run('02_nlp_bridge/02_attention_and_transformer_block/scratch_lab.py')
+        scratch_result = self._run('03_nlp_bridge/02_attention_and_transformer_block/scratch_lab.py')
         self.assertEqual(0, scratch_result.returncode, scratch_result.stderr)
-        framework_result = self._run('02_nlp_bridge/02_attention_and_transformer_block/framework_lab.py')
+        framework_result = self._run('03_nlp_bridge/02_attention_and_transformer_block/framework_lab.py')
         self.assertEqual(0, framework_result.returncode, framework_result.stderr)
-        analysis_result = self._run('02_nlp_bridge/02_attention_and_transformer_block/analysis.py')
+        analysis_result = self._run('03_nlp_bridge/02_attention_and_transformer_block/analysis.py')
         self.assertEqual(0, analysis_result.returncode, analysis_result.stderr)
 
         self.assertTrue(SCRATCH_METRICS2.exists(), 'second-unit scratch metrics missing')

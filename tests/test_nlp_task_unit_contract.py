@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 UNIT_SPECS = {
     'text_classification': {
-        'unit': ROOT / '03_nlp' / '01_text_classification',
+        'unit': ROOT / '04_nlp' / '01_text_classification',
         'readme_terms': ['실행 결과 예시', 'metrics.json', 'bag-of-words'],
         'theory_terms': ['실행 결과 예시', 'bag-of-words', 'PyTorch'],
         'lesson_terms': ['scratch svg figure', 'analysis_questions:', 'macro F1', 'bag-of-words'],
@@ -33,7 +33,7 @@ UNIT_SPECS = {
         },
     },
     'named_entity_recognition': {
-        'unit': ROOT / '03_nlp' / '02_named_entity_recognition',
+        'unit': ROOT / '04_nlp' / '02_named_entity_recognition',
         'readme_terms': ['실행 결과 예시', 'metrics.json', 'BIO'],
         'theory_terms': ['실행 결과 예시', 'BIO', 'PyTorch'],
         'lesson_terms': ['scratch svg figure', 'analysis_questions:', 'entity-level F1', 'BIO'],
@@ -55,7 +55,7 @@ UNIT_SPECS = {
         },
     },
     'machine_reading_comprehension': {
-        'unit': ROOT / '03_nlp' / '03_machine_reading_comprehension',
+        'unit': ROOT / '04_nlp' / '03_machine_reading_comprehension',
         'readme_terms': ['실행 결과 예시', 'metrics.json', 'span extraction'],
         'theory_terms': ['실행 결과 예시', 'span extraction', 'PyTorch'],
         'lesson_terms': ['scratch svg figure', 'analysis_questions:', 'exact match', 'span extraction'],

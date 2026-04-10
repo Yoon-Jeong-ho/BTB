@@ -16,7 +16,7 @@ except ModuleNotFoundError:  # pragma: no cover - environment dependent
     torch = None
 
 ROOT = Path(__file__).resolve().parents[1]
-UNIT = ROOT / '05_multimodal' / '01_image_text_retrieval'
+UNIT = ROOT / '09_multimodal' / '01_image_text_retrieval'
 ARTIFACTS = UNIT / 'artifacts'
 SCRATCH_DIR = ARTIFACTS / 'scratch-manual'
 FRAMEWORK_DIR = ARTIFACTS / 'framework-manual'
@@ -27,7 +27,7 @@ FRAMEWORK_METRICS = FRAMEWORK_DIR / 'metrics.json'
 OBSERVED_REPORT = ANALYSIS_DIR / 'latest_report.md'
 ANALYSIS_MD = UNIT / 'analysis.md'
 
-CAPTION_UNIT = ROOT / '05_multimodal' / '02_image_captioning'
+CAPTION_UNIT = ROOT / '09_multimodal' / '02_image_captioning'
 CAPTION_ARTIFACTS = CAPTION_UNIT / 'artifacts'
 CAPTION_SCRATCH_DIR = CAPTION_ARTIFACTS / 'scratch-manual'
 CAPTION_FRAMEWORK_DIR = CAPTION_ARTIFACTS / 'framework-manual'
@@ -38,7 +38,7 @@ CAPTION_FRAMEWORK_METRICS = CAPTION_FRAMEWORK_DIR / 'metrics.json'
 CAPTION_OBSERVED_REPORT = CAPTION_ANALYSIS_DIR / 'latest_report.md'
 CAPTION_ANALYSIS_MD = CAPTION_UNIT / 'analysis.md'
 
-VQA_UNIT = ROOT / '05_multimodal' / '03_visual_question_answering'
+VQA_UNIT = ROOT / '09_multimodal' / '03_visual_question_answering'
 VQA_ARTIFACTS = VQA_UNIT / 'artifacts'
 VQA_SCRATCH_DIR = VQA_ARTIFACTS / 'scratch-manual'
 VQA_FRAMEWORK_DIR = VQA_ARTIFACTS / 'framework-manual'
@@ -130,7 +130,7 @@ class TestMultimodalTaskUnitContract(unittest.TestCase):
         self.addCleanup(self._cleanup_generated_outputs)
         self._cleanup_generated_outputs()
 
-        result = self._run('05_multimodal/01_image_text_retrieval/analysis.py')
+        result = self._run('09_multimodal/01_image_text_retrieval/analysis.py')
 
         self.assertNotEqual(0, result.returncode)
         error_text = result.stdout + result.stderr
@@ -157,7 +157,7 @@ class TestMultimodalTaskUnitContract(unittest.TestCase):
         self._write_json(SCRATCH_METRICS, scratch_payload)
         self._write_json(FRAMEWORK_METRICS, framework_payload)
 
-        result = self._run('05_multimodal/01_image_text_retrieval/analysis.py')
+        result = self._run('09_multimodal/01_image_text_retrieval/analysis.py')
 
         self.assertNotEqual(0, result.returncode)
         error_text = result.stdout + result.stderr
@@ -168,7 +168,7 @@ class TestMultimodalTaskUnitContract(unittest.TestCase):
     def test_scratch_and_framework_validate_batch_size(self) -> None:
         scratch_lab = self._load_module(
             'multimodal_task_scratch_lab',
-            '05_multimodal/01_image_text_retrieval/scratch_lab.py',
+            '09_multimodal/01_image_text_retrieval/scratch_lab.py',
         )
 
         with self.assertRaisesRegex(ValueError, 'image/text batch size must match'):
@@ -183,7 +183,7 @@ class TestMultimodalTaskUnitContract(unittest.TestCase):
 
         framework_lab = self._load_module(
             'multimodal_task_framework_lab',
-            '05_multimodal/01_image_text_retrieval/framework_lab.py',
+            '09_multimodal/01_image_text_retrieval/framework_lab.py',
         )
         with self.assertRaisesRegex(ValueError, 'image/text batch size must match'):
             framework_lab.compute_logits(
@@ -198,11 +198,11 @@ class TestMultimodalTaskUnitContract(unittest.TestCase):
         self._cleanup_generated_outputs()
         stable_before = ANALYSIS_MD.read_text(encoding='utf-8')
 
-        scratch_result = self._run('05_multimodal/01_image_text_retrieval/scratch_lab.py')
+        scratch_result = self._run('09_multimodal/01_image_text_retrieval/scratch_lab.py')
         self.assertEqual(0, scratch_result.returncode, scratch_result.stderr)
-        framework_result = self._run('05_multimodal/01_image_text_retrieval/framework_lab.py')
+        framework_result = self._run('09_multimodal/01_image_text_retrieval/framework_lab.py')
         self.assertEqual(0, framework_result.returncode, framework_result.stderr)
-        analysis_result = self._run('05_multimodal/01_image_text_retrieval/analysis.py')
+        analysis_result = self._run('09_multimodal/01_image_text_retrieval/analysis.py')
         self.assertEqual(0, analysis_result.returncode, analysis_result.stderr)
 
         self.assertTrue(SCRATCH_METRICS.exists(), 'scratch metrics missing')
@@ -311,7 +311,7 @@ class TestImageCaptioningTaskUnitContract(unittest.TestCase):
         self.addCleanup(self._cleanup_generated_outputs)
         self._cleanup_generated_outputs()
 
-        result = self._run('05_multimodal/02_image_captioning/analysis.py')
+        result = self._run('09_multimodal/02_image_captioning/analysis.py')
 
         self.assertNotEqual(0, result.returncode)
         error_text = result.stdout + result.stderr
@@ -339,7 +339,7 @@ class TestImageCaptioningTaskUnitContract(unittest.TestCase):
         self._write_json(CAPTION_SCRATCH_METRICS, scratch_payload)
         self._write_json(CAPTION_FRAMEWORK_METRICS, framework_payload)
 
-        result = self._run('05_multimodal/02_image_captioning/analysis.py')
+        result = self._run('09_multimodal/02_image_captioning/analysis.py')
 
         self.assertNotEqual(0, result.returncode)
         error_text = result.stdout + result.stderr
@@ -382,7 +382,7 @@ class TestImageCaptioningTaskUnitContract(unittest.TestCase):
         self._write_json(CAPTION_SCRATCH_METRICS, scratch_payload)
         self._write_json(CAPTION_FRAMEWORK_METRICS, framework_payload)
 
-        result = self._run('05_multimodal/02_image_captioning/analysis.py')
+        result = self._run('09_multimodal/02_image_captioning/analysis.py')
 
         self.assertNotEqual(0, result.returncode)
         error_text = result.stdout + result.stderr
@@ -393,7 +393,7 @@ class TestImageCaptioningTaskUnitContract(unittest.TestCase):
     def test_scratch_and_framework_validate_batch_size(self) -> None:
         scratch_lab = self._load_module(
             'multimodal_captioning_scratch_lab',
-            '05_multimodal/02_image_captioning/scratch_lab.py',
+            '09_multimodal/02_image_captioning/scratch_lab.py',
         )
 
         with self.assertRaisesRegex(ValueError, 'image/reference batch size must match'):
@@ -408,7 +408,7 @@ class TestImageCaptioningTaskUnitContract(unittest.TestCase):
 
         framework_lab = self._load_module(
             'multimodal_captioning_framework_lab',
-            '05_multimodal/02_image_captioning/framework_lab.py',
+            '09_multimodal/02_image_captioning/framework_lab.py',
         )
         with self.assertRaisesRegex(ValueError, 'image/token batch size must match'):
             framework_lab.compute_caption_logits(
@@ -423,7 +423,7 @@ class TestImageCaptioningTaskUnitContract(unittest.TestCase):
 
         framework_lab = self._load_module(
             'multimodal_captioning_framework_lab_zero_precision',
-            '05_multimodal/02_image_captioning/framework_lab.py',
+            '09_multimodal/02_image_captioning/framework_lab.py',
         )
         original_decode = framework_lab.decode_token_ids
         framework_lab.decode_token_ids = lambda token_ids: ['a']
@@ -443,11 +443,11 @@ class TestImageCaptioningTaskUnitContract(unittest.TestCase):
         self._cleanup_generated_outputs()
         stable_before = CAPTION_ANALYSIS_MD.read_text(encoding='utf-8')
 
-        scratch_result = self._run('05_multimodal/02_image_captioning/scratch_lab.py')
+        scratch_result = self._run('09_multimodal/02_image_captioning/scratch_lab.py')
         self.assertEqual(0, scratch_result.returncode, scratch_result.stderr)
-        framework_result = self._run('05_multimodal/02_image_captioning/framework_lab.py')
+        framework_result = self._run('09_multimodal/02_image_captioning/framework_lab.py')
         self.assertEqual(0, framework_result.returncode, framework_result.stderr)
-        analysis_result = self._run('05_multimodal/02_image_captioning/analysis.py')
+        analysis_result = self._run('09_multimodal/02_image_captioning/analysis.py')
         self.assertEqual(0, analysis_result.returncode, analysis_result.stderr)
 
         self.assertTrue(CAPTION_SCRATCH_METRICS.exists(), 'scratch metrics missing')
@@ -561,7 +561,7 @@ class TestVisualQuestionAnsweringTaskUnitContract(unittest.TestCase):
         self.addCleanup(self._cleanup_generated_outputs)
         self._cleanup_generated_outputs()
 
-        result = self._run('05_multimodal/03_visual_question_answering/analysis.py')
+        result = self._run('09_multimodal/03_visual_question_answering/analysis.py')
 
         self.assertNotEqual(0, result.returncode)
         error_text = result.stdout + result.stderr
@@ -587,7 +587,7 @@ class TestVisualQuestionAnsweringTaskUnitContract(unittest.TestCase):
         self._write_json(VQA_SCRATCH_METRICS, scratch_payload)
         self._write_json(VQA_FRAMEWORK_METRICS, framework_payload)
 
-        result = self._run('05_multimodal/03_visual_question_answering/analysis.py')
+        result = self._run('09_multimodal/03_visual_question_answering/analysis.py')
 
         self.assertNotEqual(0, result.returncode)
         error_text = result.stdout + result.stderr
@@ -632,7 +632,7 @@ class TestVisualQuestionAnsweringTaskUnitContract(unittest.TestCase):
         self._write_json(VQA_SCRATCH_METRICS, scratch_payload)
         self._write_json(VQA_FRAMEWORK_METRICS, framework_payload)
 
-        result = self._run('05_multimodal/03_visual_question_answering/analysis.py')
+        result = self._run('09_multimodal/03_visual_question_answering/analysis.py')
 
         self.assertNotEqual(0, result.returncode)
         error_text = result.stdout + result.stderr
@@ -661,7 +661,7 @@ class TestVisualQuestionAnsweringTaskUnitContract(unittest.TestCase):
         self._write_json(VQA_SCRATCH_METRICS, scratch_payload)
         self._write_json(VQA_FRAMEWORK_METRICS, framework_payload)
 
-        result = self._run('05_multimodal/03_visual_question_answering/analysis.py')
+        result = self._run('09_multimodal/03_visual_question_answering/analysis.py')
 
         self.assertNotEqual(0, result.returncode)
         error_text = result.stdout + result.stderr
@@ -688,7 +688,7 @@ class TestVisualQuestionAnsweringTaskUnitContract(unittest.TestCase):
         self._write_json(VQA_SCRATCH_METRICS, scratch_payload)
         self._write_json(VQA_FRAMEWORK_METRICS, framework_payload)
 
-        result = self._run('05_multimodal/03_visual_question_answering/analysis.py')
+        result = self._run('09_multimodal/03_visual_question_answering/analysis.py')
 
         self.assertNotEqual(0, result.returncode)
         error_text = result.stdout + result.stderr
@@ -699,7 +699,7 @@ class TestVisualQuestionAnsweringTaskUnitContract(unittest.TestCase):
     def test_scratch_and_framework_validate_batch_size(self) -> None:
         scratch_lab = self._load_module(
             'multimodal_vqa_scratch_lab',
-            '05_multimodal/03_visual_question_answering/scratch_lab.py',
+            '09_multimodal/03_visual_question_answering/scratch_lab.py',
         )
 
         with self.assertRaisesRegex(ValueError, 'image/question batch size must match'):
@@ -715,7 +715,7 @@ class TestVisualQuestionAnsweringTaskUnitContract(unittest.TestCase):
 
         framework_lab = self._load_module(
             'multimodal_vqa_framework_lab',
-            '05_multimodal/03_visual_question_answering/framework_lab.py',
+            '09_multimodal/03_visual_question_answering/framework_lab.py',
         )
         with self.assertRaisesRegex(ValueError, 'image/question batch size must match'):
             framework_lab.compute_vqa_logits(
@@ -726,7 +726,7 @@ class TestVisualQuestionAnsweringTaskUnitContract(unittest.TestCase):
     def test_answer_type_accuracy_helpers_fail_clearly_when_bucket_is_absent(self) -> None:
         scratch_lab = self._load_module(
             'multimodal_vqa_scratch_lab_missing_bucket',
-            '05_multimodal/03_visual_question_answering/scratch_lab.py',
+            '09_multimodal/03_visual_question_answering/scratch_lab.py',
         )
         with self.assertRaisesRegex(ValueError, 'Missing answer_type bucket for VQA accuracy: count'):
             scratch_lab._compute_answer_type_accuracy(
@@ -738,7 +738,7 @@ class TestVisualQuestionAnsweringTaskUnitContract(unittest.TestCase):
 
         framework_lab = self._load_module(
             'multimodal_vqa_framework_lab_missing_bucket',
-            '05_multimodal/03_visual_question_answering/framework_lab.py',
+            '09_multimodal/03_visual_question_answering/framework_lab.py',
         )
         with self.assertRaisesRegex(ValueError, 'Missing answer_type bucket for VQA accuracy: count'):
             framework_lab._answer_type_accuracy(
@@ -754,11 +754,11 @@ class TestVisualQuestionAnsweringTaskUnitContract(unittest.TestCase):
         self._cleanup_generated_outputs()
         stable_before = VQA_ANALYSIS_MD.read_text(encoding='utf-8')
 
-        scratch_result = self._run('05_multimodal/03_visual_question_answering/scratch_lab.py')
+        scratch_result = self._run('09_multimodal/03_visual_question_answering/scratch_lab.py')
         self.assertEqual(0, scratch_result.returncode, scratch_result.stderr)
-        framework_result = self._run('05_multimodal/03_visual_question_answering/framework_lab.py')
+        framework_result = self._run('09_multimodal/03_visual_question_answering/framework_lab.py')
         self.assertEqual(0, framework_result.returncode, framework_result.stderr)
-        analysis_result = self._run('05_multimodal/03_visual_question_answering/analysis.py')
+        analysis_result = self._run('09_multimodal/03_visual_question_answering/analysis.py')
         self.assertEqual(0, analysis_result.returncode, analysis_result.stderr)
 
         self.assertTrue(VQA_SCRATCH_METRICS.exists(), 'scratch metrics missing')
