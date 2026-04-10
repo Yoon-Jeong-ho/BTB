@@ -13,7 +13,7 @@
 | [03_sequence_models_rnn_lstm_gru](03_sequence_models_rnn_lstm_gru/README.md) | outlined | 순서 정보와 hidden state 누적이 시퀀스 문제를 어떻게 다루는지 익힌다. |
 | [04_attention_and_transformers](04_attention_and_transformers/README.md) | outlined | attention과 transformer가 장거리 의존성과 병렬 학습을 어떻게 바꿨는지 본다. |
 | [05_autoencoders_and_representation_learning](05_autoencoders_and_representation_learning/README.md) | outlined | 복원 과제로 latent representation을 만드는 기본기를 정리한다. |
-| [06_generative_models_vae_gan](06_generative_models_vae_gan/README.md) | planned | 확률적 생성과 adversarial 학습이라는 두 generative family를 비교한다. |
+| [06_generative_models_vae_gan](06_generative_models_vae_gan/README.md) | outlined | 확률적 생성과 adversarial 학습이라는 두 generative family를 비교한다. |
 | [07_training_recipes_and_debugging](07_training_recipes_and_debugging/README.md) | outlined | 딥러닝 실험이 실제로 수렴하도록 만드는 운영 규칙과 failure triage를 정리한다. |
 
 ## 이 트랙에 포함되는 것

@@ -19,7 +19,7 @@
       "03_sequence_models_rnn_lstm_gru": "outlined",
       "04_attention_and_transformers": "outlined",
       "05_autoencoders_and_representation_learning": "outlined",
-      "06_generative_models_vae_gan": "planned",
+      "06_generative_models_vae_gan": "outlined",
       "07_training_recipes_and_debugging": "outlined"
     },
     "03_nlp_bridge": {
@@ -32,8 +32,8 @@
       "03_machine_reading_comprehension": "runnable"
     },
     "05_advanced_nlp_llm": {
-      "01_language_modeling_and_pretraining_objectives": "planned",
-      "02_corpus_tokenizer_and_data_mixture": "planned",
+      "01_language_modeling_and_pretraining_objectives": "outlined",
+      "02_corpus_tokenizer_and_data_mixture": "outlined",
       "03_domain_adaptive_pretraining": "planned",
       "04_instruction_tuning_and_sft": "planned",
       "05_preference_optimization_dpo_orpo_kto": "planned",

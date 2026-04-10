@@ -8,8 +8,8 @@
 
 | Unit | Status | Focus |
 | --- | --- | --- |
-| [01_language_modeling_and_pretraining_objectives](01_language_modeling_and_pretraining_objectives/README.md) | planned | causal / masked / span corruption objective가 어떤 inductive bias를 만드는지 정리한다. |
-| [02_corpus_tokenizer_and_data_mixture](02_corpus_tokenizer_and_data_mixture/README.md) | planned | tokenizer와 corpus mixture가 학습 분포와 budget을 어떻게 바꾸는지 본다. |
+| [01_language_modeling_and_pretraining_objectives](01_language_modeling_and_pretraining_objectives/README.md) | outlined | causal / masked / span corruption objective가 어떤 inductive bias를 만드는지 정리한다. |
+| [02_corpus_tokenizer_and_data_mixture](02_corpus_tokenizer_and_data_mixture/README.md) | outlined | tokenizer와 corpus mixture가 학습 분포와 budget을 어떻게 바꾸는지 본다. |
 | [03_domain_adaptive_pretraining](03_domain_adaptive_pretraining/README.md) | planned | 기존 LM을 특정 도메인으로 계속 pretrain할 때의 전략과 trade-off를 다룬다. |
 | [04_instruction_tuning_and_sft](04_instruction_tuning_and_sft/README.md) | planned | instruction format과 supervised fine-tuning이 사용성에 어떻게 연결되는지 본다. |
 | [05_preference_optimization_dpo_orpo_kto](05_preference_optimization_dpo_orpo_kto/README.md) | planned | 선호 데이터로 정책을 직접 업데이트하는 post-training objective를 비교한다. |
