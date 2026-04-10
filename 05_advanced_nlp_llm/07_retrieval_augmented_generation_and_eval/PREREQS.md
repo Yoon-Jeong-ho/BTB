@@ -19,4 +19,4 @@
 - [04_nlp/03_machine_reading_comprehension](../../04_nlp/03_machine_reading_comprehension/README.md) — 질문과 근거 문맥을 함께 읽는 기본 QA framing 복습
 - [05_advanced_nlp_llm/04_instruction_tuning_and_sft](../04_instruction_tuning_and_sft/README.md) — generator가 instruction과 role framing에 어떻게 반응하는지 복습
 - [05_advanced_nlp_llm/06_rlhf_and_reasoning_rl](../06_rlhf_and_reasoning_rl/README.md) — 답변 행동을 objective로 밀던 단계와 retrieval grounding을 붙이는 단계를 구분
-- [09_multimodal/01_image_text_retrieval](../../09_multimodal/01_image_text_retrieval/README.md) — retrieval metric을 modality가 달라도 어떻게 해석하는지 감각 연결
+- [05_advanced_nlp_llm/06_rlhf_and_reasoning_rl](../06_rlhf_and_reasoning_rl/README.md) — retrieval metric을 modality가 달라도 어떻게 해석하는지 감각 연결

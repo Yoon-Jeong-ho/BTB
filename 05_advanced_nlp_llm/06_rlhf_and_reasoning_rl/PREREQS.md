@@ -19,4 +19,4 @@
 - [04_instruction_tuning_and_sft](../04_instruction_tuning_and_sft/README.md) — RLHF 이전의 초기 policy가 어떻게 만들어지는지 다시 본다.
 - [05_preference_optimization_dpo_orpo_kto](../05_preference_optimization_dpo_orpo_kto/README.md) — offline preference objective와 RLHF의 차이를 연결한다.
 - [02_deep_learning/07_training_recipes_and_debugging](../../02_deep_learning/07_training_recipes_and_debugging/README.md) — training instability와 regression check 감각을 복습한다.
-- [06_training_systems/01_torchrun_and_ddp_basics](../../06_training_systems/01_torchrun_and_ddp_basics/README.md) — rollout/update 규모가 커질 때 시스템 관점을 미리 떠올린다.
+- [05_advanced_nlp_llm/05_preference_optimization_dpo_orpo_kto](../05_preference_optimization_dpo_orpo_kto/README.md) — rollout/update 규모가 커질 때 시스템 관점을 미리 떠올린다.
