@@ -8,9 +8,9 @@
 
 | Unit | Status | Focus |
 | --- | --- | --- |
-| [01_torchrun_and_ddp_basics](01_torchrun_and_ddp_basics/README.md) | planned | torchrun/DDP로 다중 프로세스 학습을 시작하는 최소 계약을 익힌다. |
-| [02_accelerate_workflows](02_accelerate_workflows/README.md) | planned | Hugging Face Accelerate로 실험 스크립트를 이식성 있게 운영하는 방법을 본다. |
-| [03_deepspeed_zero](03_deepspeed_zero/README.md) | planned | optimizer/state sharding으로 메모리 병목을 줄이는 ZeRO 단계를 정리한다. |
+| [01_torchrun_and_ddp_basics](01_torchrun_and_ddp_basics/README.md) | outlined | torchrun/DDP로 다중 프로세스 학습을 시작하는 최소 계약을 익힌다. |
+| [02_accelerate_workflows](02_accelerate_workflows/README.md) | outlined | Hugging Face Accelerate로 실험 스크립트를 이식성 있게 운영하는 방법을 본다. |
+| [03_deepspeed_zero](03_deepspeed_zero/README.md) | outlined | optimizer/state sharding으로 메모리 병목을 줄이는 ZeRO 단계를 정리한다. |
 | [04_fsdp_checkpointing_and_offload](04_fsdp_checkpointing_and_offload/README.md) | planned | FSDP와 activation/checkpoint/offload 조합으로 큰 모델을 다루는 법을 배운다. |
 | [05_tensor_parallelism](05_tensor_parallelism/README.md) | planned | 레이어 내부 연산을 여러 장치로 나누는 tensor parallel의 구조를 이해한다. |
 | [06_pipeline_parallelism](06_pipeline_parallelism/README.md) | planned | 모델 층을 스테이지로 쪼개 pipeline bubble과 schedule trade-off를 본다. |
