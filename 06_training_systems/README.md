@@ -14,9 +14,9 @@
 | [04_fsdp_checkpointing_and_offload](04_fsdp_checkpointing_and_offload/README.md) | outlined | FSDP와 activation/checkpoint/offload 조합으로 큰 모델을 다루는 법을 배운다. |
 | [05_tensor_parallelism](05_tensor_parallelism/README.md) | outlined | 레이어 내부 연산을 여러 장치로 나누는 tensor parallel의 구조를 이해한다. |
 | [06_pipeline_parallelism](06_pipeline_parallelism/README.md) | outlined | 모델 층을 스테이지로 쪼개 pipeline bubble과 schedule trade-off를 본다. |
-| [07_data_parallel_grad_accumulation](07_data_parallel_grad_accumulation/README.md) | planned | effective batch를 키우기 위한 data parallel과 grad accumulation 조합을 정리한다. |
-| [08_hybrid_parallel_topologies](08_hybrid_parallel_topologies/README.md) | planned | data/tensor/pipeline/FSDP를 섞는 실제 대형 모델 topology를 비교한다. |
-| [09_profiling_monitoring_and_failure_recovery](09_profiling_monitoring_and_failure_recovery/README.md) | planned | 병목 측정, 로그 관찰, 장애 복구 runbook을 학습한다. |
+| [07_data_parallel_grad_accumulation](07_data_parallel_grad_accumulation/README.md) | outlined | effective batch를 키우기 위한 data parallel과 grad accumulation 조합을 정리한다. |
+| [08_hybrid_parallel_topologies](08_hybrid_parallel_topologies/README.md) | outlined | data/tensor/pipeline/FSDP를 섞는 실제 대형 모델 topology를 비교한다. |
+| [09_profiling_monitoring_and_failure_recovery](09_profiling_monitoring_and_failure_recovery/README.md) | outlined | 병목 측정, 로그 관찰, 장애 복구 runbook을 학습한다. |
 
 ## 이 트랙에 포함되는 것
 

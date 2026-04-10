@@ -48,9 +48,9 @@
       "04_fsdp_checkpointing_and_offload": "outlined",
       "05_tensor_parallelism": "outlined",
       "06_pipeline_parallelism": "outlined",
-      "07_data_parallel_grad_accumulation": "planned",
-      "08_hybrid_parallel_topologies": "planned",
-      "09_profiling_monitoring_and_failure_recovery": "planned"
+      "07_data_parallel_grad_accumulation": "outlined",
+      "08_hybrid_parallel_topologies": "outlined",
+      "09_profiling_monitoring_and_failure_recovery": "outlined"
     },
     "07_frontier_labs": {
       "01_paper_reproduction_playground": "planned",
