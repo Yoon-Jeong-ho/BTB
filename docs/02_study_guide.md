@@ -2,7 +2,9 @@
 
 ## 목적
 
-이 문서는 BTB의 `00→09` 커리큘럼을 어떻게 읽고 들어갈지 정리한 한국어 우선 학습 가이드다. BTB는 전체 사다리를 먼저 공개한 상태이므로, 새 scaffold track이나 unit는 아직 `planned`일 수 있다. 따라서 **실행 가능한 lab를 기대하기 전에는 각 track README와 `docs/curriculum_status.json`의 unit status를 먼저 확인**해야 한다.
+이 문서는 BTB의 `00→09` 커리큘럼을 어떻게 읽고 들어갈지 정리한 한국어 우선 학습 가이드다. BTB는 전체 사다리를 먼저 공개한 상태이므로, 새 scaffold track이나 unit는 아직 `planned`일 수 있다. 따라서 **실행 가능한 lab를 기대하기 전에는 먼저 `docs/curriculum_status.json`을 canonical source of truth로 확인하고, 각 track README의 status note/table은 있을 때 supplementary context로 참고**해야 한다.
+
+임시 전환 안내: 현재 학습 경로와 인덱싱은 `00→09`가 기준이지만, 일부 downstream track README의 heading/title은 후속 cleanup 전까지 예전 번호나 제목을 잠시 유지할 수 있다. 이 경우에도 실제 경로와 진행 순서는 루트 문서와 `docs/curriculum_status.json`을 우선 기준으로 보면 된다.
 
 ## 표준 1-pass 루트
 
@@ -52,8 +54,8 @@ NLP·LLM 중심으로 빠르게 올라가고 싶다면 아래 압축 루트를 �
 
 ## runnable lab를 기대하기 전에 확인할 것
 
-1. track README에서 unit table의 `Status`를 먼저 본다.
-2. [docs/curriculum_status.json](curriculum_status.json)에서 최신 `planned` / `runnable` 상태를 다시 확인한다.
+1. [docs/curriculum_status.json](curriculum_status.json)에서 최신 `planned` / `runnable` 상태를 먼저 확인한다.
+2. track README에 unit table이나 status note가 있으면 보조 설명으로 함께 읽는다.
 3. 해당 unit 폴더에 `lesson.yaml`, lab 스크립트, artifact scaffold가 실제로 있는지 본다.
 4. 실행 전에 [scripts/README.md](../scripts/README.md)와 [docs/01_experiment_playbook.md](01_experiment_playbook.md)로 산출물 규약을 확인한다.
 

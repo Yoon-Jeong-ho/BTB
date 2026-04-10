@@ -32,7 +32,7 @@ BTB는 `00_foundations -> 01_ml -> 02_deep_learning -> 03_nlp_bridge -> 04_nlp -
 
 - BTB는 `00→09` 전체 사다리를 먼저 공개했지만, 모든 unit이 같은 완성도는 아니다.
 - 새 scaffold 트랙과 unit에는 아직 `planned` 상태가 남아 있을 수 있다.
-- runnable lab를 기대하기 전에는 각 트랙 README와 [curriculum_status.json](curriculum_status.json)을 확인해 현재 상태를 먼저 본다.
+- runnable lab를 기대하기 전에는 먼저 [curriculum_status.json](curriculum_status.json)을 canonical source of truth로 확인하고, track README에 status note/table이 있으면 supplementary context로 함께 읽는다.
 
 ## 단계별 산출물 관점
 

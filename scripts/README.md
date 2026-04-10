@@ -14,7 +14,7 @@ python scripts/eval.py --run-dir runs/09_multimodal/01_image_text_retrieval/<run
 
 현재 커리큘럼 기준으로 NLP 브리지는 `03_nlp_bridge`, applied NLP는 `04_nlp`, multimodal 브리지는 `08_multimodal_bridge`, multimodal 실습은 `09_multimodal` 아래에 놓인다.
 
-새 scaffold track/unit는 아직 `planned` 상태일 수 있으므로, 실행 전에 각 track README와 `docs/curriculum_status.json`에서 runnable 여부를 먼저 확인하는 것을 권장한다.
+새 scaffold track/unit는 아직 `planned` 상태일 수 있으므로, 실행 전에는 먼저 `docs/curriculum_status.json`에서 runnable 여부를 확인하고, 각 track README에 status note/table이 있으면 보조 맥락으로 함께 참고하는 것을 권장한다.
 
 ## Task 6 automation scaffold
 
