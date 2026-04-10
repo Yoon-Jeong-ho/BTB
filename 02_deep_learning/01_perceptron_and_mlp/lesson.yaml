@@ -1,0 +1,40 @@
+objective: perceptron decision rule, 선형 분리 가능성, hidden layer와 nonlinearity의 필요성을 가장 작은 neural baseline 관점에서 이해한다.
+status: outlined
+prereqs:
+  - dot product와 weighted sum 기초
+  - bias와 decision boundary 직관
+  - activation과 loss 구분
+  - gradient와 backpropagation 기초
+  - 작은 분류 baseline 비교 감각
+key_terms:
+  - perceptron
+  - weighted sum
+  - bias
+  - decision rule
+  - linear separability
+  - single neuron
+  - hidden layer
+  - nonlinearity
+  - MLP
+  - neural baseline
+required_outputs:
+  - outlined README
+  - theory note
+  - prerequisite checklist
+  - lesson metadata
+  - artifacts placeholder
+  - future scratch/framework output contract
+analysis_questions:
+  - perceptron의 decision rule은 입력을 어떤 기준으로 두 클래스로 나누는가?
+  - linear separable한 경우와 아닌 경우를 어떻게 구분해 볼 수 있는가?
+  - hidden layer와 nonlinearity가 들어가면 single neuron으로 못 풀던 패턴이 왜 풀리기 시작하는가?
+  - 가장 작은 neural baseline을 먼저 두는 것이 이후 모델 비교에 왜 유용한가?
+datasets_or_inputs:
+  - 선형 분리 가능한 2D toy points (planned)
+  - XOR 스타일의 비선형 toy points (planned)
+  - 작은 binary classification 예시 입력 (planned)
+models_or_tools:
+  - perceptron decision rule sketch
+  - sigmoid 또는 threshold 기반 single neuron
+  - one-hidden-layer tiny MLP
+  - decision boundary visualization plan
