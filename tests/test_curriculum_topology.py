@@ -36,7 +36,7 @@ class TestCurriculumTopology(unittest.TestCase):
         text = (ROOT / "docs" / "00_program_map.md").read_text(encoding="utf-8")
         for rel in ["00_foundations", "03_nlp_bridge", "08_multimodal_bridge"]:
             self.assertIn(rel, text)
-        self.assertRegex(text, r"03_nlp_bridge.*08_multimodal_bridge")
+        self.assertLess(text.index("03_nlp_bridge"), text.index("08_multimodal_bridge"))
         self.assertRegex(text, r"(한글|한국어).*(우선|중심)")
 
     def test_new_entry_dirs_have_readmes(self) -> None:

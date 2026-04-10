@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 import unittest
 from pathlib import Path
 
@@ -31,8 +32,8 @@ class TestCurriculumExpansionDocs(unittest.TestCase):
             ('04_multimodal_bridge', '08_multimodal_bridge'),
             ('05_multimodal', '09_multimodal'),
         ]:
-            self.assertIn(old, text)
-            self.assertIn(new, text)
+            pattern = rf"(?m)^.*{re.escape(old)}.*->.*{re.escape(new)}.*$"
+            self.assertRegex(text, pattern)
 
 
 if __name__ == '__main__':
