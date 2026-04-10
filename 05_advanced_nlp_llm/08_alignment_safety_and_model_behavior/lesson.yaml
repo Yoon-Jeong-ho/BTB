@@ -1,0 +1,38 @@
+objective: alignment와 capability를 구분하고 refusal, over-refusal, harmlessness, robustness를 behavioral eval과 system safety boundary 관점에서 함께 읽는다.
+status: outlined
+prereqs:
+  - post-training 단계(SFT, preference optimization, RLHF) 큰 그림 이해
+  - prompt/response/role framing이 행동 조건 신호가 된다는 점
+  - slice-based evaluation과 failure mode 관찰 기본 감각
+  - refusal / harmlessness / robustness 용어 구분
+  - 모델 정책과 시스템 guardrail 책임 분리 이해
+  - capability와 deployment behavior를 분리해 보는 태도
+key_terms:
+  - alignment
+  - capability
+  - model behavior
+  - refusal
+  - over-refusal
+  - harmlessness
+  - robustness
+  - behavioral evaluation
+  - safety slice
+  - policy boundary
+  - system guardrail
+  - jailbreak robustness
+  - safe alternative
+  - deployment behavior
+required_outputs:
+  - outlined README
+  - theory markdown
+  - prereqs markdown
+  - lesson metadata
+  - artifacts placeholder
+  - future behavioral-eval and safety-boundary sample contract
+analysis_questions:
+  - capability가 높은 모델이 왜 곧바로 잘 aligned된 모델이라는 뜻은 아닌가?
+  - refusal과 over-refusal은 어떤 behavioral slice에서 가장 잘 구분되는가?
+  - harmlessness는 단순 거절이 아니라 어떤 안전한 대안 행동까지 포함하는가?
+  - robustness 평가는 jailbreak 저항성 외에 어떤 prompt variation까지 포함해야 하는가?
+  - behavioral eval에서 judge score나 win rate가 놓치는 failure mode는 무엇인가?
+  - 모델 정책과 시스템 guardrail은 각각 어떤 안전 책임을 맡아야 하는가?
