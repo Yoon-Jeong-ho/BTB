@@ -8,13 +8,13 @@
 
 | Unit | Status | Focus |
 | --- | --- | --- |
-| [01_perceptron_and_mlp](01_perceptron_and_mlp/README.md) | outlined | 가장 작은 supervised neural model에서 출발해 hidden layer가 표현력을 어떻게 늘리는지 연결한다. |
+| [01_perceptron_and_mlp](01_perceptron_and_mlp/README.md) | runnable | 가장 작은 supervised neural model에서 출발해 hidden layer가 표현력을 어떻게 늘리는지 연결한다. |
 | [02_cnn_and_image_classification](02_cnn_and_image_classification/README.md) | outlined | local receptive field, convolution, pooling이 이미지 분류에 왜 맞는지 본다. |
-| [03_sequence_models_rnn_lstm_gru](03_sequence_models_rnn_lstm_gru/README.md) | outlined | 순서 정보와 hidden state 누적이 시퀀스 문제를 어떻게 다루는지 익힌다. |
-| [04_attention_and_transformers](04_attention_and_transformers/README.md) | outlined | attention과 transformer가 장거리 의존성과 병렬 학습을 어떻게 바꿨는지 본다. |
+| [03_sequence_models_rnn_lstm_gru](03_sequence_models_rnn_lstm_gru/README.md) | runnable | 순서 정보와 hidden state 누적이 시퀀스 문제를 어떻게 다루는지 익힌다. |
+| [04_attention_and_transformers](04_attention_and_transformers/README.md) | runnable | attention과 transformer가 장거리 의존성과 병렬 학습을 어떻게 바꿨는지 본다. |
 | [05_autoencoders_and_representation_learning](05_autoencoders_and_representation_learning/README.md) | outlined | 복원 과제로 latent representation을 만드는 기본기를 정리한다. |
 | [06_generative_models_vae_gan](06_generative_models_vae_gan/README.md) | outlined | 확률적 생성과 adversarial 학습이라는 두 generative family를 비교한다. |
-| [07_training_recipes_and_debugging](07_training_recipes_and_debugging/README.md) | outlined | 딥러닝 실험이 실제로 수렴하도록 만드는 운영 규칙과 failure triage를 정리한다. |
+| [07_training_recipes_and_debugging](07_training_recipes_and_debugging/README.md) | runnable | 딥러닝 실험이 실제로 수렴하도록 만드는 운영 규칙과 failure triage를 정리한다. |
 
 ## 이 트랙에 포함되는 것
 

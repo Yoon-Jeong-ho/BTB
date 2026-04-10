@@ -14,13 +14,13 @@
       "04_large_scale_tabular": "runnable"
     },
     "02_deep_learning": {
-      "01_perceptron_and_mlp": "outlined",
+      "01_perceptron_and_mlp": "runnable",
       "02_cnn_and_image_classification": "outlined",
-      "03_sequence_models_rnn_lstm_gru": "outlined",
-      "04_attention_and_transformers": "outlined",
+      "03_sequence_models_rnn_lstm_gru": "runnable",
+      "04_attention_and_transformers": "runnable",
       "05_autoencoders_and_representation_learning": "outlined",
       "06_generative_models_vae_gan": "outlined",
-      "07_training_recipes_and_debugging": "outlined"
+      "07_training_recipes_and_debugging": "runnable"
     },
     "03_nlp_bridge": {
       "01_tokenization_and_embeddings": "runnable",
