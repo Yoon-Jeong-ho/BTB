@@ -1,0 +1,39 @@
+objective: tensor parallelism이 large Transformer 레이어 내부 행렬 연산을 여러 장치로 어떻게 분할하는지, 그 과정에서 activation/weight shard와 collective communication이 어떤 trade-off를 만드는지 이해해 later pipeline/hybrid parallelism의 기준선을 만든다.
+status: outlined
+prereqs:
+  - tensor shape와 matrix multiplication 기본 감각
+  - Transformer attention/MLP 내부 차원 구조 이해
+  - DDP와 sharding 접근의 큰 그림
+  - collective communication 기본 직관
+  - GPU memory bottleneck과 interconnect latency 감각
+key_terms:
+  - tensor parallelism
+  - model parallelism
+  - intra-layer parallelism
+  - column parallel linear
+  - row parallel linear
+  - weight shard
+  - activation shard
+  - attention head partition
+  - all-gather
+  - reduce-scatter
+  - all-reduce
+  - hidden size
+  - latency
+  - bandwidth
+  - hybrid parallelism
+required_outputs:
+  - outlined README
+  - theory note
+  - prerequisite checklist
+  - lesson metadata
+  - artifacts placeholder
+  - future per-rank matrix shard sample contract
+  - future activation layout / collective summary contract
+analysis_questions:
+  - tensor parallelism은 상태 sharding 접근과 무엇이 다르며, 왜 intra-layer parallelism으로 따로 봐야 하는가?
+  - large Transformer에서 어떤 차원을 나누면 row/column parallel linear 감각이 자연스럽게 생기는가?
+  - column parallel과 row parallel은 각각 어떤 partial output을 만들고, 어떤 collective communication을 요구하는가?
+  - activation shard를 full tensor로 다시 모으는 시점은 왜 latency와 메모리 둘 다에 영향을 주는가?
+  - tensor parallelism은 메모리를 줄여 주는데도 왜 interconnect bandwidth와 latency에 민감한가?
+  - pipeline parallelism과 hybrid parallelism으로 넘어갈 때 tensor parallel은 어떤 독립 축으로 작동하는가?
