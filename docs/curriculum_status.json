@@ -15,11 +15,11 @@
     },
     "02_deep_learning": {
       "01_perceptron_and_mlp": "runnable",
-      "02_cnn_and_image_classification": "outlined",
+      "02_cnn_and_image_classification": "runnable",
       "03_sequence_models_rnn_lstm_gru": "runnable",
       "04_attention_and_transformers": "runnable",
-      "05_autoencoders_and_representation_learning": "outlined",
-      "06_generative_models_vae_gan": "outlined",
+      "05_autoencoders_and_representation_learning": "runnable",
+      "06_generative_models_vae_gan": "runnable",
       "07_training_recipes_and_debugging": "runnable"
     },
     "03_nlp_bridge": {
