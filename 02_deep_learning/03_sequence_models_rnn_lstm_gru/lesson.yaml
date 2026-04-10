@@ -1,0 +1,35 @@
+objective: 시퀀스 순서, hidden state 병목, vanilla RNN의 한계, LSTM/GRU gating 직관, teacher forcing setup을 연결해 이후 transformer 학습의 배경을 만든다.
+status: outlined
+prereqs:
+  - 시퀀스 텐서 shape 읽기
+  - backpropagation과 gradient chain rule 기초
+  - token/embedding/BOS/EOS 기본 용어
+  - cross entropy와 next-token prediction 기본 감각
+key_terms:
+  - sequence ordering
+  - hidden state
+  - recurrent update
+  - vanilla RNN
+  - vanishing gradient
+  - exploding gradient
+  - LSTM
+  - GRU
+  - forget gate
+  - input gate
+  - output gate
+  - update gate
+  - reset gate
+  - teacher forcing
+  - autoregressive modeling
+required_outputs:
+  - outlined README
+  - theory markdown
+  - prereqs markdown
+  - lesson metadata
+  - artifacts placeholder
+analysis_questions:
+  - hidden state는 과거 정보를 어떻게 압축하고 어떤 정보는 잃기 쉬운가?
+  - vanilla RNN은 왜 long-range dependency에서 불안정해지기 쉬운가?
+  - LSTM과 GRU의 gate는 각각 어떤 방식으로 정보 흐름을 조절하는가?
+  - teacher forcing은 왜 유용하고, inference에서는 어떤 mismatch를 남기는가?
+  - recurrence의 병목을 이해하면 transformer attention을 어떻게 더 자연스럽게 받아들일 수 있는가?
