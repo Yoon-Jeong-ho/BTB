@@ -1,35 +1,31 @@
-objective: learning rate, batch size, weight decay, scheduler의 기본기와 train/validation 모니터링, NaN/divergence/data bug triage, sanity-check/ablation 습관을 연결해 later LLM 및 training systems 학습의 운영 기반을 만든다.
-status: outlined
+objective: learning rate, batch size, weight decay, scheduler가 tiny supervised 학습 곡선에 남기는 흔적을 읽고, overfit/underfit/divergence/data bug를 sanity check로 빠르게 분류하는 습관을 만든다.
+status: runnable
 prereqs:
-  - loss, metric, gradient의 역할 구분
-  - optimizer step / epoch / batch / global step 기본 용어
-  - train/validation split과 기본 학습 곡선 해석
-  - tensor shape와 target 형식 점검 습관
-  - GPU memory, mixed precision, gradient accumulation 기초
+  - loss / metric / gradient 역할 구분
+  - batch / epoch / optimizer step / global step 기본 용어
+  - train/validation split과 기본 곡선 해석
+  - label misalignment / NaN / shape mismatch 같은 data bug 기본 감각
 key_terms:
   - learning rate
   - batch size
-  - effective batch
   - weight decay
   - scheduler
-  - warmup
   - overfitting
   - underfitting
   - divergence
-  - NaN
+  - gradient explosion
+  - data bug
   - sanity check
-  - ablation
+  - single-batch overfit
 required_outputs:
-  - outlined README
-  - theory note
-  - prerequisite checklist
-  - lesson metadata
-  - artifacts placeholder
-  - future training summary sample contract
-  - future debug checklist sample contract
+  - scratch metrics json
+  - scratch svg figure
+  - framework metrics json
+  - stable analysis markdown
+  - observed analysis report
 analysis_questions:
-  - learning rate, batch size, weight decay, scheduler는 각각 학습 곡선에 어떤 종류의 흔적을 남기는가?
-  - train/validation loss와 metric을 함께 볼 때 overfit, underfit, optimization failure를 어떻게 구분할 수 있는가?
-  - NaN이나 divergence가 났을 때 optimizer 문제, 수치 불안정, data bug를 어떤 순서로 분리해 볼 것인가?
-  - single-batch overfit, tiny-subset replay, random-label test는 각각 어떤 sanity check 역할을 하는가?
-  - one-change ablation 습관이 later LLM fine-tuning과 distributed training에서도 왜 중요한가?
+  - baseline과 large batch recipe는 같은 epoch budget에서 어떤 train/validation 차이를 남겼는가?
+  - weight decay와 scheduler를 함께 켰을 때 validation loss trade-off는 어떻게 달라졌는가?
+  - high learning rate probe는 어느 시점에서 divergence 또는 gradient explosion을 만들었는가?
+  - shifted-label bug와 overfit는 로그에서 어떻게 다르게 보였는가?
+  - single-batch overfit sanity check는 왜 디버깅 첫 단계로 유용한가?
