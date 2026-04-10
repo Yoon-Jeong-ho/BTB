@@ -2,7 +2,7 @@
 
 > Status: outlined
 >
-> 이 단위는 현재 문서/메타데이터만 정리된 outlined 단계다. 아래 실습 흐름과 출력 예시는 **후속 applied 단계에서 구현될 예상 구조**이며, 아직 `scratch_lab.py`, `framework_lab.py`, `analysis.md`, `reflection.md`는 없다.
+> 이 단위는 현재 문서/메타데이터만 정리된 outlined 단계다. 아래 실습 흐름과 출력 예시는 **후속 applied 단계에서 구현될 예상 구조**이며, 아직 `scratch_lab.py`, `framework_lab.py`, `analysis.py`, `analysis.md`, `reflection.md`는 없다.
 
 ## 왜 이 단위를 배우는가
 논문을 읽을 때 가장 흔한 착각은 "저자들이 한 일을 전부 다시 해야 재현"이라고 생각하는 것이다. 실제 연구 운영에서는 그보다 먼저 **무슨 claim을 어디까지 믿고 싶고, 그 claim을 어떤 evidence로 다시 확인할 것인가**를 좁혀야 한다. 이 단위는 paper reproduction을 거대한 복제 프로젝트가 아니라, **claim → baseline → metric → artifact**로 이어지는 작은 실험 계약으로 바꾸는 출발점이다.

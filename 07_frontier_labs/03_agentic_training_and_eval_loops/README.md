@@ -2,7 +2,7 @@
 
 > Status: outlined
 >
-> 이 단위는 현재 문서/메타데이터만 정리된 outlined 단계다. 아래 실습 흐름과 출력 예시는 **후속 applied 단계에서 구현될 예상 구조**이며, 아직 `scratch_lab.py`, `framework_lab.py`, `analysis.md`, `reflection.md`는 없다.
+> 이 단위는 현재 문서/메타데이터만 정리된 outlined 단계다. 아래 실습 흐름과 출력 예시는 **후속 applied 단계에서 구현될 예상 구조**이며, 아직 `scratch_lab.py`, `framework_lab.py`, `analysis.py`, `analysis.md`, `reflection.md`는 없다.
 
 ## 왜 이 단위를 배우는가
 앞 단위에서 capstone 문제, baseline, milestone, failure slice를 문서로 고정했다면, 이제 남는 질문은 하나다. **그 계약을 누가 어떤 순서로 실행하고, 언제 멈추고, 어떤 근거로 다음 시도를 고를 것인가?** frontier 프로젝트에서 agent를 붙인다는 말은 단순 자동 실행 버튼을 추가하는 일이 아니라, training/eval workflow 전체를 작은 반복 실험 단위로 쪼개고 각 반복마다 증거를 남기는 운영 루프를 설계하는 일에 가깝다.

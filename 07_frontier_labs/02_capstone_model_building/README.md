@@ -2,7 +2,7 @@
 
 > Status: outlined
 >
-> 이 단위는 현재 문서/메타데이터만 정리된 outlined 단계다. 아래 실습 흐름과 출력 예시는 **후속 applied 단계에서 구현될 예상 구조**이며, 아직 `scratch_lab.py`, `framework_lab.py`, `analysis.md`, `reflection.md`는 없다.
+> 이 단위는 현재 문서/메타데이터만 정리된 outlined 단계다. 아래 실습 흐름과 출력 예시는 **후속 applied 단계에서 구현될 예상 구조**이며, 아직 `scratch_lab.py`, `framework_lab.py`, `analysis.py`, `analysis.md`, `reflection.md`는 없다.
 
 ## 왜 이 단위를 배우는가
 앞선 트랙에서는 모델 구조, 학습 루프, 평가, 시스템 운영, 논문 재현 감각을 각각 익혔다. 하지만 실제 frontier 프로젝트에서는 그 조각들을 안다고 해서 곧바로 좋은 capstone이 생기지 않는다. 더 어려운 일은 **무엇을 만들지보다 무엇을 만들지 않을지, 어떤 성공 기준으로 끝낼지, 실패했을 때 무엇을 관찰할지를 먼저 계약으로 고정하는 것**이다.
