@@ -1,0 +1,41 @@
+objective: 여러 선행 트랙 지식을 묶어 capstone 프로젝트를 막연한 아이디어가 아니라 scope / milestone / dataset-model-eval / report 계약으로 고정하고, 실패도 해석 가능한 end-to-end 모델 빌드 계획의 뼈대를 만든다.
+status: outlined
+prereqs:
+  - claim/evidence를 작은 실험 계약으로 자르는 감각
+  - baseline, metric, split, failure slice를 같은 조건에서 정의하는 습관
+  - dataset leakage / label quality / protocol mismatch 위험에 대한 인식
+  - runtime budget / hardware / logging / recovery 관점에서 프로젝트 범위를 보는 태도
+  - success criterion과 non-goal을 문장으로 고정하는 기본 문서화 습관
+key_terms:
+  - capstone
+  - problem framing
+  - scope boundary
+  - non-goal
+  - dataset contract
+  - model contract
+  - eval contract
+  - baseline
+  - milestone
+  - acceptance gate
+  - report outline
+  - failure analysis
+  - risk register
+  - error slice
+  - artifact hygiene
+required_outputs:
+  - outlined README
+  - theory note
+  - prerequisite checklist
+  - lesson metadata
+  - artifacts placeholder
+  - future capstone problem statement / non-goal sample contract
+  - future milestone / acceptance gate plan sample contract
+  - future dataset-model-eval matrix sample contract
+  - future report outline / failure analysis memo sample contract
+analysis_questions:
+  - 아이디어를 어디까지 줄여야 정직하고 끝낼 수 있는 capstone scope가 되는가?
+  - baseline은 왜 가장 화려한 모델보다 가장 해석 가능한 비교선에서 시작해야 하는가?
+  - dataset / model / eval 계약 중 하나가 비어 있으면 어떤 혼란이 생기는가?
+  - milestone은 코드 작업 목록이 아니라 어떤 의사결정과 artifact를 닫아야 하는가?
+  - failure analysis는 왜 결과가 나쁜 경우의 부록이 아니라 처음부터 설계해야 하는 핵심 deliverable인가?
+  - 이 단위의 capstone contract가 다음 agentic training / eval loop 단위에서 어떤 triage 기준과 자동화 경계로 이어지는가?
