@@ -23,6 +23,11 @@ RETIRED_TRACK_ROOTS = [
 ]
 
 
+def assert_has_track_reference(testcase: unittest.TestCase, text: str, token: str, rel: str) -> None:
+    pattern = rf'(?<![A-Za-z0-9_]){re.escape(token)}(?![A-Za-z0-9_])'
+    testcase.assertRegex(text, pattern, f'{rel} missing track reference {token}')
+
+
 class TestReindexedTracks(unittest.TestCase):
     def test_reindexed_track_readmes_exist(self) -> None:
         for rel in [f'{track}/README.md' for track in FUTURE_TRACK_ROOTS]:
@@ -43,7 +48,7 @@ class TestReindexedTracks(unittest.TestCase):
         for rel in ['README.md', 'docs/00_program_map.md', 'scripts/README.md']:
             text = (ROOT / rel).read_text(encoding='utf-8')
             for token in required_tokens:
-                self.assertIn(token, text, f'{rel} missing {token}')
+                assert_has_track_reference(self, text, token, rel)
             for token in RETIRED_TRACK_ROOTS:
                 pattern = rf'(?<![A-Za-z0-9_]){re.escape(token)}(?![A-Za-z0-9_])'
                 self.assertNotRegex(text, pattern, f'{rel} still mentions retired root {token}')

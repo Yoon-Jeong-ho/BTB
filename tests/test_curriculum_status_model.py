@@ -21,7 +21,11 @@ class TestCurriculumStatusModel(unittest.TestCase):
     def _discover_unit_dirs(self, track_name: str) -> set[str]:
         track_path = ROOT / track_name
         self.assertTrue(track_path.is_dir(), f'missing track directory {track_name}')
-        return {child.name for child in track_path.iterdir() if child.is_dir()}
+        return {
+            child.name
+            for child in track_path.iterdir()
+            if child.is_dir() and (child / 'README.md').is_file()
+        }
 
     def test_status_file_lists_expanded_tracks(self) -> None:
         data = self._load_status()

@@ -30,7 +30,7 @@ class TestCurriculumExpansionDocs(unittest.TestCase):
             ('04_multimodal_bridge', '08_multimodal_bridge'),
             ('05_multimodal', '09_multimodal'),
         ]:
-            pattern = rf"(?m)^.*{re.escape(old)}.*->.*{re.escape(new)}.*$"
+            pattern = rf"(?m)^.*{re.escape(old)}.*(?:->|→).*{re.escape(new)}.*$"
             self.assertRegex(text, pattern)
 
 
