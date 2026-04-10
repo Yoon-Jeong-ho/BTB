@@ -34,9 +34,9 @@
     "05_advanced_nlp_llm": {
       "01_language_modeling_and_pretraining_objectives": "outlined",
       "02_corpus_tokenizer_and_data_mixture": "outlined",
-      "03_domain_adaptive_pretraining": "planned",
-      "04_instruction_tuning_and_sft": "planned",
-      "05_preference_optimization_dpo_orpo_kto": "planned",
+      "03_domain_adaptive_pretraining": "outlined",
+      "04_instruction_tuning_and_sft": "outlined",
+      "05_preference_optimization_dpo_orpo_kto": "outlined",
       "06_rlhf_and_reasoning_rl": "planned",
       "07_retrieval_augmented_generation_and_eval": "planned",
       "08_alignment_safety_and_model_behavior": "planned"
