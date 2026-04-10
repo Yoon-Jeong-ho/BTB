@@ -1,0 +1,37 @@
+objective: VAE와 GAN을 대비해 확률적 latent sampling, adversarial generation, sample quality와 diversity, 학습 안정성의 trade-off를 읽는 생성 모델 입문 감각을 만든다.
+status: outlined
+prereqs:
+  - encoder/decoder/latent representation 기본 개념
+  - reconstruction loss와 label-free learning signal 이해
+  - 평균, 분산, sampling에 대한 기초 확률 감각
+  - KL divergence를 분포 차이 관점에서 읽는 직관
+  - min-max 최적화와 불안정 학습에 대한 기본 문제의식
+  - sample quality와 diversity를 함께 봐야 한다는 평가 감각
+key_terms:
+  - generative model
+  - variational autoencoder
+  - VAE
+  - latent variable
+  - latent sampling
+  - KL divergence
+  - reparameterization trick
+  - generator
+  - discriminator
+  - adversarial training
+  - posterior collapse
+  - mode collapse
+required_outputs:
+  - outlined README
+  - theory note
+  - prerequisite checklist
+  - lesson metadata
+  - artifacts placeholder
+  - future latent sampling sample contract
+  - future adversarial training sample contract
+  - future failure-pattern observation contract
+analysis_questions:
+  - VAE는 latent space를 샘플링 가능하게 만들기 위해 reconstruction term과 KL term을 어떻게 함께 사용하려 하는가?
+  - GAN의 generator와 discriminator는 각각 어떤 목표를 가지며, 왜 이 경쟁이 sharp sample과 unstable training을 동시에 만들 수 있는가?
+  - VAE의 blurry sample과 GAN의 sharp sample 비교에서 무엇을 얻고 무엇을 놓치기 쉬운가?
+  - posterior collapse와 mode collapse는 각각 어떤 failure pattern이며 무엇을 관찰해야 드러나는가?
+  - 생성 모델에서는 accuracy 대신 어떤 샘플 inspection, diversity check, training-balance 관찰이 더 중요해지는가?
