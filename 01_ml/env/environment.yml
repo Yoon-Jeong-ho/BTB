@@ -1,0 +1,21 @@
+name: btb-01-ml
+channels:
+  - defaults
+  - pytorch
+  - nvidia
+dependencies:
+  - python=3.12
+  - numpy
+  - pandas
+  - scikit-learn=1.7.*
+  - pytorch
+  - pyyaml
+  - requests
+  - psutil
+  - matplotlib
+  - seaborn
+  - pip
+  - pip:
+      - datasets
+      - ucimlrepo
+      - xgboost
