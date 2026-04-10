@@ -1,0 +1,35 @@
+objective: corpus quality, tokenizer granularity, dedup/contamination, domain-language mixture 설계를 함께 읽어 pretraining data pipeline이 모델 행동과 비용을 어떻게 바꾸는지 이해한다.
+status: outlined
+prereqs:
+  - tokenization과 subword/embedding 기본 감각
+  - next-token language modeling objective 이해
+  - train/validation/test split과 leakage 개념
+  - context window와 sequence length budget 읽기
+  - 데이터 분포 차이와 weighting 기초
+key_terms:
+  - corpus curation
+  - corpus quality
+  - tokenizer
+  - vocabulary size
+  - subword granularity
+  - sequence length
+  - deduplication
+  - contamination
+  - benchmark leakage
+  - data mixture
+  - domain balance
+  - multilingual mixture
+  - token budget
+required_outputs:
+  - outlined README
+  - theory markdown
+  - prereqs markdown
+  - lesson metadata
+  - artifacts placeholder
+  - future scratch/framework output contract
+analysis_questions:
+  - corpus quality는 단순 규모와 어떻게 다르고, 어떤 노이즈가 실제 학습 신호를 약화시키는가?
+  - tokenizer vocabulary와 granularity를 바꾸면 compression, coverage, multilingual fairness는 어떻게 달라지는가?
+  - deduplication과 contamination check는 각각 무엇을 막고, 왜 둘 다 따로 봐야 하는가?
+  - mixture 비율을 문서 기준이 아니라 token budget과 품질 가중치 기준으로 읽으면 어떤 판단이 달라지는가?
+  - 특정 언어/도메인이 tokenizer와 mixture 설계에서 동시에 불리해질 수 있는 경로는 무엇인가?
