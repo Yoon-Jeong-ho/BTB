@@ -1,0 +1,71 @@
+{
+  "tracks": {
+    "00_foundations": {
+      "01_tensor_shapes": "runnable",
+      "02_activation_and_loss": "runnable",
+      "03_gradients_and_backpropagation": "runnable",
+      "04_regularization_and_normalization": "runnable",
+      "05_gpu_memory_runtime": "runnable"
+    },
+    "01_ml": {
+      "01_tabular_classification": "runnable",
+      "02_tabular_regression": "runnable",
+      "03_model_selection_and_interpretation": "runnable",
+      "04_large_scale_tabular": "runnable"
+    },
+    "02_deep_learning": {
+      "01_perceptron_and_mlp": "planned",
+      "02_cnn_and_image_classification": "planned",
+      "03_sequence_models_rnn_lstm_gru": "planned",
+      "04_attention_and_transformers": "planned",
+      "05_autoencoders_and_representation_learning": "planned",
+      "06_generative_models_vae_gan": "planned",
+      "07_training_recipes_and_debugging": "planned"
+    },
+    "03_nlp_bridge": {
+      "01_tokenization_and_embeddings": "runnable",
+      "02_attention_and_transformer_block": "runnable"
+    },
+    "04_nlp": {
+      "01_text_classification": "runnable",
+      "02_named_entity_recognition": "runnable",
+      "03_machine_reading_comprehension": "runnable"
+    },
+    "05_advanced_nlp_llm": {
+      "01_language_modeling_and_pretraining_objectives": "planned",
+      "02_corpus_tokenizer_and_data_mixture": "planned",
+      "03_domain_adaptive_pretraining": "planned",
+      "04_instruction_tuning_and_sft": "planned",
+      "05_preference_optimization_dpo_orpo_kto": "planned",
+      "06_rlhf_and_reasoning_rl": "planned",
+      "07_retrieval_augmented_generation_and_eval": "planned",
+      "08_alignment_safety_and_model_behavior": "planned"
+    },
+    "06_training_systems": {
+      "01_torchrun_and_ddp_basics": "planned",
+      "02_accelerate_workflows": "planned",
+      "03_deepspeed_zero": "planned",
+      "04_fsdp_checkpointing_and_offload": "planned",
+      "05_tensor_parallelism": "planned",
+      "06_pipeline_parallelism": "planned",
+      "07_data_parallel_grad_accumulation": "planned",
+      "08_hybrid_parallel_topologies": "planned",
+      "09_profiling_monitoring_and_failure_recovery": "planned"
+    },
+    "07_frontier_labs": {
+      "01_paper_reproduction_playground": "planned",
+      "02_capstone_model_building": "planned",
+      "03_agentic_training_and_eval_loops": "planned",
+      "04_benchmark_and_dataset_construction": "planned",
+      "05_open_ended_research_tracks": "planned"
+    },
+    "08_multimodal_bridge": {
+      "01_contrastive_alignment": "runnable"
+    },
+    "09_multimodal": {
+      "01_image_text_retrieval": "runnable",
+      "02_image_captioning": "runnable",
+      "03_visual_question_answering": "runnable"
+    }
+  }
+}
