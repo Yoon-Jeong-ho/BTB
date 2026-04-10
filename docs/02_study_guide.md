@@ -1,97 +1,64 @@
 # 02 Study Guide
 
-이 문서는 BTB를 **한 unit씩 차례대로 공부할 때** 바로 따라갈 수 있는 체크리스트다.
+## 목적
 
-## 1. 가장 먼저 읽을 것
+이 문서는 BTB의 `00→09` 커리큘럼을 어떻게 읽고 들어갈지 정리한 한국어 우선 학습 가이드다. BTB는 전체 사다리를 먼저 공개한 상태이므로, 새 scaffold track이나 unit는 아직 `planned`일 수 있다. 따라서 **실행 가능한 lab를 기대하기 전에는 각 track README와 `docs/curriculum_status.json`의 unit status를 먼저 확인**해야 한다.
 
-1. 루트 [README.md](../README.md)
-2. [00_program_map.md](00_program_map.md)
-3. 이 문서
-4. foundations/bridge/applied unit는 `README -> THEORY -> (있으면) PREREQS -> scratch/framework -> analysis -> reflection` 순서로, `01_ml` stage는 `README -> THEORY -> 최신 artifact README` 순서로 본다.
+## 표준 1-pass 루트
 
-## 2. 추천 공부 루트
+가장 권장하는 기본 루트는 전체 계단을 순서대로 한 번 통과하는 방식이다.
 
-### 루트 A. 전체 커리큘럼을 순서대로
+`00_foundations -> 01_ml -> 02_deep_learning -> 03_nlp_bridge -> 04_nlp -> 05_advanced_nlp_llm -> 06_training_systems -> 07_frontier_labs -> 08_multimodal_bridge -> 09_multimodal`
 
-| 순번 | 경로 | 메모 |
-| --- | --- | --- |
-| 1 | `00_foundations/01_tensor_shapes` | tensor shape와 broadcasting 감각 |
-| 2 | `00_foundations/02_activation_and_loss` | activation, logits, loss |
-| 3 | `00_foundations/03_gradients_and_backpropagation` | gradient, chain rule, autograd |
-| 4 | `00_foundations/04_regularization_and_normalization` | LayerNorm, dropout, weight decay |
-| 5 | `00_foundations/05_gpu_memory_runtime` | runtime, dtype, training vs inference |
-| 6 | `01_ml/01_tabular_classification` | 가장 쉬운 applied baseline |
-| 7 | `01_ml/02_tabular_regression` | residual과 calibration |
-| 8 | `01_ml/03_model_selection_and_interpretation` | validation과 해석 |
-| 9 | `01_ml/04_large_scale_tabular` | 비용-성능 trade-off |
-| 10 | `02_nlp_bridge/01_tokenization_and_embeddings` | 문장을 id와 embedding으로 바꾸기 |
-| 11 | `02_nlp_bridge/02_attention_and_transformer_block` | attention, mask, transformer block |
-| 12 | `03_nlp/01_text_classification` | NLP 첫 applied task |
-| 13 | `03_nlp/02_named_entity_recognition` | token-level prediction |
-| 14 | `03_nlp/03_machine_reading_comprehension` | span extraction과 no-answer |
-| 15 | `04_multimodal_bridge/01_contrastive_alignment` | 이미지-텍스트 공동 표현 공간 |
-| 16 | `05_multimodal/01_image_text_retrieval` | alignment를 retrieval로 읽기 |
-| 17 | `05_multimodal/02_image_captioning` | retrieval에서 generation으로 이동 |
-| 18 | `05_multimodal/03_visual_question_answering` | 멀티모달 reasoning |
+이 루트는 아래 상황에 적합하다.
 
-### 루트 B. 딥러닝 코어를 먼저 굳히기
+- 기초 수학/텐서 감각부터 LLM·멀티모달까지 한 번에 지도처럼 보고 싶은 경우
+- 모델 family, task, training system, frontier experiment 사이의 경계를 분명히 잡고 싶은 경우
+- 당장 모든 unit를 실행하지 않더라도 전체 프로그램의 역할 분리를 먼저 이해하고 싶은 경우
 
-딥러닝 쪽이 비어 있다고 느끼면 아래 7개만 먼저 본다.
+### 1-pass에서 보는 법
 
-1. `00_foundations/01_tensor_shapes`
-2. `00_foundations/02_activation_and_loss`
-3. `00_foundations/03_gradients_and_backpropagation`
-4. `00_foundations/04_regularization_and_normalization`
-5. `00_foundations/05_gpu_memory_runtime`
-6. `02_nlp_bridge/01_tokenization_and_embeddings`
-7. `02_nlp_bridge/02_attention_and_transformer_block`
+1. `00_foundations`에서 tensor, gradient, runtime 관측 습관을 먼저 만든다.
+2. `01_ml`에서 baseline, metric, failure analysis를 실험 discipline으로 굳힌다.
+3. `02_deep_learning`에서 perceptron·CNN·RNN·transformer·generative model family를 지도처럼 훑는다.
+4. `03_nlp_bridge -> 04_nlp -> 05_advanced_nlp_llm`에서 NLP/LLM 흐름을 연결한다.
+5. `06_training_systems -> 07_frontier_labs`에서 큰 실험을 운영하고 재현하는 법으로 확장한다.
+6. `08_multimodal_bridge -> 09_multimodal`에서 image-text shared representation과 응용 태스크로 넘어간다.
 
-이 루트는 **activation / loss / gradient / backprop / attention / runtime** 을 한 축으로 이해하게 만드는 데 초점을 둔다. 멀티모달 bridge는 이 다음에 붙인다.
+## NLP / LLM 집중 압축 루트
 
-## 3. 한 unit를 읽는 기본 루틴
+NLP·LLM 중심으로 빠르게 올라가고 싶다면 아래 압축 루트를 권장한다.
 
-### 1단계: 개념 잡기
-- `README.md`를 읽으며 이 unit의 목표와 대표 figure를 본다.
-- `THEORY.md`에서 용어와 직관을 먼저 잡는다.
-- `PREREQS.md`가 있으면 모르는 개념이 있는지 바로 메모한다.
+`00_foundations -> 01_ml -> 02_deep_learning(핵심 일부) -> 03_nlp_bridge -> 04_nlp -> 05_advanced_nlp_llm`
 
-### 2단계: 숫자 흐름 보기
-- `scratch_lab.py`를 먼저 본다.
-- shape, logits, probability, attention weight, similarity 같은 **중간 숫자**를 확인한다.
-- 가능하면 figure와 함께 본다.
+### 왜 `02_deep_learning`을 완전히 건너뛰지 않는가
 
-### 3단계: 실제 프레임워크와 연결하기
-- `framework_lab.py`를 읽는다.
-- PyTorch / Transformers / vision-text encoder 같은 실제 모듈 이름과 연결한다.
-- `README`에 있는 실행 결과 예시를 같이 본다.
+- NLP에 바로 들어가더라도 perceptron/MLP, sequence model, attention/transformer 계열은 한 번은 봐야 한다.
+- 최소한 `02_deep_learning`의 핵심 일부를 통해 neural architecture family와 training/debugging 감각을 먼저 잡아 두면 `03_nlp_bridge`와 `04_nlp`의 실험이 훨씬 덜 추상적으로 보인다.
+- 이후 LLM 단위에서 pretraining objective, tokenizer/data mixture, instruction tuning을 이해할 때도 도움이 된다.
 
-### 4단계: 해석하고 자기 말로 정리하기
-- `analysis.md`를 읽고 왜 이런 결과가 나왔는지 정리한다.
-- `reflection.md`를 짧게 적으며 스스로 설명 가능한지 확인한다.
+### NLP / LLM 압축 루트에서 우선순위
 
-## 4. 추천 실행 명령
+- `02_deep_learning`: transformer/sequence model/training recipe 중심으로 핵심 일부를 먼저 본다.
+- `03_nlp_bridge`: tokenization, embedding, attention, mask를 반드시 확인한다.
+- `04_nlp`: text classification -> NER -> MRC 순으로 applied NLP core를 익힌다.
+- `05_advanced_nlp_llm`: pretraining 이후 objective, post-training, RAG, alignment를 차례로 연결한다.
 
-```bash
-python scripts/run_lesson.py --unit 00_foundations/01_tensor_shapes --mode scratch
-python scripts/run_lesson.py --unit 00_foundations/01_tensor_shapes --mode framework
-python scripts/build_lesson_report.py --unit 00_foundations/01_tensor_shapes
-```
+## planned 상태를 읽는 법
 
-- 처음에는 foundations unit로 실행 흐름을 익히는 것을 권장한다.
-- applied track으로 갈수록 README의 예시 figure와 analysis를 먼저 읽고 실행 여부를 결정해도 된다.
+- BTB의 새 scaffold track과 unit는 문서 구조가 먼저 열리고, 나중에 runnable lab가 채워질 수 있다.
+- 따라서 `planned`라고 적혀 있다면 `아직 설계/문서 중심 단계`로 이해해야 한다.
+- `runnable`이라고 표시된 unit만 바로 실행 실습 대상으로 기대하는 것이 안전하다.
 
-## 5. 공부하면서 꼭 남길 메모
+## runnable lab를 기대하기 전에 확인할 것
 
-각 unit마다 최소한 아래 질문에 답해 본다.
+1. track README에서 unit table의 `Status`를 먼저 본다.
+2. [docs/curriculum_status.json](curriculum_status.json)에서 최신 `planned` / `runnable` 상태를 다시 확인한다.
+3. 해당 unit 폴더에 `lesson.yaml`, lab 스크립트, artifact scaffold가 실제로 있는지 본다.
+4. 실행 전에 [scripts/README.md](../scripts/README.md)와 [docs/01_experiment_playbook.md](01_experiment_playbook.md)로 산출물 규약을 확인한다.
 
-1. 입력 shape는 무엇이고, 출력 shape는 무엇인가?
-2. 중간 representation은 어디서 바뀌는가?
-3. loss는 어떤 실수를 벌점으로 주는가?
-4. figure가 보여주는 실패 패턴은 무엇인가?
-5. 다음 unit로 넘어가기 전에 아직 헷갈리는 개념은 무엇인가?
+## 추천 학습 운영 팁
 
-## 6. 다음 문서
-
-- 전체 프로그램 설명: [00_program_map.md](00_program_map.md)
-- 실험 운영 규칙: [01_experiment_playbook.md](01_experiment_playbook.md)
-- 시작점: [../00_foundations/README.md](../00_foundations/README.md)
+- 전체를 빨리 훑고 싶다면 각 track README만 먼저 읽고, runnable unit만 골라 실습한다.
+- 처음부터 frontier track까지 모두 돌리려 하지 말고, 관심 분야에 따라 압축 루트를 선택한다.
+- 어떤 루트를 타더라도 `summary.md`, failure case, figure를 남기는 실험 습관은 공통으로 유지한다.

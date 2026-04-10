@@ -2,89 +2,56 @@
 
 ## 목표
 
-BTB는 `00_foundations -> 01_ml -> 02_nlp_bridge -> 03_nlp -> 04_multimodal_bridge -> 05_multimodal` 순서로 올라가면서, 각 단계에서 이론을 실험으로 검증하고 재현 가능한 산출물을 남기는 한글 중심 학습 사다리다.
+BTB는 `00_foundations -> 01_ml -> 02_deep_learning -> 03_nlp_bridge -> 04_nlp -> 05_advanced_nlp_llm -> 06_training_systems -> 07_frontier_labs -> 08_multimodal_bridge -> 09_multimodal` 순서로 올라가면서, 각 단계에서 이론을 실험과 산출물로 검증하는 한글 우선 커리큘럼이다.
+
+## 트랙 역할 경계
+
+1. `00_foundations` — 공통 수치/텐서/실행 감각을 맞추는 진입 계단이다.
+2. `01_ml` — 실험 discipline과 baseline 해석을 몸에 익히는 classical ML 구간이다.
+3. `02_deep_learning` — perceptron, CNN, sequence model, transformer, generative model까지 딥러닝 모델 패밀리를 정리하는 구간이다.
+4. `03_nlp_bridge` — 딥러닝에서 NLP로 넘어가는 입력 표현, tokenization, embedding, attention 감각을 연결하는 다리다.
+5. `04_nlp` — text classification, NER, MRC 같은 applied NLP core를 실습하는 구간이다.
+6. `05_advanced_nlp_llm` — pretraining 이후 고급 NLP/LLM, instruction tuning, preference optimization, RAG, alignment를 묶어 다루는 구간이다.
+7. `06_training_systems` — distributed and large-model training systems를 다루는 운영/시스템 구간이다.
+8. `07_frontier_labs` — reproduction, capstone, agentic experiments를 수행하는 개방형 연구 실습 구간이다.
+9. `08_multimodal_bridge` — text-only 표현에서 image-text shared representation으로 넘어가는 multimodal 연결 다리다.
+10. `09_multimodal` — retrieval, captioning, VQA 중심의 multimodal applied track이다.
 
 ## 왜 이 순서인가
 
-1. `00_foundations` 에서 tensor, activation, loss, gradient, optimizer, GPU/runtime 같은 공통 기초를 먼저 고정한다.
-2. `01_ml` 에서 데이터 분할, metric, 에러 분석, 해석의 기본기를 익힌다.
-3. `02_nlp_bridge` 에서 tokenization, embedding, attention, transformer block 감각을 연결한다.
-4. `03_nlp` 에서 task-specific NLP 실습으로 확장한다.
-5. `04_multimodal_bridge` 에서 alignment, retrieval vs generation, cross-attention 개념을 미리 연결한다.
-6. `05_multimodal` 에서 retrieval, generation, reasoning까지 확장한다.
+1. `00_foundations`에서 tensor, gradient, optimizer, runtime을 먼저 고정해야 이후 모든 트랙의 실험 로그를 읽을 수 있다.
+2. `01_ml`에서 baseline, metric, error analysis, reproducibility를 익혀야 이후 딥러닝/LLM 실험에서도 흔들리지 않는다.
+3. `02_deep_learning`에서 모델 패밀리의 구조적 차이를 익혀 두면, NLP와 multimodal 실습에서 transformer를 블랙박스로 보지 않게 된다.
+4. `03_nlp_bridge`는 문장이 token id, embedding, attention flow로 바뀌는 과정을 천천히 연결해 `04_nlp` 실습의 진입 장벽을 낮춘다.
+5. `04_nlp`에서 task-specific NLP core를 경험한 뒤에야 `05_advanced_nlp_llm`의 pretraining/post-training 논의를 실제 문제와 연결할 수 있다.
+6. `06_training_systems`는 큰 모델을 실제 하드웨어 위에서 운영하는 법을 분리해, 모델 설계와 시스템 설계를 동시에 혼동하지 않게 만든다.
+7. `07_frontier_labs`는 앞선 트랙을 조합해 논문 재현, capstone, agentic workflow 실험으로 확장하는 sandbox다.
+8. `08_multimodal_bridge`는 image-text alignment를 작은 예제로 먼저 익혀 `09_multimodal`의 retrieval/caption/VQA 실습으로 자연스럽게 이어 준다.
 
-## 현재 학습 가능 상태
+## 현재 상태를 읽는 법
 
-- `00_foundations`: 공통 기초 5 unit가 모두 채워져 있다.
-- `01_ml`: 표형 데이터 기준의 applied ML baseline 트랙이 준비돼 있다.
-- `02_nlp_bridge -> 03_nlp`: bridge 2 unit 뒤에 applied NLP 3 unit가 이어진다.
-- `04_multimodal_bridge -> 05_multimodal`: bridge 1 unit 뒤에 applied multimodal 3 unit가 이어진다.
+- BTB는 `00→09` 전체 사다리를 먼저 공개했지만, 모든 unit이 같은 완성도는 아니다.
+- 새 scaffold 트랙과 unit에는 아직 `planned` 상태가 남아 있을 수 있다.
+- runnable lab를 기대하기 전에는 각 트랙 README와 [curriculum_status.json](curriculum_status.json)을 확인해 현재 상태를 먼저 본다.
 
-즉 지금은 **00→05 전체를 끊기지 않게 공부할 수 있는 상태**다.
+## 단계별 산출물 관점
 
-## 딥러닝 코어 축
-
-딥러닝 기초를 먼저 굳히고 싶다면 아래 축을 한 묶음으로 본다.
-
-1. `00_foundations/01_tensor_shapes`
-2. `00_foundations/02_activation_and_loss`
-3. `00_foundations/03_gradients_and_backpropagation`
-4. `00_foundations/04_regularization_and_normalization`
-5. `00_foundations/05_gpu_memory_runtime`
-6. `02_nlp_bridge/01_tokenization_and_embeddings`
-7. `02_nlp_bridge/02_attention_and_transformer_block`
-
-이 축은 activation, loss, gradient, backprop, masking, attention, runtime을 하나의 숫자 흐름으로 이해하게 만드는 데 목적이 있다. `04_multimodal_bridge/01_contrastive_alignment` 는 이 다음에 붙이는 선택 확장이다.
-
-## 한 unit씩 공부할 큰 흐름
-
-세부 unit-by-unit 순서는 [02_study_guide.md](02_study_guide.md) 를 따른다. 여기서는 track 수준의 큰 흐름만 잡는다.
-
-1. `00_foundations` — tensor부터 gradient, regularization, runtime까지 DL 코어를 먼저 고정한다.
-2. `01_ml` — baseline, metric, interpretation, failure analysis로 실험 discipline을 붙인다.
-3. `02_nlp_bridge` — tokenization, embedding, attention, transformer block을 연결한다.
-4. `03_nlp` — text classification, NER, MRC로 applied NLP를 읽는다.
-5. `04_multimodal_bridge` — alignment와 retrieval vs generation을 미리 연결한다.
-6. `05_multimodal` — retrieval, captioning, VQA로 멀티모달을 확장한다.
-
-## 단계 구조
-
-1. `00_foundations`: 모든 상위 트랙이 공유하는 기초 개념과 runtime 감각
-2. `01_ml`: 실험 discipline과 해석 기본기
-3. `02_nlp_bridge`: ML에서 NLP로 넘어가기 위한 표현 학습 브리지
-4. `03_nlp`: 본격 NLP 실습 트랙
-5. `04_multimodal_bridge`: NLP에서 멀티모달로 넘어가기 위한 브리지
-6. `05_multimodal`: 본격 멀티모달 실습 트랙
-
-## 단계별 산출물
-
-| Track | 반드시 남길 것 | 핵심 질문 |
+| 구간 | 반드시 남길 것 | 핵심 질문 |
 | --- | --- | --- |
-| Foundations | activation/loss figure, gradient check, runtime observation | 모델 안의 숫자 흐름이 어디서 바뀌는가 |
-| ML | confusion matrix, residual plot, feature importance | 왜 이 모델이 이 데이터에서 강한가/약한가 |
-| NLP | length distribution, class/entity/span error analysis | tokenizer와 pretraining이 무엇을 해결하는가 |
-| Multimodal | retrieval grid, caption panel, QA failure panel | 모델이 두 modality를 정말 함께 쓰는가 |
+| Foundations / ML | baseline metric, residual/error analysis, runtime 관측 | 기본기가 실제 실험 판단으로 이어지는가 |
+| Deep Learning / NLP | shape trace, attention/sequence 분석, task failure case | 모델 내부 표현과 태스크 성능을 함께 설명할 수 있는가 |
+| Advanced / Systems / Frontier | training log, system profile, ablation, self-review | 큰 모델·큰 실험을 운영 가능한 형태로 정리했는가 |
+| Multimodal | retrieval grid, caption panel, VQA failure panel | 두 modality를 정말 함께 쓰는가 |
 
 ## 추천 진행 방식
 
-1. 각 unit에서 먼저 README와 THEORY를 읽는다.
-2. 그다음 `scratch_lab.py` 또는 대표 figure를 보고 숫자 흐름을 확인한다.
-3. `framework_lab.py`와 실행 결과 예시를 보며 실제 라이브러리 구현과 연결한다.
-4. `analysis.md`에서 왜 이런 결과가 나왔는지 읽는다.
-5. 마지막에 `reflection.md`로 스스로 설명 가능한지 점검한다.
-
-## 서버와 로컬의 역할 분리
-
-- 로컬: 자료 조사, config 작성, 결과 정리, figure 선별, 보고서 작성
-- 서버: 실제 학습, sweep, 대형 로그/체크포인트 생성
+1. 먼저 `00_foundations -> 01_ml`을 끝내며 공통 실험 습관을 만든다.
+2. 이후 목표 분야에 따라 전체 1-pass 또는 압축 루트를 고른다.
+3. 각 stage에서는 가장 쉬운 dataset/baseline으로 빠르게 1차 실험을 만든다.
+4. 숫자만 저장하지 말고 figure, failure case, summary를 반드시 같이 남긴다.
+5. 같은 실수를 반복하지 않도록 `summary.md`와 회고를 누적한다.
 
 ## 언어 정책
 
-- README, THEORY, PREREQS, 분석/회고 문서는 한글 우선을 기본으로 한다.
+- README, THEORY, PREREQS, 분석/회고 문서는 한국어/한글 우선을 기본으로 한다.
 - 필요한 경우 영어 technical term를 병기하되, 설명 문장은 한국어 중심으로 유지한다.
-
-## 최소 성공 기준
-
-- 각 stage마다 최소 1개 데이터셋에서 end-to-end 재현
-- `reports/` 에 승격된 실험 보고서 존재
-- 중요한 모델은 `artifacts/MODEL_REGISTRY.md` 에 기록

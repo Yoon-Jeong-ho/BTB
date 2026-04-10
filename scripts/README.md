@@ -1,16 +1,20 @@
 # Scripts
 
-이 폴더는 학습/평가/검증 스크립트를 모으는 공간이다.
+이 폴더는 학습/평가/검증 스크립트를 모으는 공간이다. 예시 경로도 현재 `00→09` 커리큘럼 루트를 기준으로 적는다.
 
 ```text
 python scripts/run_lesson.py --unit 00_foundations/01_tensor_shapes --mode scratch
 python scripts/run_lesson.py --unit 00_foundations/05_gpu_memory_runtime --mode framework
 python scripts/build_lesson_report.py --unit 00_foundations/01_tensor_shapes
 python scripts/check_curriculum_links.py
-python scripts/train.py --track 03_nlp --stage 01_text_classification --config path/to/config.yaml
-python scripts/eval.py --run-dir runs/03_nlp/01_text_classification/<run_id>
-python scripts/eval.py --run-dir runs/05_multimodal/01_image_text_retrieval/<run_id>
+python scripts/train.py --track 04_nlp --stage 01_text_classification --config path/to/config.yaml
+python scripts/eval.py --run-dir runs/04_nlp/01_text_classification/<run_id>
+python scripts/eval.py --run-dir runs/09_multimodal/01_image_text_retrieval/<run_id>
 ```
+
+현재 커리큘럼 기준으로 NLP 브리지는 `03_nlp_bridge`, applied NLP는 `04_nlp`, multimodal 브리지는 `08_multimodal_bridge`, multimodal 실습은 `09_multimodal` 아래에 놓인다.
+
+새 scaffold track/unit는 아직 `planned` 상태일 수 있으므로, 실행 전에 각 track README와 `docs/curriculum_status.json`에서 runnable 여부를 먼저 확인하는 것을 권장한다.
 
 ## Task 6 automation scaffold
 
