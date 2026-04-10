@@ -39,11 +39,13 @@
 - DeepSpeed/FSDP 같은 backend를 Accelerate로 호출할 수 있어도, 왜 다음 단위에서 backend 자체의 메모리/통신 개념을 따로 배워야 하는가?
 
 ## 실행 결과 예시
+아래 sample output은 `accelerate launch --num_processes 4` 같은 다중 프로세스 실행을 가정한 형태 예시다. 실제 runnable 단계에서는 CPU/GPU 수와 config에 따라 값이 달라질 수 있다.
+
 아래는 **완료된 실행 결과가 아니라**, 후속 applied 단계에서 기대하는 출력 형태 예시다.
 
 ```text
 # expected output / sample shape only
-$ python 06_training_systems/02_accelerate_workflows/scratch_lab.py
+$ accelerate launch --num_processes 4 06_training_systems/02_accelerate_workflows/scratch_lab.py
 {
   "status": "sample",
   "baseline_loop": {
