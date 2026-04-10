@@ -1,64 +1,75 @@
 # 02 CNN and Image Classification
 
-> Status: outlined
-> 이 단위는 현재 문서/메타데이터만 정리된 outlined 단계다. 아래 실습 흐름과 출력 예시는 **후속 applied 단계에서 구현될 예상 모습** 이며, 아직 `scratch_lab.py`, `framework_lab.py`, `analysis.md`, `reflection.md`는 없다.
+> Status: runnable
+>
+> 이 단위는 **CPU-safe toy CNN 실험을 직접 실행하는 runnable 단계**다. convolution을 “커다란 이미지 전체를 한 번에 읽는 연산”이 아니라 **작은 patch를 반복 검사하는 local rule**로 보고, pooling / channel / feature map / 간단한 classification baseline까지 한 흐름으로 묶는다.
 
 ## 왜 이 단위를 배우는가
-`02_deep_learning/01_perceptron_and_mlp`에서 가장 작은 neural classifier를 봤다면, 이제는 **이미지처럼 공간 구조가 중요한 입력을 왜 다른 방식으로 읽어야 하는지** 봐야 한다. 픽셀을 그냥 길게 펴서(flatten) MLP에 넣으면 "서로 가까운 픽셀이 함께 패턴을 만든다"는 감각이 흐려지기 쉽다. 이 단위는 convolution, local receptive field, parameter sharing, pooling을 통해 CNN이 왜 이미지 분류의 기본 출발점이 되었는지 설명한다.
+`02_deep_learning/01_perceptron_and_mlp`에서 tiny MLP가 feature space 위에 직선을 긋는 가장 작은 neural baseline이었다면, 이제는 **이미지처럼 위치 관계가 중요한 입력**에서 왜 다른 inductive bias가 필요한지 봐야 한다. CNN은 local receptive field, parameter sharing, pooling을 통해 “가까운 픽셀 패턴을 여러 위치에서 반복 감지한다”는 구조를 만든다.
 
-또한 feature map과 channel을 "중간 계층이 무엇을 보고 있는가"라는 관점으로 읽는 연습을 해 두면, 뒤의 multimodal·representation learning 단위에서도 시각 encoder를 더 덜 막연하게 받아들일 수 있다.
+이 감각이 있어야 뒤에서 attention이나 multimodal encoder를 배울 때도, feature map이 어떻게 쌓이고 왜 공간 해상도가 줄어드는지 덜 막연하게 읽을 수 있다.
 
 ## 이번 단위에서 남길 것
-- outline 상태의 안내 문서 `README.md`
-- convolution / pooling / feature map 직관을 정리한 `THEORY.md`
-- 선행 개념과 자기 점검을 담은 `PREREQS.md`
-- 단위 목표와 핵심 질문을 구조화한 `lesson.yaml`
-- 후속 실습 산출물이 들어갈 자리 `artifacts/.gitkeep`
-- runnable 승격 때 채울 예정인 shape 로그, feature map 관찰, class-logit 비교용 출력 계약
+- scratch 관측치 `artifacts/scratch-manual/metrics.json`
+- scratch figure `artifacts/scratch-manual/cnn_feature_maps.svg`
+- framework 관측치 `artifacts/framework-manual/metrics.json`
+- 실행별 관측 리포트 `artifacts/analysis-manual/latest_report.md`
+- 반복 실행에도 안정적으로 유지할 `analysis.md`
+- 학습자용 회고 워크시트 `reflection.md`
 
 ## 실습 흐름
-현재는 outline 문서만 정리된 상태이며, 아래 흐름은 이후 runnable 승격 때 구현할 실습 순서다.
-1. 아주 작은 흑백 이미지 패치를 두고, kernel이 슬라이딩하면서 local pattern에 점수를 주는 과정을 손계산 또는 toy tensor로 확인한다.
-2. 같은 kernel이 여러 위치에 재사용될 때 parameter sharing이 왜 "어디서 나타났는지와 상관없이 비슷한 패턴을 찾는다"는 성질을 만드는지 본다.
-3. stride / padding / pooling을 바꿔 가며 feature map의 해상도와 정보 보존량이 어떻게 달라지는지 비교한다.
-4. RGB 입력처럼 channel이 여러 개인 경우, convolution이 공간축뿐 아니라 channel 축 정보도 함께 섞는다는 점을 확인한다.
-5. 마지막에는 중간 feature map이 분류기 head의 logits로 어떻게 이어지는지 읽고, "중간 표현"과 "최종 class 점수"를 구분하는 연습을 한다.
+1. `scratch_lab.py`에서 6×6 toy RGB-like 이미지 4장을 직접 convolution 한다.
+2. vertical detector / horizontal detector 두 개가 **같은 kernel을 여러 위치에 재사용** 하며 feature map을 만든다는 점을 본다.
+3. max pooling이 4×4 feature map을 2×2로 줄이면서, 세부 좌표는 일부 버리고 “강한 반응이 있었는가”를 더 압축해 남긴다는 점을 확인한다.
+4. pooled feature map 평균값을 class score처럼 읽어, simple image classification baseline이 어떻게 가능한지 본다.
+5. `framework_lab.py`에서 같은 toy dataset을 PyTorch `Conv2d` + `MaxPool2d`로 다시 실행해, scratch 직관과 framework shape가 연결되는지 확인한다.
+6. `analysis.py`로 관측 숫자를 한국어 문장으로 묶고, 안정적인 해석 프레임(`analysis.md`)과 실행별 리포트(`latest_report.md`)를 분리한다.
 
-## 이 단위에서 특히 볼 질문
-- convolution은 왜 "작은 패턴 탐지기"처럼 설명할 수 있는가?
-- local receptive field는 fully connected layer와 무엇이 다르고, 이미지에서는 왜 더 자연스러운 inductive bias가 되는가?
-- pooling은 무엇을 남기고 무엇을 버리며, stride를 키우는 것과 어떤 점이 비슷하고 다른가?
+## 이번 단위에서 특히 볼 질문
+- convolution을 왜 **작은 pattern detector**로 읽을 수 있는가?
+- local receptive field는 fully connected baseline과 무엇이 다르고, 이미지에서는 왜 자연스러운 inductive bias가 되는가?
+- parameter sharing이 “위치가 달라도 비슷한 패턴을 같은 규칙으로 본다”는 말과 어떻게 연결되는가?
+- pooling은 무엇을 남기고 무엇을 버리며, class score baseline에는 어떤 도움을 주는가?
 - 입력 channel 수와 출력 feature map 수는 각각 무엇을 의미하는가?
-- feature map이 강하게 켜졌다고 해서 곧바로 특정 class가 확정된다고 말할 수 없는 이유는 무엇인가?
-- 이미지 분류에서 최종 logits를 읽을 때 중간 표현과 예측 결과를 어떻게 구분해야 하는가?
 
 ## 실행 결과 예시
-아래는 **아직 완료된 실행 결과가 아니라**, 후속 applied 단계에서 기대하는 출력 형태 예시다.
+아래 예시는 이 디렉터리에서 **실제로 실행되는 command/output shape**를 보여 준다.
 
 ```text
-# expected output / sample shape only
 $ python 02_deep_learning/02_cnn_and_image_classification/scratch_lab.py
 {
-  "input_shape": [1, 1, 8, 8],
-  "conv_kernel_shape": [2, 1, 3, 3],
-  "feature_map_shape": [1, 2, 6, 6],
-  "pooled_shape": [1, 2, 3, 3],
-  "top_activated_region": [2, 4],
-  "classification_note": "sample output shape only"
+  "dataset_shape": [4, 3, 6, 6],
+  "conv_kernel_shape": [2, 3, 3, 3],
+  "feature_map_shape": [4, 2, 4, 4],
+  "pooled_shape": [4, 2, 2, 2],
+  "classification_accuracy": 1.0,
+  "figure_path": "artifacts/scratch-manual/cnn_feature_maps.svg"
 }
 
 $ python 02_deep_learning/02_cnn_and_image_classification/framework_lab.py
 {
-  "batch_shape": [4, 3, 32, 32],
-  "conv1_output_shape": [4, 8, 30, 30],
-  "pool_output_shape": [4, 8, 15, 15],
-  "logits_shape": [4, 10],
-  "predicted_classes": [3, 1, 7, 0],
-  "confidence_note": "sample output shape only"
+  "backend": "pytorch",
+  "device": "cpu",
+  "conv_weight_shape": [2, 3, 3, 3],
+  "feature_map_shape": [4, 2, 4, 4],
+  "pooled_shape": [4, 2, 2, 2],
+  "logits_shape": [4, 2],
+  "accuracy": 1.0
 }
+
+$ python 02_deep_learning/02_cnn_and_image_classification/analysis.py
+# 02 CNN and Image Classification 실행 관측
+- local receptive field, parameter sharing, pooling 압축,
+  channel/feature map 구분, toy classification baseline을 한국어 리포트로 저장한다.
 ```
 
-핵심은 숫자 하나를 맞히는 것이 아니라, **공간 해상도가 어느 단계에서 줄어드는지**, **feature map channel이 어떻게 늘어나는지**, **마지막 logits shape가 class 수와 어떻게 연결되는지**를 읽는 것이다.
+실행 후에는 `cnn_feature_maps.svg`를 눈으로 보면서 **어느 detector가 어느 위치에서 더 강하게 켜지는지** 확인하고, `metrics.json`을 통해 **feature map shape / pooled shape / class score baseline** 을 바로 읽을 수 있다.
+
+## 문서를 읽을 때 볼 포인트
+- `README.md`: 무엇을 실행하고 어떤 산출물을 남기는지 먼저 본다.
+- `THEORY.md`: convolution, receptive field, pooling, channel vs feature map 직관을 다시 정리한다.
+- `analysis.md`: 숫자가 바뀌어도 유지되는 해석 틀만 읽는다.
+- `artifacts/analysis-manual/latest_report.md`: 이번 실행에서 실제로 나온 관측 숫자와 해석을 읽는다.
 
 ## 다음 단위와의 연결
-이 단위에서 "공간 구조를 보존한 채 패턴을 쌓아 올리는 법"을 이해해 두면, 다음 단위 `02_deep_learning/03_sequence_models_rnn_lstm_gru`에서 순서 구조를 다루는 recurrent family와 더 선명하게 대비할 수 있다. 하나는 이미지의 **가까운 위치 관계**를, 다른 하나는 시퀀스의 **시간 순서 관계**를 위한 inductive bias라는 점에서 나란히 읽으면 좋다.
+이 단위에서 “작은 local pattern을 쌓아 큰 분류 신호로 만든다”는 감각을 잡아 두면, 다음 `02_deep_learning/03_sequence_models_rnn_lstm_gru`에서 순서 구조를 위한 recurrent inductive bias를 더 선명하게 대비해서 볼 수 있다. 하나는 **공간 이웃**, 다른 하나는 **시간 순서**를 우선적으로 보는 구조라는 점이 핵심이다.

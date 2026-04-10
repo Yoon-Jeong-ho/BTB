@@ -1,41 +1,40 @@
-objective: convolution, local receptive field, parameter sharing, pooling, feature map/channel 직관을 통해 CNN 기반 이미지 분류의 기본 읽기 틀을 만든다.
-status: outlined
+objective: convolution, local receptive field, parameter sharing, pooling, channel/feature map 직관을 toy CNN image classification baseline으로 연결한다.
+status: runnable
 prereqs:
-  - 이미지 텐서 shape 읽기
-  - weighted sum과 작은 patch 점수 계산 감각
-  - activation/logits/cross entropy 기본 이해
-  - MLP baseline과 공간 구조 한계 이해
+  - batch/channel/height/width shape 읽기
+  - weighted sum과 patch score 계산 감각
+  - activation과 class score 구분
+  - 작은 neural baseline 읽기
+  - pooling이 해상도를 줄인다는 기본 이해
 key_terms:
   - convolution
   - kernel
   - local receptive field
   - parameter sharing
-  - stride
-  - padding
   - pooling
   - channel
   - feature map
-  - image classification
+  - image classification baseline
   - logits
 required_outputs:
-  - outlined README
-  - theory markdown
-  - prerequisite checklist
-  - lesson metadata
-  - artifacts placeholder
-  - future CNN output contract
+  - scratch metrics json
+  - scratch svg figure
+  - framework metrics json
+  - stable analysis markdown
+  - observed analysis report
+  - reflection worksheet
 analysis_questions:
-  - convolution을 왜 local pattern matcher라고 읽을 수 있는가?
+  - convolution을 왜 local pattern detector라고 설명할 수 있는가?
   - local receptive field와 parameter sharing은 이미지에 어떤 inductive bias를 주는가?
-  - pooling은 무엇을 남기고 무엇을 버리며, stride downsampling과 어떻게 비교할 수 있는가?
+  - pooling은 무엇을 남기고 무엇을 버리며, 왜 classification baseline에 도움이 되는가?
   - 입력 channel과 출력 feature map 수는 각각 무엇을 의미하는가?
-  - feature map과 최종 class logits를 어떻게 구분해서 읽어야 하는가?
+  - toy image classification baseline에서 pooled feature map 평균을 class score처럼 읽을 수 있는 이유는 무엇인가?
 datasets_or_inputs:
-  - 작은 grayscale patch 예시 입력 (planned)
-  - tiny RGB image batch 예시 입력 (planned)
-  - class label이 붙은 toy image classification 샘플 (planned)
+  - 6x6 toy RGB-like vertical/horizontal bar images
+  - hand-crafted vertical detector kernel
+  - hand-crafted horizontal detector kernel
 models_or_tools:
-  - hand-crafted convolution sketch
-  - tiny CNN classifier plan
-  - pooling / stride comparison sketch
-  - feature map visualization plan
+  - scratch convolution and max pooling loops
+  - PyTorch Conv2d and MaxPool2d baseline
+  - feature map SVG visualization
+  - stable analysis / observed report split
