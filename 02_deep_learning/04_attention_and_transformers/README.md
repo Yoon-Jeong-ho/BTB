@@ -1,74 +1,73 @@
 # 04 Attention and Transformers
 
-> Status: outlined
-
-> 이 단위는 아직 outline 단계다. 아래 실습 흐름과 출력 예시는 **구현 목표를 설명하는 설계 스케치**이며, 현재 이 디렉터리에는 runnable lab 코드가 없다.
+> Status: runnable
+>
+> 이 단위는 **CPU-safe toy attention 실험을 직접 실행해 보는 runnable 단계**다. attention을 “점수 계산 공식”이 아니라 **토큰들이 서로를 섞는 sequence mixing 규칙**으로 읽고, multi-head intuition, encoder/decoder 구분, recurrent bottleneck 완화를 한 번에 묶는다.
 
 ## 왜 이 단위를 배우는가
-`02_deep_learning/03_sequence_models_rnn_lstm_gru`에서 recurrent family가 시퀀스를 시간축으로 읽는 방식을 봤다면, 이제는 **토큰들을 순서대로 하나씩 넘기지 않고도 서로 섞을 수 있는 방법**을 봐야 한다. 이 단위는 attention을 "점수 계산"이 아니라 **sequence mixing 규칙**으로 읽고, transformer가 왜 recurrent bottleneck을 줄이며 현대 NLP 모델의 기본 블록이 되었는지 모델 패밀리 관점에서 다시 묶는다.
+`02_deep_learning/03_sequence_models_rnn_lstm_gru`에서 recurrent family가 시퀀스를 시간축으로 압축하는 방식을 봤다면, 이제는 **각 위치가 필요한 다른 위치를 직접 참조하는 방식**으로 넘어와야 한다. transformer는 recurrence를 완전히 지운 마법 블록이 아니라, **정보 전달 경로를 짧게 만들고 병렬 계산을 가능하게 하는 attention family**로 읽는 것이 핵심이다.
 
-또한 `03_nlp_bridge/02_attention_and_transformer_block`에서 배운 attention weight / mask / block shape 감각을, 이제는 **encoder-only / decoder-only / encoder-decoder 계열을 구분하는 상위 시야**로 확장한다.
+또한 `03_nlp_bridge/02_attention_and_transformer_block`에서 attention row sum, mask, transformer block shape를 보았다면, 여기서는 그 감각을 **encoder-only / decoder-only / encoder-decoder** 모델 패밀리 시야로 올려서 다시 정리한다.
 
 ## 이번 단위에서 남길 것
-- outline 상태의 학습 문서 `README.md`
-- 핵심 개념과 관찰 포인트를 정리한 `THEORY.md`
-- 선행 개념과 자기 점검을 담은 `PREREQS.md`
-- 단위 목표와 질문을 구조화한 `lesson.yaml`
-- 향후 실습 산출물을 받을 `artifacts/`
-- 이후 구현 단계에서 채울 예정인 attention / transformer 관찰 결과
-  - `artifacts/scratch-manual/metrics.json` 예상
-  - `artifacts/framework-manual/metrics.json` 예상
-  - `artifacts/analysis-manual/latest_report.md` 예상
+- scratch attention 관측치 `artifacts/scratch-manual/metrics.json`
+- scratch attention heatmap `artifacts/scratch-manual/attention_patterns.svg`
+- framework attention/transformer 관측치 `artifacts/framework-manual/metrics.json`
+- 실행별 관측 리포트 `artifacts/analysis-manual/latest_report.md`
+- 반복 실행에도 안정적으로 유지할 `analysis.md`
+- 학습자 회고 질문 `reflection.md`
 
 ## 실습 흐름
-1. **scratch 관점에서 sequence mixing 다시 보기**
-   아주 작은 query / key / value 예제로, 한 토큰이 다른 토큰 표현을 얼마나 섞는지와 `softmax(QK^T)`의 각 행이 왜 "참조 비율"처럼 읽히는지 확인한다.
-2. **multi-head intuition 붙이기**
-   head를 여러 개 둘 때 각 head가 같은 시퀀스를 서로 다른 기준으로 읽을 수 있다는 점을 관찰하고, "하나의 넓은 attention"과 "여러 개의 좁은 attention"이 직관상 어떻게 다른지 비교한다.
-3. **encoder block vs decoder block 구분하기**
-   encoder는 보통 bidirectional self-attention으로 전체 문맥을 본다는 점, decoder는 causal mask로 미래를 막고 필요하면 cross-attention으로 encoder 출력을 참조한다는 점을 블록 수준에서 정리한다.
-4. **recurrent bottleneck과 비교하기**
-   RNN류는 시간축 순차 업데이트가 필요하지만 transformer는 시점별 hidden update를 병렬화할 수 있다는 점, 대신 attention cost가 시퀀스 길이에 따라 커진다는 trade-off를 함께 본다.
-5. **NLP bridge와 model family track 연결하기**
-   여기서 정리한 encoder / decoder / encoder-decoder 감각이 이후 BERT류, GPT류, seq2seq transformer를 읽는 공통 분류틀이 된다는 점을 정리한다.
+1. `scratch_lab.py`에서 아주 작은 query/key/value 예제로 attention row가 왜 1로 합쳐지고, output이 왜 value들의 가중합인지 계산한다.
+2. 같은 시퀀스를 두 개 head로 읽어 보며, **한 head는 가까운 문맥**, 다른 head는 **조금 더 긴 문맥**을 강조하도록 만들어 multi-head intuition을 잡는다.
+3. 같은 attention score를 encoder 규칙(전체 문맥 허용)과 decoder 규칙(causal mask로 미래 차단)에 각각 적용해, “누구를 볼 수 있는가”가 어떻게 달라지는지 비교한다.
+4. `framework_lab.py`에서 PyTorch `MultiheadAttention`과 작은 transformer-ish decoder block을 CPU에서 실행하며, encoder self-attention / decoder masked self-attention / cross-attention을 한 번에 관찰한다.
+5. `analysis.py`로 row sum, head diversity, encoder/decoder 접근 규칙, recurrent bottleneck relief를 한국어 문장으로 묶는다.
 
-## 이 단위에서 특히 볼 질문
-- attention output을 왜 "토큰 선택"이 아니라 **sequence mixing 결과**라고 부르는가?
+## 이번 단위에서 특히 볼 질문
+- attention output을 왜 “토큰 하나 선택”이 아니라 **sequence mixing 결과**라고 읽어야 하는가?
 - multi-head는 단순히 파라미터를 늘린 것과 무엇이 다른가?
-- encoder block과 decoder block은 둘 다 transformer인데, 어떤 정보 접근 규칙이 가장 다르게 설계되는가?
-- transformer는 왜 recurrent family의 시간축 bottleneck을 줄여 주는가?
-- NLP bridge에서 본 attention block 감각이 모델 패밀리 단위 분류로 올라가면 무엇이 더 선명해지는가?
+- encoder block과 decoder block은 둘 다 transformer인데, **정보 접근 규칙**은 어떻게 다른가?
+- transformer는 recurrent family의 어떤 bottleneck을 줄이고, 대신 어떤 비용을 새로 가져오는가?
+- encoder-only / decoder-only / encoder-decoder 구분을 할 때 attention mask와 cross-attention 유무가 왜 중요한가?
 
 ## 실행 결과 예시
-아래는 **구현 후 기대하는 출력 형태의 예시**다. 완료된 실행 기록이 아니라, 어떤 관찰값을 남기면 좋은지 보여 주는 sample shape이다.
+아래 예시는 이 디렉터리에서 **실제로 실행되는 command/output shape**를 보여 준다.
 
 ```text
 $ python 02_deep_learning/04_attention_and_transformers/scratch_lab.py
 {
-  "status": "sample",
   "sequence_length": 5,
-  "head_count": 1,
-  "attention_row_sums": [1.0, 1.0, 1.0, 1.0, 1.0],
-  "mixed_token_example": {
-    "query_token": "ate",
-    "top_keys": ["cat", "fish"]
+  "max_row_sum_error": 0.0,
+  "multi_head": {
+    "head_count": 2,
+    "distinct_top_key_counts": [1, 1, 2, 2, 1]
   },
-  "recurrent_steps": 5,
-  "parallel_attention_steps": 1
+  "encoder_decoder": {
+    "encoder_future_access_mass": 0.465313,
+    "causal_mask_future_blocked": true
+  },
+  "figure_path": "artifacts/scratch-manual/attention_patterns.svg"
 }
 
 $ python 02_deep_learning/04_attention_and_transformers/framework_lab.py
 {
-  "status": "sample",
-  "encoder_hidden_shape": [2, 6, 32],
-  "decoder_hidden_shape": [2, 6, 32],
-  "self_attention_heads": 4,
+  "device": "cpu",
+  "num_heads": 2,
+  "encoder_hidden_shape": [2, 5, 8],
+  "decoder_hidden_shape": [2, 5, 8],
   "cross_attention_used": true,
-  "causal_mask_blocked_future": true
+  "encoder_future_attention_mean": 0.18210457,
+  "decoder_future_attention_max": 0.0
 }
+
+$ python 02_deep_learning/04_attention_and_transformers/analysis.py
+# 04 Attention and Transformers 실행 관측
+- row sum 오차, head별 top-key 차이, encoder/decoder 접근 규칙,
+  recurrent bottleneck relief를 한국어 관측 리포트로 저장한다.
 ```
 
-핵심은 숫자 하나를 맞히는 것이 아니라, **row sum이 1로 유지되는지**, **head별로 다른 mixing 패턴이 보이는지**, **encoder/decoder가 같은 shape를 유지하면서도 다른 정보 접근 규칙을 쓰는지**를 읽는 것이다.
+실행 후에는 `attention_patterns.svg`를 눈으로 보면서 **head마다 어떤 토큰을 더 강하게 섞는지**, `metrics.json`을 읽으면서 **row sum / causal mask / cross-attention 사용 여부**를 바로 확인할 수 있다.
 
 ## 다음 단위와의 연결
-이 단위를 통해 transformer를 "attention 있는 블록"이 아니라 **모델 패밀리를 구분하는 기본 골격**으로 읽게 되면, 이후 NLP 트랙에서 encoder-only(BERT류), decoder-only(GPT류), encoder-decoder(seq2seq) 구분이 훨씬 자연스러워진다. 또한 뒤에서 학습 recipe와 추론 비용을 볼 때도, 왜 transformer가 recurrent 병목을 줄이는 대신 메모리/길이 비용을 새로 가져오는지 더 선명하게 해석할 수 있다.
+이 단위에서 “attention = sequence mixing”, “decoder = 미래 차단”, “encoder-decoder = cross-attention 추가” 감각을 잡아 두면, 이후 NLP/model-family 단위에서 BERT류 / GPT류 / seq2seq transformer를 훨씬 빠르게 분류할 수 있다. 또한 training recipe를 볼 때도, 왜 transformer가 recurrent bottleneck을 줄이는 대신 **길이 제곱 비용**을 가져오는지 더 선명하게 이해하게 된다.

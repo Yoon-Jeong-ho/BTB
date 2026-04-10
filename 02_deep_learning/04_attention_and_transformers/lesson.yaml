@@ -1,33 +1,32 @@
-objective: attention을 sequence mixing 관점에서 다시 읽고, multi-head intuition, encoder/decoder block 차이, recurrent bottleneck 완화 이유를 모델 패밀리 시야에서 연결한다.
-status: outlined
+objective: attention을 sequence mixing 관점에서 읽고, row sum, multi-head intuition, encoder/decoder 구분, recurrent bottleneck relief를 runnable toy 실험으로 연결한다.
+status: runnable
 prereqs:
   - batch/seq/dim shape 읽기
   - dot product, matrix multiplication, softmax 기본 감각
-  - recurrent hidden state 업데이트와 RNN 계열 한계
-  - self-attention, padding mask, causal mask 기초
+  - recurrent hidden state 업데이트와 long-range bottleneck 이해
+  - self-attention, causal mask, cross-attention 기초
   - residual connection과 layer normalization 기본 이해
 key_terms:
   - attention
   - sequence mixing
-  - self-attention
+  - scaled dot-product attention
   - multi-head attention
-  - encoder block
-  - decoder block
+  - encoder
+  - decoder
   - cross-attention
   - causal mask
   - recurrent bottleneck
   - parallelization
 required_outputs:
-  - outlined README
-  - theory note
-  - prereqs note
-  - lesson metadata yaml
-  - scratch attention metrics json (planned)
-  - framework transformer metrics json (planned)
-  - analysis markdown (planned)
+  - scratch attention metrics json
+  - scratch svg figure
+  - framework attention metrics json
+  - observed analysis report
+  - stable analysis markdown
+  - reflection markdown
 analysis_questions:
   - attention output을 왜 sequence mixing 결과라고 설명할 수 있는가?
+  - row sum이 1이라는 사실이 value mixing 해석과 어떻게 연결되는가?
   - multi-head는 어떤 점에서 single-head보다 더 풍부한 관찰 틀을 주는가?
-  - encoder block과 decoder block은 각각 어떤 정보 접근 규칙을 가지는가?
-  - transformer는 recurrent family의 어떤 bottleneck을 줄이고, 대신 어떤 비용을 가져오는가?
-  - NLP bridge에서 배운 attention block 감각이 모델 패밀리 분류와 어떻게 연결되는가?
+  - encoder와 decoder는 각각 어떤 정보 접근 규칙을 가지는가?
+  - transformer는 recurrent bottleneck을 어떤 식으로 줄이고, 대신 어떤 길이 비용을 남기는가?
