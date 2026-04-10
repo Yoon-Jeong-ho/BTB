@@ -49,3 +49,10 @@ framework 핵심 관측
 - high learning rate probe는 어느 epoch에서 처음 깨졌는가?
 - label shift probe는 overfit와 다른 어떤 흔적을 남겼는가?
 - 이 질문들을 이후 LLM fine-tuning 로그에도 그대로 적용할 수 있는가?
+
+## Common Confusion
+- learning rate를 단순히 "크면 빨라지고 작으면 느리다" 정도로만 이해하는 실수
+- batch size를 throughput 숫자만의 문제로 보고 optimization noise / generalization 영향을 놓치는 실수
+- NaN이나 divergence를 보면 곧바로 optimizer 탓만 하는 실수
+- validation metric이 흔들릴 때 데이터 문제와 학습 설정 문제를 분리하지 못하는 실수
+- sanity check를 귀찮은 부록으로 보고, 실험 신뢰성의 핵심 장치로 보지 않는 실수

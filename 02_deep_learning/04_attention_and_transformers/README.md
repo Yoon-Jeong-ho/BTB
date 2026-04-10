@@ -7,7 +7,7 @@
 ## 왜 이 단위를 배우는가
 `02_deep_learning/03_sequence_models_rnn_lstm_gru`에서 recurrent family가 시퀀스를 시간축으로 압축하는 방식을 봤다면, 이제는 **각 위치가 필요한 다른 위치를 직접 참조하는 방식**으로 넘어와야 한다. transformer는 recurrence를 완전히 지운 마법 블록이 아니라, **정보 전달 경로를 짧게 만들고 병렬 계산을 가능하게 하는 attention family**로 읽는 것이 핵심이다.
 
-또한 `03_nlp_bridge/02_attention_and_transformer_block`에서 attention row sum, mask, transformer block shape를 보았다면, 여기서는 그 감각을 **encoder-only / decoder-only / encoder-decoder** 모델 패밀리 시야로 올려서 다시 정리한다.
+여기서 만든 attention / encoder / decoder 감각은 이후 `03_nlp_bridge/02_attention_and_transformer_block`에서 문장 입력과 mask를 다룰 때 더 구체적인 NLP 문맥으로 다시 만난다.
 
 ## 이번 단위에서 남길 것
 - scratch attention 관측치 `artifacts/scratch-manual/metrics.json`

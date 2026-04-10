@@ -4,7 +4,7 @@
 - `(batch, seq, dim)` 텐서 shape를 자연스럽게 읽는 습관
 - dot product, matrix multiplication, softmax가 attention score를 weight로 바꾸는 기본 감각
 - `02_deep_learning/03_sequence_models_rnn_lstm_gru`에서 본 recurrent hidden state 업데이트와 long-range bottleneck
-- `03_nlp_bridge/02_attention_and_transformer_block`에서 본 self-attention, padding mask, causal mask 기초
+- `02_deep_learning/03_sequence_models_rnn_lstm_gru`에서 본 recurrent bottleneck과 sequence modeling 감각
 - residual connection, layer normalization, feed-forward block이 shape는 유지하고 표현은 바꾼다는 이해
 
 ## 빠른 자기 점검
