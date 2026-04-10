@@ -1,0 +1,43 @@
+objective: open-ended frontier research를 막연한 자유 탐색이 아니라 scope·hypothesis·evidence·stop/archive discipline으로 운영하는 트랙으로 읽고, keep/kill/pause 판단이 가능한 연구 기록 감각을 만든다.
+status: outlined
+prereqs:
+  - capstone goal, benchmark contract, non-goal을 문장으로 고정하는 기본 문서화 감각
+  - planner / executor / verifier / critic 역할 분리가 실험 해석력을 지키는 이유에 대한 이해
+  - baseline-relative comparison과 failure slice observation을 함께 남겨야 한다는 평가 감각
+  - retry budget, stopping rule, escalation rule이 없는 탐색이 wandering으로 흐를 수 있다는 문제의식
+  - benchmark drift / contamination / protocol mismatch가 exploratory result 해석을 보류하게 만들 수 있다는 인식
+  - negative result와 inconclusive result를 구분해 archive해야 다음 행동을 다르게 고를 수 있다는 이해
+key_terms:
+  - open-ended research
+  - research scope
+  - north-star question
+  - out-of-scope
+  - hypothesis
+  - falsifiability
+  - iteration boundary
+  - kill criterion
+  - evidence standard
+  - baseline-relative signal
+  - negative result
+  - inconclusive result
+  - stopping rule
+  - archive discipline
+  - reopen condition
+  - scope creep
+required_outputs:
+  - outlined README
+  - theory note
+  - prerequisite checklist
+  - lesson metadata
+  - artifacts placeholder
+  - future research track charter / scope memo sample
+  - future hypothesis registry / boundary / kill criterion sample
+  - future evidence log / negative result / inconclusive note sample
+  - future stop / pause / escalate / archive decision sample
+analysis_questions:
+  - open-ended research는 왜 자유 탐색이 아니라 범위 설계 문제이며, 이번 트랙의 out-of-scope를 먼저 적어야 하는가?
+  - 좋은 hypothesis는 어떤 claim / mechanism / evidence / kill criterion 조합을 가져야 keep/kill 판단이 가능한가?
+  - iteration boundary 없이 exploratory run을 반복하면 어떤 retrospective story-telling과 scope creep가 생기는가?
+  - exploratory goal에서도 baseline-relative signal, slice observation, qualitative memo, negative result를 함께 남겨야 하는 이유는 무엇인가?
+  - no-signal, inconclusive, trust failure를 각각 다른 stopping rule로 다뤄야 하는 이유는 무엇인가?
+  - archive discipline이 있어야 다음 사람이 같은 질문을 어떻게 더 싸고 정직하게 다시 열 수 있는가?
