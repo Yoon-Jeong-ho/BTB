@@ -5,6 +5,27 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+CANONICAL_CURRICULUM_LADDER = [
+    "00_foundations",
+    "01_ml",
+    "02_deep_learning",
+    "03_nlp_bridge",
+    "04_nlp",
+    "05_advanced_nlp_llm",
+    "06_training_systems",
+    "07_frontier_labs",
+    "08_multimodal_bridge",
+    "09_multimodal",
+]
+
+
+def assert_tokens_appear_in_order(testcase: unittest.TestCase, text: str, tokens: list[str]) -> None:
+    cursor = 0
+    for token in tokens:
+        pattern = rf"(?<![A-Za-z0-9_]){re.escape(token)}(?![A-Za-z0-9_])"
+        match = re.search(pattern, text[cursor:])
+        testcase.assertIsNotNone(match, f"missing ordered curriculum token: {token}")
+        cursor += match.end()
 
 
 class TestCurriculumTopology(unittest.TestCase):
@@ -32,11 +53,9 @@ class TestCurriculumTopology(unittest.TestCase):
 
         self.assertEqual(positions, sorted(positions), "curriculum ladder order changed")
 
-    def test_program_map_mentions_new_bridge_positions_and_language_policy(self) -> None:
+    def test_program_map_mentions_full_future_ladder_in_order_and_language_policy(self) -> None:
         text = (ROOT / "docs" / "00_program_map.md").read_text(encoding="utf-8")
-        for rel in ["00_foundations", "03_nlp_bridge", "08_multimodal_bridge"]:
-            self.assertIn(rel, text)
-        self.assertLess(text.index("03_nlp_bridge"), text.index("08_multimodal_bridge"))
+        assert_tokens_appear_in_order(self, text, CANONICAL_CURRICULUM_LADDER)
         self.assertRegex(text, r"(?s)(한글|한국어).*(우선|중심)")
 
     def test_new_entry_dirs_have_readmes(self) -> None:
