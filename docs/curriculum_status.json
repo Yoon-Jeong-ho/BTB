@@ -37,9 +37,9 @@
       "03_domain_adaptive_pretraining": "outlined",
       "04_instruction_tuning_and_sft": "outlined",
       "05_preference_optimization_dpo_orpo_kto": "outlined",
-      "06_rlhf_and_reasoning_rl": "planned",
-      "07_retrieval_augmented_generation_and_eval": "planned",
-      "08_alignment_safety_and_model_behavior": "planned"
+      "06_rlhf_and_reasoning_rl": "outlined",
+      "07_retrieval_augmented_generation_and_eval": "outlined",
+      "08_alignment_safety_and_model_behavior": "outlined"
     },
     "06_training_systems": {
       "01_torchrun_and_ddp_basics": "planned",
