@@ -2,11 +2,11 @@
 
 ## Suggested PR title
 
-BTB를 foundation-first 한글 학습 사다리로 재구성
+BTB를 00→05 foundations/bridge/applied 한글 학습 사다리로 재구성
 
 ## Why
 
-이 PR은 BTB를 단순 실험 저장소에서 **읽으면서 따라갈 수 있는 한글 중심 학습 레포**로 바꾸기 위한 기반 작업이다.
+이 PR은 BTB를 단순 실험 저장소에서 **읽으면서 따라갈 수 있는 한글 중심 학습 레포**로 바꾸고, 00→05 foundations/bridge/applied 사다리를 실제 unit까지 채우는 작업이다.
 
 핵심 목적은 세 가지다.
 
@@ -35,7 +35,7 @@ BTB를 foundation-first 한글 학습 사다리로 재구성
 - `00_foundations/04_regularization_and_normalization`
 - `00_foundations/05_gpu_memory_runtime`
 
-두 unit 모두 아래를 포함한다.
+각 unit는 아래를 포함한다.
 - `README.md`
 - `THEORY.md`
 - `PREREQS.md`
@@ -58,22 +58,26 @@ BTB를 foundation-first 한글 학습 사다리로 재구성
 - generated analysis 문서가 `THEORY.md`로 **역링크(backlink)** 를 가짐
 - empty-alt 이미지 링크도 link checker가 검증함
 
-### 5) concrete bridge unit 확장
+### 5) bridge rollout 확장
 - `02_nlp_bridge/01_tokenization_and_embeddings`
 - `02_nlp_bridge/02_attention_and_transformer_block`
 - `04_multimodal_bridge/01_contrastive_alignment`
 
-이제 bridge 구간에서 다음을 직접 본다.
+이제 bridge 구간이 foundations 뒤, applied 앞에서 바로 이어지는 형태로 채워져 있다.
 - tokenization / subword-ish splitting / id mapping
 - embedding lookup / padding mask / attention / transformer block shape 변화
 - image-text contrastive alignment와 similarity heatmap
 - 한국어 analysis + theory backlink
 
-### 6) 첫 applied task unit 확장
+### 6) applied rollout 확장
 - `03_nlp/01_text_classification`
+- `03_nlp/02_named_entity_recognition`
+- `03_nlp/03_machine_reading_comprehension`
 - `05_multimodal/01_image_text_retrieval`
+- `05_multimodal/02_image_captioning`
+- `05_multimodal/03_visual_question_answering`
 
-이제 bridge 뒤 첫 실제 task unit도 foundations/bridge와 같은 contract로 읽고 실행할 수 있다.
+이제 03_nlp/05_multimodal applied unit들도 foundations/bridge와 같은 contract로 읽고 실행할 수 있다.
 - 실행 결과 예시
 - figure / metrics
 - stable analysis + observed report
@@ -162,7 +166,11 @@ python scripts/check_curriculum_links.py
 - `b49c301` attention/transformer bridge unit
 - `8ca5fef` multimodal contrastive-alignment bridge unit
 - `bc97072` first applied NLP text-classification unit
+- `9af9148` applied NER unit
+- `3e027b4` applied MRC unit
 - `860c73e` first applied multimodal retrieval unit
+- `a2bccec` applied image captioning unit
+- `f0c4cc1` applied VQA unit
 
 ## Reviewer checklist
 
@@ -171,13 +179,13 @@ python scripts/check_curriculum_links.py
 - [ ] foundations 01→05 흐름이 번호대로 자연스럽게 읽히는가?
 - [ ] activation / gradient / regularization / GPU runtime에 figure와 실행 예시가 충분한가?
 - [ ] NLP bridge 2개와 multimodal bridge 1개가 다음 트랙으로 넘어가기 전 개념 다리 역할을 하는가?
-- [ ] 첫 applied NLP / multimodal unit도 bridge/foundation 수준으로 읽기 쉬운가?
+- [ ] applied NLP 3개와 applied multimodal 3개가 모두 bridge/foundation 수준으로 읽기 쉬운가?
 - [ ] automation scripts가 과하게 무겁지 않고, 현재 범위에 맞게 단순한가?
 - [ ] generated docs/report가 evidence-first 원칙을 지키는가?
 
 ## Remaining follow-ups
 
 이 PR 이후 바로 이어갈 만한 작업:
-1. 03_nlp의 NER / MRC unit도 지금 수준으로 확장
-2. 05_multimodal의 captioning / VQA unit도 지금 수준으로 확장
-3. 더 많은 unit가 생기면 `lesson.yaml` 스키마를 lint/validate하는 도구 추가
+1. 더 많은 unit가 생기면 `lesson.yaml` 스키마를 lint/validate하는 도구 추가
+2. 실제 benchmark 데이터셋/모델로 넘어가는 중간 실험 레이어를 추가
+3. 리포트 승격(worktree/PR) 자동화를 더 정교하게 다듬기
