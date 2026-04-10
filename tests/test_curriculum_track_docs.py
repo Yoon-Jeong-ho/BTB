@@ -10,12 +10,13 @@ class TestCurriculumTrackDocs(unittest.TestCase):
     def test_root_readme_removes_placeholder_language(self) -> None:
         text = (ROOT / "README.md").read_text(encoding="utf-8")
 
-        for stale in ["재배치 대상", "자리를 미리 고정", "단계적으로 재배치 중"]:
+        for stale in ["재배치 대상", "자리를 미리 고정", "단계적으로 재배치 중", "향후 학습/평가"]:
             self.assertNotIn(stale, text)
 
         self.assertIn("foundations/bridge/applied", text)
         self.assertIn("03_nlp", text)
         self.assertIn("05_multimodal", text)
+        self.assertIn("docs/02_study_guide.md", text)
 
     def test_reindexed_track_headings_match_directory_numbers(self) -> None:
         self.assertEqual(
@@ -57,14 +58,26 @@ class TestCurriculumTrackDocs(unittest.TestCase):
             / "2026-03-31-btb-curriculum-redesign-pr.md"
         ).read_text(encoding="utf-8")
 
-        self.assertIn("현재 rollout 상태", program_map)
+        self.assertIn("현재 학습 가능 상태", program_map)
         self.assertIn("02_nlp_bridge -> 03_nlp", program_map)
         self.assertIn("04_multimodal_bridge -> 05_multimodal", program_map)
+        self.assertIn("02_study_guide.md", program_map)
 
         self.assertIn("00→05 foundations/bridge/applied", pr_draft)
         self.assertIn("### 5) bridge rollout 확장", pr_draft)
         self.assertIn("### 6) applied rollout 확장", pr_draft)
         self.assertNotIn("두 unit 모두", pr_draft)
+
+    def test_study_guide_surfaces_deep_learning_core_path(self) -> None:
+        guide = (ROOT / "docs" / "02_study_guide.md").read_text(encoding="utf-8")
+
+        self.assertIn("딥러닝 코어", guide)
+        for rel in [
+            "00_foundations/02_activation_and_loss",
+            "00_foundations/03_gradients_and_backpropagation",
+            "02_nlp_bridge/02_attention_and_transformer_block",
+        ]:
+            self.assertIn(rel, guide)
 
 
 if __name__ == "__main__":

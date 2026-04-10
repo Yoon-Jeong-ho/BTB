@@ -2,15 +2,20 @@
 
 이 구간은 `03_nlp`에서 `05_multimodal`로 넘어가기 전에 필요한 연결 고리다. 텍스트만 보던 표현 학습 감각을 **이미지-텍스트 공동 표현 공간**으로 옮기는 데 초점을 둔다.
 
+## 선행 / 다음 단계
+
+- 선행 권장: [03_nlp](../03_nlp/README.md) 의 세 unit를 먼저 읽고 text-only 표현 학습 감각을 잡는다.
+- 다음 단계: [05_multimodal](../05_multimodal/README.md)
+
+## 읽는 순서
+
+1. [01_contrastive_alignment](01_contrastive_alignment/README.md) — 이미지 임베딩과 텍스트 임베딩을 같은 공간에 놓고, 대각선 정답 쌍이 왜 중요해지는지 tiny 예제로 확인한다.
+
 ## 핵심 목표
 
 - contrastive alignment가 무엇을 맞추는지 이해한다.
 - retrieval와 generation이 요구하는 표현 차이를 구분한다.
 - cross-attention, grounding, failure case를 멀티모달 실습 전에 익힌다.
-
-## 첫 번째 브리지 단위
-
-1. [01_contrastive_alignment](01_contrastive_alignment/README.md) — 이미지 임베딩과 텍스트 임베딩을 같은 공간에 놓고, 대각선 정답 쌍이 왜 중요해지는지 tiny 예제로 확인한다.
 
 ## 학습 태도
 
