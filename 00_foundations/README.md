@@ -40,6 +40,6 @@
 ## 다음 단계로 어떻게 이어지나
 
 - 기본 루트: foundations를 끝낸 뒤 [01_ml](../01_ml/README.md) 로 가서 실험 discipline을 붙인다.
-- 딥러닝 코어 압축 루트: foundations를 끝낸 뒤 [02_nlp_bridge](../02_nlp_bridge/README.md) 로 바로 가서 embedding과 attention을 잇는다.
+- 딥러닝 코어 압축 루트: foundations를 끝낸 뒤 [03_nlp_bridge](../03_nlp_bridge/README.md) 로 바로 가서 embedding과 attention을 잇는다.
 
 한글 설명을 먼저 읽고, 필요한 technical term만 영어로 연결해서 이해한다.
