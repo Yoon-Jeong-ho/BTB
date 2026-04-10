@@ -1,0 +1,39 @@
+objective: Hugging Face Accelerate를 PyTorch training loop 위의 실행/장치 추상화 계층으로 이해하고, device placement·mixed precision·launcher 단순화가 어디까지 도움을 주며 어디서부터 backend complexity가 다시 드러나는지 구분한다.
+status: outlined
+prereqs:
+  - single-GPU PyTorch training loop 기본 구조 이해
+  - torchrun/DDP의 rank / world size / local rank 기초
+  - model과 batch의 device placement 기본 개념
+  - mixed precision(fp16/bf16) 목적과 기본 위험 요소 이해
+  - gradient accumulation과 effective batch 기초
+  - distributed evaluation / checkpointing 필요성에 대한 감각
+key_terms:
+  - Hugging Face Accelerate
+  - Accelerator
+  - AcceleratorState
+  - prepare
+  - device placement
+  - distributed_type
+  - mixed precision
+  - autocast
+  - accelerate launch
+  - accelerate config
+  - gradient accumulation
+  - dataloader sharding
+  - AcceleratedOptimizer
+  - AcceleratedScheduler
+required_outputs:
+  - outlined README
+  - theory note
+  - prerequisite checklist
+  - lesson metadata
+  - artifacts placeholder
+  - future Accelerator state sample contract
+  - future launcher workflow sample contract
+analysis_questions:
+  - Accelerate는 기존 PyTorch training loop의 어떤 보일러플레이트를 줄이며, 어떤 복잡도는 그대로 남기는가?
+  - `accelerator.prepare(...)`는 model / optimizer / dataloader / scheduler를 각각 어떻게 재조립한다고 이해하면 좋은가?
+  - automatic device placement가 편리해도 device semantics를 계속 이해해야 하는 이유는 무엇인가?
+  - mixed precision을 `Accelerator` 한 곳에서 켤 수 있다는 것과 실제 수치 안정성 관리가 쉬워진다는 것은 왜 다른가?
+  - `accelerate config` / `accelerate launch`는 launcher complexity를 얼마나 줄이지만, 왜 multi-node/backend 세부사항은 여전히 중요하게 남는가?
+  - DeepSpeed ZeRO나 FSDP를 later unit에서 따로 배우는 이유를 Accelerate abstraction boundary 관점에서 어떻게 설명할 수 있는가?
