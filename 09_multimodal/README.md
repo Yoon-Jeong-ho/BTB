@@ -1,17 +1,6 @@
-# 05 Multimodal
+# 09 Multimodal
 
-이 트랙은 현재 `01_image_text_retrieval`, `02_image_captioning`, `03_visual_question_answering` 세 unit로 채워져 있으며, `이미지와 텍스트를 같은 표현 공간에서 다루는 법` 과 `생성/추론 태스크에서 멀티모달 모델을 평가하는 법` 을 실제 태스크로 반복한다.
-
-## 선행 / 들어오는 길
-
-- 기본 루트: [04_multimodal_bridge](../04_multimodal_bridge/README.md) 를 먼저 읽고 들어온다.
-- 딥러닝 코어 보강이 더 필요하면 [00_foundations](../00_foundations/README.md) 과 [02_nlp_bridge](../02_nlp_bridge/README.md) 를 다시 본다.
-
-## 읽는 순서
-
-1. [01_image_text_retrieval](01_image_text_retrieval/README.md) — alignment가 실제 검색 성능으로 어떻게 보이는지 본다.
-2. [02_image_captioning](02_image_captioning/README.md) — retrieval에서 generation으로 넘어가며 caption quality와 failure case를 읽는다.
-3. [03_visual_question_answering](03_visual_question_answering/README.md) — 질문 유형별 성능과 qualitative failure를 읽는다.
+이 트랙의 목표는 `이미지와 텍스트를 같은 표현 공간에서 다루는 법` 과 `생성/추론 태스크에서 멀티모달 모델을 평가하는 법` 을 익히는 것이다.
 
 처음부터 거대한 모델을 직접 끝까지 학습하기보다, 작은 데이터 subset 또는 parameter-efficient finetuning으로 시작하는 것을 기본 원칙으로 한다.
 
@@ -22,6 +11,17 @@
 | [01_image_text_retrieval](01_image_text_retrieval/README.md) | 이미지-텍스트 정렬 | COCO, CxC | frozen CLIP retrieval | VisionTextDualEncoder finetuning | Recall@K, retrieval grid |
 | [02_image_captioning](02_image_captioning/README.md) | 이미지 설명 생성 | COCO Captions | pretrained captioner inference | VisionEncoderDecoder / BLIP 계열 finetuning | BLEU/CIDEr table, caption examples |
 | [03_visual_question_answering](03_visual_question_answering/README.md) | 시각적 질의응답과 추론 | VQA v2, VizWiz, ScienceQA, NLVR2 | frozen VLM prompting | PEFT finetuning / task head | answer-type breakdown, qualitative panel |
+
+## 추천 데이터셋
+
+| Dataset | Task | 규모/형태 | 왜 좋은가 | 공식 출처 |
+| --- | --- | --- | --- | --- |
+| MS COCO | captioning / retrieval / detection | 대규모 image-caption benchmark | 캡셔닝과 retrieval의 공통 출발점 | https://cocodataset.org/ |
+| Crisscrossed Captions (CxC) | retrieval evaluation / similarity | COCO 확장 human similarity labels | retrieval를 더 정교하게 평가하기 좋다 | https://github.com/google-research-datasets/Crisscrossed-Captions |
+| VQA v2 | visual question answering | 204,721 COCO images, 1.1M+ questions | 멀티모달 질의응답의 대표 벤치마크 | https://visualqa.org/ |
+| VizWiz-VQA | robust VQA / answerability | 실제 촬영 이미지와 사용자 질문 | 저화질, framing 문제, unanswerable case 분석에 좋다 | https://vizwiz.org/tasks-and-datasets/vqa/ |
+| ScienceQA | multimodal reasoning | 21,208 science questions | explanation과 reasoning 분석까지 가능 | https://scienceqa.github.io/ |
+| NLVR2 | visual reasoning | image + sentence truth judgment | 정답률뿐 아니라 reasoning 오류 분석에 좋음 | https://github.com/lil-lab/nlvr |
 
 ## 이 트랙에서 꼭 남길 것
 

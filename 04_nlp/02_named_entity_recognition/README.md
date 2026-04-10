@@ -1,7 +1,7 @@
 # 02 Named Entity Recognition
 
 ## 왜 이 단위를 배우는가
-`03_nlp/01_text_classification`에서 문장 전체를 하나의 라벨로 보내 봤다면, 이제는 **문장 안의 어떤 span이 사람/기관/장소인지 토큰 단위로 찍는 applied NLP 감각**이 필요하다. 이 단위는 작은 한국어 예제로 `BIO alignment 확인 -> token baseline -> tiny PyTorch sequence labeler -> 분석 보고서` 흐름을 직접 돌리게 해서, 이후 KLUE-NER나 CoNLL-2003으로 넘어갈 때도 바로 거대한 모델부터 잡지 않고 **경계(boundary)와 alignment를 먼저 읽는 습관**을 만들도록 설계했다.
+`04_nlp/01_text_classification`에서 문장 전체를 하나의 라벨로 보내 봤다면, 이제는 **문장 안의 어떤 span이 사람/기관/장소인지 토큰 단위로 찍는 applied NLP 감각**이 필요하다. 이 단위는 작은 한국어 예제로 `BIO alignment 확인 -> token baseline -> tiny PyTorch sequence labeler -> 분석 보고서` 흐름을 직접 돌리게 해서, 이후 KLUE-NER나 CoNLL-2003으로 넘어갈 때도 바로 거대한 모델부터 잡지 않고 **경계(boundary)와 alignment를 먼저 읽는 습관**을 만들도록 설계했다.
 
 ## 이번 단위에서 남길 것
 - scratch 실험으로 만든 `artifacts/scratch-manual/metrics.json`
@@ -25,9 +25,9 @@
 
 ## 실행 방법
 ```bash
-python 03_nlp/02_named_entity_recognition/scratch_lab.py
-python 03_nlp/02_named_entity_recognition/framework_lab.py
-python 03_nlp/02_named_entity_recognition/analysis.py
+python 04_nlp/02_named_entity_recognition/scratch_lab.py
+python 04_nlp/02_named_entity_recognition/framework_lab.py
+python 04_nlp/02_named_entity_recognition/analysis.py
 ```
 
 ## 실행 결과 예시

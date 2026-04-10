@@ -8,4 +8,4 @@
 ## 실행 후 체크
 - `alignment_heatmap.svg`에서 가장 진한 칸이 모두 대각선이었는가?
 - scratch와 framework 결과의 loss가 같은 직관을 주었는가?
-- 이 단위의 감각이 `05_multimodal/01_image_text_retrieval`의 Recall@K 해석과 어떻게 이어지는가?
+- 이 단위의 감각이 `09_multimodal/01_image_text_retrieval`의 Recall@K 해석과 어떻게 이어지는가?

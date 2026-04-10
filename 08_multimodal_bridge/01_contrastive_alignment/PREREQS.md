@@ -13,4 +13,4 @@
 ## 막히면 먼저 복습할 것
 - `00_foundations/01_tensor_shapes`
 - `00_foundations/02_activation_and_loss`
-- `02_nlp_bridge/01_tokenization_and_embeddings`
+- `03_nlp_bridge/01_tokenization_and_embeddings`

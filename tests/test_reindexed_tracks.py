@@ -21,11 +21,34 @@ RETIRED_TRACK_ROOTS = [
     '04_multimodal_bridge',
     '05_multimodal',
 ]
+ACTIVE_MOVED_CURRICULUM_DOCS = [
+    '03_nlp_bridge/README.md',
+    '03_nlp_bridge/01_tokenization_and_embeddings/README.md',
+    '03_nlp_bridge/02_attention_and_transformer_block/README.md',
+    '04_nlp/README.md',
+    '04_nlp/01_text_classification/README.md',
+    '04_nlp/01_text_classification/PREREQS.md',
+    '04_nlp/02_named_entity_recognition/README.md',
+    '04_nlp/02_named_entity_recognition/PREREQS.md',
+    '04_nlp/03_machine_reading_comprehension/README.md',
+    '04_nlp/03_machine_reading_comprehension/PREREQS.md',
+    '08_multimodal_bridge/README.md',
+    '08_multimodal_bridge/01_contrastive_alignment/README.md',
+    '08_multimodal_bridge/01_contrastive_alignment/PREREQS.md',
+    '08_multimodal_bridge/01_contrastive_alignment/reflection.md',
+    '09_multimodal/README.md',
+    '09_multimodal/01_image_text_retrieval/README.md',
+    '09_multimodal/02_image_captioning/README.md',
+    '09_multimodal/03_visual_question_answering/README.md',
+]
+
+
+def token_pattern(token: str) -> str:
+    return rf'(?<![A-Za-z0-9_]){re.escape(token)}(?![A-Za-z0-9_])'
 
 
 def assert_has_track_reference(testcase: unittest.TestCase, text: str, token: str, rel: str) -> None:
-    pattern = rf'(?<![A-Za-z0-9_]){re.escape(token)}(?![A-Za-z0-9_])'
-    testcase.assertRegex(text, pattern, f'{rel} missing track reference {token}')
+    testcase.assertRegex(text, token_pattern(token), f'{rel} missing track reference {token}')
 
 
 class TestReindexedTracks(unittest.TestCase):
@@ -50,8 +73,13 @@ class TestReindexedTracks(unittest.TestCase):
             for token in required_tokens:
                 assert_has_track_reference(self, text, token, rel)
             for token in RETIRED_TRACK_ROOTS:
-                pattern = rf'(?<![A-Za-z0-9_]){re.escape(token)}(?![A-Za-z0-9_])'
-                self.assertNotRegex(text, pattern, f'{rel} still mentions retired root {token}')
+                self.assertNotRegex(text, token_pattern(token), f'{rel} still mentions retired root {token}')
+
+    def test_active_moved_curriculum_docs_do_not_reference_retired_roots(self) -> None:
+        for rel in ACTIVE_MOVED_CURRICULUM_DOCS:
+            text = (ROOT / rel).read_text(encoding='utf-8')
+            for token in RETIRED_TRACK_ROOTS:
+                self.assertNotRegex(text, token_pattern(token), f'{rel} still mentions retired root {token}')
 
 
 if __name__ == '__main__':

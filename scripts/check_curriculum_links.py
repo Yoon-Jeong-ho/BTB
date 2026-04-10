@@ -14,10 +14,14 @@ SCAN_ROOTS = [
     ROOT / "00_foundations",
     ROOT / "00_shared",
     ROOT / "01_ml",
-    ROOT / "02_nlp_bridge",
-    ROOT / "03_nlp",
-    ROOT / "04_multimodal_bridge",
-    ROOT / "05_multimodal",
+    ROOT / "02_deep_learning",
+    ROOT / "03_nlp_bridge",
+    ROOT / "04_nlp",
+    ROOT / "05_advanced_nlp_llm",
+    ROOT / "06_training_systems",
+    ROOT / "07_frontier_labs",
+    ROOT / "08_multimodal_bridge",
+    ROOT / "09_multimodal",
 ]
 
 

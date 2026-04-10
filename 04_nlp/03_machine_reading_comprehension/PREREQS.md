@@ -4,7 +4,7 @@
 - Python 리스트, 딕셔너리, 반복문을 무리 없이 읽을 수 있는가?
 - `(batch, seq_len)` 과 `(batch, seq_len, hidden_dim)` 같은 tensor shape를 읽을 수 있는가?
 - exact match와 token F1이 서로 다른 질문에 답한다는 점을 이해하는가?
-- `02_nlp_bridge`와 앞선 NLP task unit에서 tokenization, padding, embedding 기초를 이미 손으로 만져봤는가?
+- `03_nlp_bridge`와 앞선 NLP task unit에서 tokenization, padding, embedding 기초를 이미 손으로 만져봤는가?
 
 ## 빠른 자기 점검
 - 질문과 문맥을 한 시퀀스로 붙일 때 `[CLS]`, `[SEP]` 같은 special token이 왜 필요한지 설명할 수 있는가?

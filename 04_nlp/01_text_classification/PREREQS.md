@@ -4,7 +4,7 @@
 - Python 리스트, 딕셔너리, 반복문을 무리 없이 읽을 수 있는가?
 - 간단한 확률 직관(빈도 -> 가능성 비교)을 이해하는가?
 - `(batch, seq)`와 `(batch, dim)` 같은 tensor shape를 읽을 수 있는가?
-- `02_nlp_bridge`에서 tokenization, embedding, padding의 기초를 봤는가?
+- `03_nlp_bridge`에서 tokenization, embedding, padding의 기초를 봤는가?
 
 ## 빠른 자기 점검
 - 문장을 token count 벡터로 바꾼다는 말을 예시와 함께 설명할 수 있는가?

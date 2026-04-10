@@ -1,7 +1,7 @@
 # 01 Contrastive Alignment
 
 ## 왜 이 단위를 배우는가
-`05_multimodal`로 가면 CLIP-style retrieval, image-text similarity, contrastive loss가 거의 바로 등장한다. 이 단위는 **이미지 벡터와 텍스트 벡터가 같은 의미일 때 대각선이 커지고, 다른 쌍일 때 비대각선이 작아져야 한다**는 가장 첫 감각을 한국어 tiny 예제로 먼저 만든다.
+`09_multimodal`로 가면 CLIP-style retrieval, image-text similarity, contrastive loss가 거의 바로 등장한다. 이 단위는 **이미지 벡터와 텍스트 벡터가 같은 의미일 때 대각선이 커지고, 다른 쌍일 때 비대각선이 작아져야 한다**는 가장 첫 감각을 한국어 tiny 예제로 먼저 만든다.
 
 ## 이번 단위에서 남길 것
 - scratch 계산 결과 `artifacts/scratch-manual/metrics.json`
@@ -18,7 +18,7 @@
 
 ## 실행 결과 예시
 ```text
-$ python 04_multimodal_bridge/01_contrastive_alignment/scratch_lab.py
+$ python 08_multimodal_bridge/01_contrastive_alignment/scratch_lab.py
 {
   "pair_count": 3,
   "top1_alignment_accuracy": 1.0,
@@ -28,7 +28,7 @@ $ python 04_multimodal_bridge/01_contrastive_alignment/scratch_lab.py
   "figure_path": "artifacts/scratch-manual/alignment_heatmap.svg"
 }
 
-$ python 04_multimodal_bridge/01_contrastive_alignment/framework_lab.py
+$ python 08_multimodal_bridge/01_contrastive_alignment/framework_lab.py
 {
   "device": "cpu",
   "logits_shape": [3, 3],
@@ -40,4 +40,4 @@ $ python 04_multimodal_bridge/01_contrastive_alignment/framework_lab.py
 실행 후에는 heatmap SVG와 metrics JSON이 모두 `artifacts/` 아래에 남아, contrastive alignment가 “정답 쌍의 대각선을 키우는 문제”라는 사실을 바로 눈으로 확인할 수 있다.
 
 ## 다음 단위와의 연결
-이 감각이 있어야 `05_multimodal/01_image_text_retrieval`에서 zero-shot CLIP retrieval, hard negative, Recall@K를 숫자와 qualitative case로 읽을 수 있다. retrieval는 결국 “가장 가까운 텍스트/이미지를 찾는 문제”이므로, 여기서 만든 similarity matrix 읽기 습관이 바로 이어진다.
+이 감각이 있어야 `09_multimodal/01_image_text_retrieval`에서 zero-shot CLIP retrieval, hard negative, Recall@K를 숫자와 qualitative case로 읽을 수 있다. retrieval는 결국 “가장 가까운 텍스트/이미지를 찾는 문제”이므로, 여기서 만든 similarity matrix 읽기 습관이 바로 이어진다.

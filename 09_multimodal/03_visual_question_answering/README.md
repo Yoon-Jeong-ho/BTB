@@ -19,7 +19,7 @@
 
 ## 실행 결과 예시
 ```text
-$ python 05_multimodal/03_visual_question_answering/scratch_lab.py
+$ python 09_multimodal/03_visual_question_answering/scratch_lab.py
 {
   "sample_count": 6,
   "overall_accuracy": 0.833333,
@@ -31,7 +31,7 @@ $ python 05_multimodal/03_visual_question_answering/scratch_lab.py
   "figure_path": "artifacts/scratch-manual/vqa_answer_type_accuracy.svg"
 }
 
-$ python 05_multimodal/03_visual_question_answering/framework_lab.py
+$ python 09_multimodal/03_visual_question_answering/framework_lab.py
 {
   "device": "cpu",
   "epochs": 180,

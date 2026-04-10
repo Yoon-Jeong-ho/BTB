@@ -1,7 +1,7 @@
 # 01 Text Classification
 
 ## 왜 이 단위를 배우는가
-`02_nlp_bridge`에서 tokenization, embedding, attention을 미리 손으로 만져봤다면 이제는 **문장을 실제 라벨 문제로 연결하는 첫 applied NLP 단계**가 필요하다. 이 단위는 작은 한국어 예제로 `bag-of-words baseline -> tiny PyTorch classifier -> 분석 보고서` 흐름을 한 번에 돌려 보게 해서, 이후 감성 분류/토픽 분류/리뷰 분류 실습이 덜 막막하게 느껴지도록 설계했다.
+`03_nlp_bridge`에서 tokenization, embedding, attention을 미리 손으로 만져봤다면 이제는 **문장을 실제 라벨 문제로 연결하는 첫 applied NLP 단계**가 필요하다. 이 단위는 작은 한국어 예제로 `bag-of-words baseline -> tiny PyTorch classifier -> 분석 보고서` 흐름을 한 번에 돌려 보게 해서, 이후 감성 분류/토픽 분류/리뷰 분류 실습이 덜 막막하게 느껴지도록 설계했다.
 
 ## 이번 단위에서 남길 것
 - scratch 실험으로 만든 `artifacts/scratch-manual/metrics.json`
@@ -24,9 +24,9 @@
 
 ## 실행 방법
 ```bash
-python 03_nlp/01_text_classification/scratch_lab.py
-python 03_nlp/01_text_classification/framework_lab.py
-python 03_nlp/01_text_classification/analysis.py
+python 04_nlp/01_text_classification/scratch_lab.py
+python 04_nlp/01_text_classification/framework_lab.py
+python 04_nlp/01_text_classification/analysis.py
 ```
 
 ## 실행 결과 예시

@@ -1,7 +1,7 @@
 # 01 Image-Text Retrieval
 
 ## 왜 이 단위를 배우는가
-`04_multimodal_bridge/01_contrastive_alignment`에서 “대각선이 살아야 한다”는 감각을 만들었다면, 이제는 그 감각을 **실제 retrieval 지표**로 읽어야 한다. 이 단위는 아주 작은 이미지-텍스트 예제에서 **Recall@K, 양방향 검색(image→text / text→image), hard negative**를 숫자와 사례로 동시에 확인하게 만든다.
+`08_multimodal_bridge/01_contrastive_alignment`에서 “대각선이 살아야 한다”는 감각을 만들었다면, 이제는 그 감각을 **실제 retrieval 지표**로 읽어야 한다. 이 단위는 아주 작은 이미지-텍스트 예제에서 **Recall@K, 양방향 검색(image→text / text→image), hard negative**를 숫자와 사례로 동시에 확인하게 만든다.
 
 ## 이번 단위에서 남길 것
 - scratch 계산 결과 `artifacts/scratch-manual/metrics.json`
@@ -19,7 +19,7 @@
 
 ## 실행 결과 예시
 ```text
-$ python 05_multimodal/01_image_text_retrieval/scratch_lab.py
+$ python 09_multimodal/01_image_text_retrieval/scratch_lab.py
 {
   "pair_count": 4,
   "image_to_text_recall_at_1": 1.0,
@@ -29,7 +29,7 @@ $ python 05_multimodal/01_image_text_retrieval/scratch_lab.py
   "figure_path": "artifacts/scratch-manual/retrieval_heatmap.svg"
 }
 
-$ python 05_multimodal/01_image_text_retrieval/framework_lab.py
+$ python 09_multimodal/01_image_text_retrieval/framework_lab.py
 {
   "device": "cpu",
   "epochs": 200,

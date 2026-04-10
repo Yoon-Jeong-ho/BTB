@@ -19,7 +19,7 @@
 
 ## 실행 결과 예시
 ```text
-$ python 05_multimodal/02_image_captioning/scratch_lab.py
+$ python 09_multimodal/02_image_captioning/scratch_lab.py
 {
   "sample_count": 4,
   "exact_match_rate": 0.75,
@@ -28,7 +28,7 @@ $ python 05_multimodal/02_image_captioning/scratch_lab.py
   "figure_path": "artifacts/scratch-manual/caption_diagnostics.svg"
 }
 
-$ python 05_multimodal/02_image_captioning/framework_lab.py
+$ python 09_multimodal/02_image_captioning/framework_lab.py
 {
   "device": "cpu",
   "epochs": 60,

@@ -1,7 +1,7 @@
 # 03 Machine Reading Comprehension
 
 ## 왜 이 단위를 배우는가
-`03_nlp/02_named_entity_recognition`에서 span 경계를 토큰 단위로 다뤄 봤다면, 이제는 **질문과 문맥을 함께 읽고 정답 span을 고르거나 아예 답하지 않는 판단**까지 해 보는 applied NLP 단계가 필요하다. 이 단위는 작은 한국어 예제로 `question-context 정렬 -> heuristic span extraction -> tiny PyTorch QA head -> 분석 보고서` 흐름을 직접 돌리게 해서, 이후 KLUE-MRC나 SQuAD 2.0으로 넘어갈 때도 **정답 span과 no-answer threshold를 먼저 해석하는 습관**을 만들도록 설계했다.
+`04_nlp/02_named_entity_recognition`에서 span 경계를 토큰 단위로 다뤄 봤다면, 이제는 **질문과 문맥을 함께 읽고 정답 span을 고르거나 아예 답하지 않는 판단**까지 해 보는 applied NLP 단계가 필요하다. 이 단위는 작은 한국어 예제로 `question-context 정렬 -> heuristic span extraction -> tiny PyTorch QA head -> 분석 보고서` 흐름을 직접 돌리게 해서, 이후 KLUE-MRC나 SQuAD 2.0으로 넘어갈 때도 **정답 span과 no-answer threshold를 먼저 해석하는 습관**을 만들도록 설계했다.
 
 ## 이번 단위에서 남길 것
 - scratch 실험으로 만든 `artifacts/scratch-manual/metrics.json`
@@ -24,9 +24,9 @@
 
 ## 실행 방법
 ```bash
-python 03_nlp/03_machine_reading_comprehension/scratch_lab.py
-python 03_nlp/03_machine_reading_comprehension/framework_lab.py
-python 03_nlp/03_machine_reading_comprehension/analysis.py
+python 04_nlp/03_machine_reading_comprehension/scratch_lab.py
+python 04_nlp/03_machine_reading_comprehension/framework_lab.py
+python 04_nlp/03_machine_reading_comprehension/analysis.py
 ```
 
 ## 실행 결과 예시

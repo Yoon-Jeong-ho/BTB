@@ -22,4 +22,4 @@
 - transformer block은 shape를 유지하면서 내부 표현을 어떻게 바꾸는가?
 
 ## 다음 단위와의 연결
-이 감각이 있으면 `03_nlp`에서 BERT류 self-attention, decoder causal mask, encoder block hidden state 업데이트를 더 이상 마법처럼 보지 않게 된다.
+이 감각이 있으면 `04_nlp`에서 BERT류 self-attention, decoder causal mask, encoder block hidden state 업데이트를 더 이상 마법처럼 보지 않게 된다.
