@@ -1,0 +1,42 @@
+objective: 모델 레이어 스택을 stage로 나눠 microbatch를 시간축으로 흘리는 pipeline parallelism의 기본 직관을 익히고, bubble/throughput trade-off·기본 스케줄링·activation transfer·partition boundary 문제를 later hybrid parallel 학습의 기준선으로 삼는다.
+status: outlined
+prereqs:
+  - transformer 같은 순차 레이어 스택 기본 구조 이해
+  - forward/backward/activation memory 기본 감각
+  - batch, microbatch, gradient accumulation 구분
+  - torchrun/DDP의 rank / world size 기초
+  - tensor parallel과 pipeline parallel의 차이를 받아들일 준비
+  - GPU memory bottleneck과 communication bottleneck 기본 관점
+key_terms:
+  - pipeline parallelism
+  - stage
+  - stage partition
+  - partition boundary
+  - microbatch
+  - schedule
+  - GPipe
+  - 1F1B
+  - warmup
+  - steady state
+  - cooldown
+  - pipeline bubble
+  - throughput
+  - latency
+  - activation transfer
+  - send/recv
+  - load imbalance
+required_outputs:
+  - outlined README
+  - theory note
+  - prerequisite checklist
+  - lesson metadata
+  - artifacts placeholder
+  - future schedule trace sample contract
+  - future activation transfer observation sample contract
+analysis_questions:
+  - pipeline parallelism은 모델 실행 경로를 stage로 나눈다는 점에서 data parallel / tensor parallel과 어떻게 다른가?
+  - stage partition은 왜 메모리 적재 문제를 완화하면서도 single-batch latency를 자동으로 줄여 주지 않는가?
+  - microbatch 수가 bubble fraction과 throughput에 어떤 영향을 주며, 왜 무한히 늘리는 것이 정답이 아닌가?
+  - GPipe식 스케줄과 1F1B 스케줄은 activation 보관량과 runtime 관찰에서 어떻게 다르게 보이는가?
+  - activation transfer와 partition boundary는 왜 단순 레이어 개수 균등 분할보다 더 중요한 설계 문제가 되는가?
+  - 이후 data parallel + grad accumulation, hybrid parallel topologies와 연결할 때 pipeline 축을 어떻게 설명할 수 있는가?
