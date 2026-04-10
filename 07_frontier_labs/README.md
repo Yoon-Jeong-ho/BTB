@@ -11,8 +11,8 @@
 | [01_paper_reproduction_playground](01_paper_reproduction_playground/README.md) | outlined | 논문 하나를 재현 가능한 실험 묶음으로 바꾸는 기본 playground를 만든다. |
 | [02_capstone_model_building](02_capstone_model_building/README.md) | outlined | 여러 이전 단위를 묶어 하나의 end-to-end 모델 프로젝트를 설계한다. |
 | [03_agentic_training_and_eval_loops](03_agentic_training_and_eval_loops/README.md) | outlined | agentic workflow가 training/eval/triage loop를 어떻게 바꾸는지 실험한다. |
-| [04_benchmark_and_dataset_construction](04_benchmark_and_dataset_construction/README.md) | planned | 새 벤치마크와 데이터셋 계약을 설계하고 quality gate를 정의한다. |
-| [05_open_ended_research_tracks](05_open_ended_research_tracks/README.md) | planned | 정답이 정해지지 않은 연구 질문을 작은 track으로 쪼개는 방법을 배운다. |
+| [04_benchmark_and_dataset_construction](04_benchmark_and_dataset_construction/README.md) | outlined | 새 벤치마크와 데이터셋 계약을 설계하고 quality gate를 정의한다. |
+| [05_open_ended_research_tracks](05_open_ended_research_tracks/README.md) | outlined | 정답이 정해지지 않은 연구 질문을 작은 track으로 쪼개는 방법을 배운다. |
 
 ## 이 트랙에 포함되는 것
 
