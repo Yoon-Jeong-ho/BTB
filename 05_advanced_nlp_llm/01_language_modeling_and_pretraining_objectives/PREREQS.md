@@ -20,3 +20,6 @@
 - span corruption에서 sentinel token이 왜 필요한지 말할 수 있는가?
 - context window와 long-term memory를 같은 말로 보면 왜 문제가 되는지 설명할 수 있는가?
 - 같은 transformer family여도 objective가 바뀌면 model behavior intuition이 달라진다는 말을 받아들일 수 있는가?
+
+## 다음에 이어서 보면 좋은 단위
+- [02_corpus_tokenizer_and_data_mixture](../02_corpus_tokenizer_and_data_mixture/README.md) — tokenizer/data mixture 설계가 objective를 어떻게 지지하는지 후속 연결로 확인한다.
