@@ -1,0 +1,74 @@
+{
+  "train_size": 8,
+  "eval_size": 4,
+  "vocab_size": 44,
+  "embedding_dim": 12,
+  "epochs": 80,
+  "num_classes": 2,
+  "label_names": [
+    "negative",
+    "positive"
+  ],
+  "train_input_shape": [
+    8,
+    6
+  ],
+  "eval_input_shape": [
+    4,
+    5
+  ],
+  "loss_history_head": [
+    0.762755,
+    0.580499,
+    0.421497,
+    0.266388,
+    0.136398
+  ],
+  "loss_history_tail": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "eval_accuracy": 1.0,
+  "eval_macro_f1": 1.0,
+  "prediction_rows": [
+    {
+      "text": "업데이트가 안정적이고 사용이 편하다",
+      "gold": "positive",
+      "predicted": "positive",
+      "probabilities": {
+        "negative": 0.214353,
+        "positive": 0.785647
+      }
+    },
+    {
+      "text": "광고가 많고 실행이 느려 불편하다",
+      "gold": "negative",
+      "predicted": "negative",
+      "probabilities": {
+        "negative": 0.972509,
+        "positive": 0.027491
+      }
+    },
+    {
+      "text": "예제가 친절해서 다시 보고 싶다",
+      "gold": "positive",
+      "predicted": "positive",
+      "probabilities": {
+        "negative": 0.002495,
+        "positive": 0.997505
+      }
+    },
+    {
+      "text": "포장이 찢어지고 배송이 늦었다",
+      "gold": "negative",
+      "predicted": "negative",
+      "probabilities": {
+        "negative": 0.999989,
+        "positive": 1.1e-05
+      }
+    }
+  ]
+}

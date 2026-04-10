@@ -1,0 +1,580 @@
+{
+  "train_size": 8,
+  "eval_size": 4,
+  "label_names": [
+    "O",
+    "B-PER",
+    "I-PER",
+    "B-ORG",
+    "I-ORG",
+    "B-LOC",
+    "I-LOC"
+  ],
+  "aligned_train_tokens": 75,
+  "aligned_eval_tokens": 38,
+  "token_accuracy": 0.921053,
+  "entity_precision": 0.875,
+  "entity_recall": 0.777778,
+  "entity_f1": 0.823529,
+  "piece_majority_map": {
+    "##나에": "O",
+    "##는": "O",
+    "##다": "O",
+    "##대": "I-ORG",
+    "##들이": "O",
+    "##를": "O",
+    "##버": "I-ORG",
+    "##션은": "O",
+    "##수": "I-PER",
+    "##스에서": "O",
+    "##연": "I-PER",
+    "##오": "I-ORG",
+    "##우드": "I-ORG",
+    "##을": "I-LOC",
+    "##이": "O",
+    "##지": "I-ORG",
+    "##진": "I-PER",
+    "##템": "I-ORG",
+    "##했다": "O",
+    "##훈": "I-PER",
+    "LG": "B-ORG",
+    "공사": "O",
+    "공항": "I-LOC",
+    "교수": "O",
+    "기자": "O",
+    "김민": "B-PER",
+    "네이": "B-ORG",
+    "는": "O",
+    "박지": "B-PER",
+    "발표": "O",
+    "방문": "O",
+    "본사": "O",
+    "부산": "B-LOC",
+    "서울": "B-LOC",
+    "세미": "O",
+    "솔루": "O",
+    "시스": "I-ORG",
+    "시청": "I-LOC",
+    "에너": "I-ORG",
+    "에서": "O",
+    "연세": "B-ORG",
+    "열었": "O",
+    "오늘": "O",
+    "오피": "O",
+    "옮겼": "O",
+    "은": "O",
+    "이서": "B-PER",
+    "일한": "O",
+    "정유": "B-PER",
+    "제주": "B-LOC",
+    "직원": "O",
+    "참석": "O",
+    "취재": "O",
+    "카카": "B-ORG",
+    "클라": "I-ORG",
+    "팀에": "O",
+    "판교": "B-LOC",
+    "한화": "B-ORG",
+    "합류": "O",
+    "항만": "I-LOC",
+    "회의": "O"
+  },
+  "label_counts": {
+    "O": 41,
+    "B-PER": 4,
+    "I-PER": 4,
+    "B-ORG": 5,
+    "I-ORG": 9,
+    "B-LOC": 6,
+    "I-LOC": 6
+  },
+  "alignment_example": {
+    "words": [
+      "최민호",
+      "는",
+      "서울",
+      "본사로",
+      "출근했다"
+    ],
+    "word_tags": [
+      "B-PER",
+      "O",
+      "B-LOC",
+      "O",
+      "O"
+    ],
+    "pieces": [
+      "최민",
+      "##호",
+      "는",
+      "서울",
+      "본사",
+      "##로",
+      "출근",
+      "##했다"
+    ],
+    "gold_piece_tags": [
+      "B-PER",
+      "I-PER",
+      "O",
+      "B-LOC",
+      "O",
+      "O",
+      "O",
+      "O"
+    ],
+    "predicted_piece_tags": [
+      "O",
+      "O",
+      "O",
+      "B-LOC",
+      "O",
+      "O",
+      "O",
+      "O"
+    ],
+    "alignment": [
+      [
+        0,
+        1
+      ],
+      [
+        2
+      ],
+      [
+        3
+      ],
+      [
+        4,
+        5
+      ],
+      [
+        6,
+        7
+      ]
+    ],
+    "gold_entities": [
+      [
+        "PER",
+        0,
+        2
+      ],
+      [
+        "LOC",
+        3,
+        4
+      ]
+    ],
+    "predicted_entities": [
+      [
+        "LOC",
+        3,
+        4
+      ]
+    ]
+  },
+  "prediction_rows": [
+    {
+      "words": [
+        "최민호",
+        "는",
+        "서울",
+        "본사로",
+        "출근했다"
+      ],
+      "word_tags": [
+        "B-PER",
+        "O",
+        "B-LOC",
+        "O",
+        "O"
+      ],
+      "pieces": [
+        "최민",
+        "##호",
+        "는",
+        "서울",
+        "본사",
+        "##로",
+        "출근",
+        "##했다"
+      ],
+      "gold_piece_tags": [
+        "B-PER",
+        "I-PER",
+        "O",
+        "B-LOC",
+        "O",
+        "O",
+        "O",
+        "O"
+      ],
+      "predicted_piece_tags": [
+        "O",
+        "O",
+        "O",
+        "B-LOC",
+        "O",
+        "O",
+        "O",
+        "O"
+      ],
+      "alignment": [
+        [
+          0,
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          6,
+          7
+        ]
+      ],
+      "gold_entities": [
+        [
+          "PER",
+          0,
+          2
+        ],
+        [
+          "LOC",
+          3,
+          4
+        ]
+      ],
+      "predicted_entities": [
+        [
+          "LOC",
+          3,
+          4
+        ]
+      ]
+    },
+    {
+      "words": [
+        "네이버",
+        "클라우드",
+        "직원이",
+        "부산",
+        "항만을",
+        "방문했다"
+      ],
+      "word_tags": [
+        "B-ORG",
+        "I-ORG",
+        "O",
+        "B-LOC",
+        "I-LOC",
+        "O"
+      ],
+      "pieces": [
+        "네이",
+        "##버",
+        "클라",
+        "##우드",
+        "직원",
+        "##이",
+        "부산",
+        "항만",
+        "##을",
+        "방문",
+        "##했다"
+      ],
+      "gold_piece_tags": [
+        "B-ORG",
+        "I-ORG",
+        "I-ORG",
+        "I-ORG",
+        "O",
+        "O",
+        "B-LOC",
+        "I-LOC",
+        "I-LOC",
+        "O",
+        "O"
+      ],
+      "predicted_piece_tags": [
+        "B-ORG",
+        "I-ORG",
+        "I-ORG",
+        "I-ORG",
+        "O",
+        "O",
+        "B-LOC",
+        "I-LOC",
+        "I-LOC",
+        "O",
+        "O"
+      ],
+      "alignment": [
+        [
+          0,
+          1
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          6
+        ],
+        [
+          7,
+          8
+        ],
+        [
+          9,
+          10
+        ]
+      ],
+      "gold_entities": [
+        [
+          "ORG",
+          0,
+          4
+        ],
+        [
+          "LOC",
+          6,
+          9
+        ]
+      ],
+      "predicted_entities": [
+        [
+          "ORG",
+          0,
+          4
+        ],
+        [
+          "LOC",
+          6,
+          9
+        ]
+      ]
+    },
+    {
+      "words": [
+        "카카오",
+        "직원",
+        "이서연이",
+        "판교",
+        "오피스에",
+        "모였다"
+      ],
+      "word_tags": [
+        "B-ORG",
+        "O",
+        "B-PER",
+        "B-LOC",
+        "O",
+        "O"
+      ],
+      "pieces": [
+        "카카",
+        "##오",
+        "직원",
+        "이서",
+        "##연이",
+        "판교",
+        "오피",
+        "##스에",
+        "모였",
+        "##다"
+      ],
+      "gold_piece_tags": [
+        "B-ORG",
+        "I-ORG",
+        "O",
+        "B-PER",
+        "I-PER",
+        "B-LOC",
+        "O",
+        "O",
+        "O",
+        "O"
+      ],
+      "predicted_piece_tags": [
+        "B-ORG",
+        "I-ORG",
+        "O",
+        "B-PER",
+        "O",
+        "B-LOC",
+        "O",
+        "O",
+        "O",
+        "O"
+      ],
+      "alignment": [
+        [
+          0,
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          5
+        ],
+        [
+          6,
+          7
+        ],
+        [
+          8,
+          9
+        ]
+      ],
+      "gold_entities": [
+        [
+          "ORG",
+          0,
+          2
+        ],
+        [
+          "PER",
+          3,
+          5
+        ],
+        [
+          "LOC",
+          5,
+          6
+        ]
+      ],
+      "predicted_entities": [
+        [
+          "ORG",
+          0,
+          2
+        ],
+        [
+          "PER",
+          3,
+          4
+        ],
+        [
+          "LOC",
+          5,
+          6
+        ]
+      ]
+    },
+    {
+      "words": [
+        "박지훈",
+        "은",
+        "제주",
+        "공항",
+        "행사에",
+        "참석했다"
+      ],
+      "word_tags": [
+        "B-PER",
+        "O",
+        "B-LOC",
+        "I-LOC",
+        "O",
+        "O"
+      ],
+      "pieces": [
+        "박지",
+        "##훈",
+        "은",
+        "제주",
+        "공항",
+        "행사",
+        "##에",
+        "참석",
+        "##했다"
+      ],
+      "gold_piece_tags": [
+        "B-PER",
+        "I-PER",
+        "O",
+        "B-LOC",
+        "I-LOC",
+        "O",
+        "O",
+        "O",
+        "O"
+      ],
+      "predicted_piece_tags": [
+        "B-PER",
+        "I-PER",
+        "O",
+        "B-LOC",
+        "I-LOC",
+        "O",
+        "O",
+        "O",
+        "O"
+      ],
+      "alignment": [
+        [
+          0,
+          1
+        ],
+        [
+          2
+        ],
+        [
+          3
+        ],
+        [
+          4
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          7,
+          8
+        ]
+      ],
+      "gold_entities": [
+        [
+          "PER",
+          0,
+          2
+        ],
+        [
+          "LOC",
+          3,
+          5
+        ]
+      ],
+      "predicted_entities": [
+        [
+          "PER",
+          0,
+          2
+        ],
+        [
+          "LOC",
+          3,
+          5
+        ]
+      ]
+    }
+  ],
+  "figure_path": "artifacts/scratch-manual/label_distribution.svg"
+}
