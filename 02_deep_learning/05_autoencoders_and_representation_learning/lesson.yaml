@@ -1,0 +1,33 @@
+objective: reconstruction objective, encoder-latent-decoder 역할, bottleneck 직관을 연결해 representation learning의 가장 작은 출발점을 이해한다.
+status: outlined
+prereqs:
+  - 입력/출력/latent tensor shape 읽기
+  - activation과 reconstruction loss 구분
+  - gradient와 backpropagation 기초
+  - hidden representation과 feature 재사용 감각
+  - 차원 축소와 정보 손실 trade-off 이해
+key_terms:
+  - autoencoder
+  - encoder
+  - decoder
+  - latent representation
+  - latent space
+  - reconstruction objective
+  - reconstruction loss
+  - bottleneck
+  - denoising autoencoder
+  - compression
+  - representation learning
+required_outputs:
+  - outlined README
+  - theory markdown
+  - prereqs markdown
+  - lesson metadata
+  - artifacts placeholder
+  - future scratch/framework output contract
+analysis_questions:
+  - reconstruction objective는 label 없이도 어떤 학습 신호를 제공하는가?
+  - encoder, latent, decoder는 각각 어떤 역할을 하고 어디에서 병목이 생기는가?
+  - bottleneck dimension을 줄이거나 늘리면 representation quality와 reconstruction quality는 어떻게 달라질까?
+  - denoising autoencoder와 compression-oriented autoencoder는 같은 구조를 어떻게 다르게 활용하는가?
+  - latent representation이 downstream retrieval, clustering, generative modeling에 도움이 되려면 무엇을 더 관찰해야 할까?
