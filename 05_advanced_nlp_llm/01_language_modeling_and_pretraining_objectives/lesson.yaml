@@ -1,34 +1,31 @@
-objective: causal LM, masked LM, span corruption을 예측 타깃 설계 관점에서 비교해 pretraining objective가 문맥 사용 방식과 이후 모델 행동을 어떻게 바꾸는지 이해한다.
-status: outlined
+objective: causal LM, masked LM, span corruption을 target framing 관점에서 비교하고, loss-mask density와 context window intuition이 objective별로 어떻게 달라지는지 runnable toy 실험으로 이해한다.
+status: runnable
 prereqs:
   - token, vocabulary, logit, cross entropy 기본 감각
-  - sequence length와 context window 기초
   - autoregressive next-token prediction 이해
+  - [MASK] 및 sentinel token의 역할 이해
   - encoder-only / decoder-only / encoder-decoder 구분
-  - self-attention과 positional information 기본 직관
+  - context window와 self-attention 기본 직관
 key_terms:
-  - language modeling objective
-  - causal language modeling
-  - autoregressive modeling
-  - next-token prediction
-  - masked language modeling
+  - causal LM
+  - masked LM
   - span corruption
-  - denoising pretraining
-  - prediction target
-  - loss mask
-  - supervision density
+  - target framing
+  - loss-mask density
   - context window
   - sentinel token
+  - denoising pretraining
+  - next-token prediction
 required_outputs:
-  - outlined README
-  - theory markdown
-  - prereqs markdown
-  - lesson metadata
-  - artifacts placeholder
-  - future objective-comparison sample contract
+  - scratch metrics json
+  - scratch svg figure
+  - framework metrics json
+  - observed analysis report
+  - stable analysis markdown
+  - reflection markdown
 analysis_questions:
-  - 같은 문장을 causal LM, masked LM, span corruption으로 바꾸면 input/target pair는 각각 어떻게 달라지는가?
-  - 각 objective에서 loss는 어느 위치에 걸리고 supervision density는 어떻게 달라지는가?
-  - context window는 objective마다 어떤 문맥을 보게 해 주고, 무엇을 보장하지는 않는가?
-  - objective와 architecture를 혼동하면 어떤 오해가 생기는가?
-  - 이 비교가 다음 단위의 tokenizer/data mixture 설계와 이후 domain-adaptive pretraining 해석에 왜 중요한가?
+  - causal LM, masked LM, span corruption은 각각 무엇을 입력으로 보고 무엇을 정답으로 삼는가?
+  - target framing이 달라질 때 loss-mask density와 scored token 수는 어떻게 달라지는가?
+  - 같은 context window여도 causal LM, masked LM, span corruption의 visible context는 왜 다르게 느껴지는가?
+  - span corruption에서 sentinel token은 어떤 bookkeeping 역할을 하는가?
+  - 이 비교는 다음 단위의 tokenizer/data mixture와 later domain-adaptive pretraining을 어떤 질문으로 바라보게 만드는가?
