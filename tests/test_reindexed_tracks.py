@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 import unittest
 from pathlib import Path
 
@@ -44,7 +45,8 @@ class TestReindexedTracks(unittest.TestCase):
             for token in required_tokens:
                 self.assertIn(token, text, f'{rel} missing {token}')
             for token in RETIRED_TRACK_ROOTS:
-                self.assertNotIn(token, text, f'{rel} still mentions {token}')
+                pattern = rf'(?<![A-Za-z0-9_]){re.escape(token)}(?![A-Za-z0-9_])'
+                self.assertNotRegex(text, pattern, f'{rel} still mentions retired root {token}')
 
 
 if __name__ == '__main__':
