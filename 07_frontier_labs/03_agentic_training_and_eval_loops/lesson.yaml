@@ -1,0 +1,42 @@
+objective: capstone에서 고정한 문제/평가 계약을 planner-executor-verifier-critic 구조의 agentic training/eval loop로 옮기고, 자동 반복보다 evidence-first 운영과 stop/escalation 기준을 먼저 설계하는 감각을 만든다.
+status: outlined
+prereqs:
+  - capstone scope, acceptance gate, non-goal을 문장으로 고정하는 기본 문서화 감각
+  - baseline / metric / split / failure slice를 같은 protocol에서 비교해야 한다는 이해
+  - seed, config, hardware, runtime, artifact log가 결과 해석에 미치는 영향 이해
+  - retry budget과 stop condition 없이 자동화를 붙이면 해석력보다 비용만 커질 수 있다는 문제의식
+  - verifier / critic 역할이 과장 방지와 escalation 판단에 중요하다는 인식
+key_terms:
+  - agentic loop
+  - experiment contract
+  - planner
+  - executor
+  - verifier
+  - critic
+  - iteration
+  - retry budget
+  - stop condition
+  - escalation
+  - evidence bundle
+  - protocol match
+  - artifact completeness
+  - triage
+  - benchmark drift
+  - failure slice
+required_outputs:
+  - outlined README
+  - theory note
+  - prerequisite checklist
+  - lesson metadata
+  - artifacts placeholder
+  - future planner brief / iteration plan sample contract
+  - future executor run log / artifact bundle sample contract
+  - future verifier checklist / gate verdict sample contract
+  - future critic triage / retry / escalation memo sample contract
+analysis_questions:
+  - agentic training/eval loop는 단순 job automation과 무엇이 다르고 왜 experiment contract가 먼저 필요한가?
+  - planner / executor / verifier / critic를 분리하지 않으면 어떤 self-approval와 해석 왜곡이 생기는가?
+  - retry는 언제 탐색을 돕고 언제 retry storm가 되어 정보량보다 비용만 키우는가?
+  - verifier는 왜 metric checker가 아니라 artifact와 protocol 정합성을 확인하는 gatekeeper여야 하는가?
+  - critic recommendation이 evidence 기반 triage인지 단순 추측인지 어떻게 판별할 수 있는가?
+  - 이 단위의 iteration trace와 gate 설계가 다음 benchmark / dataset construction 단위에서 어떤 품질 기준으로 이어지는가?
