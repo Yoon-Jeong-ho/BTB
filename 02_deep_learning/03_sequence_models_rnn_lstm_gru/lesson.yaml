@@ -1,5 +1,5 @@
-objective: 시퀀스 순서, hidden state 병목, vanilla RNN의 한계, LSTM/GRU gating 직관, teacher forcing setup을 연결해 이후 transformer 학습의 배경을 만든다.
-status: outlined
+objective: 시퀀스 순서, hidden state 병목, vanilla RNN의 한계, LSTM/GRU gating 직관, teacher forcing gap을 실행 가능한 toy 실험으로 연결해 이후 transformer 학습의 배경을 만든다.
+status: runnable
 prereqs:
   - 시퀀스 텐서 shape 읽기
   - backpropagation과 gradient chain rule 기초
@@ -15,21 +15,23 @@ key_terms:
   - LSTM
   - GRU
   - forget gate
-  - input gate
-  - output gate
   - update gate
-  - reset gate
   - teacher forcing
-  - autoregressive modeling
+  - exposure bias
 required_outputs:
-  - outlined README
-  - theory markdown
-  - prereqs markdown
-  - lesson metadata
-  - artifacts placeholder
+  - scratch metrics json
+  - scratch svg figure
+  - framework metrics json
+  - observed analysis report
+  - stable analysis markdown
+  - reflection prompts
 analysis_questions:
   - hidden state는 과거 정보를 어떻게 압축하고 어떤 정보는 잃기 쉬운가?
-  - vanilla RNN은 왜 long-range dependency에서 불안정해지기 쉬운가?
-  - LSTM과 GRU의 gate는 각각 어떤 방식으로 정보 흐름을 조절하는가?
+  - 같은 token 집합인데도 순서가 바뀌면 왜 final state가 달라지는가?
+  - vanilla RNN보다 LSTM/GRU가 long-range signal을 더 오래 붙잡는 이유를 gate 관점에서 어떻게 설명할 수 있는가?
   - teacher forcing은 왜 유용하고, inference에서는 어떤 mismatch를 남기는가?
   - recurrence의 병목을 이해하면 transformer attention을 어떻게 더 자연스럽게 받아들일 수 있는가?
+run_commands:
+  - python 02_deep_learning/03_sequence_models_rnn_lstm_gru/scratch_lab.py
+  - python 02_deep_learning/03_sequence_models_rnn_lstm_gru/framework_lab.py
+  - python 02_deep_learning/03_sequence_models_rnn_lstm_gru/analysis.py

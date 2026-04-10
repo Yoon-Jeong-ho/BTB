@@ -6,7 +6,8 @@
 - backpropagation과 gradient chain rule의 기본 감각
 - token sequence, embedding, 시작/종료 토큰(BOS/EOS) 같은 NLP 기본 용어
 - cross entropy가 "다음에 나올 정답 index"를 맞히는 데 자주 쓰인다는 점
-- 순서가 바뀌면 의미가 달라질 수 있다는 sequence task 직관
+- cosine similarity가 두 hidden state 방향 차이를 비교하는 도구라는 점
+- PyTorch `RNN/LSTM/GRU` 가 CPU에서도 작은 toy batch를 충분히 재현할 수 있다는 점
 
 ## 빠른 자기 점검
 - 같은 token 집합이라도 순서가 바뀌면 모델 출력이 달라져야 하는 예를 하나 들 수 있는가?
