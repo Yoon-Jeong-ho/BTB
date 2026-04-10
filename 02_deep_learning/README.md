@@ -6,6 +6,8 @@
 
 ## 단위 구성
 
+처음 runnable로 따라갈 때는 `01_perceptron_and_mlp -> 03_sequence_models_rnn_lstm_gru -> 04_attention_and_transformers -> 07_training_recipes_and_debugging` 순서를 기본 경로로 권장한다. 이 네 단위가 이후 NLP/LLM 이해를 가장 덜 끊기게 이어 준다.
+
 | Unit | Status | Focus |
 | --- | --- | --- |
 | [01_perceptron_and_mlp](01_perceptron_and_mlp/README.md) | runnable | 가장 작은 supervised neural model에서 출발해 hidden layer가 표현력을 어떻게 늘리는지 연결한다. |
