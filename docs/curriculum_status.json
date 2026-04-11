@@ -45,12 +45,12 @@
       "01_torchrun_and_ddp_basics": "runnable",
       "02_accelerate_workflows": "runnable",
       "03_deepspeed_zero": "runnable",
-      "04_fsdp_checkpointing_and_offload": "outlined",
-      "05_tensor_parallelism": "outlined",
-      "06_pipeline_parallelism": "outlined",
-      "07_data_parallel_grad_accumulation": "outlined",
-      "08_hybrid_parallel_topologies": "outlined",
-      "09_profiling_monitoring_and_failure_recovery": "outlined"
+      "04_fsdp_checkpointing_and_offload": "runnable",
+      "05_tensor_parallelism": "runnable",
+      "06_pipeline_parallelism": "runnable",
+      "07_data_parallel_grad_accumulation": "runnable",
+      "08_hybrid_parallel_topologies": "runnable",
+      "09_profiling_monitoring_and_failure_recovery": "runnable"
     },
     "07_frontier_labs": {
       "01_paper_reproduction_playground": "outlined",
