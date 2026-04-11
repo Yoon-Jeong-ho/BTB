@@ -35,9 +35,9 @@
       "01_language_modeling_and_pretraining_objectives": "runnable",
       "02_corpus_tokenizer_and_data_mixture": "runnable",
       "03_domain_adaptive_pretraining": "runnable",
-      "04_instruction_tuning_and_sft": "outlined",
-      "05_preference_optimization_dpo_orpo_kto": "outlined",
-      "06_rlhf_and_reasoning_rl": "outlined",
+      "04_instruction_tuning_and_sft": "runnable",
+      "05_preference_optimization_dpo_orpo_kto": "runnable",
+      "06_rlhf_and_reasoning_rl": "runnable",
       "07_retrieval_augmented_generation_and_eval": "outlined",
       "08_alignment_safety_and_model_behavior": "outlined"
     },
