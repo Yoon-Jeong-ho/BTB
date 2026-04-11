@@ -1,38 +1,40 @@
-objective: instruction format, role framing, supervised fine-tuning을 함께 읽어 base LM이 assistant-style behavior로 어떻게 재정렬되고 왜 preference optimization이 뒤따르는지 이해한다.
-status: outlined
+objective: "instruction format, supervised fine-tuning, input-output template, system/user/assistant role framing을 runnable toy SFT로 관찰하고 imitation vs helpfulness tradeoff와 preference optimization 필요성을 이해한다."
+status: runnable
 prereqs:
   - causal LM과 next-token loss 기본 감각
-  - pretraining objective와 supervision target framing 이해
   - prompt/response/template/EOS 기본 용어
   - role-based chat message 형식 기초
   - labeled fine-tuning dataset 구조 이해
+  - loss mask와 ignored label 기초
   - format adherence와 factual correctness 구분
 key_terms:
   - instruction tuning
   - supervised fine-tuning
   - SFT
-  - instruction-response format
+  - instruction format
+  - input-output template
   - chat template
   - role framing
+  - system/user/assistant
   - system prompt
   - user prompt
   - assistant response
   - serialization
   - loss mask
-  - imitation learning
+  - imitation
   - helpfulness
   - preference optimization
 required_outputs:
-  - outlined README
-  - theory markdown
-  - prereqs markdown
-  - lesson metadata
-  - artifacts placeholder
-  - future instruction-template and loss-mask sample contract
+  - scratch metrics json
+  - scratch svg figure
+  - framework metrics json
+  - observed analysis report
+  - stable analysis markdown
+  - reflection markdown
 analysis_questions:
-  - instruction tuning은 pretraining된 language model의 어떤 행동을 다시 맞추며, 무엇은 그대로 두는가?
-  - plain instruction template와 system/user/assistant chat template는 어떤 다른 conditioning signal을 제공하는가?
-  - SFT에서 assistant 구간 중심 loss masking은 왜 자주 쓰이며, 전체 토큰 loss와 무엇이 다른가?
-  - system message는 실제 응답 톤과 제약에 어떤 방식으로 작동하는가?
-  - helpfulness를 높이는 것과 labeled answer를 잘 모방하는 것은 어디서 갈라지는가?
-  - 왜 SFT 다음에 preference optimization이 이어지는가?
+  - instruction format은 base LM의 continuation behavior를 assistant interaction으로 어떻게 다시 framing하는가?
+  - supervised fine-tuning은 next-token loss를 유지하면서 어떤 assistant response target을 모방하게 만드는가?
+  - plain input-output template와 system/user/assistant chat template는 어떤 다른 conditioning signal을 제공하는가?
+  - assistant-only loss mask는 prompt tokens와 assistant tokens를 어떻게 다르게 취급하는가?
+  - system message는 role framing 안에서 응답 톤과 제약을 어떻게 바꾸는가?
+  - imitation을 잘하는 것과 helpfulness가 높은 것은 어디서 갈라지며, 왜 preference optimization이 이어지는가?

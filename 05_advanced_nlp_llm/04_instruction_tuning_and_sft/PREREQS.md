@@ -1,23 +1,21 @@
 # 04 Instruction Tuning and SFT 선행 개념
 
 ## 꼭 알고 오면 좋은 것
-- causal LM과 next-token loss가 기본적으로 어떻게 동작하는지에 대한 감각
-- prompt, response, template, EOS 같은 생성 인터페이스 기본 용어
-- train / validation split과 labeled supervision 데이터셋의 기본 구조
-- role/message 형식(system, user, assistant)이 대화형 모델 입력으로 쓰인다는 점
-- fine-tuning이 base model의 행동을 이동시키되 모든 능력을 새로 만들지는 않는다는 점
-- format adherence와 factual correctness를 구분해서 봐야 한다는 점
-
-- [03_domain_adaptive_pretraining](../03_domain_adaptive_pretraining/README.md) — 계속 pretrain된 모델을 instruction 형태로 옮길 때 무엇이 이어지는지 먼저 정리한다.
+- causal LM과 next-token loss가 serialized sequence에서 어떻게 계산되는지에 대한 기본 감각
+- prompt, response, template, EOS, label, loss mask 같은 생성/학습 인터페이스 용어
+- train/validation split과 labeled supervision dataset의 기본 구조
+- role/message 형식(system, user, assistant)이 chat model 입력으로 쓰인다는 점
+- fine-tuning이 base model의 모든 능력을 새로 만들기보다 행동 분포를 이동시킨다는 점
+- format adherence, factual correctness, helpfulness를 서로 구분해서 봐야 한다는 점
 
 ## 빠른 자기 점검
-- instruction tuning이 pretraining과 완전히 별개라기보다 instruction-formatted example 위의 supervised next-token 학습이라는 설명을 받아들일 수 있는가?
-- plain instruction-response format과 chat template가 모델에 다른 conditioning signal을 준다는 점을 설명할 수 있는가?
-- system message가 user 질문과 다른 역할을 하는 이유를 한두 문장으로 말할 수 있는가?
-- assistant 답변 구간에 loss를 집중하는 설정이 왜 자주 쓰이는지 설명할 수 있는가?
-- SFT로 말투와 형식은 정렬돼도 preference ranking 문제는 별도로 남는다는 점을 이해하는가?
+- instruction format이 단순한 문자열 장식이 아니라 모델이 보는 input-output template라는 점을 설명할 수 있는가?
+- supervised fine-tuning이 reference assistant answer를 모방하게 만드는 단계라는 점을 이해하는가?
+- system/user/assistant role framing이 conditioning signal로 작동한다는 말을 받아들일 수 있는가?
+- assistant-only loss mask가 prompt 복창보다 response 생성을 강조하는 이유를 말할 수 있는가?
+- imitation과 helpfulness가 같은 것이 아니며, preference optimization이 별도로 필요한 이유를 예로 들 수 있는가?
 
 ## 먼저 다시 보면 좋은 단위
-- [01_language_modeling_and_pretraining_objectives](../01_language_modeling_and_pretraining_objectives/README.md) — next-token objective와 supervision target framing 복습
-- [02_corpus_tokenizer_and_data_mixture](../02_corpus_tokenizer_and_data_mixture/README.md) — instruction 데이터도 결국 corpus/format 설계라는 관점 연결
-- [04_nlp/03_machine_reading_comprehension](../../04_nlp/03_machine_reading_comprehension/README.md) — 입력-정답 framing이 모델 행동을 바꾼다는 감각 복습
+- [01_language_modeling_and_pretraining_objectives](../01_language_modeling_and_pretraining_objectives/README.md) — next-token objective와 target framing 복습
+- [02_corpus_tokenizer_and_data_mixture](../02_corpus_tokenizer_and_data_mixture/README.md) — instruction dataset도 결국 corpus/template 설계라는 관점 연결
+- [03_domain_adaptive_pretraining](../03_domain_adaptive_pretraining/README.md) — base LM 분포 적응과 assistant behavior 적응을 분리해서 이해한다.
