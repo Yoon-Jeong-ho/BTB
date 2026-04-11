@@ -1,22 +1,23 @@
 # 05 Preference Optimization: DPO, ORPO, KTO 선행 개념
 
 ## 꼭 알고 오면 좋은 것
-- supervised fine-tuning(SFT)이 prompt-response likelihood를 최대화하는 과정이라는 기본 감각
-- token log-probability, cross entropy, likelihood ratio를 아주 거칠게라도 읽을 수 있는 정도의 수학 감각
-- train / validation / held-out evaluation 분리와 data leakage의 위험
-- pairwise comparison과 binary label이 서로 다른 supervision 신호라는 점
-- reference model / KL regularization이 왜 policy drift를 막는 장치로 자주 등장하는지에 대한 직관
-- alignment 평가에서 win rate, factuality, safety, verbosity가 서로 다른 축이라는 이해
+- SFT가 instruction-response example의 assistant 답변을 모방하도록 next-token loss를 주는 과정이라는 기본 감각
+- token log-probability, negative log likelihood, log-prob margin을 읽을 수 있는 정도의 수학 감각
+- train / validation / held-out eval을 분리해야 하며, offline win rate가 실제 사용자 만족을 보장하지 않는다는 이해
+- chosen/rejected pair와 desirable/undesirable label이 서로 다른 supervision 구조라는 점
+- reference policy 또는 anchor term이 policy drift를 줄이지만 behavior shift를 보수적으로 만들 수 있다는 직관
+- alignment eval에서 helpfulness, factuality, safety/refusal, verbosity/style을 분리해야 한다는 관점
 
 ## 빠른 자기 점검
-- chosen / rejected pair는 "정답 / 오답"과 같지 않다는 점을 설명할 수 있는가?
-- SFT objective와 preference objective가 각각 무엇을 직접 밀어 올리는지 구분할 수 있는가?
-- reference policy를 두는 이유를 "너무 멀리 가지 않게 하는 기준점" 정도로 설명할 수 있는가?
-- pairwise preference 데이터가 없을 때 desirable / undesirable label 기반 학습이 왜 대안이 될 수 있는지 말할 수 있는가?
-- offline judge win rate가 length bias, style bias, safety regression을 가릴 수 있다는 점을 받아들일 수 있는가?
+- chosen 응답이 절대 정답이 아니라 rejected보다 선호된 응답이라는 점을 설명할 수 있는가?
+- `log p(chosen) - log p(rejected)`가 왜 preference objective의 최소 관찰값이 되는지 말할 수 있는가?
+- DPO가 reference-relative margin을 보는 이유를 policy drift 관점으로 설명할 수 있는가?
+- ORPO가 chosen likelihood anchor와 preference odds-ratio를 함께 본다는 설명을 받아들일 수 있는가?
+- KTO가 strict pair 없이 desirable/undesirable label을 쓸 수 있지만 label noise에 민감하다는 점을 설명할 수 있는가?
+- full RL loop 없이도 policy update를 할 수 있지만 alignment/eval tradeoff는 계속 남는다는 점을 이해하는가?
 
 ## 먼저 다시 보면 좋은 단위
-- [04_instruction_tuning_and_sft](../04_instruction_tuning_and_sft/README.md) — SFT policy를 preference optimization의 출발점으로 다시 본다.
-- [01_language_modeling_and_pretraining_objectives](../01_language_modeling_and_pretraining_objectives/README.md) — log-prob와 objective framing 감각을 다시 연결한다.
-- [01_ml/03_model_selection_and_interpretation](../../01_ml/03_model_selection_and_interpretation/README.md) — 지표 해석과 validation 분리 감각을 복습한다.
-- [02_deep_learning/07_training_recipes_and_debugging](../../02_deep_learning/07_training_recipes_and_debugging/README.md) — loss 안정화와 evaluation regression 체크 감각을 복습한다.
+- [04_instruction_tuning_and_sft](../04_instruction_tuning_and_sft/README.md) — SFT policy가 preference optimization의 출발점이라는 점을 복습한다.
+- [01_language_modeling_and_pretraining_objectives](../01_language_modeling_and_pretraining_objectives/README.md) — log-probability와 objective framing을 다시 확인한다.
+- [03_domain_adaptive_pretraining](../03_domain_adaptive_pretraining/README.md) — policy drift와 guardrail을 distribution shift 관점으로 다시 본다.
+- [02_deep_learning/07_training_recipes_and_debugging](../../02_deep_learning/07_training_recipes_and_debugging/README.md) — loss 안정화와 eval regression 체크 감각을 복습한다.

@@ -1,17 +1,16 @@
-objective: preference data와 DPO / ORPO / KTO를 policy-loss 설계 관점에서 비교해 full RL loop 없이도 post-training alignment를 어떻게 밀 수 있는지 이해한다.
-status: outlined
+objective: chosen/rejected pair와 desirable/undesirable label을 이용해 DPO, ORPO, KTO가 full RL loop 없이 policy log-prob margin을 어떻게 움직이는지 이해한다.
+status: runnable
 prereqs:
   - supervised fine-tuning(SFT) 기본 감각
-  - token log-probability / cross entropy / likelihood ratio 기초
+  - token log-probability / negative log likelihood / log-prob margin 기초
   - chosen/rejected pair와 desirable/undesirable label 차이 이해
-  - held-out evaluation과 leakage 위험 이해
-  - reference policy / KL regularization 직관
-  - alignment 평가 축(helpfulness, factuality, safety, verbosity) 구분
+  - reference policy / anchor / KL-style drift guardrail 직관
+  - offline alignment eval과 held-out regression 점검 이해
 key_terms:
   - preference optimization
-  - preference data
-  - chosen rejected pair
+  - chosen/rejected pair
   - desirability label
+  - log-prob margin
   - DPO
   - direct preference optimization
   - ORPO
@@ -19,20 +18,25 @@ key_terms:
   - KTO
   - Kahneman-Tversky optimization
   - reference policy
-  - policy drift
-  - offline alignment
-  - judge win rate
+  - policy update without full RL
+  - alignment eval tradeoff
   - length bias
+  - style over factuality
 required_outputs:
-  - outlined README
+  - runnable README with real execution examples
   - theory markdown
   - prereqs markdown
   - lesson metadata
-  - artifacts placeholder
-  - future preference-objective comparison sample contract
+  - scratch metrics json
+  - scratch svg figure
+  - framework metrics json
+  - observed analysis report
+  - stable analysis markdown
+  - reflection markdown
 analysis_questions:
-  - preference data는 정답 데이터와 어떻게 다르고, chosen / rejected signal은 무엇을 보장하지 않는가?
-  - DPO / ORPO / KTO는 각각 어떤 데이터 형식과 anchor/regularization 직관을 요구하는가?
-  - reward model + PPO 없이도 policy를 업데이트한다는 말은 실제로 어떤 loss 설계를 뜻하는가?
-  - alignment 성능 향상과 함께 verbosity, refusal, factuality regression은 어떻게 같이 확인해야 하는가?
-  - offline preference objective의 한계는 무엇이며, 다음 RLHF 단위에서 online rollouts가 다시 필요해지는 이유는 무엇인가?
+  - chosen/rejected pair는 정답/오답 label과 어떻게 다르고, log-prob margin 해석을 어떻게 바꾸는가?
+  - DPO는 reference-relative chosen/rejected margin으로 policy drift와 preference separation을 어떻게 함께 보는가?
+  - ORPO의 chosen likelihood anchor와 odds-ratio term은 imitation과 preference separation 사이에서 어떤 균형을 만드는가?
+  - KTO는 strict pair 없이 desirable/undesirable label을 쓸 수 있지만 어떤 label noise와 imbalance 위험을 더 크게 받는가?
+  - policy update without full RL로 개선된 offline margin이 실제 alignment eval tradeoff까지 해결했다는 뜻이 아닌 이유는 무엇인가?
+  - win rate, factuality, refusal balance, verbosity, style bias를 어떻게 분리해서 평가할 것인가?
