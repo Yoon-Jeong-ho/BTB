@@ -1,5 +1,10 @@
-objective: 여러 선행 트랙 지식을 묶어 capstone 프로젝트를 막연한 아이디어가 아니라 scope / milestone / dataset-model-eval / report 계약으로 고정하고, 실패도 해석 가능한 end-to-end 모델 빌드 계획의 뼈대를 만든다.
-status: outlined
+objective: 여러 선행 트랙 지식을 묶어 capstone 프로젝트를 막연한 아이디어가 아니라 problem statement / non-goal / dataset-model-eval / milestone / acceptance gate / risk register / failure analysis / report outline 계약으로 고정하고, 다음 agentic training loop에 넘길 수 있는 실행 가능한 프로젝트 보드를 만든다.
+unit: 02_capstone_model_building
+track: 07_frontier_labs
+status: runnable
+runtime: cpu-safe deterministic simulation
+cpu_safe: true
+deterministic: true
 prereqs:
   - claim/evidence를 작은 실험 계약으로 자르는 감각
   - baseline, metric, split, failure slice를 같은 조건에서 정의하는 습관
@@ -8,6 +13,7 @@ prereqs:
   - success criterion과 non-goal을 문장으로 고정하는 기본 문서화 습관
 key_terms:
   - capstone
+  - problem statement
   - problem framing
   - scope boundary
   - non-goal
@@ -22,20 +28,30 @@ key_terms:
   - risk register
   - error slice
   - artifact hygiene
+scripts:
+  scratch: scratch_lab.py
+  framework: framework_lab.py
+  analysis: analysis.py
 required_outputs:
-  - outlined README
+  - runnable README
   - theory note
   - prerequisite checklist
   - lesson metadata
-  - artifacts placeholder
-  - future capstone problem statement / non-goal sample contract
-  - future milestone / acceptance gate plan sample contract
-  - future dataset-model-eval matrix sample contract
-  - future report outline / failure analysis memo sample contract
+  - artifacts/scratch-manual/capstone_contract.json
+  - artifacts/scratch-manual/milestone_gates.svg
+  - artifacts/framework-manual/project_board.json
+  - artifacts/analysis-manual/latest_report.md
+  - stable analysis markdown
+  - reflection worksheet
+  - capstone problem statement and non-goal contract
+  - milestone and acceptance gate plan contract
+  - dataset/model/eval matrix contract
+  - risk register and failure-analysis report outline
 analysis_questions:
   - 아이디어를 어디까지 줄여야 정직하고 끝낼 수 있는 capstone scope가 되는가?
   - baseline은 왜 가장 화려한 모델보다 가장 해석 가능한 비교선에서 시작해야 하는가?
   - dataset / model / eval 계약 중 하나가 비어 있으면 어떤 혼란이 생기는가?
   - milestone은 코드 작업 목록이 아니라 어떤 의사결정과 artifact를 닫아야 하는가?
   - failure analysis는 왜 결과가 나쁜 경우의 부록이 아니라 처음부터 설계해야 하는 핵심 deliverable인가?
+  - risk register는 어떤 관측 signal과 mitigation을 가져야 다음 실험으로 이어지는가?
   - 이 단위의 capstone contract가 다음 agentic training / eval loop 단위에서 어떤 triage 기준과 자동화 경계로 이어지는가?
