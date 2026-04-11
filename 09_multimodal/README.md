@@ -4,6 +4,8 @@
 
 처음부터 거대한 모델을 직접 끝까지 학습하기보다, 작은 데이터 subset 또는 parameter-efficient finetuning으로 시작하는 것을 기본 원칙으로 한다.
 
+이 트랙은 세 unit로 채워져 있으며, retrieval·captioning·VQA를 각각 작은 runnable 실습과 qualitative failure 분석으로 연결한다.
+
 ## 단계 구성
 
 | Stage | 목적 | 추천 데이터셋 | 약한 베이스라인 | 강한 베이스라인 | 남길 figure |

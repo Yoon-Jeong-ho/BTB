@@ -4,6 +4,8 @@
 
 한국어 실습을 바로 하고 싶다면 `NSMC` 와 `KLUE` 를 중심으로 시작하고, 영어 표준 벤치마크를 병행하고 싶다면 `IMDb`, `CoNLL-2003`, `SQuAD 2.0` 을 같이 본다.
 
+이 트랙은 세 unit로 채워져 있으며, 각 unit은 baseline과 transformer 계열 비교, failure analysis, 실행 산출물을 남기는 runnable 실습 단위다.
+
 ## 단계 구성
 
 | Stage | 목적 | 추천 데이터셋 | 약한 베이스라인 | 강한 베이스라인 | 남길 figure |

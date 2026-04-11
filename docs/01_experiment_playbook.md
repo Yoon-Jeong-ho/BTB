@@ -12,40 +12,11 @@
 6. `analysis.md`: 실행 결과와 figure를 어떻게 해석해야 하는지 읽는다.
 7. `reflection.md`: 스스로 설명할 수 있는지 점검한다.
 
-## 2. 실행 예시
-
-대표 실행 흐름은 아래와 같다.
-
-```bash
-python scripts/run_lesson.py --unit 00_foundations/01_tensor_shapes --mode scratch
-python scripts/run_lesson.py --unit 00_foundations/01_tensor_shapes --mode framework
-python scripts/build_lesson_report.py --unit 00_foundations/01_tensor_shapes
-python scripts/check_curriculum_links.py
-```
-
-- `run_lesson.py`: unit의 `scratch_lab.py` 또는 `framework_lab.py`를 실행한다.
-- `build_lesson_report.py`: unit의 요약 report 초안을 만든다.
-- `check_curriculum_links.py`: README와 docs 링크가 깨지지 않았는지 점검한다.
-
-## 3. Run ID 규약
-
-권장 형식:
-
-```text
-YYYYMMDD-HHMMSS_<dataset>_<model>_s<seed>
-```
-
-예시:
-
-```text
-20260326-221500_nsmc_klue-roberta-base_s42
-```
-
-## 4. 모든 실험/학습 단위가 남겨야 하는 파일
+## 2. 모든 실험/학습 단위가 남겨야 하는 파일
 
 ### 학습 단위 contract
 
-아래 블록은 unit 기본 골격이다. 5절부터는 run/report artifact 승격 규약으로 읽는다.
+아래 블록은 unit 기본 골격이다. 3절부터는 run/report artifact 승격 규약으로 읽는다.
 
 ```text
 <unit>/
@@ -65,6 +36,35 @@ YYYYMMDD-HHMMSS_<dataset>_<model>_s<seed>
 - `reflection.md`: 학습자 관점 회고
 - runtime 관련 실습은 GPU/CPU 관측치를 함께 남긴다.
 - runtime observations는 숫자만 적지 말고 원인 해석까지 붙인다.
+
+## 3. 실행 예시
+
+대표 실행 흐름은 아래와 같다.
+
+```bash
+python scripts/run_lesson.py --unit 00_foundations/01_tensor_shapes --mode scratch
+python scripts/run_lesson.py --unit 00_foundations/01_tensor_shapes --mode framework
+python scripts/build_lesson_report.py --unit 00_foundations/01_tensor_shapes
+python scripts/check_curriculum_links.py
+```
+
+- `run_lesson.py`: unit의 `scratch_lab.py` 또는 `framework_lab.py`를 실행한다.
+- `build_lesson_report.py`: unit의 요약 report 초안을 만든다.
+- `check_curriculum_links.py`: README와 docs 링크가 깨지지 않았는지 점검한다.
+
+## 4. Run ID 규약
+
+권장 형식:
+
+```text
+YYYYMMDD-HHMMSS_<dataset>_<model>_s<seed>
+```
+
+예시:
+
+```text
+20260326-221500_nsmc_klue-roberta-base_s42
+```
 
 ## 5. 결과 figure와 분석 figure 구분
 

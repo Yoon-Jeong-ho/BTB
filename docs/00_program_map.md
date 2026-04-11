@@ -28,11 +28,11 @@ BTB는 `00_foundations -> 01_ml -> 02_deep_learning -> 03_nlp_bridge -> 04_nlp -
 7. `07_frontier_labs`는 앞선 트랙을 조합해 논문 재현, capstone, agentic workflow 실험으로 확장하는 sandbox다.
 8. `08_multimodal_bridge`는 image-text alignment를 작은 예제로 먼저 익혀 `09_multimodal`의 retrieval/caption/VQA 실습으로 자연스럽게 이어 준다.
 
-## 현재 상태를 읽는 법
+## 현재 학습 가능 상태
 
-- BTB는 `00→09` 전체 사다리를 먼저 공개했지만, 모든 unit이 같은 완성도는 아니다.
-- 새 scaffold 트랙과 unit에는 아직 `planned` 상태가 남아 있을 수 있다.
-- runnable lab를 기대하기 전에는 먼저 [curriculum_status.json](curriculum_status.json)을 canonical source of truth로 확인하고, track README에 status note/table이 있으면 supplementary context로 함께 읽는다.
+- 현재 [curriculum_status.json](curriculum_status.json)에 선언된 `00→09` 전체 unit은 `runnable` 상태다.
+- `02_deep_learning`은 딥러닝 코어를, `03_nlp_bridge -> 04_nlp`는 NLP bridge/applied 흐름을, `08_multimodal_bridge -> 09_multimodal`은 multimodal bridge/applied 흐름을 담당한다.
+- 과거 경로에서 현재 경로로 바뀐 대응표는 migration note의 historical reference로만 유지하며, 현재 실행 경로는 manifest와 track README를 canonical source of truth로 삼는다.
 
 ## 단계별 산출물 관점
 
@@ -45,8 +45,8 @@ BTB는 `00_foundations -> 01_ml -> 02_deep_learning -> 03_nlp_bridge -> 04_nlp -
 
 ## 추천 진행 방식
 
-1. 먼저 `00_foundations -> 01_ml`을 끝내며 공통 실험 습관을 만든다.
-2. 이후 목표 분야에 따라 전체 1-pass 또는 압축 루트를 고른다.
+1. 먼저 [docs/02_study_guide.md](02_study_guide.md)에서 표준 1-pass, 딥러닝 코어 우선, NLP/LLM 압축 루트 중 하나를 고른다.
+2. `00_foundations -> 01_ml`을 끝내며 공통 실험 습관을 만든다.
 3. 각 stage에서는 가장 쉬운 dataset/baseline으로 빠르게 1차 실험을 만든다.
 4. 숫자만 저장하지 말고 figure, failure case, summary를 반드시 같이 남긴다.
 5. 같은 실수를 반복하지 않도록 `summary.md`와 회고를 누적한다.

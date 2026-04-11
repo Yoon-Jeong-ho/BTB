@@ -2,7 +2,7 @@
 
 ## NLP 바보에서 박사
 
-이 저장소는 `00_foundations -> 01_ml -> 02_deep_learning -> 03_nlp_bridge -> 04_nlp -> 05_advanced_nlp_llm -> 06_training_systems -> 07_frontier_labs -> 08_multimodal_bridge -> 09_multimodal` 순서로 올라가면서, 이론을 읽고 끝내지 않고 반드시 작은 실험과 산출물로 확인하는 한글 우선 학습 저장소다.
+이 저장소는 `00_foundations -> 01_ml -> 02_deep_learning -> 03_nlp_bridge -> 04_nlp -> 05_advanced_nlp_llm -> 06_training_systems -> 07_frontier_labs -> 08_multimodal_bridge -> 09_multimodal` 순서로 올라가면서, foundations/deep-learning core/bridge/applied/systems/frontier/multimodal을 모두 작은 실험과 산출물로 확인하는 한글 우선 학습 저장소다.
 
 핵심 철학은 세 가지다.
 
@@ -23,9 +23,9 @@
 9. [08_multimodal_bridge](08_multimodal_bridge/README.md): contrastive alignment와 image-text shared representation으로 멀티모달 연결 다리를 만든다.
 10. [09_multimodal](09_multimodal/README.md): retrieval, captioning, VQA를 중심으로 multimodal applied track을 실습한다.
 
-`02_deep_learning`, `05_advanced_nlp_llm`, `06_training_systems`, `07_frontier_labs`처럼 새로 열린 scaffold 트랙은 아직 `planned` unit이 많을 수 있다. 실제로 runnable한 실습을 기대하기 전에는 먼저 [docs/curriculum_status.json](docs/curriculum_status.json)을 기준으로 현재 unit 상태를 확인하고, track README에 status note/table이 있으면 보조 맥락으로 함께 읽자.
+현재 `docs/curriculum_status.json`에 선언된 모든 unit은 `runnable` 상태다. 그래도 실행 전에는 manifest와 각 track README의 status table을 함께 확인해, 어떤 산출물과 분석 질문을 남겨야 하는지 먼저 읽는 것을 원칙으로 한다.
 
-임시 전환 안내: 현재 학습 경로와 인덱싱은 `00→09`가 기준이지만, 일부 downstream track README의 heading/title은 후속 정리 전까지 예전 번호나 제목을 잠시 유지할 수 있다. 경로와 진행 순서는 루트 문서와 `docs/curriculum_status.json`을 우선 기준으로 보면 된다.
+현재 경로 기준으로 `03_nlp_bridge -> 04_nlp`, `08_multimodal_bridge -> 09_multimodal`이 bridge/applied 흐름을 담당한다. 과거 경로에서 현재 경로로 바뀐 자세한 대응표는 [docs/03_track_migration_map.md](docs/03_track_migration_map.md)에서만 historical reference로 다룬다.
 
 전체 프로그램 개요는 [docs/00_program_map.md](docs/00_program_map.md), 추천 학습 동선은 [docs/02_study_guide.md](docs/02_study_guide.md), 경로 변경 안내는 [docs/03_track_migration_map.md](docs/03_track_migration_map.md), 실험 운영 규칙은 [docs/01_experiment_playbook.md](docs/01_experiment_playbook.md)에 정리했다.
 
@@ -84,7 +84,7 @@ Hugging Face 업로드와 Git LFS 관련 규칙은 루트의 `.gitignore`, `.git
 1. [docs/00_program_map.md](docs/00_program_map.md)로 전체 트랙의 역할 경계를 먼저 본다.
 2. [docs/02_study_guide.md](docs/02_study_guide.md)에서 자신에게 맞는 학습 동선을 고른다.
 3. [00_foundations/README.md](00_foundations/README.md)와 [01_ml/README.md](01_ml/README.md)로 공통 기초와 baseline 운영 습관을 먼저 다진다.
-4. 새 scaffold 트랙을 들어가기 전에는 먼저 [docs/curriculum_status.json](docs/curriculum_status.json)에서 `planned` / `runnable` 상태를 확인하고, 해당 track README에 status note/table이 있으면 보조 설명으로 함께 읽는다.
+4. 각 track에 들어가기 전에는 먼저 [docs/curriculum_status.json](docs/curriculum_status.json)에서 `runnable` 상태와 unit 목록을 확인하고, 해당 track README의 status table을 보조 설명으로 함께 읽는다.
 5. 실험을 돌릴 때는 [00_shared/templates/run_summary_template.md](00_shared/templates/run_summary_template.md) 형식으로 요약을 남기고, 다시 볼 가치가 있는 결과만 [reports/README.md](reports/README.md) 규칙에 맞게 승격한다.
 
 ## 참고 자료

@@ -2,9 +2,9 @@
 
 ## 목적
 
-이 문서는 BTB의 `00→09` 커리큘럼을 어떻게 읽고 들어갈지 정리한 한국어 우선 학습 가이드다. BTB는 전체 사다리를 먼저 공개한 상태이므로, 새 scaffold track이나 unit는 아직 `planned`일 수 있다. 따라서 **실행 가능한 lab를 기대하기 전에는 먼저 `docs/curriculum_status.json`을 canonical source of truth로 확인하고, 각 track README의 status note/table은 있을 때 supplementary context로 참고**해야 한다.
+이 문서는 BTB의 `00→09` 커리큘럼을 어떻게 읽고 들어갈지 정리한 한국어 우선 학습 가이드다. 현재 `docs/curriculum_status.json`에 선언된 전체 unit은 `runnable` 상태다. 그래도 **실행 전에 manifest를 canonical source of truth로 확인하고, 각 track README의 status table을 supplementary context로 참고**해야 한다.
 
-임시 전환 안내: 현재 학습 경로와 인덱싱은 `00→09`가 기준이지만, 일부 downstream track README의 heading/title은 후속 cleanup 전까지 예전 번호나 제목을 잠시 유지할 수 있다. 이 경우에도 실제 경로와 진행 순서는 루트 문서와 `docs/curriculum_status.json`을 우선 기준으로 보면 된다.
+현재 학습 경로와 인덱싱은 `00→09`가 기준이다. 과거 경로명은 migration note에서만 historical reference로 다룬다.
 
 ## 표준 1-pass 루트
 
@@ -22,10 +22,23 @@
 
 1. `00_foundations`에서 tensor, gradient, runtime 관측 습관을 먼저 만든다.
 2. `01_ml`에서 baseline, metric, failure analysis를 실험 discipline으로 굳힌다.
-3. `02_deep_learning`에서 perceptron·CNN·RNN·transformer·generative model family를 지도처럼 훑는다.
+3. `02_deep_learning`에서 딥러닝 코어인 perceptron·CNN·RNN·transformer·generative model family를 지도처럼 훑는다.
 4. `03_nlp_bridge -> 04_nlp -> 05_advanced_nlp_llm`에서 NLP/LLM 흐름을 연결한다.
 5. `06_training_systems -> 07_frontier_labs`에서 큰 실험을 운영하고 재현하는 법으로 확장한다.
 6. `08_multimodal_bridge -> 09_multimodal`에서 image-text shared representation과 응용 태스크로 넘어간다.
+
+
+## 딥러닝 코어 우선 루트
+
+딥러닝 코어만 먼저 단단히 잡고 싶다면 아래 unit를 우선 실행한다.
+
+1. `00_foundations/02_activation_and_loss` — logits, activation, loss가 학습 신호로 바뀌는 최소 감각
+2. `00_foundations/03_gradients_and_backpropagation` — gradient flow와 update 방향 감각
+3. `02_deep_learning/01_perceptron_and_mlp` — 가장 작은 supervised neural model
+4. `02_deep_learning/04_attention_and_transformers` — attention/transformer core
+5. `03_nlp_bridge/02_attention_and_transformer_block` — text 입력 관점의 attention bridge
+
+이 루트는 `04_nlp`나 `05_advanced_nlp_llm`로 넘어가기 전에 모델 내부의 shape, signal, update, attention 흐름을 먼저 설명할 수 있게 만드는 압축 경로다.
 
 ## NLP / LLM 집중 압축 루트
 
@@ -48,8 +61,8 @@ NLP·LLM 중심으로 빠르게 올라가고 싶다면 아래 압축 루트를 �
 
 ## planned 상태를 읽는 법
 
-- BTB의 새 scaffold track과 unit는 문서 구조가 먼저 열리고, 나중에 runnable lab가 채워질 수 있다.
-- 따라서 `planned`라고 적혀 있다면 `아직 설계/문서 중심 단계`로 이해해야 한다.
+- 현재 manifest의 모든 unit은 `runnable`이다.
+- 향후 새 unit가 추가되어 `planned`나 `outlined`가 다시 등장하면, 그 상태는 아직 설계/문서 중심 단계로 이해한다.
 - `runnable`이라고 표시된 unit만 바로 실행 실습 대상으로 기대하는 것이 안전하다.
 
 ## runnable lab를 기대하기 전에 확인할 것
