@@ -1,5 +1,10 @@
-objective: open-ended frontier research를 막연한 자유 탐색이 아니라 scope·hypothesis·evidence·stop/archive discipline으로 운영하는 트랙으로 읽고, keep/kill/pause 판단이 가능한 연구 기록 감각을 만든다.
-status: outlined
+objective: open-ended frontier research를 막연한 자유 탐색이 아니라 research scope·north-star question·hypothesis registry·iteration boundary·kill criteria·evidence standard·archive discipline으로 운영하고, negative result와 inconclusive result를 구분해 stop / pause / escalate / archive 결정을 내리는 기준선을 CPU-safe deterministic simulation으로 만든다.
+unit: 05_open_ended_research_tracks
+track: 07_frontier_labs
+status: runnable
+runtime: cpu-safe deterministic simulation
+cpu_safe: true
+deterministic: true
 prereqs:
   - capstone goal, benchmark contract, non-goal을 문장으로 고정하는 기본 문서화 감각
   - planner / executor / verifier / critic 역할 분리가 실험 해석력을 지키는 이유에 대한 이해
@@ -12,32 +17,40 @@ key_terms:
   - research scope
   - north-star question
   - out-of-scope
-  - hypothesis
+  - hypothesis registry
   - falsifiability
   - iteration boundary
-  - kill criterion
+  - kill criteria
   - evidence standard
   - baseline-relative signal
   - negative result
   - inconclusive result
-  - stopping rule
-  - archive discipline
+  - stop decision
+  - pause decision
+  - escalate decision
+  - archive decision
   - reopen condition
   - scope creep
+scripts:
+  scratch: scratch_lab.py
+  framework: framework_lab.py
+  analysis: analysis.py
 required_outputs:
-  - outlined README
+  - runnable README
   - theory note
   - prerequisite checklist
   - lesson metadata
-  - artifacts placeholder
-  - future research track charter / scope memo sample
-  - future hypothesis registry / boundary / kill criterion sample
-  - future evidence log / negative result / inconclusive note sample
-  - future stop / pause / escalate / archive decision sample
+  - artifacts/scratch-manual/metrics.json
+  - artifacts/scratch-manual/research_track_map.svg
+  - artifacts/framework-manual/metrics.json
+  - artifacts/analysis-manual/latest_report.md
+  - stable analysis markdown
+  - reflection worksheet
 analysis_questions:
-  - open-ended research는 왜 자유 탐색이 아니라 범위 설계 문제이며, 이번 트랙의 out-of-scope를 먼저 적어야 하는가?
-  - 좋은 hypothesis는 어떤 claim / mechanism / evidence / kill criterion 조합을 가져야 keep/kill 판단이 가능한가?
+  - open-ended research는 왜 자유 탐색이 아니라 research scope와 north-star question을 작게 자르는 운영 문제인가?
+  - 좋은 hypothesis registry는 어떤 claim / mechanism / iteration boundary / kill criteria / evidence standard 조합을 가져야 keep/kill 판단이 가능한가?
   - iteration boundary 없이 exploratory run을 반복하면 어떤 retrospective story-telling과 scope creep가 생기는가?
   - exploratory goal에서도 baseline-relative signal, slice observation, qualitative memo, negative result를 함께 남겨야 하는 이유는 무엇인가?
-  - no-signal, inconclusive, trust failure를 각각 다른 stopping rule로 다뤄야 하는 이유는 무엇인가?
-  - archive discipline이 있어야 다음 사람이 같은 질문을 어떻게 더 싸고 정직하게 다시 열 수 있는가?
+  - negative result와 inconclusive result를 각각 archive와 pause로 다뤄야 하는 이유는 무엇인가?
+  - trust failure가 보이면 왜 더 실험하지 않고 escalate해야 하는가?
+  - archive discipline과 reopen condition이 있어야 다음 사람이 같은 질문을 어떻게 더 싸고 정직하게 다시 열 수 있는가?
