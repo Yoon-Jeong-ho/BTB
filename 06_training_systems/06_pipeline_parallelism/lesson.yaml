@@ -1,5 +1,9 @@
-objective: 모델 레이어 스택을 stage로 나눠 microbatch를 시간축으로 흘리는 pipeline parallelism의 기본 직관을 익히고, bubble/throughput trade-off·기본 스케줄링·activation transfer·partition boundary 문제를 later hybrid parallel 학습의 기준선으로 삼는다.
-status: outlined
+objective: pipeline parallelism이 모델 레이어 스택을 pipeline stage로 나누고 microbatch schedule로 시간축 실행을 구성하는 방식임을 이해하며, bubble/throughput trade-off·activation transfer·partition balance를 later hybrid parallel 학습의 기준선으로 삼는다.
+unit: 06_pipeline_parallelism
+track: 06_training_systems
+status: runnable
+cpu_safe: true
+deterministic: true
 prereqs:
   - transformer 같은 순차 레이어 스택 기본 구조 이해
   - forward/backward/activation memory 기본 감각
@@ -9,30 +13,36 @@ prereqs:
   - GPU memory bottleneck과 communication bottleneck 기본 관점
 key_terms:
   - pipeline parallelism
-  - stage
-  - stage partition
-  - partition boundary
+  - pipeline_stage
+  - stage_partition
+  - partition_boundary
+  - partition_balance
   - microbatch
-  - schedule
+  - microbatch_schedule
+  - schedule_trace
   - GPipe
   - 1F1B
   - warmup
-  - steady state
+  - steady_state
   - cooldown
-  - pipeline bubble
+  - pipeline_bubble
+  - bubble_fraction
   - throughput
   - latency
-  - activation transfer
-  - send/recv
-  - load imbalance
+  - activation_transfer
+  - send_recv
+  - load_imbalance
 required_outputs:
-  - outlined README
+  - runnable README
   - theory note
   - prerequisite checklist
   - lesson metadata
-  - artifacts placeholder
-  - future schedule trace sample contract
-  - future activation transfer observation sample contract
+  - scratch pipeline schedule metrics json
+  - scratch pipeline schedule SVG
+  - framework deterministic pipeline simulation metrics json
+  - stable analysis markdown
+  - observed analysis json
+  - reflection worksheet
 analysis_questions:
   - pipeline parallelism은 모델 실행 경로를 stage로 나눈다는 점에서 data parallel / tensor parallel과 어떻게 다른가?
   - stage partition은 왜 메모리 적재 문제를 완화하면서도 single-batch latency를 자동으로 줄여 주지 않는가?
