@@ -4,7 +4,7 @@
 
 즉 `03 → 04 → 05` 구간에서 `작은 태스크 실습`을 `대형 언어모델을 만들고 적응시키고 평가하는 파이프라인`으로 확장하는 역할을 맡는다. `06_training_systems`가 분산 시스템이라면, 이 트랙은 모델/데이터/정렬 관점의 고급 NLP·LLM 설계에 초점을 둔다.
 
-현재는 `01~06` 단위가 runnable toy lab 단계까지 올라와 있고, `07~08` 단위는 outlined 문서 단계로 정리돼 있다. 즉 objective → corpus/tokenizer → DAPT → SFT → preference optimization → RLHF/reasoning-RL까지는 직접 실행하며 따라갈 수 있고, RAG/alignment 후반부는 문서와 메타데이터 기준으로 먼저 학습한다.
+현재는 `01~08` 전 unit가 runnable toy lab 단계까지 올라와 있다. 즉 objective → corpus/tokenizer → DAPT → SFT → preference optimization → RLHF/reasoning-RL → RAG/eval → alignment/safety까지 직접 실행하며 따라갈 수 있다.
 
 ## 단위 구성
 
@@ -16,8 +16,8 @@
 | [04_instruction_tuning_and_sft](04_instruction_tuning_and_sft/README.md) | runnable | instruction format과 supervised fine-tuning이 사용성에 어떻게 연결되는지 본다. |
 | [05_preference_optimization_dpo_orpo_kto](05_preference_optimization_dpo_orpo_kto/README.md) | runnable | 선호 데이터로 정책을 직접 업데이트하는 post-training objective를 비교한다. |
 | [06_rlhf_and_reasoning_rl](06_rlhf_and_reasoning_rl/README.md) | runnable | reward model과 policy optimization이 reasoning behavior를 어떻게 바꾸는지 익힌다. |
-| [07_retrieval_augmented_generation_and_eval](07_retrieval_augmented_generation_and_eval/README.md) | outlined | RAG 파이프라인과 평가 harness를 함께 설계하는 방법을 다룬다. |
-| [08_alignment_safety_and_model_behavior](08_alignment_safety_and_model_behavior/README.md) | outlined | 모델 행동, 안전성, refusal/harmlessness/robustness를 체계적으로 읽는다. |
+| [07_retrieval_augmented_generation_and_eval](07_retrieval_augmented_generation_and_eval/README.md) | runnable | RAG 파이프라인과 평가 harness를 함께 설계하는 방법을 다룬다. |
+| [08_alignment_safety_and_model_behavior](08_alignment_safety_and_model_behavior/README.md) | runnable | 모델 행동, 안전성, refusal/harmlessness/robustness를 체계적으로 읽는다. |
 
 ## 이 트랙에 포함되는 것
 
