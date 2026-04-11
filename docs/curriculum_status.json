@@ -53,11 +53,11 @@
       "09_profiling_monitoring_and_failure_recovery": "runnable"
     },
     "07_frontier_labs": {
-      "01_paper_reproduction_playground": "outlined",
-      "02_capstone_model_building": "outlined",
-      "03_agentic_training_and_eval_loops": "outlined",
-      "04_benchmark_and_dataset_construction": "outlined",
-      "05_open_ended_research_tracks": "outlined"
+      "01_paper_reproduction_playground": "runnable",
+      "02_capstone_model_building": "runnable",
+      "03_agentic_training_and_eval_loops": "runnable",
+      "04_benchmark_and_dataset_construction": "runnable",
+      "05_open_ended_research_tracks": "runnable"
     },
     "08_multimodal_bridge": {
       "01_contrastive_alignment": "runnable"
