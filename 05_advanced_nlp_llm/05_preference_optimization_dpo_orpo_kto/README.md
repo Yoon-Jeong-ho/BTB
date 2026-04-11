@@ -50,7 +50,7 @@ $ python 05_advanced_nlp_llm/05_preference_optimization_dpo_orpo_kto/scratch_lab
   "preference_batch": {"prompt_count": 4, "pair_count": 4, "desirable_labels": 2, "undesirable_labels": 2},
   "margin_summary": {
     "avg_policy_margin": 0.38,
-    "avg_dpo_advantage": 0.14,
+    "avg_dpo_advantage": 0.115,
     "policy_update_without_full_rl": "log-prob margin을 offline objective로 직접 이동시킨다."
   },
   "objective_views": {
