@@ -1,5 +1,6 @@
-objective: FSDP가 parameter/gradient/optimizer state shard lifecycle을 어떻게 관리하는지, activation checkpointing과 offload가 어떤 memory-compute-I/O trade-off를 만드는지, 그리고 full/sharded checkpoint save-load 계약이 어떻게 달라지는지를 연결해 대형 학습의 메모리 운영 감각을 만든다.
-status: outlined
+objective: FSDP가 parameter/gradient/optimizer state shard lifecycle을 어떻게 관리하는지, activation checkpointing과 offload가 어떤 memory-compute-I/O trade-off를 만드는지, 그리고 full/sharded checkpoint save-load 계약이 어떻게 달라지는지를 CPU-safe simulation으로 관찰한다.
+status: runnable
+runtime: cpu-safe deterministic simulation
 prereqs:
   - DDP와 ZeRO의 state replication / partition 기본 그림
   - parameter / gradient / optimizer state / activation 구분
@@ -16,25 +17,22 @@ key_terms:
   - activation checkpointing
   - recomputation
   - CPU offload
-  - NVMe offload
   - full state dict
   - sharded state dict
   - state_dict_type
-  - auto wrap policy
   - peak memory
-  - mixed precision
+scripts:
+  scratch: scratch_lab.py
+  framework: framework_lab.py
+  analysis: analysis.py
 required_outputs:
-  - outlined README
-  - theory note
-  - prerequisite checklist
-  - lesson metadata
-  - artifacts placeholder
-  - future FSDP shard lifecycle sample contract
-  - future checkpoint/offload comparison sample contract
+  - artifacts/scratch-manual/metrics.json
+  - artifacts/scratch-manual/fsdp_memory_tradeoffs.svg
+  - artifacts/framework-manual/metrics.json
+  - artifacts/analysis-manual/latest_report.md
 analysis_questions:
   - FSDP는 parameter를 언제 모으고 언제 다시 shard하는 runtime으로 이해하면 좋은가?
   - activation checkpointing은 어떤 메모리를 줄이고, 그 대가로 어떤 recomputation 비용을 만드는가?
-  - CPU/NVMe offload는 메모리 절약과 step latency 사이에서 어떤 교환을 만드는가?
+  - CPU offload는 메모리 절약과 step latency 사이에서 어떤 교환을 만드는가?
   - full state dict와 sharded state dict는 save/load/resume/export 관점에서 어떤 서로 다른 운영 계약을 가지는가?
-  - auto wrap policy, mixed precision, offload, checkpoint 설정을 왜 하나의 시스템 그림 안에서 읽어야 하는가?
   - 이후 tensor parallelism이나 hybrid parallelism을 볼 때 FSDP가 해결하는 문제와 남겨 두는 문제는 무엇인가?
