@@ -1,5 +1,10 @@
-objective: data parallel과 grad accumulation을 함께 보며 local/global/effective batch를 분리해 이해하고, sync cadence·optimizer step timing·throughput/memory trade-off를 later hybrid parallel 학습의 기준선으로 삼는다.
-status: outlined
+objective: data parallel과 grad accumulation을 함께 실행 가능한 CPU-safe simulation으로 관찰하며 local/global/effective batch, deferred sync/no_sync, optimizer step cadence, loss normalization, gradient clipping, throughput/memory trade-off를 later hybrid parallel 학습의 기준선으로 삼는다.
+unit: 07_data_parallel_grad_accumulation
+track: 06_training_systems
+status: runnable
+cpu_safe: true
+deterministic: true
+runtime: cpu-safe deterministic simulation
 prereqs:
   - backward와 optimizer step 기본 감각
   - local batch와 GPU memory pressure 관계 이해
@@ -7,33 +12,46 @@ prereqs:
   - effective batch와 learning-rate 해석 기본 관점
   - throughput, latency, utilization을 분리해서 보는 운영 감각
 key_terms:
+  - data_parallel
   - data parallel
   - DDP
-  - gradient accumulation
+  - gradient_accumulation
+  - grad accumulation
   - local batch size
   - global batch size
+  - effective_batch
   - effective batch size
   - microstep
-  - optimizer step cadence
-  - gradient synchronization
+  - optimizer_step_cadence
+  - deferred_sync
   - no_sync
   - all-reduce
+  - loss_normalization
+  - gradient clipping
+  - scheduler step timing
   - throughput
   - latency
   - memory ceiling
   - optimizer noise
+scripts:
+  scratch: scratch_lab.py
+  framework: framework_lab.py
+  analysis: analysis.py
 required_outputs:
-  - outlined README
+  - runnable README
   - theory note
   - prerequisite checklist
   - lesson metadata
-  - artifacts placeholder
-  - future effective-batch calculation sample contract
-  - future sync-cadence / optimizer-step trace sample contract
+  - scratch data-parallel accumulation metrics json
+  - scratch cadence SVG
+  - framework deterministic accumulation metrics json
+  - stable analysis markdown
+  - observed analysis json
+  - reflection worksheet
 analysis_questions:
   - data parallel은 batch를 어떤 축으로 키우고, grad accumulation은 optimizer step을 어떤 방식으로 늦추는가?
   - local batch, global batch, effective batch를 구분하지 않으면 어떤 해석 오류가 생기는가?
   - accumulation step을 늘리면 memory fit은 좋아질 수 있는데도 throughput이 자동으로 개선되지 않는 이유는 무엇인가?
-  - DDP에서 every-step sync와 accumulation-boundary sync는 communication cadence에서 어떻게 다르게 보이는가?
-  - 큰 local batch와 작은 local batch + accumulation은 memory, utilization, optimizer dynamics에서 어떻게 다른가?
+  - DDP에서 every-step sync와 accumulation-boundary deferred sync는 communication cadence에서 어떻게 다르게 보이는가?
+  - loss normalization, gradient clipping, scheduler step timing은 왜 accumulation boundary와 함께 봐야 하는가?
   - later hybrid parallel topologies에서 data-parallel 축은 왜 batch budget과 optimizer-step cadence의 기준선으로 남는가?
