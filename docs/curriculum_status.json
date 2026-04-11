@@ -42,9 +42,9 @@
       "08_alignment_safety_and_model_behavior": "runnable"
     },
     "06_training_systems": {
-      "01_torchrun_and_ddp_basics": "outlined",
-      "02_accelerate_workflows": "outlined",
-      "03_deepspeed_zero": "outlined",
+      "01_torchrun_and_ddp_basics": "runnable",
+      "02_accelerate_workflows": "runnable",
+      "03_deepspeed_zero": "runnable",
       "04_fsdp_checkpointing_and_offload": "outlined",
       "05_tensor_parallelism": "outlined",
       "06_pipeline_parallelism": "outlined",

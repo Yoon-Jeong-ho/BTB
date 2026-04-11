@@ -1,39 +1,24 @@
-objective: ZeRO가 optimizer state, gradient, parameter의 중복 메모리를 어떻게 줄이는지와 그 대가로 어떤 communication/runtime trade-off가 생기는지 이해해 later FSDP/offload 학습의 기준선을 만든다.
-status: outlined
+objective: ZeRO가 data parallel 중복 상태를 단계별로 shard해 per-rank memory를 줄이는 방식을 toy memory accounting으로 이해한다.
+status: runnable
 prereqs:
-  - DDP 복제와 gradient synchronization 기본 그림
-  - optimizer state / gradient / parameter 구분
-  - micro-batch, gradient accumulation, effective batch 기초
-  - mixed precision이 memory/runtime에 주는 영향
-  - collective communication 기본 감각
-  - GPU memory bottleneck을 학습 설계 문제로 보는 관점
+  - DDP와 data parallel 기초
+  - parameter / gradient / optimizer state 구분
+  - rank/world size 실행 계약
 key_terms:
   - DeepSpeed
   - ZeRO
-  - ZeRO Stage 1
-  - ZeRO Stage 2
-  - ZeRO Stage 3
   - optimizer state
-  - gradient shard
-  - parameter shard
-  - memory breakdown
-  - reduce-scatter
-  - all-gather
-  - gradient accumulation
-  - effective batch
-  - offload
+  - gradient sharding
+  - parameter sharding
+  - memory accounting
+  - communication overhead
 required_outputs:
-  - outlined README
-  - theory note
-  - prerequisite checklist
-  - lesson metadata
-  - artifacts placeholder
-  - future ZeRO memory breakdown sample contract
-  - future DeepSpeed config observation sample contract
+  - scratch metrics json
+  - scratch svg figure
+  - framework metrics json
+  - stable analysis markdown
+  - observed analysis report
 analysis_questions:
-  - DDP에서 무엇이 중복되고, ZeRO는 그중 어느 상태부터 줄이기 시작하는가?
-  - optimizer state, gradient, parameter는 왜 메모리 크기와 partition 난이도가 서로 다른가?
-  - ZeRO Stage 1/2/3는 각각 어떤 절감 효과와 어떤 orchestration 비용을 만드는가?
-  - gradient accumulation만으로 해결되는 병목과 ZeRO가 직접 해결하는 병목은 어떻게 다른가?
-  - DeepSpeed config를 memory/runtime 관점에서 읽으면 어떤 의사결정이 드러나는가?
-  - 왜 이 단위 다음에 FSDP, checkpointing, offload를 더 깊게 봐야 하는가?
+  - ZeRO stage별로 어떤 상태가 shard되는가?
+  - per-rank memory는 얼마나 줄어드는가?
+  - 메모리 절약과 통신/복구 복잡도는 어떻게 trade-off를 이루는가?
