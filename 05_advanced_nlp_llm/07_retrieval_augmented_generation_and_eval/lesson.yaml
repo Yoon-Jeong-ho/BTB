@@ -1,9 +1,9 @@
-objective: retrieval로 외부 근거를 붙인 생성 시스템을 retriever-reader / retriever-generator, grounding/citation 기대, offline/online evaluation harness 관점에서 함께 이해한다.
-status: outlined
+objective: retrieval로 외부 근거를 붙인 생성 시스템을 retriever-reader / retriever-generator, retrieval grounding, context injection, citation/evidence expectation, failure modes, eval harness metrics 관점에서 실행 가능한 toy RAG로 이해한다.
+status: runnable
 prereqs:
   - embedding similarity / top-k retrieval / reranking 기초
   - question answering과 evidence reading 기본 감각
-  - prompt / context window / instruction framing 기본 용어
+  - prompt / context window / context injection 기본 용어
   - chunking / metadata / source freshness가 retrieval에 주는 영향 이해
   - answer correctness와 groundedness / citation adequacy 구분
   - offline metric과 online product metric의 역할 차이 이해
@@ -16,28 +16,32 @@ key_terms:
   - reranker
   - reader
   - generator
-  - grounding
-  - citation
-  - chunking
+  - retriever-reader
+  - retriever-generator
+  - retrieval grounding
   - context injection
+  - citation
+  - evidence
+  - unsupported claim
+  - failure modes
+  - eval harness
   - recall at k
   - MRR
   - nDCG
   - groundedness
-  - faithfulness
   - citation precision
   - abstention
 required_outputs:
-  - outlined README
-  - theory markdown
-  - prereqs markdown
-  - lesson metadata
-  - artifacts placeholder
-  - future retrieval-trace and evaluation-harness sample contract
+  - scratch metrics json
+  - scratch svg figure
+  - framework metrics json
+  - observed analysis report
+  - stable analysis markdown
+  - reflection markdown
 analysis_questions:
-  - retrieval은 언제 parametric LM을 실제로 보완하고, 언제 irrelevant context만 늘리는가?
   - retriever-reader와 retriever-generator는 evidence 사용 방식과 failure pattern이 어떻게 다른가?
-  - citation이 있다는 것과 claim-level grounding이 확보됐다는 것은 왜 같은 말이 아닌가?
-  - chunking, top-k, reranking, prompt placement는 어떤 context injection failure를 만들 수 있는가?
-  - retrieval metric과 answer grounding metric은 왜 따로 봐야 하며, online acceptance/correction metric과는 어떻게 어긋날 수 있는가?
+  - retrieval grounding은 citation 개수보다 claim-level evidence support를 왜 우선해야 하는가?
+  - context injection에서 metadata, chunk boundary, citation tag, prompt order는 어떤 failure modes를 줄이거나 키우는가?
+  - citation/evidence expectation을 answer correctness와 어떻게 분리해 평가할 것인가?
+  - retrieval metrics와 answer grounding metrics는 왜 따로 봐야 하며 offline/online metric split은 어디서 필요해지는가?
   - evidence가 부족하거나 source가 충돌할 때 answer, abstain, ask-back 중 무엇을 어떻게 평가해야 하는가?
