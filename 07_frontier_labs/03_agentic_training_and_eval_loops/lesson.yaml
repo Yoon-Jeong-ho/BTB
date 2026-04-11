@@ -1,5 +1,10 @@
-objective: capstone에서 고정한 문제/평가 계약을 planner-executor-verifier-critic 구조의 agentic training/eval loop로 옮기고, 자동 반복보다 evidence-first 운영과 stop/escalation 기준을 먼저 설계하는 감각을 만든다.
-status: outlined
+objective: capstone에서 고정한 문제/평가 계약을 planner-executor-verifier-critic 구조의 agentic training/eval loop로 옮기고, 자동 반복보다 evidence-first 운영과 stop/escalation 기준을 먼저 설계하는 감각을 CPU-safe deterministic simulation으로 만든다.
+unit: 03_agentic_training_and_eval_loops
+track: 07_frontier_labs
+status: runnable
+runtime: cpu-safe deterministic simulation
+cpu_safe: true
+deterministic: true
 prereqs:
   - capstone scope, acceptance gate, non-goal을 문장으로 고정하는 기본 문서화 감각
   - baseline / metric / split / failure slice를 같은 protocol에서 비교해야 한다는 이해
@@ -15,7 +20,9 @@ key_terms:
   - critic
   - iteration
   - retry budget
+  - stop rule
   - stop condition
+  - escalation rule
   - escalation
   - evidence bundle
   - protocol match
@@ -23,20 +30,28 @@ key_terms:
   - triage
   - benchmark drift
   - failure slice
+  - self-approval
+  - rollback
+scripts:
+  scratch: scratch_lab.py
+  framework: framework_lab.py
+  analysis: analysis.py
 required_outputs:
-  - outlined README
+  - runnable README
   - theory note
   - prerequisite checklist
   - lesson metadata
-  - artifacts placeholder
-  - future planner brief / iteration plan sample contract
-  - future executor run log / artifact bundle sample contract
-  - future verifier checklist / gate verdict sample contract
-  - future critic triage / retry / escalation memo sample contract
+  - scratch agentic loop metrics json
+  - scratch iteration trace jsonl
+  - scratch agentic loop SVG
+  - framework role contract metrics json
+  - observed analysis markdown
+  - observed analysis json
+  - reflection worksheet
 analysis_questions:
   - agentic training/eval loop는 단순 job automation과 무엇이 다르고 왜 experiment contract가 먼저 필요한가?
   - planner / executor / verifier / critic를 분리하지 않으면 어떤 self-approval와 해석 왜곡이 생기는가?
   - retry는 언제 탐색을 돕고 언제 retry storm가 되어 정보량보다 비용만 키우는가?
   - verifier는 왜 metric checker가 아니라 artifact와 protocol 정합성을 확인하는 gatekeeper여야 하는가?
   - critic recommendation이 evidence 기반 triage인지 단순 추측인지 어떻게 판별할 수 있는가?
-  - 이 단위의 iteration trace와 gate 설계가 다음 benchmark / dataset construction 단위에서 어떤 품질 기준으로 이어지는가?
+  - benchmark drift나 protocol mismatch가 관측되면 stop/escalation rule은 어떻게 작동해야 하는가?
