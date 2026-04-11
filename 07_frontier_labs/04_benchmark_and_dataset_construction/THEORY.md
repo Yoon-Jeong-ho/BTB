@@ -125,3 +125,10 @@
 - contamination audit가 exact overlap 너머의 paraphrase / template / evaluator leakage까지 보려 하는가?
 - benchmark refresh 필요성과 historical comparability가 같은 문서 안에서 함께 관리되는가?
 - score report에 known limits와 drift warning이 빠지지 않는가?
+
+## Runnable 실습 용어 연결
+- 이 runnable 실습에서는 **benchmark card**가 primary claim과 known non-goals를 고정한다.
+- **task contract**는 input/output/unit of record와 claim boundary를 묶고, **dataset schema**는 필수 field와 optional metadata를 고정한다.
+- **source/split manifest**는 source와 template family 단위 disjointness를 확인해 leakage를 줄인다.
+- **annotation rubric**과 **QC**는 agreement score, major disagreement, adjudication rule을 함께 남긴다.
+- **contamination**과 **drift** audit는 score 해석 전에 붙여야 하는 warning이며, **versioning**과 **report template**는 다음 연구 트랙의 비교 가능성을 보호한다.

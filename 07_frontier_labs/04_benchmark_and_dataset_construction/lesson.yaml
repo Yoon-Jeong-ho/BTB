@@ -1,5 +1,5 @@
-objective: benchmark를 leaderboard가 아니라 측정 계약으로 읽고, dataset contract·split hygiene·annotation QC·contamination/drift 관리를 함께 설계해 이후 연구 트랙이 정직한 비교 기준 위에서 움직이게 만드는 감각을 만든다.
-status: outlined
+objective: CPU-safe toy benchmark records로 benchmark card, task contract, dataset schema, source/split manifest, annotation QC, leakage / contamination / drift audit, versioning, report template를 직접 구성해 frontier 연구의 측정 계약을 runnable artifact로 만든다.
+status: runnable
 prereqs:
   - baseline, metric, acceptance gate를 먼저 고정하는 실험 설계 감각
   - train/dev/test split과 leakage 문제에 대한 기본 이해
@@ -8,37 +8,33 @@ prereqs:
   - slice evaluation과 long-tail failure를 함께 읽는 평가 관점
   - dataset versioning과 benchmark refresh의 trade-off에 대한 기본 인식
 key_terms:
-  - benchmark
+  - benchmark card
   - task contract
-  - dataset contract
+  - dataset schema
+  - source/split manifest
   - unit of record
-  - schema
   - split hygiene
   - holdout
   - annotation rubric
+  - annotation QC
   - adjudication
-  - quality control
   - leakage
   - contamination
-  - benchmark gaming
   - benchmark drift
   - slice evaluation
   - versioning
-  - reporting template
+  - report template
 required_outputs:
-  - outlined README
-  - theory note
-  - prerequisite checklist
-  - lesson metadata
-  - artifacts placeholder
-  - future benchmark card / task contract sample
-  - future dataset schema / split manifest sample
-  - future annotation rubric / QC report sample
-  - future contamination / drift audit sample
+  - scratch metrics json
+  - scratch svg figure
+  - framework metrics json
+  - observed analysis report
+  - stable analysis markdown
+  - reflection markdown
 analysis_questions:
-  - benchmark를 leaderboard가 아니라 측정 계약으로 본다면, score 외에 어떤 claim boundary까지 함께 정의해야 하는가?
-  - dataset contract에는 schema 외에 source boundary, unit of record, licensing, version freeze를 왜 같이 적어야 하는가?
-  - split hygiene는 random split을 넘어 어떤 축의 disjointness를 요구하고, 그 이유는 무엇인가?
-  - annotation disagreement는 언제 noise이고 언제 task definition weakness를 드러내는가?
-  - leakage, contamination, benchmark gaming, drift는 각각 무엇이 다르고 어떤 audit / reporting이 필요한가?
-  - 이 단위에서 만든 benchmark/dataset contract가 다음 open-ended research track의 stopping rule과 evidence 기준에 어떻게 연결되는가?
+  - task contract를 먼저 고정하면 benchmark score가 허용하는 claim boundary가 어떻게 선명해지는가?
+  - dataset schema에는 source boundary, unit of record, license tier, version freeze가 왜 함께 들어가야 하는가?
+  - source/split manifest는 random split을 넘어 어떤 축의 disjointness를 요구하고, 그 이유는 무엇인가?
+  - annotation QC는 agreement score 외에 major disagreement와 adjudication rule을 왜 같이 남겨야 하는가?
+  - leakage / contamination / drift audit는 각각 무엇이 다르고 benchmark report에서 어떤 warning으로 이어지는가?
+  - benchmark versioning과 report template가 다음 open-ended research track의 stopping rule과 evidence 기준에 어떻게 연결되는가?
