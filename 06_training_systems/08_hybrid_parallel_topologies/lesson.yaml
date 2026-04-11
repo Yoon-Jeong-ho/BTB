@@ -1,5 +1,10 @@
-objective: data parallel, tensor parallel, pipeline parallel, FSDP/state sharding을 한 장의 topology 설계 문제로 묶어 보고, 모델 규모·메모리 병목·통신 경로·하드웨어 링크 구조를 기준으로 hybrid parallel 구성을 선택하는 감각을 만든다.
-status: outlined
+objective: data parallel, tensor parallel, pipeline parallel, FSDP/state sharding을 한 장의 topology 설계 문제로 묶어 보고, 모델 규모·메모리 병목·통신 경로·하드웨어 링크 구조를 기준으로 hybrid parallel 구성을 선택하는 감각을 CPU-safe deterministic simulation으로 만든다.
+unit: 08_hybrid_parallel_topologies
+track: 06_training_systems
+status: runnable
+runtime: cpu-safe deterministic simulation
+cpu_safe: true
+deterministic: true
 prereqs:
   - data parallel / tensor parallel / pipeline parallel / FSDP의 큰 그림
   - global batch, microbatch, gradient accumulation 구분
@@ -9,8 +14,10 @@ prereqs:
   - checkpoint save/load가 topology-aware contract가 될 수 있다는 이해
 key_terms:
   - hybrid parallelism
+  - hybrid parallel topology
   - topology
   - device mesh
+  - rank mesh
   - data parallel
   - tensor parallelism
   - pipeline parallelism
@@ -25,17 +32,27 @@ key_terms:
   - reduce-scatter
   - send/recv
   - interconnect
+  - node-local link
   - memory budget
-  - throughput
+  - communication tradeoff
+  - bottleneck reasoning
+  - checkpoint portability
   - load balance
+scripts:
+  scratch: scratch_lab.py
+  framework: framework_lab.py
+  analysis: analysis.py
 required_outputs:
-  - outlined README
+  - runnable README
   - theory note
   - prerequisite checklist
   - lesson metadata
-  - artifacts placeholder
-  - future topology candidate comparison contract
-  - future memory / communication budget sample contract
+  - scratch hybrid topology metrics json
+  - scratch hybrid topology SVG
+  - framework deterministic topology scoring metrics json
+  - stable analysis markdown
+  - observed analysis json
+  - reflection worksheet
 analysis_questions:
   - hybrid parallel topology는 왜 여러 parallelism 옵션의 단순 조합이 아니라 모델-하드웨어 배치 설계 문제로 봐야 하는가?
   - data parallel, tensor parallel, pipeline parallel, FSDP는 각각 무엇을 나누며 어떤 병목을 완화하는가?

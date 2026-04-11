@@ -1,119 +1,118 @@
 # 08 Hybrid Parallel Topologies
 
-> Status: outlined
+> Status: runnable
 >
-> 이 단위는 현재 문서/메타데이터만 정리된 outlined 단계다. 아래 실습 흐름과 출력 예시는 **후속 applied 단계에서 구현될 예상 구조**이며, 아직 `scratch_lab.py`, `framework_lab.py`, `analysis.md`, `reflection.md`는 없다.
+> 이 단위는 GPU를 직접 요구하지 않는 **CPU-safe deterministic topology simulation**이다. 실제 분산 런타임을 띄우지 않고도 data parallel, tensor parallel, pipeline parallel, FSDP/state sharding 축을 한 장의 device mesh 설계 문제로 묶어 읽는다.
 
 ## 왜 이 단위를 배우는가
+
 `06_training_systems/04_fsdp_checkpointing_and_offload`, `05_tensor_parallelism`, `06_pipeline_parallelism`, `07_data_parallel_grad_accumulation`까지 오면 이제 중요한 질문은 각 기법을 따로 설명하는 것이 아니라, **실제 대형 모델 학습에서 이 축들을 어떻게 함께 묶을 것인가**다. 현실의 LLM/멀티모달 모델 학습은 data parallel만으로도, tensor parallel만으로도, pipeline parallel만으로도, FSDP만으로도 끝나지 않는다. 모델 상태 메모리, activation 메모리, intra-layer 연산량, stage bubble, global batch 운영, checkpoint 복구 제약이 동시에 얽히기 때문이다.
 
-그래서 hybrid parallel topology는 단순한 "옵션 조합"이 아니라, **모델 규모와 하드웨어 배치를 연결하는 설계 문제**로 봐야 한다. 어느 축을 node 안에 둘지, 어느 축을 node 사이에 둘지, 통신이 잦은 축을 빠른 interconnect 위에 올릴지, memory-saving 축과 throughput 축을 어떤 비율로 섞을지 결정하는 감각이 필요하다. 이 단위는 바로 그 감각을 만들기 위해, 여러 parallelism 축을 한 장의 topology 그림으로 합쳐 읽는 연습을 한다.
+그래서 hybrid parallel topology는 단순한 "옵션 조합"이 아니라, **모델 규모와 하드웨어 배치를 연결하는 설계 문제**로 봐야 한다. 어느 축을 node 안에 둘지, 어느 축을 node 사이에 둘지, 통신이 잦은 축을 빠른 interconnect 위에 올릴지, memory-saving 축과 throughput 축을 어떤 비율로 섞을지 결정하는 감각이 필요하다. 이 단위는 여러 parallelism 축을 한 장의 topology 그림으로 합쳐 읽고, 그 선택이 memory fit, communication tradeoff, bottleneck reasoning, checkpoint portability에 어떤 흔적을 남기는지 관찰한다.
 
-## 이번 단위에서 남길 것
-- outlined 상태의 안내 문서 `README.md`
-- data / tensor / pipeline / FSDP 조합 직관과 설계 기준을 정리한 `THEORY.md`
-- 선행 개념 체크리스트 `PREREQS.md`
-- 단위 목표와 핵심 질문을 고정한 `lesson.yaml`
-- 이후 실습 산출물이 들어갈 자리 `artifacts/.gitkeep`
-- 후속 applied 단계에서 채울 예정인 출력 계약
-  - topology 후보별 mesh 구성표와 rank 역할 요약
-  - memory / throughput / communication budget 비교표
-  - 모델 규모 대비 하드웨어 매핑 체크리스트
-  - 병목 지점 및 failure signature 관찰 메모
+## 실행 순서
 
-## 실습 흐름
-현재는 outline 문서만 정리된 상태이며, 아래 흐름은 이후 runnable 승격 때 구현할 실습 순서다.
-1. 먼저 한 가지 모델 규모(예: 30B, 70B, 100B+)와 한 가지 클러스터 제약(예: 8 GPU 단일 노드, 64 GPU 다중 노드)을 정하고, 어떤 병목이 먼저 오는지부터 분류한다.
-2. data parallel, tensor parallel, pipeline parallel, FSDP가 각각 해결하려는 문제가 무엇인지 다시 나눈 뒤, **어떤 축은 상태 메모리를 줄이고 어떤 축은 active compute를 나누며 어떤 축은 시간축 실행을 다시 짠다**는 점을 한 장의 표로 정리한다.
-3. device mesh를 가정해 tensor parallel은 node 내부의 빠른 링크 위에, pipeline parallel은 stage 경계 기준으로, data parallel/FSDP는 replica·shard 그룹 기준으로 어떻게 배치할지 후보 topology를 그려 본다.
-4. 각 후보에 대해 all-reduce, all-gather, reduce-scatter, activation send/recv가 어디서 가장 많이 생길지 추정하고, 통신이 빠른 링크와 느린 링크를 어떻게 타게 되는지 비교한다.
-5. global batch, microbatch, gradient accumulation, checkpoint save/load, optimizer state 배치까지 함께 넣어 보며 **단순히 돌아가는지**가 아니라 **운영 가능한지**를 판단한다.
-6. 마지막에는 어떤 topology가 특정 모델/클러스터에서 더 현실적인지 선택 이유를 적고, 다음 단위 `06_training_systems/09_profiling_monitoring_and_failure_recovery`에서 실제 병목과 장애를 어디서 관찰할지 연결한다.
+```bash
+python 06_training_systems/08_hybrid_parallel_topologies/scratch_lab.py
+python 06_training_systems/08_hybrid_parallel_topologies/framework_lab.py
+python 06_training_systems/08_hybrid_parallel_topologies/analysis.py
+```
 
-## 이 단위에서 특히 볼 질문
-- hybrid parallel topology는 왜 "parallelism을 다 켠다"가 아니라, 모델 병목과 하드웨어 제약을 맞추는 설계 문제로 봐야 하는가?
-- data parallel, tensor parallel, pipeline parallel, FSDP는 각각 무엇을 나누며, 서로 겹치는 부분과 독립 축은 어디인가?
-- 통신이 많은 축은 왜 node 내부 NVLink/NVSwitch 같은 빠른 링크 쪽에 두고, 상대적으로 덜 민감한 축은 node 간으로 밀어내는 경우가 많은가?
-- 모델 크기·sequence length·global batch 목표가 달라지면 topology 선택 기준은 어떻게 달라지는가?
-- memory fit, throughput, implementation complexity, checkpoint portability는 왜 동시에 최적화되지 않는가?
-- 실제 운영에서 topology가 잘못 설계되었을 때는 어떤 로그/프로파일/메모리 흔적으로 먼저 드러나는가?
+세 스크립트는 모두 deterministic CPU simulation이다.
+
+- `scratch_lab.py`는 64-GPU planning case에서 여러 candidate topology를 만들고, `DP x TP x PP` axis product, FSDP shard factor, memory budget, communication hotspot, bottleneck reasoning을 계산한다.
+- `framework_lab.py`는 같은 후보를 더 framework-like scoring으로 읽어 rank mesh contract, fast/slow link 배치, checkpoint portability signal을 정리한다.
+- `analysis.py`는 두 metrics 파일이 존재해야 실행되며, stable report(`analysis.md`)와 observed JSON을 남긴다.
+
+## 생성되는 산출물
+
+- `artifacts/scratch_metrics.json` — scratch topology planner의 후보별 memory/communication budget
+- `artifacts/hybrid_topology_mesh.svg` — selected topology의 DP/TP/PP/FSDP 축 관계 그림
+- `artifacts/framework_metrics.json` — framework-style topology scoring과 rank mesh contract
+- `artifacts/analysis_observed.json` — 실행별 관측 요약
+- `analysis.md` — 안정적인 해석 프레임
+
+## 이번 단위에서 특히 볼 축
+
+### Data parallel axis
+
+Data parallel은 replica와 batch 축이다. global/effective batch, gradient synchronization cadence, optimizer step timing을 책임진다. Hybrid topology에서는 보통 바깥 축으로 두기 쉽지만, DP group이 커질수록 gradient all-reduce 또는 reduce-scatter 비용이 무시되지 않는다.
+
+### Tensor parallel axis
+
+Tensor parallel은 레이어 내부 matmul/attention head split이다. `tp_all_reduce`, `all_gather` 같은 collective가 block마다 자주 등장하기 때문에 latency-sensitive하다. 이 단위의 preferred candidate는 TP4를 node-local fast link 위에 두는 선택을 보여 준다. 같은 world size라도 tensor-parallel group이 느린 node 간 link를 타면 step time bottleneck이 먼저 커질 수 있다.
+
+### Pipeline parallel axis
+
+Pipeline parallel은 layer stack을 stage로 나누고 microbatch schedule을 만든다. 모델 residency를 줄이는 데 도움이 되지만 stage boundary activation `send/recv`, bubble fraction, load balance 위험을 남긴다. PP depth를 늘리면 per-stage memory는 줄 수 있지만, microbatch 수와 stage imbalance가 충분히 관리되지 않으면 throughput이 떨어진다.
+
+### FSDP / state sharding axis
+
+FSDP/ZeRO류 sharding은 parameter, gradient, optimizer state의 resident memory와 lifecycle을 바꾼다. 이는 compute split이라기보다 state placement와 checkpoint contract 문제에 가깝다. Hybrid topology에서는 어떤 DP/FSDP group 기준으로 shard를 저장하고, 어떤 TP/PP mesh metadata를 함께 남겨야 reload/restart가 안전한지가 중요해진다.
 
 ## 실행 결과 예시
-아래는 **완료된 실행 결과가 아니라**, 후속 applied 단계에서 기대하는 출력 형태 예시다.
 
-```text
-# expected output / sample shape only
-$ python 06_training_systems/08_hybrid_parallel_topologies/scratch_lab.py
-{
-  "status": "sample",
-  "model": {
-    "name": "decoder_only_llm",
-    "params_b": 70,
-    "sequence_length": 8192,
-    "target_global_batch": 1024
-  },
-  "hardware": {
-    "nodes": 8,
-    "gpus_per_node": 8,
-    "intra_node_link": "NVLink",
-    "inter_node_link": "InfiniBand"
-  },
-  "candidate_topology": {
-    "data_parallel": 8,
-    "tensor_parallel": 4,
-    "pipeline_parallel": 2,
-    "fsdp_mode": "hybrid_shard",
-    "microbatch_per_pipeline": 4,
-    "grad_accum_steps": 4
-  },
-  "fit_summary": {
-    "per_rank_param_state_gb": 11.8,
-    "activation_peak_gb": 18.4,
-    "estimated_tokens_per_step": 8388608,
-    "primary_risk": "tensor-parallel collectives across node boundary if mesh is misaligned"
-  },
-  "notes": [
-    "sample numbers for intuition only",
-    "expected output/sample shape only"
-  ]
-}
+`scratch_lab.py`는 다음 형태의 JSON을 출력한다. 숫자는 CPU-only planning model의 deterministic 추정값이며 실제 네트워크 벤치마크가 아니다.
 
-$ python 06_training_systems/08_hybrid_parallel_topologies/framework_lab.py
+```json
 {
-  "status": "sample",
-  "topology_candidates": [
-    {
-      "name": "tp4_pp2_dp8_fsdp_hybrid",
-      "best_for": "fast intra-node links, moderate pipeline depth",
-      "communication_hotspots": ["tp all-reduce", "fsdp all-gather"],
-      "memory_notes": ["optimizer state remains sharded", "activation pressure depends on microbatch"]
-    },
-    {
-      "name": "tp2_pp4_dp8_fsdp_full_shard",
-      "best_for": "deeper model partition with smaller per-stage memory",
-      "communication_hotspots": ["pipeline send/recv", "checkpoint reshaping"],
-      "memory_notes": ["smaller stage footprint", "higher bubble/load-balance sensitivity"]
-    }
-  ],
+  "status": "runnable",
+  "simulation": "deterministic_cpu_hybrid_topology_planner",
+  "cpu_safe_simulation": true,
+  "parallel_axes": {
+    "data_parallel": "replica / batch axis and gradient synchronization cadence",
+    "tensor_parallel": "intra-layer matrix and attention-head split; latency-sensitive collectives",
+    "pipeline_parallel": "layer-stage split plus microbatch time-axis schedule",
+    "fsdp_state_sharding": "parameter/gradient/optimizer state residency and checkpoint lifecycle"
+  },
+  "preferred_candidate": "tp4_pp2_dp8_fsdp_hybrid",
   "selection_summary": {
-    "preferred_candidate": "tp4_pp2_dp8_fsdp_hybrid",
+    "axis_product": "DP8 x TP4 x PP2",
+    "primary_risk": "pipeline_or_fsdp_overlap",
     "reason": [
-      "keeps tensor-parallel traffic inside node",
-      "limits pipeline bubble compared with deeper stage split",
-      "preserves sharded optimizer-state memory savings"
-    ],
-    "profiling_focus": [
-      "collective overlap",
-      "stage imbalance",
-      "checkpoint save/load portability"
+      "keeps tensor-parallel collectives inside fast node-local links",
+      "uses pipeline depth 2 to reduce model residency without excessive bubble",
+      "keeps FSDP/state sharding as an explicit checkpoint-aware memory axis"
     ]
   }
 }
 ```
 
+`framework_lab.py`는 같은 후보를 scoring 관점에서 다시 읽는다.
+
+```json
+{
+  "status": "runnable",
+  "framework": "deterministic_cpu_hybrid_parallel_topology_sim",
+  "device_mesh_axes": [
+    "data_parallel",
+    "tensor_parallel",
+    "pipeline_parallel",
+    "fsdp_state_sharding"
+  ],
+  "rank_mesh_contract": {
+    "rank_order": "dp_outer / pp_middle / tp_inner",
+    "tp_inner_reason": "tensor-parallel all-reduce/all-gather is latency-sensitive, so keep it inside fast node-local links",
+    "pp_middle_reason": "pipeline stages can cross node boundaries when activation payload and bubble are budgeted",
+    "dp_fsdp_outer_reason": "data replica and FSDP shard groups define batch cadence, state residency, and checkpoint remap contract"
+  }
+}
+```
+
+## 해석 방법
+
 핵심은 특정 숫자를 외우는 것이 아니라, **모델 규모를 어떤 병렬화 축 조합으로 하드웨어에 끼워 넣는지**, **그때 통신과 메모리 부담이 어느 경계로 이동하는지**, **운영 가능한 checkpoint / batch / schedule 계약이 무엇인지**를 읽는 것이다.
 
+좋은 답은 보통 다음 문장을 모두 포함한다.
+
+- “이 topology의 world size는 DP, TP, PP 축의 곱으로 맞는다.”
+- “하지만 world size가 맞는 것만으로는 부족하고, tensor-parallel traffic이 어떤 link를 타는지가 중요하다.”
+- “FSDP는 memory fit을 돕지만 all-gather peak와 checkpoint metadata 계약을 남긴다.”
+- “Pipeline depth는 residency를 줄이지만 bubble/load balance와 activation transfer를 만든다.”
+- “Data parallel 축은 batch budget과 optimizer cadence를 정한다.”
+
 ## 다음 단위와의 연결
+
 다음 단위 `06_training_systems/09_profiling_monitoring_and_failure_recovery`에서는 여기서 설계한 hybrid topology가 실제로 돌 때, 어느 링크가 막히는지, 어느 stage가 놀고 있는지, 어떤 rank에서 OOM이나 timeout이 먼저 나는지, checkpoint 복구가 왜 꼬이는지 같은 **운영 흔적**을 본격적으로 다룬다.
 
-즉 이 단위가 topology를 종이 위에서 설계하는 단계라면, 다음 단위는 그 설계가 실제 runtime에서 어떤 로그·metric·failure mode로 나타나는지 읽는 단계다. 따라서 여기서 parallel axes를 한 장의 시스템 그림으로 묶어 두면, 다음 단위에서 profiling과 recovery를 볼 때도 "이 병목이 tensor parallel 때문인지, pipeline bubble 때문인지, FSDP shard lifecycle 때문인지"를 더 정확히 분해할 수 있다.
+즉 이 단위가 topology를 종이 위에서 설계하는 단계라면, 다음 단위는 그 설계가 실제 runtime에서 어떤 로그·metric·failure mode로 나타나는지 읽는 단계다. 여기서 parallel axes를 한 장의 시스템 그림으로 묶어 두면, profiling과 recovery를 볼 때도 “이 병목이 tensor parallel 때문인지, pipeline bubble 때문인지, FSDP shard lifecycle 때문인지”를 더 정확히 분해할 수 있다.
