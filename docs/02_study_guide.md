@@ -24,7 +24,7 @@
 2. `01_ml`에서 baseline, metric, failure analysis를 실험 discipline으로 굳힌다.
 3. `02_deep_learning`에서 딥러닝 코어인 perceptron·CNN·RNN·transformer·generative model family를 지도처럼 훑는다.
 4. `03_nlp_bridge -> 04_nlp -> 05_advanced_nlp_llm`에서 NLP/LLM 흐름을 연결한다.
-5. `06_training_systems -> 07_frontier_labs`에서 큰 실험을 운영하고 재현하는 법으로 확장한다.
+5. `06_training_systems -> 07_frontier_labs`는 큰 실험을 운영하고 재현하는 선택/고급 구간으로 보되, GPU·분산·논문 재현이 당장 필요 없으면 나중으로 미뤄도 된다.
 6. `08_multimodal_bridge -> 09_multimodal`에서 image-text shared representation과 응용 태스크로 넘어간다.
 7. `10_vla`에서 multimodal understanding을 action token과 safety gate로 연결한다.
 
@@ -41,8 +41,9 @@ LLM과 VLA까지 목표라면 아래 체크포인트를 빠뜨리지 않는다.
 7. `05_advanced_nlp_llm/06_rlhf_and_reasoning_rl`에서 RLHF/reasoning RL을 본다.
 8. `08_multimodal_bridge -> 09_multimodal`로 image-text retrieval/captioning/VQA를 실행한다.
 9. `10_vla/01_vision_language_action_grounding`에서 action token과 safety gate를 확인한다.
+10. `06_training_systems`와 `07_frontier_labs`는 남는 GPU, 분산 학습, 논문 재현, capstone sandbox가 필요해지는 시점에 나중 선택 구간으로 되돌아온다.
 
-이 경로를 따르면 LLM base가 없는 학습자도 LLM, RLHF, multimodal, VLA 입구까지 같은 산출물 규칙으로 이어갈 수 있다. 다만 일반 제어 RL 전체가 필요하면 별도 RL 교과 과정이 추가로 필요하다.
+이 경로를 따르면 LLM base가 없는 학습자도 LLM, RLHF, multimodal, VLA 입구까지 같은 산출물 규칙으로 이어갈 수 있다. `10_vla/01_vision_language_action_grounding`은 VLA grounding entry point로, 실제 로봇 제어 전체가 아니라 multimodal 이해를 행동 토큰과 safety gate에 연결하는 최소 실험이다. 다만 일반 제어 RL 전체가 필요하면 별도 RL 교과 과정이 추가로 필요하다.
 
 ## 딥러닝 코어 우선 루트
 

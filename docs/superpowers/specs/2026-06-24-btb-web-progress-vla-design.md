@@ -4,7 +4,7 @@
 BTB 학습자가 문서 트리를 직접 뒤지는 대신 웹사이트에서 전체 커리큘럼을 보고, 단원별 진행 체크를 사용자별 로컬 캐시에만 누적하며, 무기초에서 LLM/RL/멀티모달/VLA까지 이어지는 학습 경로를 확인하게 만든다.
 
 ## Approach
-- 정적 웹 앱(`web/`)을 추가한다. 별도 서버/DB 없이 GitHub Pages 또는 `python -m http.server -d web`로 볼 수 있다.
+- 정적 웹 앱(`web/`)을 추가한다. 별도 서버/DB 없이 GitHub Pages 또는 저장소 루트에서 `python -m http.server 8000`을 실행해 볼 수 있다.
 - 커리큘럼 데이터는 `docs/curriculum_status.json`, 각 track README, 각 `lesson.yaml`에서 생성한 `web/catalog.json`을 사용한다.
 - 진행률은 브라우저 `localStorage`에만 저장한다. 저장 키는 `btb.study.progress.v1`이고, Git에 올라가는 파일에는 사용자 진행 상태를 쓰지 않는다.
 - 사용자 프로필은 로컬 display name/profile id 단위로 나누어 같은 브라우저 안에서도 학습자별 진행률을 분리한다.

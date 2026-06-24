@@ -91,6 +91,13 @@ class WebStudySiteContractTest(unittest.TestCase):
         self.assertIn("../docs/02_study_guide.md", app)
         self.assertIn("../docs/05_rl_primer_for_rlhf.md", app)
         self.assertIn("09 Multimodal recap", app)
+        self.assertIn("학습 순서", app)
+        self.assertIn("이론 읽기", app)
+        self.assertIn("scratch 실행", app)
+        self.assertIn("framework 실행", app)
+        self.assertIn("analysis 정리", app)
+        self.assertIn("reflection 작성", app)
+        self.assertIn("recommendedStartingUnit", app)
 
     @unittest.skipIf(shutil.which("node") is None, "node is not installed")
     def test_progress_storage_profiles_corrupt_recovery_and_import(self) -> None:
@@ -103,8 +110,14 @@ store.users.alice = { displayName: 'Alice', lessons: {} };
 store.users.bob = { displayName: 'Bob', lessons: {} };
 Progress.upsertLessonProgress(store, 'alice', '00_foundations/01_tensor_shapes', { state: 'done', percent: 100 }, '2026-06-24T00:00:00Z');
 Progress.upsertLessonProgress(store, 'bob', '00_foundations/01_tensor_shapes', { state: 'blocked', percent: 20 }, '2026-06-24T00:01:00Z');
+Progress.updateUserUI(store, 'alice', { selectedTrack: '00_foundations', selectedUnit: '00_foundations/01_tensor_shapes', filters: { query: 'tensor', progressState: 'done' } });
+Progress.updateUserUI(store, 'bob', { selectedTrack: '10_vla', selectedUnit: '10_vla/01_vision_language_action_grounding', filters: { query: 'VLA', progressState: 'blocked' } });
 assert.strictEqual(Progress.lessonState(store, 'alice', '00_foundations/01_tensor_shapes').state, 'done');
 assert.strictEqual(Progress.lessonState(store, 'bob', '00_foundations/01_tensor_shapes').state, 'blocked');
+assert.strictEqual(Progress.userUI(store, 'alice').selectedUnit, '00_foundations/01_tensor_shapes');
+assert.strictEqual(Progress.userUI(store, 'bob').selectedUnit, '10_vla/01_vision_language_action_grounding');
+assert.strictEqual(Progress.userUI(store, 'alice').filters.query, 'tensor');
+assert.strictEqual(Progress.userUI(store, 'bob').filters.query, 'VLA');
 
 const storage = Progress.createMemoryStorage();
 Progress.saveProgress(store, storage);

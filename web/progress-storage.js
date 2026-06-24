@@ -8,6 +8,14 @@
     blocked: '막힘',
   };
 
+  function defaultUI() {
+    return {
+      selectedTrack: '',
+      selectedUnit: '',
+      filters: { progressState: 'all', query: '' },
+    };
+  }
+
   function defaultProgress() {
     return {
       schemaVersion: 1,
@@ -16,13 +24,10 @@
         'local-default': {
           displayName: '내 로컬 진행',
           lessons: {},
+          ui: defaultUI(),
         },
       },
-      ui: {
-        selectedTrack: '',
-        selectedUnit: '',
-        filters: { progressState: 'all', query: '' },
-      },
+      ui: defaultUI(),
     };
   }
 
@@ -35,8 +40,13 @@
       if (!firstUser) throw new Error('progress store has no users');
       parsed.activeUserId = firstUser;
     }
-    if (!parsed.ui) parsed.ui = defaultProgress().ui;
+    if (!parsed.ui) parsed.ui = defaultUI();
     if (!parsed.ui.filters) parsed.ui.filters = { progressState: 'all', query: '' };
+    for (const user of Object.values(parsed.users)) {
+      if (!user.lessons) user.lessons = {};
+      if (!user.ui) user.ui = { ...defaultUI(), ...parsed.ui, filters: { ...defaultUI().filters, ...(parsed.ui.filters || {}) } };
+      if (!user.ui.filters) user.ui.filters = { progressState: 'all', query: '' };
+    }
     return parsed;
   }
 
@@ -67,10 +77,27 @@
   function ensureUser(store, userId) {
     const resolvedUserId = userId || store.activeUserId || 'local-default';
     if (!store.users[resolvedUserId]) {
-      store.users[resolvedUserId] = { displayName: '새 로컬 진행', lessons: {} };
+      store.users[resolvedUserId] = { displayName: '새 로컬 진행', lessons: {}, ui: defaultUI() };
     }
     if (!store.users[resolvedUserId].lessons) store.users[resolvedUserId].lessons = {};
+    if (!store.users[resolvedUserId].ui) store.users[resolvedUserId].ui = defaultUI();
+    if (!store.users[resolvedUserId].ui.filters) store.users[resolvedUserId].ui.filters = { progressState: 'all', query: '' };
     return store.users[resolvedUserId];
+  }
+
+  function userUI(store, userId) {
+    return ensureUser(store, userId).ui;
+  }
+
+  function updateUserUI(store, userId, patch) {
+    const resolvedUserId = userId || store.activeUserId || 'local-default';
+    const ui = userUI(store, resolvedUserId);
+    const nextFilters = patch.filters ? { ...ui.filters, ...patch.filters } : ui.filters;
+    ensureUser(store, resolvedUserId).ui = { ...ui, ...patch, filters: nextFilters };
+    if (store.activeUserId === resolvedUserId) {
+      store.ui = { ...ensureUser(store, resolvedUserId).ui, filters: { ...ensureUser(store, resolvedUserId).ui.filters } };
+    }
+    return store;
   }
 
   function lessonState(store, userId, unitPath) {
@@ -93,8 +120,7 @@
       lastOpenedAt: timestamp,
     };
     store.activeUserId = userId;
-    store.ui.selectedUnit = unitPath;
-    store.ui.selectedTrack = unitPath.split('/')[0];
+    updateUserUI(store, userId, { selectedUnit: unitPath, selectedTrack: unitPath.split('/')[0] });
     return store;
   }
 
@@ -106,6 +132,12 @@
     }
     if (incoming.ui) {
       store.ui = { ...store.ui, ...incoming.ui, filters: { ...store.ui.filters, ...(incoming.ui.filters || {}) } };
+    }
+    for (const userId of Object.keys(store.users)) {
+      ensureUser(store, userId);
+    }
+    if (store.users[store.activeUserId]) {
+      store.ui = { ...userUI(store, store.activeUserId), filters: { ...userUI(store, store.activeUserId).filters } };
     }
     return store;
   }
@@ -132,10 +164,13 @@
     PROGRESS_KEY,
     STATES,
     STATE_LABELS,
+    defaultUI,
     defaultProgress,
     loadProgress,
     saveProgress,
     ensureUser,
+    userUI,
+    updateUserUI,
     lessonState,
     upsertLessonProgress,
     mergeImportedProgress,

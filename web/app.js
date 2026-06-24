@@ -28,8 +28,7 @@ async function init() {
     return;
   }
 
-  selectedTrackId = progressStore.ui.selectedTrack || catalog.tracks[0]?.id || '';
-  selectedUnitPath = progressStore.ui.selectedUnit || '';
+  restoreActiveView();
   renderProfiles();
   bindEvents();
   render();
@@ -41,6 +40,24 @@ function persistProgress() {
   } catch (error) {
     console.warn('Progress is session-only because localStorage is unavailable.', error);
   }
+}
+
+function activeUI() {
+  return Progress.userUI(progressStore, activeUserId);
+}
+
+function updateActiveUI(patch) {
+  Progress.updateUserUI(progressStore, activeUserId, patch);
+}
+
+function restoreActiveView() {
+  const ui = activeUI();
+  const recommended = recommendedStartingUnit();
+  selectedUnitPath = findUnit(ui.selectedUnit) ? ui.selectedUnit : recommended?.path || '';
+  const unitTrackId = selectedUnitPath ? selectedUnitPath.split('/')[0] : '';
+  const savedTrackExists = catalog.tracks.some((track) => track.id === ui.selectedTrack);
+  selectedTrackId = unitTrackId || (savedTrackExists ? ui.selectedTrack : catalog.tracks[0]?.id || '');
+  updateActiveUI({ selectedTrack: selectedTrackId, selectedUnit: selectedUnitPath });
 }
 
 function currentUser() {
@@ -60,23 +77,23 @@ function updateLesson(unitPath, patch) {
 }
 
 function bindEvents() {
-  searchInput.value = progressStore.ui.filters?.query || '';
-  progressFilter.value = progressStore.ui.filters?.progressState || 'all';
+  searchInput.value = activeUI().filters?.query || '';
+  progressFilter.value = activeUI().filters?.progressState || 'all';
 
   searchInput.addEventListener('input', () => {
-    progressStore.ui.filters.query = searchInput.value;
+    updateActiveUI({ filters: { query: searchInput.value } });
     persistProgress();
     renderUnits();
   });
   progressFilter.addEventListener('change', () => {
-    progressStore.ui.filters.progressState = progressFilter.value;
+    updateActiveUI({ filters: { progressState: progressFilter.value } });
     persistProgress();
     renderUnits();
   });
   $('#reset-filters').addEventListener('click', () => {
     searchInput.value = '';
     progressFilter.value = 'all';
-    progressStore.ui.filters = { query: '', progressState: 'all' };
+    updateActiveUI({ filters: { query: '', progressState: 'all' } });
     persistProgress();
     renderUnits();
   });
@@ -92,6 +109,9 @@ function bindEvents() {
   profileSelect.addEventListener('change', () => {
     activeUserId = profileSelect.value;
     progressStore.activeUserId = activeUserId;
+    restoreActiveView();
+    searchInput.value = activeUI().filters?.query || '';
+    progressFilter.value = activeUI().filters?.progressState || 'all';
     persistProgress();
     render();
   });
@@ -126,7 +146,7 @@ function renderTracks() {
   trackList.querySelectorAll('[data-track]').forEach((button) => {
     button.addEventListener('click', () => {
       selectedTrackId = button.dataset.track;
-      progressStore.ui.selectedTrack = selectedTrackId;
+      updateActiveUI({ selectedTrack: selectedTrackId });
       persistProgress();
       render();
     });
@@ -178,6 +198,11 @@ function renderDetail() {
   detail.innerHTML = `<h2 id="detail-title">${escapeHtml(unit.title)}</h2>
     <p class="unit-meta">${escapeHtml(unit.path)} · curriculum: ${escapeHtml(unit.status)} · personal: ${STATE_LABELS[progress.state]}</p>
     <p>${escapeHtml(unit.objective || '')}</p>
+    <div class="start-callout">처음이라면 여기서 시작하세요: README와 THEORY를 읽고 scratch → framework → analysis → reflection 순서로 진행합니다.</div>
+    <h3>학습 순서</h3>
+    <ol class="learning-steps">
+      ${learningStepsFor(unit).map((step) => `<li><strong>${escapeHtml(step.label)}</strong><span>${escapeHtml(step.description)}</span></li>`).join('')}
+    </ol>
     <div class="status-buttons" aria-label="진행 상태 변경">
       ${STATES.map((state) => `<button type="button" data-state="${state}" class="${state === progress.state ? 'active' : ''}">${STATE_LABELS[state]}</button>`).join('')}
     </div>
@@ -214,6 +239,27 @@ function renderDetail() {
   $('#unit-note').addEventListener('change', (event) => updateLesson(unit.path, { note: event.target.value }));
 }
 
+function recommendedStartingUnit() {
+  const units = catalog.tracks.flatMap((track) => track.units);
+  return units.find((unit) => lessonState(unit.path).state !== 'done') || units[0] || null;
+}
+
+function learningStepsFor(unit) {
+  return [
+    { label: '이론 읽기', description: 'README / THEORY / PREREQS로 왜 배우는지와 선행 개념을 잡는다.' },
+    { label: 'scratch 실행', description: 'scratch_lab.py로 작은 수치와 직접 계산을 확인한다.' },
+    { label: 'framework 실행', description: 'framework_lab.py로 PyTorch나 프레임워크 관측을 비교한다.' },
+    { label: 'analysis 정리', description: 'analysis.py와 analysis.md로 관측값을 한국어 해석으로 남긴다.' },
+    { label: 'reflection 작성', description: 'reflection.md에 헷갈린 점, 실패 사례, 다음 질문을 적는다.' },
+  ].filter((step) => {
+    if (step.label.includes('scratch')) return unit.checkpoints.includes('scratch lab');
+    if (step.label.includes('framework')) return unit.checkpoints.includes('framework lab');
+    if (step.label.includes('analysis')) return unit.checkpoints.includes('analysis script') || unit.checkpoints.includes('analysis note');
+    if (step.label.includes('reflection')) return unit.checkpoints.includes('reflection');
+    return true;
+  });
+}
+
 function studyLinksFor(unit) {
   const links = [
     { href: '../docs/02_study_guide.md', label: 'Study guide', reason: '무기초 → LLM/RLHF/Multimodal/VLA 경로 확인' },
@@ -236,8 +282,7 @@ function selectUnit(unitPath) {
   selectedTrackId = unitPath.split('/')[0];
   const previous = lessonState(unitPath);
   currentUser().lessons[unitPath] = { ...previous, lastOpenedAt: new Date().toISOString() };
-  progressStore.ui.selectedUnit = unitPath;
-  progressStore.ui.selectedTrack = selectedTrackId;
+  updateActiveUI({ selectedUnit: unitPath, selectedTrack: selectedTrackId });
   persistProgress();
   render();
 }
@@ -251,7 +296,8 @@ function trackStats(track) {
 function renderOverallProgress() {
   const units = catalog.tracks.flatMap((track) => track.units);
   const done = units.filter((unit) => lessonState(unit.path).state === 'done').length;
-  $('#overall-progress').textContent = units.length ? `${Math.round((done / units.length) * 100)}%` : '0%';
+  const profileName = currentUser().displayName || activeUserId;
+  $('#overall-progress').textContent = units.length ? `${Math.round((done / units.length) * 100)}% · ${profileName}` : `0% · ${profileName}`;
 }
 
 function completionPercent(checkpoints, checked, state) {
@@ -277,9 +323,10 @@ function addProfile() {
   const displayName = prompt('새 사용자 이름을 입력하세요. 이 이름도 로컬에만 저장됩니다.', '새 학습자');
   if (!displayName) return;
   const id = `local-${Date.now()}`;
-  progressStore.users[id] = { displayName, lessons: {} };
+  progressStore.users[id] = { displayName, lessons: {}, ui: Progress.defaultUI() };
   activeUserId = id;
   progressStore.activeUserId = id;
+  restoreActiveView();
   persistProgress();
   render();
 }
@@ -301,6 +348,7 @@ function importProgress() {
     if (incoming.schemaVersion !== 1 || !incoming.users) throw new Error('schema mismatch');
     Progress.mergeImportedProgress(progressStore, incoming);
     activeUserId = progressStore.activeUserId;
+    restoreActiveView();
     persistProgress();
     $('#import-dialog').close();
     render();
@@ -313,6 +361,7 @@ function resetProgress() {
   if (!confirm('현재 브라우저의 BTB 로컬 진행률을 삭제할까요? GitHub 데이터는 바뀌지 않습니다.')) return;
   progressStore = Progress.defaultProgress();
   activeUserId = progressStore.activeUserId;
+  restoreActiveView();
   persistProgress();
   render();
 }

@@ -24,6 +24,8 @@
 10. [09_multimodal](09_multimodal/README.md): retrieval, captioning, VQA를 중심으로 multimodal applied track을 실습한다.
 11. [10_vla](10_vla/README.md): vision-language-action grounding, action token, safety gate를 통해 VLA 입구를 만든다.
 
+무기초에서 LLM/RLHF/Multimodal/VLA까지 빠르게 올라가는 루트에서는 `06_training_systems`와 `07_frontier_labs`를 나중 선택 구간으로 미뤄도 된다. 먼저 `00→05`로 언어 모델의 이론·코드·실험 습관을 만들고, `08_multimodal_bridge -> 09_multimodal -> 10_vla`로 넘어간 뒤, 큰 GPU 실험·분산 운영·논문 재현이 필요해질 때 `06_training_systems`와 `07_frontier_labs`를 optional capstone sandbox로 되돌아본다. `10_vla/01_vision_language_action_grounding`은 실제 로봇 제어 전체가 아니라 VLA grounding entry point이므로, 행동 토큰과 safety gate의 최소 감각을 잡는 입구로 읽는다.
+
 현재 `docs/curriculum_status.json`에 선언된 모든 unit은 `runnable` 상태다. 그래도 실행 전에는 manifest와 각 track README의 status table을 함께 확인해, 어떤 산출물과 분석 질문을 남겨야 하는지 먼저 읽는 것을 원칙으로 한다.
 
 현재 경로 기준으로 `03_nlp_bridge -> 04_nlp`, `08_multimodal_bridge -> 09_multimodal`이 bridge/applied 흐름을 담당한다. 과거 경로에서 현재 경로로 바뀐 자세한 대응표는 [docs/03_track_migration_map.md](docs/03_track_migration_map.md)에서만 historical reference로 다룬다.

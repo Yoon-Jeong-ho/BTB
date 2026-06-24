@@ -18,6 +18,8 @@ BTB는 `00_foundations -> 01_ml -> 02_deep_learning -> 03_nlp_bridge -> 04_nlp -
 10. `09_multimodal` — retrieval, captioning, VQA 중심의 multimodal applied track이다.
 11. `10_vla` — vision-language-action grounding, action token, safety gate로 VLA 입구를 여는 track이다.
 
+초심자 압축 루트에서는 `06_training_systems`와 `07_frontier_labs`를 나중 선택 구간으로 미뤄도 된다. `06`은 GPU/분산 운영이 필요해질 때, `07`은 앞선 실험을 묶는 optional capstone sandbox가 필요할 때 되돌아오는 고급 구간이다.
+
 ## 왜 이 순서인가
 
 1. `00_foundations`에서 tensor, gradient, optimizer, runtime을 먼저 고정해야 이후 모든 트랙의 실험 로그를 읽을 수 있다.
