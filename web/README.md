@@ -12,14 +12,32 @@ python -m http.server 8000
 
 ## Python 버튼 실행까지 쓰기
 
-일반 `python -m http.server 8000`은 정적 파일만 보여 주므로 브라우저 버튼으로 Python을 실행할 수 없다. 코드 탭의 `scratch_lab.py 실행`, `framework_lab.py 실행`, `analysis.py 실행` 버튼까지 쓰려면 저장소 루트에서 아래 서버를 띄운다.
+일반 `python -m http.server 8000`은 정적 파일만 보여 주므로 브라우저 버튼으로 Python을 실행할 수 없다. 이미 정적 서버로 열었다면 그 터미널에서 `Ctrl+C`로 멈춘 뒤, 저장소 루트에서 아래 실행 서버로 다시 띄운다.
 
 ```bash
-python scripts/study_server.py --port 8000
+python scripts/study_server.py --port 8000 --device auto
 # http://localhost:8000/web/ 열기
 ```
 
-`study_server.py`는 임의 명령을 실행하지 않고, 저장소 안의 `scratch_lab.py`, `framework_lab.py`, `analysis.py`만 허용 목록으로 실행한다. 실행 결과의 stdout/stderr와 종료 코드는 코드 블록 위의 결과 패널에 표시된다.
+`study_server.py`는 임의 명령을 실행하지 않고, 저장소 안의 `scratch_lab.py`, `framework_lab.py`, `analysis.py`만 허용 목록으로 실행한다. 실행 결과의 stdout/stderr, 종료 코드, 선택된 실행 환경은 코드 블록 위의 결과 패널에 표시된다.
+
+conda 환경이나 GPU 선택을 명시하고 싶다면 아래처럼 실행한다.
+
+```bash
+# conda 환경 이름으로 실행
+python scripts/study_server.py --port 8000 --conda-env btb --device auto
+
+# conda prefix 경로로 실행
+python scripts/study_server.py --port 8000 --conda-prefix /path/to/env --device auto
+
+# GPU를 쓰지 않고 CPU로 고정
+python scripts/study_server.py --port 8000 --device cpu
+
+# 특정 GPU를 강제로 사용
+python scripts/study_server.py --port 8000 --device cuda --gpu-index 0
+```
+
+`--device auto`는 `nvidia-smi`로 idle GPU를 찾고, 조건에 맞는 GPU가 없거나 `nvidia-smi`가 없으면 CPU로 fallback한다.
 
 ## 진행률 저장 방식
 
@@ -40,7 +58,7 @@ python scripts/build_web_catalog.py --output web/catalog.json
 
 - 왼쪽 좁은 영역에서 track과 unit을 고르고, 오른쪽 넓은 reader에서 README/THEORY/PREREQS/실습 코드를 바로 읽는다.
 - 문서 안의 로컬 `.md` 링크도 가능한 한 사이트 안에서 이어서 열리므로, raw README 파일이 깨져 보이는 흐름을 피한다.
-- `study_server.py`로 열면 Python 코드 탭에서 버튼 하나로 실행하고 결과를 바로 아래에서 확인한다.
+- `study_server.py --device auto`로 열면 Python 코드 탭에서 버튼 하나로 실행하고 결과를 바로 아래에서 확인한다.
 - 체크리스트와 현재 자료 체크는 사용자별 localStorage에만 누적된다.
 
 ## Playwright QA

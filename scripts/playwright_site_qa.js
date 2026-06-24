@@ -55,6 +55,25 @@ async function withStaticServer(fn) {
   }
 }
 
+async function withPlainHttpServer(fn) {
+  const port = await freePort();
+  const python = process.env.PYTHON || 'python';
+  const server = spawn(python, ['-m', 'http.server', String(port), '--bind', '127.0.0.1'], {
+    cwd: ROOT,
+    stdio: ['ignore', 'pipe', 'pipe'],
+  });
+  let stderr = '';
+  server.stderr.on('data', (chunk) => { stderr += chunk.toString(); });
+  const baseUrl = `http://127.0.0.1:${port}`;
+  try {
+    await waitForServer(`${baseUrl}/web/`);
+    return await fn(baseUrl);
+  } finally {
+    server.kill();
+    if (stderr && process.env.BTB_QA_DEBUG) process.stderr.write(stderr);
+  }
+}
+
 async function assertNoHorizontalOverflow(page, label) {
   const metrics = await page.evaluate(() => {
     const box = (selector) => {
@@ -178,6 +197,9 @@ async function assertRunButton(page, tabName, expectedText) {
   if (!text.includes('exit code: 0')) {
     throw new Error(`${tabName}: run output did not finish with exit code 0:\n${text}`);
   }
+  if (!text.includes('runner:')) {
+    throw new Error(`${tabName}: run output should show the selected Python/conda and CPU/GPU runner:\n${text}`);
+  }
 }
 
 async function selectStudyUnit(page, trackText, unitText) {
@@ -276,15 +298,44 @@ async function runMobileQa(browser, baseUrl) {
   return metrics;
 }
 
+async function runStaticServerRunHelpQa(browser, baseUrl) {
+  const { context, externalRequests } = await newLocalOnlyContext(browser, baseUrl, { viewport: { width: 1280, height: 900 } });
+  const page = await context.newPage();
+  await page.goto(`${baseUrl}/web/`, { waitUntil: 'domcontentloaded' });
+  await page.getByRole('tab', { name: 'scratch_lab.py' }).click();
+  await page.locator('[data-run-code]', { hasText: 'scratch_lab.py 실행' }).click();
+  const output = page.locator('[data-run-output]');
+  await output.locator('text=정적 http.server').waitFor({ state: 'visible' });
+  const text = await output.innerText();
+  if (!text.includes('501 Unsupported method')) {
+    throw new Error(`static server help should explain the 501 POST failure:\n${text}`);
+  }
+  if (text.includes('<!DOCTYPE HTML>')) {
+    throw new Error(`static server help should not expose the raw HTML error body:\n${text}`);
+  }
+  await page.screenshot({ path: path.join(OUT_DIR, 'static-server-run-help.png'), fullPage: false });
+  await context.close();
+  assertLocalOnlyRequests(externalRequests, 'static-server-help');
+  return { explained501: true };
+}
+
 async function main() {
   fs.mkdirSync(OUT_DIR, { recursive: true });
+  const staticServerHelp = await withPlainHttpServer(async (baseUrl) => {
+    const browser = await chromium.launch({ headless: true });
+    try {
+      return await runStaticServerRunHelpQa(browser, baseUrl);
+    } finally {
+      await browser.close();
+    }
+  });
   await withStaticServer(async (baseUrl) => {
     const browser = await chromium.launch({ headless: true });
     try {
       const desktop = await runDesktopQa(browser, baseUrl);
       const tablet = await runResponsiveQa(browser, baseUrl);
       const mobile = await runMobileQa(browser, baseUrl);
-      console.log(JSON.stringify({ ok: true, baseUrl, outDir: OUT_DIR, desktop, tablet, mobile }, null, 2));
+      console.log(JSON.stringify({ ok: true, baseUrl, outDir: OUT_DIR, staticServerHelp, desktop, tablet, mobile }, null, 2));
     } finally {
       await browser.close();
     }

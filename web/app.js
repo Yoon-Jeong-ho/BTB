@@ -349,7 +349,7 @@ function renderRunPanel(section) {
     <div>
       <p class="eyebrow">로컬 실행</p>
       <h4>버튼으로 실행하고 결과를 바로 확인하기</h4>
-      <p>저장소 루트에서 <code>python scripts/study_server.py --port 8000</code>로 열면 이 버튼이 실제 Python을 실행합니다. 일반 정적 서버에서는 안내 메시지만 표시됩니다.</p>
+      <p>저장소 루트에서 <code>python scripts/study_server.py --port 8000 --device auto</code>로 열면 이 버튼이 실제 Python을 실행합니다. idle GPU가 있으면 잡고, 없으면 CPU로 내려갑니다.</p>
     </div>
     <div class="run-actions">
       <button type="button" data-run-code data-run-path="${escapeHtml(cleanHref(section.href))}">${escapeHtml(section.label)} 실행</button>
@@ -388,22 +388,19 @@ async function runPythonSection(section, button) {
     const contentType = response.headers.get('content-type') || '';
     const payload = contentType.includes('application/json')
       ? await response.json()
-      : { error: await response.text() };
+      : { error: await response.text(), status: response.status };
+    if (!response.ok && response.status === 501) {
+      output.textContent = staticServerHelp('501 Unsupported method: 현재 서버가 POST /api/run-python을 지원하지 않는 정적 서버입니다.');
+      status.textContent = '정적 서버로 실행 중';
+      return;
+    }
     if (!response.ok && !('returncode' in payload)) {
       throw new Error(payload.error || `HTTP ${response.status}`);
     }
     output.textContent = formatRunResult(payload);
     status.textContent = payload.returncode === 0 ? '실행 완료' : `종료 코드 ${payload.returncode}`;
   } catch (error) {
-    output.textContent = [
-      '이 버튼은 BTB 로컬 실행 서버에서만 실제 Python을 실행합니다.',
-      '저장소 루트에서 아래 명령으로 다시 열어 주세요.',
-      '',
-      'python scripts/study_server.py --port 8000',
-      'http://localhost:8000/web/',
-      '',
-      `상세: ${error.message}`,
-    ].join('\n');
+    output.textContent = staticServerHelp(error.message);
     status.textContent = '실행 서버 필요';
   } finally {
     button.disabled = false;
@@ -416,11 +413,38 @@ function formatRunResult(payload) {
     `$ ${command}`,
     `exit code: ${payload.returncode}`,
   ];
+  if (payload.runner) lines.push(`runner: ${formatRunnerSummary(payload.runner)}`);
   if (payload.duration_seconds !== undefined) lines.push(`duration: ${payload.duration_seconds}s`);
   if (payload.stdout) lines.push('', '[stdout]', payload.stdout.trimEnd());
   if (payload.stderr) lines.push('', '[stderr]', payload.stderr.trimEnd());
   if (!payload.stdout && !payload.stderr) lines.push('', '(출력 없음)');
   return lines.join('\n');
+}
+
+function formatRunnerSummary(runner) {
+  const gpu = runner.gpu_index !== undefined && runner.gpu_index !== null ? `, gpu=${runner.gpu_index}` : '';
+  return `${runner.environment || 'current python'}, device=${runner.device || 'unknown'}${gpu} (${runner.device_reason || 'runner selected'})`;
+}
+
+function staticServerHelp(detail) {
+  return [
+    '지금 켜져 있는 서버는 정적 http.server라서 Python 실행 POST를 받을 수 없습니다.',
+    '현재 터미널에서 서버를 Ctrl+C로 멈춘 뒤, 저장소 루트에서 같은 포트로 다시 열어 주세요.',
+    '',
+    currentStudyServerCommand(),
+    `${window.location.origin}/web/`,
+    '',
+    'conda 환경을 쓰려면 예:',
+    `${currentStudyServerCommand()} --conda-env btb`,
+    'GPU를 쓰지 않으려면 --device cpu, 특정 GPU를 강제로 쓰려면 --device cuda --gpu-index 0을 붙입니다.',
+    '',
+    `상세: ${detail || '501 Unsupported method'}`,
+  ].join('\n');
+}
+
+function currentStudyServerCommand() {
+  const port = window.location.port || '8000';
+  return `python scripts/study_server.py --port ${port} --device auto`;
 }
 
 function renderCodeExplanation(section, source) {

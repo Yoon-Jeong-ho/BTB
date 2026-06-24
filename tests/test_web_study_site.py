@@ -11,6 +11,7 @@ import time
 import unittest
 import urllib.error
 import urllib.request
+import warnings
 from pathlib import Path
 
 from tests.test_curriculum_topology import CANONICAL_CURRICULUM_LADDER
@@ -31,11 +32,33 @@ class WebStudySiteContractTest(unittest.TestCase):
         spec.loader.exec_module(module)
         return module
 
+    def _load_study_server(self):
+        server_path = ROOT / "scripts" / "study_server.py"
+        spec = importlib.util.spec_from_file_location("study_server", server_path)
+        self.assertIsNotNone(spec, "scripts/study_server.py must be importable")
+        self.assertIsNotNone(spec.loader)
+        module = importlib.util.module_from_spec(spec)
+        sys.modules["study_server"] = module
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=ResourceWarning)
+            spec.loader.exec_module(module)
+        return module
+
     def _free_port(self) -> int:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
             sock.bind(("127.0.0.1", 0))
             return int(sock.getsockname()[1])
 
+    def _terminate_process(self, process: subprocess.Popen[str]) -> None:
+        if process.poll() is None:
+            process.terminate()
+            try:
+                process.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                process.kill()
+                process.wait(timeout=5)
+        if process.stderr is not None:
+            process.stderr.close()
 
     def test_root_index_redirects_to_web_app_for_plain_localhost(self) -> None:
         root_index = ROOT / "index.html"
@@ -64,6 +87,8 @@ class WebStudySiteContractTest(unittest.TestCase):
         self.assertIn("사용자별", html + readme)
         self.assertIn("python -m http.server 8000", readme)
         self.assertIn("python scripts/study_server.py --port 8000", readme)
+        self.assertIn("--conda-env", readme)
+        self.assertIn("--device auto", readme)
         self.assertIn("http://localhost:8000/web/", readme)
         self.assertNotIn("python -m http.server -d web", readme + app)
 
@@ -162,8 +187,11 @@ class WebStudySiteContractTest(unittest.TestCase):
             "# 학습 포인트:",
             "# 핵심 함수",
             "runPythonSection",
+            "staticServerHelp",
+            "formatRunnerSummary",
             "data-run-code",
             "run-output",
+            "501 Unsupported method",
             "scratch_lab.py는",
             "framework_lab.py는",
             "analysis.py는",
@@ -189,6 +217,8 @@ class WebStudySiteContractTest(unittest.TestCase):
         self.assertIn("npm run qa:web", readme)
         self.assertIn("Playwright", readme)
         self.assertIn("study_server.py", readme)
+        self.assertIn("conda", readme)
+        self.assertIn("GPU", readme)
 
     def test_inline_summary_renderer_strips_visible_markdown_syntax(self) -> None:
         module = self._load_builder()
@@ -259,13 +289,14 @@ assert.strictEqual(recovered.users.carol.lessons['10_vla/01_vision_language_acti
             stderr=subprocess.DEVNULL,
             text=True,
         )
-        self.addCleanup(server.terminate)
+        self.addCleanup(self._terminate_process, server)
         base = f"http://127.0.0.1:{port}"
         last_error: Exception | None = None
         for _ in range(30):
             try:
                 with urllib.request.urlopen(f"{base}/web/", timeout=1) as response:
                     self.assertEqual(200, response.status)
+                    response.read()
                 break
             except Exception as exc:  # pragma: no cover - timing dependent
                 last_error = exc
@@ -286,6 +317,7 @@ assert.strictEqual(recovered.users.carol.lessons['10_vla/01_vision_language_acti
         ]:
             with urllib.request.urlopen(f"{base}{path}", timeout=2) as response:
                 self.assertEqual(200, response.status, path)
+                response.read()
 
     def test_local_study_server_runs_allowlisted_python_files(self) -> None:
         port = self._free_port()
@@ -296,13 +328,14 @@ assert.strictEqual(recovered.users.carol.lessons['10_vla/01_vision_language_acti
             stderr=subprocess.PIPE,
             text=True,
         )
-        self.addCleanup(server.terminate)
+        self.addCleanup(self._terminate_process, server)
         base = f"http://127.0.0.1:{port}"
         last_error: Exception | None = None
         for _ in range(30):
             try:
                 with urllib.request.urlopen(f"{base}/web/", timeout=1) as response:
                     self.assertEqual(200, response.status)
+                    response.read()
                 break
             except Exception as exc:  # pragma: no cover - timing dependent
                 last_error = exc
@@ -322,6 +355,9 @@ assert.strictEqual(recovered.users.carol.lessons['10_vla/01_vision_language_acti
         self.assertEqual(0, payload["returncode"])
         self.assertIn("00_foundations/01_tensor_shapes/scratch_lab.py", payload["path"])
         self.assertIn("matmul_shape", payload["stdout"])
+        self.assertIn(payload["runner"]["device"], {"cpu", "cuda"})
+        self.assertIn("python", payload["runner"])
+        self.assertIn("environment", payload["runner"])
 
         forbidden = urllib.request.Request(
             f"{base}/api/run-python",
@@ -332,6 +368,27 @@ assert.strictEqual(recovered.users.carol.lessons['10_vla/01_vision_language_acti
         with self.assertRaises(urllib.error.HTTPError) as ctx:
             urllib.request.urlopen(forbidden, timeout=5)
         self.assertEqual(403, ctx.exception.code)
+
+    def test_study_server_builds_conda_gpu_and_cpu_fallback_invocations(self) -> None:
+        server = self._load_study_server()
+        script_path = ROOT / "00_foundations" / "01_tensor_shapes" / "scratch_lab.py"
+        gpu_rows = server._parse_nvidia_smi_rows("0, 24000, 128, 0\n1, 16000, 12000, 95\n")
+
+        conda_config = server.RunnerConfig(conda_env="btb", device="auto")
+        command, env, runner = server._build_runner_invocation(script_path, conda_config, gpu_rows)
+        self.assertEqual(["conda", "run", "--no-capture-output", "-n", "btb", "python"], command[:6])
+        self.assertEqual("cuda", runner["device"])
+        self.assertEqual("0", runner["gpu_index"])
+        self.assertEqual("0", env["CUDA_VISIBLE_DEVICES"])
+        self.assertEqual("cuda", env["BTB_DEVICE"])
+        self.assertEqual("conda:btb", runner["environment"])
+
+        cpu_config = server.RunnerConfig(device="auto")
+        command, env, runner = server._build_runner_invocation(script_path, cpu_config, [])
+        self.assertEqual(sys.executable, command[0])
+        self.assertEqual("cpu", runner["device"])
+        self.assertEqual("", env["CUDA_VISIBLE_DEVICES"])
+        self.assertEqual("cpu", env["BTB_DEVICE"])
 
     def test_catalog_builder_covers_manifest_tracks_and_units(self) -> None:
         module = self._load_builder()
