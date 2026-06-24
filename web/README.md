@@ -1,6 +1,6 @@
 # BTB Study Website
 
-`web/`는 BTB 커리큘럼을 브라우저에서 보기 위한 정적 사이트다.
+`web/`는 BTB 커리큘럼을 브라우저에서 보기 위한 정적 사이트다. 단원 README, THEORY, PREREQS, scratch/framework/analysis 코드를 README 파일을 새 탭으로 직접 여는 방식이 아니라 사이트 안에서 렌더링해 읽고 체크할 수 있게 한다.
 
 ```bash
 python scripts/build_web_catalog.py
@@ -8,7 +8,7 @@ python -m http.server 8000
 # http://localhost:8000 또는 http://localhost:8000/web/ 열기
 ```
 
-> 주의: 저장소 루트에서 실행해야 단원 README 링크가 함께 열린다. `web/` 폴더 안에서 서버를 띄우면 커리큘럼 문서 링크가 보이지 않을 수 있다.
+> 주의: 저장소 루트에서 실행해야 사이트 안에서 단원 문서와 실습 코드가 함께 열린다. `web/` 폴더 안에서 서버를 띄우면 커리큘럼 문서 fetch 경로가 깨질 수 있다.
 
 ## 진행률 저장 방식
 
@@ -24,3 +24,9 @@ python -m http.server 8000
 ```bash
 python scripts/build_web_catalog.py --output web/catalog.json
 ```
+
+## 보는 방식
+
+- 왼쪽 좁은 영역에서 track과 unit을 고르고, 오른쪽 넓은 reader에서 README/THEORY/PREREQS/실습 코드를 바로 읽는다.
+- 문서 안의 로컬 `.md` 링크도 가능한 한 사이트 안에서 이어서 열리므로, raw README 파일이 깨져 보이는 흐름을 피한다.
+- 체크리스트와 현재 자료 체크는 사용자별 localStorage에만 누적된다.

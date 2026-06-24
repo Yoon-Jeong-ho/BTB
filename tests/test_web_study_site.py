@@ -85,6 +85,11 @@ class WebStudySiteContractTest(unittest.TestCase):
 
     def test_ui_surfaces_learning_process_metadata(self) -> None:
         app = (WEB / "app.js").read_text(encoding="utf-8")
+        styles = (WEB / "styles.css").read_text(encoding="utf-8")
+        html = (WEB / "index.html").read_text(encoding="utf-8")
+        root_readme = (ROOT / "README.md").read_text(encoding="utf-8")
+        web_readme = (WEB / "README.md").read_text(encoding="utf-8")
+
         self.assertIn("track.summary", app)
         self.assertIn("선행 확인", app)
         self.assertIn("학습 방향", app)
@@ -98,6 +103,22 @@ class WebStudySiteContractTest(unittest.TestCase):
         self.assertIn("analysis 정리", app)
         self.assertIn("reflection 작성", app)
         self.assertIn("recommendedStartingUnit", app)
+
+        self.assertIn("학습 자료", app)
+        self.assertIn("fetchLessonDocument", app)
+        self.assertIn("renderMarkdown", app)
+        self.assertIn("lessonSectionsFor", app)
+        for label in ["README", "THEORY", "PREREQS", "scratch_lab.py", "framework_lab.py", "analysis.py", "reflection.md"]:
+            self.assertIn(label, app)
+        self.assertNotIn("README 열기", app)
+        self.assertNotIn('target="_blank"', app)
+
+        self.assertIn("reader-panel", html)
+        self.assertIn("grid-template-areas", styles)
+        self.assertIn("minmax(280px, 24vw) minmax(0, 1fr)", styles)
+        self.assertNotIn("minmax(220px, 0.8fr) minmax(360px, 1.4fr) minmax(320px, 1fr)", styles)
+        self.assertIn("사이트 안에서", root_readme + web_readme)
+        self.assertIn("README 파일을 새 탭으로 직접 여는 방식", root_readme + web_readme)
 
     @unittest.skipIf(shutil.which("node") is None, "node is not installed")
     def test_progress_storage_profiles_corrupt_recovery_and_import(self) -> None:
