@@ -39,7 +39,7 @@ async function waitForServer(url, timeoutMs = 8000) {
 async function withStaticServer(fn) {
   const port = await freePort();
   const python = process.env.PYTHON || 'python';
-  const server = spawn(python, ['-m', 'http.server', String(port), '--bind', '127.0.0.1'], {
+  const server = spawn(python, ['scripts/study_server.py', '--port', String(port), '--bind', '127.0.0.1'], {
     cwd: ROOT,
     stdio: ['ignore', 'pipe', 'pipe'],
   });
@@ -140,17 +140,43 @@ function assertLocalOnlyRequests(externalRequests, label) {
 async function assertInjectedPythonComments(page, tabName) {
   await page.getByRole('tab', { name: tabName }).click();
   const codeText = await page.locator('.code-block code').innerText();
-  for (const token of ['# 학습자용 한글 주석', '# 이 파일은 무엇인가:', '# 어떻게 읽으면 좋은가:', '# 실행하면 남는 결과:', '# 아래부터 원본 Python 코드입니다.']) {
+  for (const token of ['# 핵심 함수', '# 학습 포인트:']) {
     if (!codeText.includes(token)) {
-      throw new Error(`${tabName}: missing injected Korean code comment ${token}`);
+      throw new Error(`${tabName}: missing inline Korean code hint ${token}`);
     }
   }
-  const firstLines = codeText.trimStart().split('\n').slice(0, 8).join('\n');
-  if (!firstLines.includes('# 이 파일은 무엇인가:')) {
-    throw new Error(`${tabName}: Korean guidance comments should start the displayed code block`);
+  for (const removed of ['# 학습자용 한글 주석', '# 이 파일은 무엇인가:', '# 어떻게 읽으면 좋은가:', '# 실행하면 남는 결과:', '# 아래부터 원본 Python 코드입니다.']) {
+    if (codeText.includes(removed)) {
+      throw new Error(`${tabName}: removed top-level guidance comment is still present: ${removed}`);
+    }
+  }
+  if (codeText.trimStart().startsWith('#')) {
+    throw new Error(`${tabName}: Korean hints should not be prepended as a repeated header block`);
   }
   if (await page.locator('.learner-comment').count()) {
     throw new Error(`${tabName}: guidance must be injected into code, not rendered as a separate learner-comment block`);
+  }
+}
+
+async function assertTrackMarkdownRendered(page) {
+  const foundations = page.locator('.track-card', { hasText: '00 Foundations' }).first();
+  await foundations.waitFor({ state: 'visible' });
+  const text = await foundations.innerText();
+  if (text.includes('**')) {
+    throw new Error(`track summary exposes raw markdown syntax: ${text}`);
+  }
+  await foundations.locator('strong', { hasText: '딥러닝 공통 기초 트랙' }).waitFor({ state: 'visible' });
+}
+
+async function assertRunButton(page, tabName, expectedText) {
+  await page.getByRole('tab', { name: tabName }).click();
+  await page.locator('[data-run-code]', { hasText: `${tabName} 실행` }).click();
+  const output = page.locator('[data-run-output]');
+  await output.waitFor({ state: 'visible' });
+  await output.locator(`text=${expectedText}`).waitFor({ state: 'visible', timeout: 30000 });
+  const text = await output.innerText();
+  if (!text.includes('exit code: 0')) {
+    throw new Error(`${tabName}: run output did not finish with exit code 0:\n${text}`);
   }
 }
 
@@ -188,8 +214,11 @@ async function runDesktopQa(browser, baseUrl) {
 
   await page.goto(`${baseUrl}/web/`, { waitUntil: 'domcontentloaded' });
   await page.evaluate(() => document.fonts?.ready);
+  await assertTrackMarkdownRendered(page);
   await assertNoHorizontalOverflow(page, 'desktop-readme');
   await assertInjectedPythonComments(page, 'scratch_lab.py');
+  await assertRunButton(page, 'scratch_lab.py', 'matmul_shape');
+  await page.screenshot({ path: path.join(OUT_DIR, 'desktop-run-output.png'), fullPage: false });
   await page.getByText('코드 읽기 안내').waitFor({ state: 'visible' });
   await page.locator('.code-explanation dt', { hasText: '이 파일은 무엇인가' }).waitFor({ state: 'visible' });
   await page.locator('.code-explanation dt', { hasText: '실행하면 남는 결과' }).waitFor({ state: 'visible' });

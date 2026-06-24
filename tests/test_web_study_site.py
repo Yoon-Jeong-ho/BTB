@@ -9,6 +9,7 @@ import sys
 import tempfile
 import time
 import unittest
+import urllib.error
 import urllib.request
 from pathlib import Path
 
@@ -47,6 +48,7 @@ class WebStudySiteContractTest(unittest.TestCase):
         required = ["index.html", "styles.css", "progress-storage.js", "app.js", "catalog.json", "README.md"]
         missing = [name for name in required if not (WEB / name).is_file()]
         self.assertEqual([], missing)
+        self.assertTrue((ROOT / "scripts" / "study_server.py").is_file(), "one-click code execution needs the local study server")
 
         html = (WEB / "index.html").read_text(encoding="utf-8")
         app = (WEB / "app.js").read_text(encoding="utf-8")
@@ -61,6 +63,7 @@ class WebStudySiteContractTest(unittest.TestCase):
         self.assertIn("GitHub에 공유되지", html + readme)
         self.assertIn("사용자별", html + readme)
         self.assertIn("python -m http.server 8000", readme)
+        self.assertIn("python scripts/study_server.py --port 8000", readme)
         self.assertIn("http://localhost:8000/web/", readme)
         self.assertNotIn("python -m http.server -d web", readme + app)
 
@@ -73,15 +76,12 @@ class WebStudySiteContractTest(unittest.TestCase):
             "XMLHttpRequest",
             "fetch('/progress",
             'fetch("/progress',
-            "method: 'POST'",
-            'method: "POST"',
-            "method:'POST'",
-            'method:"POST"',
         ]
         for snippet in forbidden_network_writes:
             self.assertNotIn(snippet, combined)
 
         self.assertIn("storage.setItem(PROGRESS_KEY", combined)
+        self.assertIn("fetch('/api/run-python'", combined)
         self.assertIn("activeUserId", combined)
         self.assertIn("lessons", combined)
         self.assertNotIn("@import url(", styles)
@@ -100,6 +100,8 @@ class WebStudySiteContractTest(unittest.TestCase):
         web_readme = (WEB / "README.md").read_text(encoding="utf-8")
 
         self.assertIn("track.summary", app)
+        self.assertIn("renderInlineSummary(track.summary", app)
+        self.assertNotIn("escapeHtml(track.summary", app)
         self.assertIn("선행 확인", app)
         self.assertIn("학습 방향", app)
         self.assertIn("../docs/02_study_guide.md", app)
@@ -156,24 +158,48 @@ class WebStudySiteContractTest(unittest.TestCase):
             "어떻게 읽으면 좋은가",
             "실행하면 남는 결과",
             "핵심 함수",
-            "학습자용 한글 주석",
-            "annotateCodeWithKoreanComments",
-            "# 이 파일은 무엇인가",
-            "# 실행하면 남는 결과",
-            "# 아래부터 원본 Python 코드입니다.",
+            "annotateCodeWithInlineHints",
+            "# 학습 포인트:",
             "# 핵심 함수",
+            "runPythonSection",
+            "data-run-code",
+            "run-output",
             "scratch_lab.py는",
             "framework_lab.py는",
             "analysis.py는",
         ]:
             self.assertIn(token, app)
 
+        for removed in [
+            "# 학습자용 한글 주석",
+            "# 이 파일은 무엇인가",
+            "# 어떻게 읽으면 좋은가",
+            "# 실행하면 남는 결과",
+            "# 아래부터 원본 Python 코드입니다.",
+            "annotateCodeWithKoreanComments",
+        ]:
+            self.assertNotIn(removed, app)
+
         self.assertIn("code-explanation", styles)
+        self.assertIn("run-panel", styles)
+        self.assertIn("run-output", styles)
         self.assertIn("reader-shell", styles)
         self.assertIn("sticky", styles)
         self.assertNotIn("learner-comment", app + styles)
         self.assertIn("npm run qa:web", readme)
         self.assertIn("Playwright", readme)
+        self.assertIn("study_server.py", readme)
+
+    def test_inline_summary_renderer_strips_visible_markdown_syntax(self) -> None:
+        module = self._load_builder()
+        catalog = module.build_catalog(ROOT)
+        track_with_bold = next(track for track in catalog["tracks"] if "**" in track["summary"])
+        self.assertIn("공통 기초 트랙", track_with_bold["summary"])
+
+        app = (WEB / "app.js").read_text(encoding="utf-8")
+        self.assertIn("function renderInlineSummary", app)
+        self.assertIn("<strong>$1</strong>", app)
+        self.assertIn("stripMarkdownLinks", app)
 
     @unittest.skipIf(shutil.which("node") is None, "node is not installed")
     def test_progress_storage_profiles_corrupt_recovery_and_import(self) -> None:
@@ -260,6 +286,52 @@ assert.strictEqual(recovered.users.carol.lessons['10_vla/01_vision_language_acti
         ]:
             with urllib.request.urlopen(f"{base}{path}", timeout=2) as response:
                 self.assertEqual(200, response.status, path)
+
+    def test_local_study_server_runs_allowlisted_python_files(self) -> None:
+        port = self._free_port()
+        server = subprocess.Popen(
+            [sys.executable, "scripts/study_server.py", "--port", str(port), "--bind", "127.0.0.1"],
+            cwd=ROOT,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        self.addCleanup(server.terminate)
+        base = f"http://127.0.0.1:{port}"
+        last_error: Exception | None = None
+        for _ in range(30):
+            try:
+                with urllib.request.urlopen(f"{base}/web/", timeout=1) as response:
+                    self.assertEqual(200, response.status)
+                break
+            except Exception as exc:  # pragma: no cover - timing dependent
+                last_error = exc
+                time.sleep(0.1)
+        else:
+            self.fail(f"study_server.py did not start: {last_error}; stderr={server.stderr.read() if server.stderr else ''}")
+
+        request = urllib.request.Request(
+            f"{base}/api/run-python",
+            data=json.dumps({"path": "00_foundations/01_tensor_shapes/scratch_lab.py"}).encode("utf-8"),
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        with urllib.request.urlopen(request, timeout=20) as response:
+            self.assertEqual(200, response.status)
+            payload = json.loads(response.read().decode("utf-8"))
+        self.assertEqual(0, payload["returncode"])
+        self.assertIn("00_foundations/01_tensor_shapes/scratch_lab.py", payload["path"])
+        self.assertIn("matmul_shape", payload["stdout"])
+
+        forbidden = urllib.request.Request(
+            f"{base}/api/run-python",
+            data=json.dumps({"path": "README.md"}).encode("utf-8"),
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        with self.assertRaises(urllib.error.HTTPError) as ctx:
+            urllib.request.urlopen(forbidden, timeout=5)
+        self.assertEqual(403, ctx.exception.code)
 
     def test_catalog_builder_covers_manifest_tracks_and_units(self) -> None:
         module = self._load_builder()

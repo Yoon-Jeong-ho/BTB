@@ -141,7 +141,7 @@ function renderTracks() {
     return `<button class="track-card" type="button" aria-pressed="${track.id === selectedTrackId}" data-track="${escapeHtml(track.id)}">
       <div class="track-top"><span class="track-title">${escapeHtml(track.title)}</span><span class="track-meta">${stats.done}/${stats.total}</span></div>
       <div class="track-meta">${escapeHtml(track.id)}</div>
-      <p>${escapeHtml(track.summary || '이 트랙의 README에서 학습 방향을 확인한다.')}</p>
+      <p>${renderInlineSummary(track.summary || '이 트랙의 README에서 학습 방향을 확인한다.')}</p>
       <div class="progress-bar" aria-hidden="true"><span style="width:${stats.percent}%"></span></div>
     </button>`;
   }).join('');
@@ -182,7 +182,7 @@ function unitCard(unit) {
   return `<button class="unit-card" type="button" data-unit="${escapeHtml(unit.path)}" aria-current="${unit.path === selectedUnitPath}">
     <div class="unit-top"><span class="unit-title">${escapeHtml(unit.title)}</span><span class="chip ${progress.state}">${STATE_LABELS[progress.state]}</span></div>
     <div class="unit-meta">${escapeHtml(unit.path)} · ${escapeHtml(unit.status)}</div>
-    <p>${escapeHtml(unit.objective || '목표 설명은 사이트 안의 README 탭에서 확인하세요.')}</p>
+    <p>${renderInlineSummary(unit.objective || '목표 설명은 사이트 안의 README 탭에서 확인하세요.')}</p>
     <div class="chips">${outputChips}</div>
   </button>`;
 }
@@ -205,7 +205,7 @@ function renderDetail() {
       <div>
         <h2 id="detail-title">${escapeHtml(unit.title)}</h2>
         <p class="unit-meta">${escapeHtml(unit.path)} · curriculum: ${escapeHtml(unit.status)} · personal: ${STATE_LABELS[progress.state]}</p>
-        <p>${escapeHtml(unit.objective || '')}</p>
+        <p>${renderInlineSummary(unit.objective || '')}</p>
       </div>
       <div>
         <div class="status-buttons" aria-label="진행 상태 변경">
@@ -325,7 +325,8 @@ async function loadLessonSection(unit, section) {
     const text = await fetchLessonDocument(section.href);
     if (requestId !== contentRequestId) return;
     if (section.type === 'code') {
-      content.innerHTML = `<div class="document-title"><span>${escapeHtml(section.label)}</span><code>${escapeHtml(cleanHref(section.href))}</code></div>${renderCodeExplanation(section, text)}<pre class="code-block"><code>${escapeHtml(annotateCodeWithKoreanComments(section, text))}</code></pre>`;
+      content.innerHTML = `<div class="document-title"><span>${escapeHtml(section.label)}</span><code>${escapeHtml(cleanHref(section.href))}</code></div>${renderCodeExplanation(section, text)}${renderRunPanel(section)}<pre class="code-block"><code>${escapeHtml(annotateCodeWithInlineHints(section, text))}</code></pre>`;
+      bindRunButton(section);
     } else {
       content.innerHTML = `<div class="document-title"><span>${escapeHtml(section.label)}</span><code>${escapeHtml(cleanHref(section.href))}</code></div>${renderMarkdown(text, section.href)}`;
       bindInlineDocLinks(unit, section.href);
@@ -340,6 +341,86 @@ async function fetchLessonDocument(href) {
   const response = await fetch(href, { cache: 'no-cache' });
   if (!response.ok) throw new Error(`document load failed: ${response.status}`);
   return response.text();
+}
+
+function renderRunPanel(section) {
+  if (!isRunnableCodeSection(section)) return '';
+  return `<section class="run-panel" aria-label="Python 코드 실행">
+    <div>
+      <p class="eyebrow">로컬 실행</p>
+      <h4>버튼으로 실행하고 결과를 바로 확인하기</h4>
+      <p>저장소 루트에서 <code>python scripts/study_server.py --port 8000</code>로 열면 이 버튼이 실제 Python을 실행합니다. 일반 정적 서버에서는 안내 메시지만 표시됩니다.</p>
+    </div>
+    <div class="run-actions">
+      <button type="button" data-run-code data-run-path="${escapeHtml(cleanHref(section.href))}">${escapeHtml(section.label)} 실행</button>
+      <span class="run-status" data-run-status>stdout/stderr가 아래에 표시됩니다.</span>
+    </div>
+    <pre class="run-output" data-run-output hidden></pre>
+  </section>`;
+}
+
+function isRunnableCodeSection(section) {
+  return section.type === 'code' && /(?:scratch_lab|framework_lab|analysis)\.py$/.test(cleanHref(section.href));
+}
+
+function bindRunButton(section) {
+  const button = $('#lesson-content [data-run-code]');
+  if (!button) return;
+  button.addEventListener('click', () => runPythonSection(section, button));
+}
+
+async function runPythonSection(section, button) {
+  const panel = button.closest('.run-panel');
+  const output = panel?.querySelector('[data-run-output]');
+  const status = panel?.querySelector('[data-run-status]');
+  if (!output || !status) return;
+
+  button.disabled = true;
+  output.hidden = false;
+  output.textContent = '실행 중입니다...';
+  status.textContent = '실행 중';
+  try {
+    const response = await fetch('/api/run-python', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ path: cleanHref(section.href) }),
+    });
+    const contentType = response.headers.get('content-type') || '';
+    const payload = contentType.includes('application/json')
+      ? await response.json()
+      : { error: await response.text() };
+    if (!response.ok && !('returncode' in payload)) {
+      throw new Error(payload.error || `HTTP ${response.status}`);
+    }
+    output.textContent = formatRunResult(payload);
+    status.textContent = payload.returncode === 0 ? '실행 완료' : `종료 코드 ${payload.returncode}`;
+  } catch (error) {
+    output.textContent = [
+      '이 버튼은 BTB 로컬 실행 서버에서만 실제 Python을 실행합니다.',
+      '저장소 루트에서 아래 명령으로 다시 열어 주세요.',
+      '',
+      'python scripts/study_server.py --port 8000',
+      'http://localhost:8000/web/',
+      '',
+      `상세: ${error.message}`,
+    ].join('\n');
+    status.textContent = '실행 서버 필요';
+  } finally {
+    button.disabled = false;
+  }
+}
+
+function formatRunResult(payload) {
+  const command = Array.isArray(payload.command) ? payload.command.join(' ') : `python ${payload.path || ''}`.trim();
+  const lines = [
+    `$ ${command}`,
+    `exit code: ${payload.returncode}`,
+  ];
+  if (payload.duration_seconds !== undefined) lines.push(`duration: ${payload.duration_seconds}s`);
+  if (payload.stdout) lines.push('', '[stdout]', payload.stdout.trimEnd());
+  if (payload.stderr) lines.push('', '[stderr]', payload.stderr.trimEnd());
+  if (!payload.stdout && !payload.stderr) lines.push('', '(출력 없음)');
+  return lines.join('\n');
 }
 
 function renderCodeExplanation(section, source) {
@@ -359,18 +440,31 @@ function renderCodeExplanation(section, source) {
   </section>`;
 }
 
-function annotateCodeWithKoreanComments(section, source) {
+function annotateCodeWithInlineHints(section, source) {
   const explanation = codeExplanationFor(section, source);
-  const intro = [
-    '# 학습자용 한글 주석',
-    `# 이 파일은 무엇인가: ${explanation.what}`,
-    `# 어떻게 읽으면 좋은가: ${explanation.howToRead}`,
-    `# 실행하면 남는 결과: ${explanation.outputs}`,
-    `# 핵심 함수: ${explanation.functions.join(', ') || '상단 설정값과 main 실행 흐름'}`,
-    '# 아래부터 원본 Python 코드입니다.',
-    '',
-  ].join('\n');
-  return intro + annotateCoreFunctions(source, explanation.functions);
+  return annotateCoreFunctions(annotateArtifactLocations(source, section), explanation.functions);
+}
+
+function annotateArtifactLocations(source, section) {
+  const artifactHint = '# 학습 포인트: 이 경로가 실행 후 metrics/figure/report가 남는 위치입니다.';
+  const reportHint = '# 학습 포인트: analysis.py가 최종 해석 문서를 쓰는 위치입니다.';
+  let annotated = source;
+  if (/^ARTIFACT_DIR\s*=/m.test(annotated)) {
+    annotated = annotated.replace(/(^ARTIFACT_DIR\s*=)/m, `${artifactHint}\n$1`);
+  }
+  if (cleanHref(section.href).endsWith('analysis.py') && /^REPORT\s*=/m.test(annotated)) {
+    annotated = annotated.replace(/(^REPORT\s*=)/m, `${reportHint}\n$1`);
+  }
+  if (cleanHref(section.href).endsWith('analysis.py') && /^SCRATCH\s*=/m.test(annotated)) {
+    annotated = annotated.replace(/(^SCRATCH\s*=)/m, '# 학습 포인트: scratch/framework metrics를 analysis 입력으로 다시 읽습니다.\n$1');
+  }
+  if (cleanHref(section.href).endsWith('analysis.py') && /^ANALYSIS_PATH\s*=/m.test(annotated)) {
+    annotated = annotated.replace(/(^ANALYSIS_PATH\s*=)/m, '# 학습 포인트: 분석 결과 markdown이 저장되는 위치입니다.\n$1');
+  }
+  if (/^with\s+torch\.no_grad\(\):/m.test(annotated)) {
+    annotated = annotated.replace(/(^with\s+torch\.no_grad\(\):)/m, '# 학습 포인트: 여기부터는 학습이 아니라 평가/추론 구간입니다.\n$1');
+  }
+  return annotated;
 }
 
 function annotateCoreFunctions(source, functions) {
@@ -378,8 +472,17 @@ function annotateCoreFunctions(source, functions) {
     const name = symbol.replace(/\(\)$/, '');
     const pattern = new RegExp(`(^def\\s+${escapeRegExp(name)}\\s*\\()`, 'm');
     if (!pattern.test(annotated)) return annotated;
-    return annotated.replace(pattern, `# 핵심 함수 ${symbol}: 이 함수부터 실행 흐름을 따라가세요.\n$1`);
+    return annotated.replace(pattern, `# 핵심 함수 ${symbol}: ${functionHint(name)}\n$1`);
   }, source);
+}
+
+function functionHint(name) {
+  if (name === 'main' || name === 'run') return '파일을 실행했을 때 전체 흐름이 모이는 진입점입니다.';
+  if (name.includes('train')) return '입력 batch, loss, optimizer step이 어떻게 연결되는지 보세요.';
+  if (name.includes('forward')) return '모델 입력이 출력/logit으로 바뀌는 핵심 계산입니다.';
+  if (name.includes('write') || name.includes('save')) return '실험 결과가 학습자가 읽을 artifact로 저장되는 지점입니다.';
+  if (name.includes('load') || name.includes('read')) return '이전 실행 산출물을 다시 읽어 분석 입력으로 바꾸는 지점입니다.';
+  return '입력값이 어떤 중간 계산을 거쳐 반환되는지 한 줄씩 따라가세요.';
 }
 
 function escapeRegExp(value) {
@@ -591,6 +694,17 @@ function inlineMarkdown(text, baseHref) {
     return `<a href="${escapeHtml(clean)}" rel="noreferrer">${label}</a>`;
   });
   return escaped;
+}
+
+function renderInlineSummary(text) {
+  let escaped = escapeHtml(stripMarkdownLinks(text));
+  escaped = escaped.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  escaped = escaped.replace(/`([^`]+)`/g, '<code>$1</code>');
+  return escaped;
+}
+
+function stripMarkdownLinks(text) {
+  return String(text ?? '').replace(/\[([^\]]+)\]\(([^)]+)\)/g, '$1');
 }
 
 function isLocalMarkdownHref(href) {
