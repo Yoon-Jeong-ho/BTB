@@ -214,7 +214,7 @@ function renderDetail() {
         <div class="progress-bar" aria-label="체크리스트 ${percent}% 완료"><span style="width:${percent}%"></span></div>
       </div>
     </section>
-    <div class="lesson-workspace">
+    <div class="lesson-workspace reader-shell">
       <aside class="lesson-guide" aria-label="학습 진행 가이드">
         <div class="start-callout">처음이라면 여기서 시작하세요: README와 THEORY를 사이트 안에서 읽고 scratch → framework → analysis → reflection 순서로 진행합니다.</div>
         <h3>학습 순서</h3>
@@ -325,7 +325,7 @@ async function loadLessonSection(unit, section) {
     const text = await fetchLessonDocument(section.href);
     if (requestId !== contentRequestId) return;
     if (section.type === 'code') {
-      content.innerHTML = `<div class="document-title"><span>${escapeHtml(section.label)}</span><code>${escapeHtml(cleanHref(section.href))}</code></div><pre class="code-block"><code>${escapeHtml(text)}</code></pre>`;
+      content.innerHTML = `<div class="document-title"><span>${escapeHtml(section.label)}</span><code>${escapeHtml(cleanHref(section.href))}</code></div>${renderCodeExplanation(section, text)}${renderKoreanCodeComment(section, text)}<pre class="code-block"><code>${escapeHtml(text)}</code></pre>`;
     } else {
       content.innerHTML = `<div class="document-title"><span>${escapeHtml(section.label)}</span><code>${escapeHtml(cleanHref(section.href))}</code></div>${renderMarkdown(text, section.href)}`;
       bindInlineDocLinks(unit, section.href);
@@ -340,6 +340,84 @@ async function fetchLessonDocument(href) {
   const response = await fetch(href, { cache: 'no-cache' });
   if (!response.ok) throw new Error(`document load failed: ${response.status}`);
   return response.text();
+}
+
+function renderCodeExplanation(section, source) {
+  const explanation = codeExplanationFor(section, source);
+  return `<section class="code-explanation" aria-label="코드 읽기 안내">
+    <div>
+      <p class="eyebrow">코드 읽기 안내</p>
+      <h4>${escapeHtml(explanation.title)}</h4>
+      <p>${escapeHtml(explanation.summary)}</p>
+    </div>
+    <dl>
+      <div><dt>이 파일은 무엇인가</dt><dd>${escapeHtml(explanation.what)}</dd></div>
+      <div><dt>어떻게 읽으면 좋은가</dt><dd>${escapeHtml(explanation.howToRead)}</dd></div>
+      <div><dt>실행하면 남는 결과</dt><dd>${escapeHtml(explanation.outputs)}</dd></div>
+      <div><dt>핵심 함수</dt><dd>${escapeHtml(explanation.functions.join(', ') || '상단 설정값과 main 실행 흐름')}</dd></div>
+    </dl>
+  </section>`;
+}
+
+function renderKoreanCodeComment(section, source) {
+  const explanation = codeExplanationFor(section, source);
+  const comment = [
+    '# 학습자용 한글 주석',
+    `# 이 파일은 무엇인가: ${explanation.what}`,
+    `# 어떻게 읽으면 좋은가: ${explanation.howToRead}`,
+    `# 실행하면 남는 결과: ${explanation.outputs}`,
+    `# 핵심 함수: ${explanation.functions.join(', ') || '상단 설정값과 main 실행 흐름'}`,
+  ].join('\n');
+  return `<pre class="learner-comment"><code>${escapeHtml(comment)}</code></pre>`;
+}
+
+function codeExplanationFor(section, source) {
+  const path = cleanHref(section.href);
+  const functions = extractPythonSymbols(source);
+  if (path.endsWith('scratch_lab.py')) {
+    return {
+      title: 'scratch_lab.py는 개념을 직접 계산해 보는 코드입니다.',
+      summary: '라이브러리 편의 기능에 기대기 전에, 작은 숫자와 단계별 계산으로 이 단원의 핵심 원리를 확인합니다.',
+      what: '이 파일은 모델이나 metric을 아주 작은 예제로 직접 구성해, README/THEORY의 설명이 실제 숫자로 어떻게 바뀌는지 보여주는 scratch 실습입니다.',
+      howToRead: '위쪽의 데이터/설정 → 중간의 계산 함수 → 아래쪽의 artifact 저장 순서로 읽으면 됩니다. 먼저 입력 shape와 중간 변수 이름을 보고, 마지막에 저장되는 metrics를 확인하세요.',
+      outputs: '보통 artifacts 아래 scratch metrics json, 작은 svg/표, 또는 stdout 요약이 남습니다. 이 결과는 analysis.py가 비교·해석하는 기준선입니다.',
+      functions,
+    };
+  }
+  if (path.endsWith('framework_lab.py')) {
+    return {
+      title: 'framework_lab.py는 같은 아이디어를 프레임워크로 확인하는 코드입니다.',
+      summary: 'scratch에서 본 계산을 PyTorch/sklearn 같은 도구로 다시 실행해, 실제 연구·개발 코드의 구조와 결과를 비교합니다.',
+      what: '이 파일은 단원의 핵심 개념을 프레임워크 API로 구현해 재현성, 학습 루프, metric 계산, 저장 포맷을 확인하는 실습입니다.',
+      howToRead: '데이터 준비 → 모델/파이프라인 정의 → 학습 또는 추론 → metrics/artifacts 저장 순서로 따라가세요. scratch와 같은 이름의 지표가 어떻게 대응되는지 비교하면 좋습니다.',
+      outputs: '보통 framework metrics json, 결과 figure, predictions 샘플이 남습니다. scratch 결과와 나란히 보며 프레임워크가 자동으로 처리한 부분을 찾습니다.',
+      functions,
+    };
+  }
+  if (path.endsWith('analysis.py')) {
+    return {
+      title: 'analysis.py는 실행 결과를 공부 가능한 해석으로 바꾸는 코드입니다.',
+      summary: 'scratch/framework가 만든 metrics와 artifacts를 읽고, 무엇이 잘 됐고 어디서 실패했는지 한국어 분석 노트로 정리합니다.',
+      what: '이 파일은 실험 산출물을 검증하고, 핵심 수치·실패 사례·다음 질문을 analysis.md나 summary 형태로 정리하는 분석 스크립트입니다.',
+      howToRead: '입력 파일을 읽는 부분 → metric 검증/집계 → markdown 문장 생성 → 저장 경로 순서로 읽으세요. 예외 메시지는 어떤 산출물이 빠졌는지 알려주는 체크리스트 역할을 합니다.',
+      outputs: 'analysis.md, summary.md, observed metrics json 같은 해석 산출물이 남습니다. 단원을 완료할 때는 이 파일의 질문에 답할 수 있어야 합니다.',
+      functions,
+    };
+  }
+  return {
+    title: `${section.label} 코드 설명`,
+    summary: '이 코드는 단원 실습을 재현 가능하게 실행하기 위한 보조 코드입니다.',
+    what: '파일 이름과 README의 실행 순서를 함께 보며 역할을 확인하세요.',
+    howToRead: '상단 설정, 데이터 준비, 핵심 함수, 저장 로직 순서로 읽으면 됩니다.',
+    outputs: 'stdout, metrics json, markdown, figure 중 하나 이상의 산출물을 남깁니다.',
+    functions,
+  };
+}
+
+function extractPythonSymbols(source) {
+  return Array.from(source.matchAll(/^def\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(/gm))
+    .map((match) => `${match[1]}()`)
+    .slice(0, 8);
 }
 
 function updateMarkSectionButton(unit, section, button) {

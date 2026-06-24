@@ -24,7 +24,7 @@ BTB를 00→05 foundations/bridge/applied 한글 학습 사다리로 재구성
 - `00_foundations/`, `02_nlp_bridge/`, `04_multimodal_bridge/` 도입
 
 ### 2) 공통 unit contract / template 추가
-- `00_shared/README.md`를 문서형 unit contract 중심으로 재작성
+- `shared/README.md`를 문서형 unit contract 중심으로 재작성
 - foundation용 템플릿 4종 추가
 - `docs/01_experiment_playbook.md`에 `lesson.yaml`, `analysis.md`, `reflection.md`, runtime observation 규칙 추가
 
@@ -88,7 +88,7 @@ BTB를 00→05 foundations/bridge/applied 한글 학습 사다리로 재구성
 ### Topology / docs
 - `README.md`
 - `docs/00_program_map.md`
-- `00_shared/README.md`
+- `shared/README.md`
 - `docs/01_experiment_playbook.md`
 
 ### Foundations units

@@ -12,7 +12,7 @@ SCAN_ROOTS = [
     ROOT / "README.md",
     ROOT / "docs",
     ROOT / "00_foundations",
-    ROOT / "00_shared",
+    ROOT / "shared",
     ROOT / "01_ml",
     ROOT / "02_deep_learning",
     ROOT / "03_nlp_bridge",

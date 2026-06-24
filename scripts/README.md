@@ -24,3 +24,5 @@ python scripts/run_lesson.py --unit 10_vla/01_vision_language_action_grounding -
 - `check_curriculum_links.py`: 루트 README, docs, foundations/bridge/track/VLA 문서의 로컬 markdown 링크를 점검한다.
 - `build_web_catalog.py`: manifest와 lesson metadata를 정적 웹사이트용 `web/catalog.json`으로 변환한다.
 - `_lesson_metadata.py`: 현재 BTB의 제한된 `lesson.yaml` 스키마(top-level scalar/list)만 파싱하는 무의존성 로더다.
+
+- `playwright_site_qa.js`: Playwright로 정적 웹사이트의 데스크톱/모바일 reader, 코드 설명, viewport overflow를 점검한다. `npm run qa:web`으로 실행한다.

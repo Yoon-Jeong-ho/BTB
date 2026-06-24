@@ -1,3 +1,11 @@
+@font-face {
+  font-family: "BTB Noto Sans KR";
+  src: url("./assets/fonts/NotoSansKR-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   color-scheme: light dark;
   --bg: #f6f0e8;
@@ -10,7 +18,7 @@
   --good: #177245;
   --warn: #9b5b00;
   --bad: #a33a3a;
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: "BTB Noto Sans KR", "Noto Sans KR", "Noto Sans CJK KR", "Apple SD Gothic Neo", "Malgun Gothic", "Nanum Gothic", Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 * { box-sizing: border-box; }
@@ -22,24 +30,25 @@ button:disabled { cursor: default; opacity: 0.7; }
 button.danger { color: var(--bad); }
 a { color: var(--accent-2); }
 
-.hero { display: flex; justify-content: space-between; gap: 1.5rem; align-items: stretch; padding: 1.45rem clamp(1rem, 3vw, 3rem); border-bottom: 1px solid var(--line); }
+.hero { display: flex; justify-content: space-between; gap: 1.2rem; align-items: stretch; padding: 0.9rem clamp(1rem, 3vw, 2rem); border-bottom: 1px solid var(--line); }
 .eyebrow { margin: 0 0 0.35rem; color: var(--accent); font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
-h1 { margin: 0; font-size: clamp(1.8rem, 4vw, 3.6rem); line-height: 1; }
-.lead { max-width: 900px; color: var(--muted); font-size: 1.02rem; line-height: 1.65; }
-.hero-card { min-width: 180px; border: 1px solid var(--line); border-radius: 24px; background: var(--panel); padding: 1.1rem; display: grid; place-content: center; text-align: center; box-shadow: 0 12px 30px rgb(77 48 20 / 0.08); }
-.hero-card span { font-size: 2.6rem; font-weight: 900; color: var(--accent-2); }
+h1 { margin: 0; font-size: clamp(1.55rem, 3vw, 2.4rem); line-height: 1.08; }
+.lead { max-width: 960px; color: var(--muted); font-size: 0.95rem; line-height: 1.55; margin: 0.45rem 0 0; }
+.hero-card { min-width: 160px; border: 1px solid var(--line); border-radius: 20px; background: var(--panel); padding: 1.1rem; display: grid; place-content: center; text-align: center; box-shadow: 0 12px 30px rgb(77 48 20 / 0.08); }
+.hero-card span { font-size: 1.9rem; font-weight: 900; color: var(--accent-2); }
 .hero-card small { color: var(--muted); }
 
-.layout { display: grid; grid-template-columns: minmax(280px, 24vw) minmax(0, 1fr); grid-template-areas: "tracks reader" "units reader"; gap: 1rem; padding: 1rem; align-items: start; }
+.layout { display: grid; grid-template-columns: minmax(280px, 20rem) minmax(0, 1fr); grid-template-areas: "tracks reader" "units reader"; gap: 1rem; padding: 1rem; align-items: start; }
 .panel { background: color-mix(in srgb, var(--panel) 92%, white); border: 1px solid var(--line); border-radius: 24px; padding: 1rem; }
-.track-panel { grid-area: tracks; max-height: 44vh; overflow: auto; }
-.unit-panel { grid-area: units; max-height: calc(56vh - 3rem); overflow: auto; }
+.track-panel { grid-area: tracks; position: sticky; top: 1rem; max-height: 42vh; overflow: auto; }
+.unit-panel { grid-area: units; position: sticky; top: calc(42vh + 2rem); max-height: calc(58vh - 3rem); overflow: auto; }
 .reader-panel { grid-area: reader; min-height: calc(100vh - 9rem); }
 .panel-heading, .toolbar, .profile-actions { display: flex; gap: 0.65rem; align-items: center; justify-content: space-between; flex-wrap: wrap; }
 .panel h2 { margin: 0.2rem 0 0.8rem; }
 label { display: grid; gap: 0.3rem; color: var(--muted); font-size: 0.85rem; }
 input, select, textarea { border: 1px solid var(--line); border-radius: 14px; padding: 0.65rem 0.75rem; background: white; color: #201a17; min-width: 0; }
-textarea { width: 100%; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+textarea { width: 100%; font-family: inherit; }
+#import-json { font-family: "Noto Sans Mono", "BTB Noto Sans KR", "Noto Sans KR", ui-monospace, SFMono-Regular, Menlo, monospace; }
 
 .track-list, .unit-list { display: grid; gap: 0.7rem; margin-top: 1rem; }
 .track-card, .unit-card { border: 1px solid var(--line); background: white; color: #201a17; border-radius: 18px; padding: 0.85rem; text-align: left; width: 100%; }
@@ -61,8 +70,9 @@ textarea { width: 100%; font-family: ui-monospace, SFMono-Regular, Menlo, monosp
 .unit-detail { line-height: 1.65; }
 .lesson-hero { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1rem; align-items: start; border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1rem; }
 .lesson-hero h2 { margin: 0.2rem 0 0.5rem; font-size: clamp(1.6rem, 3vw, 2.5rem); }
-.lesson-workspace { display: grid; grid-template-columns: minmax(260px, 0.33fr) minmax(0, 1fr); gap: 1rem; align-items: start; }
-.lesson-guide { border-right: 1px solid var(--line); padding-right: 1rem; max-height: calc(100vh - 15rem); overflow: auto; }
+.lesson-workspace { display: grid; grid-template-columns: minmax(200px, 0.22fr) minmax(0, 1fr); gap: 1rem; align-items: start; }
+.reader-shell { width: 100%; }
+.lesson-guide { position: sticky; top: 1rem; border-right: 1px solid var(--line); padding-right: 1rem; max-height: calc(100vh - 3rem); overflow: auto; }
 .lesson-guide h3, .lesson-reader h3 { margin: 1rem 0 0.45rem; }
 .lesson-reader { min-width: 0; }
 .reader-header { display: flex; justify-content: space-between; gap: 1rem; align-items: center; margin-bottom: 0.75rem; }
@@ -71,12 +81,20 @@ textarea { width: 100%; font-family: ui-monospace, SFMono-Regular, Menlo, monosp
 .document-tabs button[aria-selected="true"] { background: var(--accent-2); color: white; border-color: var(--accent-2); }
 .document-title { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.75rem; color: var(--muted); border-bottom: 1px solid var(--line); padding-bottom: 0.65rem; margin-bottom: 1rem; }
 .document-title span { color: var(--accent-2); font-weight: 900; }
-.lesson-content { background: white; color: #201a17; border: 1px solid var(--line); border-radius: 22px; padding: clamp(1rem, 2vw, 1.6rem); max-width: 980px; min-height: 55vh; box-shadow: 0 12px 32px rgb(77 48 20 / 0.06); }
+.code-explanation { display: grid; grid-template-columns: minmax(220px, 0.36fr) minmax(0, 1fr); gap: 1rem; border: 1px solid color-mix(in srgb, var(--accent-2) 30%, var(--line)); border-radius: 18px; background: color-mix(in srgb, var(--accent-2) 7%, white); padding: 1rem; margin: 0 0 1rem; }
+.code-explanation h4 { margin: 0.15rem 0 0.4rem; }
+.code-explanation p { margin: 0; color: var(--muted); }
+.code-explanation dl { display: grid; gap: 0.65rem; margin: 0; }
+.code-explanation dt { font-weight: 900; color: var(--accent-2); }
+.code-explanation dd { margin: 0.12rem 0 0; color: var(--ink); line-height: 1.55; }
+.lesson-content { background: white; color: #201a17; border: 1px solid var(--line); border-radius: 22px; padding: clamp(1rem, 2vw, 1.8rem); width: 100%; max-width: 1240px; min-height: 62vh; box-shadow: 0 12px 32px rgb(77 48 20 / 0.06); }
 .lesson-content h2, .lesson-content h3, .lesson-content h4, .lesson-content h5 { line-height: 1.25; margin: 1.25rem 0 0.55rem; }
 .lesson-content p, .lesson-content li { line-height: 1.75; }
 .lesson-content code { border-radius: 6px; background: #f4eee6; padding: 0.05rem 0.25rem; }
+.learner-comment { overflow: auto; border-radius: 16px; background: #f6eee6; color: #49372b; border: 1px dashed var(--line); padding: 0.9rem 1rem; line-height: 1.6; white-space: pre-wrap; }
+.learner-comment code { font-family: "Noto Sans Mono", "BTB Noto Sans KR", "Noto Sans KR", ui-monospace, SFMono-Regular, Menlo, monospace; }
 .code-block { overflow: auto; max-height: 62vh; border-radius: 16px; background: #201a17; color: #fff4e8; padding: 1rem; line-height: 1.55; }
-.code-block code { background: transparent; color: inherit; padding: 0; }
+.code-block code { background: transparent; color: inherit; padding: 0; font-family: "Noto Sans Mono", "BTB Noto Sans KR", "Noto Sans KR", ui-monospace, SFMono-Regular, Menlo, monospace; }
 .table-wrap { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; margin: 0.75rem 0; }
 th, td { border: 1px solid var(--line); padding: 0.55rem; text-align: left; vertical-align: top; }
@@ -108,16 +126,17 @@ menu { display: flex; justify-content: flex-end; gap: 0.5rem; padding: 0; }
 }
 
 @media (max-width: 1180px) {
-  .layout { grid-template-columns: minmax(240px, 30vw) minmax(0, 1fr); }
+  .layout { grid-template-columns: minmax(250px, 18rem) minmax(0, 1fr); }
   .lesson-workspace { grid-template-columns: 1fr; }
-  .lesson-guide { border-right: 0; border-bottom: 1px solid var(--line); padding-right: 0; padding-bottom: 1rem; max-height: none; }
+  .lesson-guide { position: static; border-right: 0; border-bottom: 1px solid var(--line); padding-right: 0; padding-bottom: 1rem; max-height: none; }
+  .code-explanation { grid-template-columns: 1fr; }
   .lesson-content { max-width: none; }
 }
 
 @media (max-width: 820px) {
   .hero { flex-direction: column; }
   .layout { grid-template-columns: 1fr; grid-template-areas: "tracks" "units" "reader"; }
-  .track-panel, .unit-panel { max-height: none; }
+  .track-panel, .unit-panel { position: static; max-height: none; }
   .lesson-hero { grid-template-columns: 1fr; }
   .status-buttons { justify-content: flex-start; }
   .toolbar { align-items: stretch; }

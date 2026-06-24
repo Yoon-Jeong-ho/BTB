@@ -30,3 +30,13 @@ python scripts/build_web_catalog.py --output web/catalog.json
 - 왼쪽 좁은 영역에서 track과 unit을 고르고, 오른쪽 넓은 reader에서 README/THEORY/PREREQS/실습 코드를 바로 읽는다.
 - 문서 안의 로컬 `.md` 링크도 가능한 한 사이트 안에서 이어서 열리므로, raw README 파일이 깨져 보이는 흐름을 피한다.
 - 체크리스트와 현재 자료 체크는 사용자별 localStorage에만 누적된다.
+
+## Playwright QA
+
+브라우저에서 실제로 보기 편한지 확인하려면 Playwright를 사용한다. 최초 1회는 `npm install`과 `npx playwright install chromium`을 실행하고, 이후에는 아래 명령으로 데스크톱/모바일 smoke QA와 스크린샷 캡처를 반복한다.
+
+```bash
+npm run qa:web
+```
+
+스크린샷은 기본적으로 `/tmp/btb-playwright-site-qa`에 저장된다. `BTB_QA_OUT=원하는/경로 npm run qa:web`처럼 출력 경로를 바꿀 수 있다.

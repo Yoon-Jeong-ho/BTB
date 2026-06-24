@@ -63,6 +63,7 @@ artifacts/staging/*
 !artifacts/promoted/**/*.safetensors
 
 # Package outputs
+node_modules/
 build/
 dist/
 *.egg-info/

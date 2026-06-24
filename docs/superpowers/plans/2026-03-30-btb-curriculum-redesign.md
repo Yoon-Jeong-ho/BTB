@@ -16,10 +16,10 @@
 - `00_foundations/README.md`
 - `02_nlp_bridge/README.md`
 - `04_multimodal_bridge/README.md`
-- `00_shared/templates/foundation_readme_template.md`
-- `00_shared/templates/foundation_theory_template.md`
-- `00_shared/templates/foundation_analysis_template.md`
-- `00_shared/templates/foundation_reflection_template.md`
+- `shared/templates/foundation_readme_template.md`
+- `shared/templates/foundation_theory_template.md`
+- `shared/templates/foundation_analysis_template.md`
+- `shared/templates/foundation_reflection_template.md`
 - `00_foundations/01_tensor_shapes/{README.md,THEORY.md,PREREQS.md,lesson.yaml,scratch_lab.py,framework_lab.py,analysis.py,analysis.md,reflection.md,artifacts/.gitkeep}`
 - `00_foundations/05_gpu_memory_runtime/{README.md,THEORY.md,PREREQS.md,lesson.yaml,scratch_lab.py,framework_lab.py,analysis.py,analysis.md,reflection.md,artifacts/.gitkeep}`
 - `scripts/_lesson_metadata.py`
@@ -38,7 +38,7 @@
 - `README.md`
 - `docs/00_program_map.md`
 - `docs/01_experiment_playbook.md`
-- `00_shared/README.md`
+- `shared/README.md`
 - `scripts/README.md`
 
 ### Move
@@ -346,8 +346,8 @@ EOF
 ### Task 3: Define the shared unit contract and templates
 
 **Files:**
-- Create: `00_shared/templates/foundation_readme_template.md`, `00_shared/templates/foundation_theory_template.md`, `00_shared/templates/foundation_analysis_template.md`, `00_shared/templates/foundation_reflection_template.md`, `tests/test_shared_templates.py`
-- Modify: `00_shared/README.md`, `docs/01_experiment_playbook.md`
+- Create: `shared/templates/foundation_readme_template.md`, `shared/templates/foundation_theory_template.md`, `shared/templates/foundation_analysis_template.md`, `shared/templates/foundation_reflection_template.md`, `tests/test_shared_templates.py`
+- Modify: `shared/README.md`, `docs/01_experiment_playbook.md`
 - Test: `tests/test_shared_templates.py`
 
 - [ ] **Step 1: Write the failing template test**
@@ -359,7 +359,7 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-TEMPLATE_ROOT = ROOT / '00_shared' / 'templates'
+TEMPLATE_ROOT = ROOT / 'shared' / 'templates'
 
 
 class TestSharedTemplates(unittest.TestCase):
@@ -373,7 +373,7 @@ class TestSharedTemplates(unittest.TestCase):
             self.assertTrue((TEMPLATE_ROOT / name).exists(), name)
 
     def test_shared_readme_mentions_unit_contract(self) -> None:
-        text = (ROOT / '00_shared' / 'README.md').read_text(encoding='utf-8')
+        text = (ROOT / 'shared' / 'README.md').read_text(encoding='utf-8')
         self.assertIn('README/THEORY/PREREQS/scratch/framework/analysis/reflection', text)
 
     def test_playbook_mentions_lesson_yaml(self) -> None:
@@ -394,7 +394,7 @@ Expected: FAIL because the foundation templates and updated playbook text do not
 
 - [ ] **Step 3: Add the templates and update the shared docs**
 
-Use this `00_shared/README.md` body:
+Use this `shared/README.md` body:
 
 ```markdown
 # 00 Shared
@@ -493,7 +493,7 @@ Expected: PASS with 3 tests.
 - [ ] **Step 5: Commit the shared contract**
 
 ```bash
-git add 00_shared/README.md 00_shared/templates/foundation_readme_template.md 00_shared/templates/foundation_theory_template.md 00_shared/templates/foundation_analysis_template.md 00_shared/templates/foundation_reflection_template.md docs/01_experiment_playbook.md tests/test_shared_templates.py
+git add shared/README.md shared/templates/foundation_readme_template.md shared/templates/foundation_theory_template.md shared/templates/foundation_analysis_template.md shared/templates/foundation_reflection_template.md docs/01_experiment_playbook.md tests/test_shared_templates.py
 git commit -F - <<'EOF'
 Define a document-heavy lesson contract before cloning new units
 

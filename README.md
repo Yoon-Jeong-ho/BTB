@@ -37,7 +37,7 @@
 ```text
 BTB/
 ├── 00_foundations/             # 공통 수치/텐서/런타임 기초
-├── 00_shared/                  # 공통 규약, 템플릿, 요약 포맷
+├── shared/                    # 번호 없는 공통 규약, 템플릿, 요약 포맷
 ├── 01_ml/                      # baseline, metric, 해석 discipline
 ├── 02_deep_learning/           # 딥러닝 모델 패밀리 학습
 ├── 03_nlp_bridge/              # DL -> NLP 입력/표현 브리지
@@ -89,9 +89,9 @@ Hugging Face 업로드와 Git LFS 관련 규칙은 루트의 `.gitignore`, `.git
 1. [docs/00_program_map.md](docs/00_program_map.md)로 전체 트랙의 역할 경계를 먼저 본다.
 2. [docs/02_study_guide.md](docs/02_study_guide.md)에서 자신에게 맞는 학습 동선을 고른다.
 3. [00_foundations/README.md](00_foundations/README.md)와 [01_ml/README.md](01_ml/README.md)로 공통 기초와 baseline 운영 습관을 먼저 다진다.
-4. 웹에서 전체 커리큘럼과 사용자별 로컬 진행률을 보려면 저장소 루트에서 `python -m http.server 8000`을 실행하고 `http://localhost:8000` 또는 `http://localhost:8000/web/`을 연다. 이 웹사이트는 README 파일을 새 탭으로 직접 여는 방식이 아니라 README/THEORY/PREREQS/실습 코드를 사이트 안에서 렌더링해 보여준다. 자세한 내용은 `web/README.md`를 따른다.
+4. 웹에서 전체 커리큘럼과 사용자별 로컬 진행률을 보려면 저장소 루트에서 `python -m http.server 8000`을 실행하고 `http://localhost:8000` 또는 `http://localhost:8000/web/`을 연다. 이 웹사이트는 README 파일을 새 탭으로 직접 여는 방식이 아니라 README/THEORY/PREREQS/실습 코드를 사이트 안에서 렌더링해 보여준다. 자세한 내용은 `web/README.md`를 따른다. 화면 QA가 필요하면 Playwright 설치 후 `npm run qa:web`을 실행한다.
 5. 각 track에 들어가기 전에는 먼저 [docs/curriculum_status.json](docs/curriculum_status.json)에서 `runnable` 상태와 unit 목록을 확인하고, 해당 track README의 status table을 보조 설명으로 함께 읽는다.
-6. 실험을 돌릴 때는 [00_shared/templates/run_summary_template.md](00_shared/templates/run_summary_template.md) 형식으로 요약을 남기고, 다시 볼 가치가 있는 결과만 [reports/README.md](reports/README.md) 규칙에 맞게 승격한다.
+6. 실험을 돌릴 때는 [shared/templates/run_summary_template.md](shared/templates/run_summary_template.md) 형식으로 요약을 남기고, 다시 볼 가치가 있는 결과만 [reports/README.md](reports/README.md) 규칙에 맞게 승격한다.
 
 ## 참고 자료
 

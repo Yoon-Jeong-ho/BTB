@@ -4,7 +4,8 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-TEMPLATE_ROOT = ROOT / "00_shared" / "templates"
+SHARED_ROOT = ROOT / "shared"
+TEMPLATE_ROOT = SHARED_ROOT / "templates"
 
 
 class TestSharedTemplates(unittest.TestCase):
@@ -37,7 +38,11 @@ class TestSharedTemplates(unittest.TestCase):
                     self.assertIn(marker, text)
 
     def test_shared_readme_mentions_unit_contract(self) -> None:
-        text = (ROOT / "00_shared" / "README.md").read_text(encoding="utf-8")
+        self.assertTrue(SHARED_ROOT.exists(), "shared assets should not look like a numbered curriculum track")
+        self.assertFalse((ROOT / "00_shared").exists(), "00_shared is ambiguous with 00_foundations")
+        text = (SHARED_ROOT / "README.md").read_text(encoding="utf-8")
+        self.assertIn("# Shared", text)
+        self.assertIn("학습 트랙이 아니라", text)
         self.assertIn("README/THEORY/PREREQS/scratch/framework/analysis/reflection", text)
         for name in [
             "README.md",

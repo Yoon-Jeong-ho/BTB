@@ -1,0 +1,13 @@
+{
+  "name": "btb-study-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "BTB static study website QA tooling",
+  "type": "commonjs",
+  "scripts": {
+    "qa:web": "node scripts/playwright_site_qa.js"
+  },
+  "dependencies": {
+    "playwright": "^1.61.1"
+  }
+}

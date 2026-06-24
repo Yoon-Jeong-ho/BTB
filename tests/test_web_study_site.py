@@ -66,6 +66,8 @@ class WebStudySiteContractTest(unittest.TestCase):
 
     def test_progress_code_is_local_only(self) -> None:
         combined = (WEB / "app.js").read_text(encoding="utf-8") + "\n" + (WEB / "progress-storage.js").read_text(encoding="utf-8")
+        styles = (WEB / "styles.css").read_text(encoding="utf-8")
+        qa_script = (ROOT / "scripts" / "playwright_site_qa.js").read_text(encoding="utf-8")
         forbidden_network_writes = [
             "navigator.sendBeacon",
             "XMLHttpRequest",
@@ -82,6 +84,13 @@ class WebStudySiteContractTest(unittest.TestCase):
         self.assertIn("storage.setItem(PROGRESS_KEY", combined)
         self.assertIn("activeUserId", combined)
         self.assertIn("lessons", combined)
+        self.assertNotIn("@import url(", styles)
+        self.assertNotIn("fonts.googleapis", styles)
+        self.assertNotIn("fonts.gstatic", styles)
+        self.assertIn("assets/fonts/NotoSansKR-Regular.ttf", styles)
+        self.assertIn("isAllowedRequest", qa_script)
+        self.assertIn("externalRequests", qa_script)
+        self.assertIn("route.abort", qa_script)
 
     def test_ui_surfaces_learning_process_metadata(self) -> None:
         app = (WEB / "app.js").read_text(encoding="utf-8")
@@ -115,10 +124,47 @@ class WebStudySiteContractTest(unittest.TestCase):
 
         self.assertIn("reader-panel", html)
         self.assertIn("grid-template-areas", styles)
-        self.assertIn("minmax(280px, 24vw) minmax(0, 1fr)", styles)
+        self.assertIn("minmax(280px, 20rem) minmax(0, 1fr)", styles)
         self.assertNotIn("minmax(220px, 0.8fr) minmax(360px, 1.4fr) minmax(320px, 1fr)", styles)
         self.assertIn("사이트 안에서", root_readme + web_readme)
         self.assertIn("README 파일을 새 탭으로 직접 여는 방식", root_readme + web_readme)
+
+    def test_site_has_playwright_qa_and_code_reading_guidance(self) -> None:
+        package_path = ROOT / "package.json"
+        self.assertTrue(package_path.is_file(), "Playwright should be installed through package.json")
+        package = json.loads(package_path.read_text(encoding="utf-8"))
+        app = (WEB / "app.js").read_text(encoding="utf-8")
+        styles = (WEB / "styles.css").read_text(encoding="utf-8")
+        readme = (WEB / "README.md").read_text(encoding="utf-8") + (ROOT / "README.md").read_text(encoding="utf-8")
+        qa_script = ROOT / "scripts" / "playwright_site_qa.js"
+
+        self.assertIn("playwright", package.get("dependencies", {}) | package.get("devDependencies", {}))
+        self.assertEqual("node scripts/playwright_site_qa.js", package["scripts"]["qa:web"])
+        self.assertTrue(qa_script.is_file(), "Playwright QA should be runnable by future maintainers")
+
+        for token in [
+            "renderCodeExplanation",
+            "codeExplanationFor",
+            "코드 읽기 안내",
+            "이 파일은 무엇인가",
+            "어떻게 읽으면 좋은가",
+            "실행하면 남는 결과",
+            "핵심 함수",
+            "학습자용 한글 주석",
+            "renderKoreanCodeComment",
+            "# 이 파일은 무엇인가",
+            "# 실행하면 남는 결과",
+            "scratch_lab.py는",
+            "framework_lab.py는",
+            "analysis.py는",
+        ]:
+            self.assertIn(token, app)
+
+        self.assertIn("code-explanation", styles)
+        self.assertIn("reader-shell", styles)
+        self.assertIn("sticky", styles)
+        self.assertIn("npm run qa:web", readme)
+        self.assertIn("Playwright", readme)
 
     @unittest.skipIf(shutil.which("node") is None, "node is not installed")
     def test_progress_storage_profiles_corrupt_recovery_and_import(self) -> None:
