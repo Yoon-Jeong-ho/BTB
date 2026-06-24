@@ -14,6 +14,7 @@ FUTURE_TRACK_ROOTS = [
     '07_frontier_labs',
     '08_multimodal_bridge',
     '09_multimodal',
+    '10_vla',
 ]
 RETIRED_TRACK_ROOTS = [
     '02_nlp_bridge',

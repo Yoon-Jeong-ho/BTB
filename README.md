@@ -2,7 +2,7 @@
 
 ## NLP 바보에서 박사
 
-이 저장소는 `00_foundations -> 01_ml -> 02_deep_learning -> 03_nlp_bridge -> 04_nlp -> 05_advanced_nlp_llm -> 06_training_systems -> 07_frontier_labs -> 08_multimodal_bridge -> 09_multimodal` 순서로 올라가면서, foundations/deep-learning core/bridge/applied/systems/frontier/multimodal을 모두 작은 실험과 산출물로 확인하는 한글 우선 학습 저장소다.
+이 저장소는 `00_foundations -> 01_ml -> 02_deep_learning -> 03_nlp_bridge -> 04_nlp -> 05_advanced_nlp_llm -> 06_training_systems -> 07_frontier_labs -> 08_multimodal_bridge -> 09_multimodal -> 10_vla` 순서로 올라가면서, foundations/deep-learning core/bridge/applied/systems/frontier/multimodal을 모두 작은 실험과 산출물로 확인하는 한글 우선 학습 저장소다.
 
 핵심 철학은 세 가지다.
 
@@ -22,6 +22,7 @@
 8. [07_frontier_labs](07_frontier_labs/README.md): paper reproduction, capstone, agentic experiment를 수행하는 연구형 실습 구간이다.
 9. [08_multimodal_bridge](08_multimodal_bridge/README.md): contrastive alignment와 image-text shared representation으로 멀티모달 연결 다리를 만든다.
 10. [09_multimodal](09_multimodal/README.md): retrieval, captioning, VQA를 중심으로 multimodal applied track을 실습한다.
+11. [10_vla](10_vla/README.md): vision-language-action grounding, action token, safety gate를 통해 VLA 입구를 만든다.
 
 현재 `docs/curriculum_status.json`에 선언된 모든 unit은 `runnable` 상태다. 그래도 실행 전에는 manifest와 각 track README의 status table을 함께 확인해, 어떤 산출물과 분석 질문을 남겨야 하는지 먼저 읽는 것을 원칙으로 한다.
 
@@ -44,6 +45,8 @@ BTB/
 ├── 07_frontier_labs/           # reproduction, capstone, agentic labs
 ├── 08_multimodal_bridge/       # multimodal 연결 브리지
 ├── 09_multimodal/              # multimodal applied track
+├── 10_vla/                     # vision-language-action grounding
+├── web/                        # 정적 커리큘럼 웹사이트(localStorage 진행 체크)
 ├── data/                       # raw/interim/processed/external 설명용 구조
 ├── runs/                       # 서버/로컬의 비정제 실행 산출물(기본 ignore)
 ├── reports/                    # Git에 남길 승격된 실험 결과
@@ -84,8 +87,9 @@ Hugging Face 업로드와 Git LFS 관련 규칙은 루트의 `.gitignore`, `.git
 1. [docs/00_program_map.md](docs/00_program_map.md)로 전체 트랙의 역할 경계를 먼저 본다.
 2. [docs/02_study_guide.md](docs/02_study_guide.md)에서 자신에게 맞는 학습 동선을 고른다.
 3. [00_foundations/README.md](00_foundations/README.md)와 [01_ml/README.md](01_ml/README.md)로 공통 기초와 baseline 운영 습관을 먼저 다진다.
-4. 각 track에 들어가기 전에는 먼저 [docs/curriculum_status.json](docs/curriculum_status.json)에서 `runnable` 상태와 unit 목록을 확인하고, 해당 track README의 status table을 보조 설명으로 함께 읽는다.
-5. 실험을 돌릴 때는 [00_shared/templates/run_summary_template.md](00_shared/templates/run_summary_template.md) 형식으로 요약을 남기고, 다시 볼 가치가 있는 결과만 [reports/README.md](reports/README.md) 규칙에 맞게 승격한다.
+4. 웹에서 전체 커리큘럼과 사용자별 로컬 진행률을 보려면 `python -m http.server 8000`을 실행하고 `web/README.md`를 따른다.
+5. 각 track에 들어가기 전에는 먼저 [docs/curriculum_status.json](docs/curriculum_status.json)에서 `runnable` 상태와 unit 목록을 확인하고, 해당 track README의 status table을 보조 설명으로 함께 읽는다.
+6. 실험을 돌릴 때는 [00_shared/templates/run_summary_template.md](00_shared/templates/run_summary_template.md) 형식으로 요약을 남기고, 다시 볼 가치가 있는 결과만 [reports/README.md](reports/README.md) 규칙에 맞게 승격한다.
 
 ## 참고 자료
 

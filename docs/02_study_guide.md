@@ -2,15 +2,15 @@
 
 ## 목적
 
-이 문서는 BTB의 `00→09` 커리큘럼을 어떻게 읽고 들어갈지 정리한 한국어 우선 학습 가이드다. 현재 `docs/curriculum_status.json`에 선언된 전체 unit은 `runnable` 상태다. 그래도 **실행 전에 manifest를 canonical source of truth로 확인하고, 각 track README의 status table을 supplementary context로 참고**해야 한다.
+이 문서는 BTB의 `00→10` 커리큘럼을 어떻게 읽고 들어갈지 정리한 한국어 우선 학습 가이드다. 현재 `docs/curriculum_status.json`에 선언된 전체 unit은 `runnable` 상태다. 그래도 **실행 전에 manifest를 canonical source of truth로 확인하고, 각 track README의 status table을 supplementary context로 참고**해야 한다.
 
-현재 학습 경로와 인덱싱은 `00→09`가 기준이다. 과거 경로명은 migration note에서만 historical reference로 다룬다.
+현재 학습 경로와 인덱싱은 `00→10`이 기준이다. 과거 경로명은 migration note에서만 historical reference로 다룬다.
 
 ## 표준 1-pass 루트
 
 가장 권장하는 기본 루트는 전체 계단을 순서대로 한 번 통과하는 방식이다.
 
-`00_foundations -> 01_ml -> 02_deep_learning -> 03_nlp_bridge -> 04_nlp -> 05_advanced_nlp_llm -> 06_training_systems -> 07_frontier_labs -> 08_multimodal_bridge -> 09_multimodal`
+`00_foundations -> 01_ml -> 02_deep_learning -> 03_nlp_bridge -> 04_nlp -> 05_advanced_nlp_llm -> 06_training_systems -> 07_frontier_labs -> 08_multimodal_bridge -> 09_multimodal -> 10_vla`
 
 이 루트는 아래 상황에 적합하다.
 
@@ -26,7 +26,23 @@
 4. `03_nlp_bridge -> 04_nlp -> 05_advanced_nlp_llm`에서 NLP/LLM 흐름을 연결한다.
 5. `06_training_systems -> 07_frontier_labs`에서 큰 실험을 운영하고 재현하는 법으로 확장한다.
 6. `08_multimodal_bridge -> 09_multimodal`에서 image-text shared representation과 응용 태스크로 넘어간다.
+7. `10_vla`에서 multimodal understanding을 action token과 safety gate로 연결한다.
 
+## 무기초 → LLM / RLHF / Multimodal / VLA 루트
+
+LLM과 VLA까지 목표라면 아래 체크포인트를 빠뜨리지 않는다.
+
+1. `00_foundations/01_tensor_shapes`, `02_activation_and_loss`, `03_gradients_and_backpropagation`으로 shape/loss/update 언어를 만든다.
+2. `01_ml`에서 baseline, metric, error analysis를 먼저 익힌다.
+3. `02_deep_learning/04_attention_and_transformers`와 `03_nlp_bridge/02_attention_and_transformer_block`으로 attention을 숫자 흐름으로 설명한다.
+4. `04_nlp` 전체를 통해 tokenizer/encoder/task head를 applied task에서 확인한다.
+5. `05_advanced_nlp_llm/01~05`로 pretraining objective, data mixture, DAPT, SFT, preference optimization을 본다.
+6. RLHF 전에 [RL primer](05_rl_primer_for_rlhf.md)를 읽고 reward/policy/rollout/advantage/KL/PPO 용어를 정리한다.
+7. `05_advanced_nlp_llm/06_rlhf_and_reasoning_rl`에서 RLHF/reasoning RL을 본다.
+8. `08_multimodal_bridge -> 09_multimodal`로 image-text retrieval/captioning/VQA를 실행한다.
+9. `10_vla/01_vision_language_action_grounding`에서 action token과 safety gate를 확인한다.
+
+이 경로를 따르면 LLM base가 없는 학습자도 LLM, RLHF, multimodal, VLA 입구까지 같은 산출물 규칙으로 이어갈 수 있다. 다만 일반 제어 RL 전체가 필요하면 별도 RL 교과 과정이 추가로 필요하다.
 
 ## 딥러닝 코어 우선 루트
 

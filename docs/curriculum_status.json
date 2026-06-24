@@ -66,6 +66,9 @@
       "01_image_text_retrieval": "runnable",
       "02_image_captioning": "runnable",
       "03_visual_question_answering": "runnable"
+    },
+    "10_vla": {
+      "01_vision_language_action_grounding": "runnable"
     }
   }
 }

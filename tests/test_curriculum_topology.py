@@ -16,6 +16,7 @@ CANONICAL_CURRICULUM_LADDER = [
     "07_frontier_labs",
     "08_multimodal_bridge",
     "09_multimodal",
+    "10_vla",
 ]
 
 
@@ -42,6 +43,7 @@ class TestCurriculumTopology(unittest.TestCase):
             ("07_frontier_labs", "07_frontier_labs/README.md"),
             ("08_multimodal_bridge", "08_multimodal_bridge/README.md"),
             ("09_multimodal", "09_multimodal/README.md"),
+            ("10_vla", "10_vla/README.md"),
         ]
 
         positions: list[int] = []

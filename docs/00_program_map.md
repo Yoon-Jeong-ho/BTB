@@ -2,7 +2,7 @@
 
 ## 목표
 
-BTB는 `00_foundations -> 01_ml -> 02_deep_learning -> 03_nlp_bridge -> 04_nlp -> 05_advanced_nlp_llm -> 06_training_systems -> 07_frontier_labs -> 08_multimodal_bridge -> 09_multimodal` 순서로 올라가면서, 각 단계에서 이론을 실험과 산출물로 검증하는 한글 우선 커리큘럼이다.
+BTB는 `00_foundations -> 01_ml -> 02_deep_learning -> 03_nlp_bridge -> 04_nlp -> 05_advanced_nlp_llm -> 06_training_systems -> 07_frontier_labs -> 08_multimodal_bridge -> 09_multimodal -> 10_vla` 순서로 올라가면서, 각 단계에서 이론을 실험과 산출물로 검증하는 한글 우선 커리큘럼이다.
 
 ## 트랙 역할 경계
 
@@ -16,6 +16,7 @@ BTB는 `00_foundations -> 01_ml -> 02_deep_learning -> 03_nlp_bridge -> 04_nlp -
 8. `07_frontier_labs` — reproduction, capstone, agentic experiments를 수행하는 개방형 연구 실습 구간이다.
 9. `08_multimodal_bridge` — text-only 표현에서 image-text shared representation으로 넘어가는 multimodal 연결 다리다.
 10. `09_multimodal` — retrieval, captioning, VQA 중심의 multimodal applied track이다.
+11. `10_vla` — vision-language-action grounding, action token, safety gate로 VLA 입구를 여는 track이다.
 
 ## 왜 이 순서인가
 
@@ -27,11 +28,12 @@ BTB는 `00_foundations -> 01_ml -> 02_deep_learning -> 03_nlp_bridge -> 04_nlp -
 6. `06_training_systems`는 큰 모델을 실제 하드웨어 위에서 운영하는 법을 분리해, 모델 설계와 시스템 설계를 동시에 혼동하지 않게 만든다.
 7. `07_frontier_labs`는 앞선 트랙을 조합해 논문 재현, capstone, agentic workflow 실험으로 확장하는 sandbox다.
 8. `08_multimodal_bridge`는 image-text alignment를 작은 예제로 먼저 익혀 `09_multimodal`의 retrieval/caption/VQA 실습으로 자연스럽게 이어 준다.
+9. `10_vla`는 multimodal understanding을 action selection과 safety gate로 확장해 VLA의 첫 runnable 실험을 제공한다.
 
 ## 현재 학습 가능 상태
 
-- 현재 [curriculum_status.json](curriculum_status.json)에 선언된 `00→09` 전체 unit은 `runnable` 상태다.
-- `02_deep_learning`은 딥러닝 코어를, `03_nlp_bridge -> 04_nlp`는 NLP bridge/applied 흐름을, `08_multimodal_bridge -> 09_multimodal`은 multimodal bridge/applied 흐름을 담당한다.
+- 현재 [curriculum_status.json](curriculum_status.json)에 선언된 `00→10` 전체 unit은 `runnable` 상태다.
+- `02_deep_learning`은 딥러닝 코어를, `03_nlp_bridge -> 04_nlp`는 NLP bridge/applied 흐름을, `08_multimodal_bridge -> 09_multimodal -> 10_vla`는 multimodal understanding에서 action grounding으로 이어지는 흐름을 담당한다.
 - 과거 경로에서 현재 경로로 바뀐 대응표는 migration note의 historical reference로만 유지하며, 현재 실행 경로는 manifest와 track README를 canonical source of truth로 삼는다.
 
 ## 단계별 산출물 관점
@@ -41,7 +43,7 @@ BTB는 `00_foundations -> 01_ml -> 02_deep_learning -> 03_nlp_bridge -> 04_nlp -
 | Foundations / ML | baseline metric, residual/error analysis, runtime 관측 | 기본기가 실제 실험 판단으로 이어지는가 |
 | Deep Learning / NLP | shape trace, attention/sequence 분석, task failure case | 모델 내부 표현과 태스크 성능을 함께 설명할 수 있는가 |
 | Advanced / Systems / Frontier | training log, system profile, ablation, self-review | 큰 모델·큰 실험을 운영 가능한 형태로 정리했는가 |
-| Multimodal | retrieval grid, caption panel, VQA failure panel | 두 modality를 정말 함께 쓰는가 |
+| Multimodal / VLA | retrieval grid, caption panel, VQA failure panel, action policy matrix, safety gate | 두 modality를 함께 쓰고 행동 선택까지 안전하게 이어지는가 |
 
 ## 추천 진행 방식
 

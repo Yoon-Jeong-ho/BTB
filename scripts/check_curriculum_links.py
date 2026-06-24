@@ -22,6 +22,7 @@ SCAN_ROOTS = [
     ROOT / "07_frontier_labs",
     ROOT / "08_multimodal_bridge",
     ROOT / "09_multimodal",
+    ROOT / "10_vla",
 ]
 
 
