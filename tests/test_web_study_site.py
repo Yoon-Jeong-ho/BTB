@@ -35,6 +35,14 @@ class WebStudySiteContractTest(unittest.TestCase):
             sock.bind(("127.0.0.1", 0))
             return int(sock.getsockname()[1])
 
+
+    def test_root_index_redirects_to_web_app_for_plain_localhost(self) -> None:
+        root_index = ROOT / "index.html"
+        self.assertTrue(root_index.is_file(), "plain http://localhost:8000 should have a root entrypoint")
+        text = root_index.read_text(encoding="utf-8")
+        self.assertIn('url=/web/', text)
+        self.assertIn('href="web/"', text)
+
     def test_web_assets_exist_and_explain_local_progress(self) -> None:
         required = ["index.html", "styles.css", "progress-storage.js", "app.js", "catalog.json", "README.md"]
         missing = [name for name in required if not (WEB / name).is_file()]
@@ -149,6 +157,10 @@ assert.strictEqual(recovered.users.carol.lessons['10_vla/01_vision_language_acti
                 time.sleep(0.1)
         else:
             self.fail(f"http.server did not start: {last_error}")
+
+        with urllib.request.urlopen(f"{base}/", timeout=2) as response:
+            self.assertEqual(200, response.status)
+            self.assertIn("BTB", response.read().decode("utf-8"))
 
         for path in [
             "/web/catalog.json",

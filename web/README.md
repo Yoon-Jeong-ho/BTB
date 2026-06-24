@@ -5,8 +5,10 @@
 ```bash
 python scripts/build_web_catalog.py
 python -m http.server 8000
-# http://localhost:8000/web/ 열기
+# http://localhost:8000 또는 http://localhost:8000/web/ 열기
 ```
+
+> 주의: 저장소 루트에서 실행해야 단원 README 링크가 함께 열린다. `web/` 폴더 안에서 서버를 띄우면 커리큘럼 문서 링크가 보이지 않을 수 있다.
 
 ## 진행률 저장 방식
 
