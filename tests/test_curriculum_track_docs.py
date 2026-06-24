@@ -68,6 +68,25 @@ class TestCurriculumTrackDocs(unittest.TestCase):
         self.assertIn("### 6) applied rollout 확장", pr_draft)
         self.assertNotIn("두 unit 모두", pr_draft)
 
+
+    def test_beginner_route_defers_systems_frontier_and_removes_stale_bridge_name(self) -> None:
+        root = (ROOT / "README.md").read_text(encoding="utf-8")
+        program_map = (ROOT / "docs" / "00_program_map.md").read_text(encoding="utf-8")
+        guide = (ROOT / "docs" / "02_study_guide.md").read_text(encoding="utf-8")
+        foundations = (ROOT / "00_foundations" / "README.md").read_text(encoding="utf-8")
+        ml = (ROOT / "01_ml" / "README.md").read_text(encoding="utf-8")
+        frontier = (ROOT / "07_frontier_labs" / "README.md").read_text(encoding="utf-8")
+
+        for text in [root, program_map, guide]:
+            self.assertIn("06_training_systems", text)
+            self.assertIn("07_frontier_labs", text)
+            self.assertRegex(text, r"(미뤄|나중|선택|optional|capstone sandbox)")
+
+        self.assertNotIn("02_nlp_bridge", ml)
+        self.assertIn("selected `02_deep_learning`", foundations)
+        self.assertRegex(frontier, r"(선택|optional|capstone sandbox|고급)")
+        self.assertIn("grounding entry point", root + guide)
+
     def test_study_guide_surfaces_deep_learning_core_path(self) -> None:
         guide = (ROOT / "docs" / "02_study_guide.md").read_text(encoding="utf-8")
 

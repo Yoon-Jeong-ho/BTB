@@ -1,0 +1,2677 @@
+{
+  "schema_version": 1,
+  "source": "BTB repo curriculum_status.json + lesson.yaml",
+  "tracks": [
+    {
+      "id": "00_foundations",
+      "title": "00 Foundations",
+      "order": 0,
+      "readme": "00_foundations/README.md",
+      "summary": "이 구간은 BTB 전체에서 가장 먼저 보는 **딥러닝 공통 기초 트랙**이다. tensor shape를 읽는 법부터 activation, gradient, regularization, runtime까지를 한 줄의 숫자 흐름으로 연결하는 데 목적이 있다.",
+      "units": [
+        {
+          "id": "01_tensor_shapes",
+          "title": "01 Tensor Shapes",
+          "path": "00_foundations/01_tensor_shapes",
+          "status": "runnable",
+          "objective": "텐서 shape, broadcasting, batch 차원, matmul 흐름을 몸으로 익힌다.",
+          "readme": "00_foundations/01_tensor_shapes/README.md",
+          "lesson": "00_foundations/01_tensor_shapes/lesson.yaml",
+          "prereqs": [
+            "벡터와 행렬 표기",
+            "행렬 곱의 조건"
+          ],
+          "key_terms": [
+            "tensor",
+            "shape",
+            "broadcasting",
+            "batch dimension",
+            "matrix multiplication"
+          ],
+          "required_outputs": [
+            "scratch metrics json",
+            "framework metrics json",
+            "analysis markdown"
+          ],
+          "analysis_questions": [
+            "어떤 연산에서 shape mismatch가 났는가?",
+            "broadcasting이 편하지만 위험한 이유는 무엇인가?"
+          ],
+          "checkpoints": [
+            "README",
+            "THEORY",
+            "PREREQS",
+            "scratch lab",
+            "framework lab",
+            "analysis script",
+            "analysis note",
+            "reflection"
+          ],
+          "cpu_safe": false,
+          "deterministic": false
+        },
+        {
+          "id": "02_activation_and_loss",
+          "title": "02 Activation and Loss",
+          "path": "00_foundations/02_activation_and_loss",
+          "status": "runnable",
+          "objective": "activation이 표현을 어떻게 바꾸고, loss가 오차를 어떻게 scalar 학습 신호로 압축하는지 이해한다.",
+          "readme": "00_foundations/02_activation_and_loss/README.md",
+          "lesson": "00_foundations/02_activation_and_loss/lesson.yaml",
+          "prereqs": [
+            "tensor shape와 batch 차원 읽기",
+            "logits와 probability 구분",
+            "분류 target 형식의 차이"
+          ],
+          "key_terms": [
+            "activation",
+            "relu",
+            "sigmoid",
+            "tanh",
+            "softmax",
+            "logits",
+            "binary cross entropy",
+            "cross entropy"
+          ],
+          "required_outputs": [
+            "scratch metrics json",
+            "scratch svg figure",
+            "framework metrics json",
+            "stable analysis markdown",
+            "observed analysis report"
+          ],
+          "analysis_questions": [
+            "어떤 activation이 입력 분포를 가장 강하게 잘랐는가?",
+            "BCE와 cross entropy는 각각 어떤 target 형식을 기대하는가?",
+            "logits를 바로 loss에 넣는 이유를 실행 결과와 함께 설명할 수 있는가?"
+          ],
+          "checkpoints": [
+            "README",
+            "THEORY",
+            "PREREQS",
+            "scratch lab",
+            "framework lab",
+            "analysis script",
+            "analysis note",
+            "reflection"
+          ],
+          "cpu_safe": false,
+          "deterministic": false
+        },
+        {
+          "id": "03_gradients_and_backpropagation",
+          "title": "03 Gradients and Backpropagation",
+          "path": "00_foundations/03_gradients_and_backpropagation",
+          "status": "runnable",
+          "objective": "gradient가 loss 변화 방향을 어떻게 나타내고, backpropagation이 그 신호를 파라미터까지 어떻게 전달하는지 이해한다.",
+          "readme": "00_foundations/03_gradients_and_backpropagation/README.md",
+          "lesson": "00_foundations/03_gradients_and_backpropagation/lesson.yaml",
+          "prereqs": [
+            "tensor shape와 batch 차원 읽기",
+            "activation과 loss 구분",
+            "scalar 함수의 기울기 감각"
+          ],
+          "key_terms": [
+            "gradient",
+            "local derivative",
+            "chain rule",
+            "backpropagation",
+            "finite difference",
+            "autograd",
+            "optimizer step"
+          ],
+          "required_outputs": [
+            "scratch metrics json",
+            "scratch svg figure",
+            "framework metrics json",
+            "stable analysis markdown",
+            "observed analysis report"
+          ],
+          "analysis_questions": [
+            "analytic gradient와 finite-difference gradient가 얼마나 가깝게 맞았는가?",
+            "backpropagation에서 어떤 local gradient들이 곱해졌는가?",
+            "한 번의 parameter update 뒤 loss는 어떻게 바뀌었는가?"
+          ],
+          "checkpoints": [
+            "README",
+            "THEORY",
+            "PREREQS",
+            "scratch lab",
+            "framework lab",
+            "analysis script",
+            "analysis note",
+            "reflection"
+          ],
+          "cpu_safe": false,
+          "deterministic": false
+        },
+        {
+          "id": "04_regularization_and_normalization",
+          "title": "04 Regularization and Normalization",
+          "path": "00_foundations/04_regularization_and_normalization",
+          "status": "runnable",
+          "objective": "normalization이 gradient scale과 학습 안정성을 어떻게 바꾸고, regularization이 weight growth를 어떻게 억제하는지 이해한다.",
+          "readme": "00_foundations/04_regularization_and_normalization/README.md",
+          "lesson": "00_foundations/04_regularization_and_normalization/lesson.yaml",
+          "prereqs": [
+            "gradient와 learning rate의 관계",
+            "평균 / 분산 / 표준편차 읽기",
+            "train / eval mode 구분"
+          ],
+          "key_terms": [
+            "normalization",
+            "regularization",
+            "z-score normalization",
+            "LayerNorm",
+            "dropout",
+            "weight decay",
+            "L2 regularization",
+            "training dynamics"
+          ],
+          "required_outputs": [
+            "scratch metrics json",
+            "scratch svg figure",
+            "framework metrics json",
+            "stable analysis markdown",
+            "observed analysis report"
+          ],
+          "analysis_questions": [
+            "normalization이 초기 gradient scale을 어떻게 바꿨는가?",
+            "weight decay는 loss 감소와 weight norm 사이 균형을 어떻게 바꿨는가?",
+            "LayerNorm과 dropout은 tiny tensor에서도 어떤 규칙성을 보여주는가?"
+          ],
+          "checkpoints": [
+            "README",
+            "THEORY",
+            "PREREQS",
+            "scratch lab",
+            "framework lab",
+            "analysis script",
+            "analysis note",
+            "reflection"
+          ],
+          "cpu_safe": false,
+          "deterministic": false
+        },
+        {
+          "id": "05_gpu_memory_runtime",
+          "title": "05 GPU Memory Runtime",
+          "path": "00_foundations/05_gpu_memory_runtime",
+          "status": "runnable",
+          "objective": "무엇이 GPU 메모리를 차지하는지, training과 inference가 왜 다른지 이해한다.",
+          "readme": "00_foundations/05_gpu_memory_runtime/README.md",
+          "lesson": "00_foundations/05_gpu_memory_runtime/lesson.yaml",
+          "prereqs": [
+            "tensor shape 감각",
+            "dtype 기본 개념",
+            "forward / backward 구분"
+          ],
+          "key_terms": [
+            "vram",
+            "parameter",
+            "activation",
+            "gradient",
+            "optimizer state",
+            "mixed precision"
+          ],
+          "required_outputs": [
+            "scratch metrics json",
+            "framework metrics json",
+            "analysis markdown"
+          ],
+          "analysis_questions": [
+            "어떤 항목이 batch size와 함께 증가했는가?",
+            "training과 inference의 차이는 무엇인가?",
+            "fp32와 fp16 추정 메모리 차이는 얼마나 되는가?"
+          ],
+          "checkpoints": [
+            "README",
+            "THEORY",
+            "PREREQS",
+            "scratch lab",
+            "framework lab",
+            "analysis script",
+            "analysis note",
+            "reflection"
+          ],
+          "cpu_safe": false,
+          "deterministic": false
+        }
+      ]
+    },
+    {
+      "id": "01_ml",
+      "title": "01 ML",
+      "order": 1,
+      "readme": "01_ml/README.md",
+      "summary": "이 트랙의 목표는 `표형 데이터 -> 전처리 -> baseline -> strong baseline -> metric 해석 -> failure analysis` 흐름을 몸에 익히는 것이다. 지금은 각 stage 폴더 안에 코드, 이론, 최신 artifact가 함께 있어 **하나씩 읽고 결과를 바로 확인할 수 있는 상태**다.",
+      "units": [
+        {
+          "id": "01_tabular_classification",
+          "title": "01 Tabular Classification",
+          "path": "01_ml/01_tabular_classification",
+          "status": "runnable",
+          "objective": "이 stage 는 “분류 모델을 하나 돌려 보기”가 아니라, **분류 문제를 읽는 언어를 배우는 단계**다. 특히 표형 데이터에서 자주 나오는 질문들을 실제 실험과 연결해 이해하도록 구성한다.",
+          "readme": "01_ml/01_tabular_classification/README.md",
+          "lesson": "",
+          "prereqs": [],
+          "key_terms": [],
+          "required_outputs": [],
+          "analysis_questions": [],
+          "checkpoints": [
+            "README",
+            "THEORY",
+            "analysis script"
+          ],
+          "cpu_safe": false,
+          "deterministic": false
+        },
+        {
+          "id": "02_tabular_regression",
+          "title": "02 표형 회귀",
+          "path": "01_ml/02_tabular_regression",
+          "status": "runnable",
+          "objective": "이 장은 **회귀 지표를 읽는 법**과 **오차 구조를 해석하는 법**을 익히는 학습 노트다. 단순히 모델을 한 번 돌리는 장이 아니라, **왜 이런 지표가 생겼는지**, **각 지표가 어떤 문제를 해결하는지**, **어떤 구간에서 계속 틀리는지**를 함께 본다.",
+          "readme": "01_ml/02_tabular_regression/README.md",
+          "lesson": "",
+          "prereqs": [],
+          "key_terms": [],
+          "required_outputs": [],
+          "analysis_questions": [],
+          "checkpoints": [
+            "README",
+            "THEORY",
+            "analysis script"
+          ],
+          "cpu_safe": false,
+          "deterministic": false
+        },
+        {
+          "id": "03_model_selection_and_interpretation",
+          "title": "03 Model Selection And Interpretation",
+          "path": "01_ml/03_model_selection_and_interpretation",
+          "status": "runnable",
+          "objective": "이 단계는 단순히 점수를 높이는 실습이 아니다. **시간축이 있는 표형 데이터에서 어떤 검증이 타당한지**, **어떤 모델이 운영 관점에서 안전한지**, **왜 그런 결론이 나왔는지 설명할 수 있는지**를 배우는 단계다.",
+          "readme": "01_ml/03_model_selection_and_interpretation/README.md",
+          "lesson": "",
+          "prereqs": [],
+          "key_terms": [],
+          "required_outputs": [],
+          "analysis_questions": [],
+          "checkpoints": [
+            "README",
+            "THEORY",
+            "analysis script"
+          ],
+          "cpu_safe": false,
+          "deterministic": false
+        },
+        {
+          "id": "04_large_scale_tabular",
+          "title": "04 Large Scale Tabular",
+          "path": "01_ml/04_large_scale_tabular",
+          "status": "runnable",
+          "objective": "이 단계는 **대규모 표형 분류를 어떻게 읽고, 어떻게 비교하고, 무엇을 의심해야 하는지**를 익히는 공부 노트다. 작은 데이터에서는 점수표 하나만으로도 모델을 고를 수 있지만, 큰 데이터에서는 그렇지 않다. 여기서는 품질, class 균형성, 학습 비용, 추론 비용을 함께 읽어야 한다.",
+          "readme": "01_ml/04_large_scale_tabular/README.md",
+          "lesson": "",
+          "prereqs": [],
+          "key_terms": [],
+          "required_outputs": [],
+          "analysis_questions": [],
+          "checkpoints": [
+            "README",
+            "THEORY",
+            "analysis script"
+          ],
+          "cpu_safe": false,
+          "deterministic": false
+        }
+      ]
+    },
+    {
+      "id": "02_deep_learning",
+      "title": "02 Deep Learning",
+      "order": 2,
+      "readme": "02_deep_learning/README.md",
+      "summary": "이 트랙은 `00_foundations`와 `01_ml` 다음에 놓이는 **딥러닝 모델 패밀리 학습** 구간이다. 앞선 두 트랙에서 텐서/gradient 감각과 고전 ML baseline 운영법을 익혔다면, 이제는 perceptron부터 transformer·generative model까지 `어떤 신경망 가족이 어떤 문제를 풀기 위해 등장했는지`를 계통적으로 연결한다.",
+      "units": [
+        {
+          "id": "01_perceptron_and_mlp",
+          "title": "01 Perceptron and MLP",
+          "path": "02_deep_learning/01_perceptron_and_mlp",
+          "status": "runnable",
+          "objective": "perceptron decision rule, 선형 분리 가능성, XOR 실패, tiny MLP 개선을 가장 작은 neural baseline 관점에서 이해한다.",
+          "readme": "02_deep_learning/01_perceptron_and_mlp/README.md",
+          "lesson": "02_deep_learning/01_perceptron_and_mlp/lesson.yaml",
+          "prereqs": [
+            "dot product와 weighted sum 기초",
+            "bias와 decision boundary 직관",
+            "activation과 loss 구분",
+            "gradient와 backpropagation 기초",
+            "작은 baseline 비교 감각"
+          ],
+          "key_terms": [
+            "perceptron",
+            "decision rule",
+            "linear separability",
+            "single neuron",
+            "XOR",
+            "hidden layer",
+            "nonlinearity",
+            "MLP",
+            "neural baseline"
+          ],
+          "required_outputs": [
+            "scratch metrics json",
+            "scratch svg figure",
+            "framework metrics json",
+            "stable analysis markdown",
+            "observed analysis report",
+            "reflection worksheet"
+          ],
+          "analysis_questions": [
+            "perceptron의 decision rule은 입력을 어떤 기준으로 두 클래스로 나누는가?",
+            "linear separable한 경우와 XOR 같은 경우를 어떻게 구분해서 읽을 수 있는가?",
+            "single neuron의 XOR 실패를 optimizer 문제가 아니라 표현력 한계라고 설명하려면 어떤 관측이 필요한가?",
+            "tiny MLP가 같은 toy data에서 개선을 보일 때, hidden layer와 nonlinearity의 역할을 어떻게 말로 설명할 수 있는가?"
+          ],
+          "checkpoints": [
+            "README",
+            "THEORY",
+            "PREREQS",
+            "scratch lab",
+            "framework lab",
+            "analysis script",
+            "analysis note",
+            "reflection"
+          ],
+          "cpu_safe": false,
+          "deterministic": false
+        },
+        {
+          "id": "02_cnn_and_image_classification",
+          "title": "02 CNN and Image Classification",
+          "path": "02_deep_learning/02_cnn_and_image_classification",
+          "status": "runnable",
+          "objective": "convolution, local receptive field, parameter sharing, pooling, channel/feature map 직관을 toy CNN image classification baseline으로 연결한다.",
+          "readme": "02_deep_learning/02_cnn_and_image_classification/README.md",
+          "lesson": "02_deep_learning/02_cnn_and_image_classification/lesson.yaml",
+          "prereqs": [
+            "batch/channel/height/width shape 읽기",
+            "weighted sum과 patch score 계산 감각",
+            "activation과 class score 구분",
+            "작은 neural baseline 읽기",
+            "pooling이 해상도를 줄인다는 기본 이해"
+          ],
+          "key_terms": [
+            "convolution",
+            "kernel",
+            "local receptive field",
+            "parameter sharing",
+            "pooling",
+            "channel",
+            "feature map",
+            "image classification baseline",
+            "logits"
+          ],
+          "required_outputs": [
+            "scratch metrics json",
+            "scratch svg figure",
+            "framework metrics json",
+            "stable analysis markdown",
+            "observed analysis report",
+            "reflection worksheet"
+          ],
+          "analysis_questions": [
+            "convolution을 왜 local pattern detector라고 설명할 수 있는가?",
+            "local receptive field와 parameter sharing은 이미지에 어떤 inductive bias를 주는가?",
+            "pooling은 무엇을 남기고 무엇을 버리며, 왜 classification baseline에 도움이 되는가?",
+            "입력 channel과 출력 feature map 수는 각각 무엇을 의미하는가?",
+            "toy image classification baseline에서 pooled feature map 평균을 class score처럼 읽을 수 있는 이유는 무엇인가?"
+          ],
+          "checkpoints": [
+            "README",
+            "THEORY",
+            "PREREQS",
+            "scratch lab",
+            "framework lab",
+            "analysis script",
+            "analysis note",
+            "reflection"
+          ],
+          "cpu_safe": false,
+          "deterministic": false
+        },
+        {
+          "id": "03_sequence_models_rnn_lstm_gru",
+          "title": "03 Sequence Models: RNN, LSTM, GRU",
+          "path": "02_deep_learning/03_sequence_models_rnn_lstm_gru",
+          "status": "runnable",
+          "objective": "시퀀스 순서, hidden state 병목, vanilla RNN의 한계, LSTM/GRU gating 직관, teacher forcing gap을 실행 가능한 toy 실험으로 연결해 이후 transformer 학습의 배경을 만든다.",
+          "readme": "02_deep_learning/03_sequence_models_rnn_lstm_gru/README.md",
+          "lesson": "02_deep_learning/03_sequence_models_rnn_lstm_gru/lesson.yaml",
+          "prereqs": [
+            "시퀀스 텐서 shape 읽기",
+            "backpropagation과 gradient chain rule 기초",
+            "token/embedding/BOS/EOS 기본 용어",
+            "cross entropy와 next-token prediction 기본 감각"
+          ],
+          "key_terms": [
+            "sequence ordering",
+            "hidden state",
+            "recurrent update",
+            "vanilla RNN",
+            "vanishing gradient",
+            "exploding gradient",
+            "LSTM",
+            "GRU",
+            "forget gate",
+            "update gate",
+            "teacher forcing",
+            "exposure bias"
+          ],
+          "required_outputs": [
+            "scratch metrics json",
+            "scratch svg figure",
+            "framework metrics json",
+            "observed analysis report",
+            "stable analysis markdown",
+            "reflection prompts"
+          ],
+          "analysis_questions": [
+            "hidden state는 과거 정보를 어떻게 압축하고 어떤 정보는 잃기 쉬운가?",
+            "같은 token 집합인데도 순서가 바뀌면 왜 final state가 달라지는가?",
+            "vanilla RNN보다 LSTM/GRU가 long-range signal을 더 오래 붙잡는 이유를 gate 관점에서 어떻게 설명할 수 있는가?",
+            "teacher forcing은 왜 유용하고, inference에서는 어떤 mismatch를 남기는가?",
+            "recurrence의 병목을 이해하면 transformer attention을 어떻게 더 자연스럽게 받아들일 수 있는가?"
+          ],
+          "checkpoints": [
+            "README",
+            "THEORY",
+            "PREREQS",
+            "scratch lab",
+            "framework lab",
+            "analysis script",
+            "analysis note",
+            "reflection"
+          ],
+          "cpu_safe": false,
+          "deterministic": false
+        },
+        {
+          "id": "04_attention_and_transformers",
+          "title": "04 Attention and Transformers",
+          "path": "02_deep_learning/04_attention_and_transformers",
+          "status": "runnable",
+          "objective": "attention을 sequence mixing 관점에서 읽고, row sum, multi-head intuition, encoder/decoder 구분, recurrent bottleneck relief를 runnable toy 실험으로 연결한다.",
+          "readme": "02_deep_learning/04_attention_and_transformers/README.md",
+          "lesson": "02_deep_learning/04_attention_and_transformers/lesson.yaml",
+          "prereqs": [
+            "batch/seq/dim shape 읽기",
+            "dot product, matrix multiplication, softmax 기본 감각",
+            "recurrent hidden state 업데이트와 long-range bottleneck 이해",
+            "self-attention, causal mask, cross-attention 기초",
+            "residual connection과 layer normalization 기본 이해"
+          ],
+          "key_terms": [
+            "attention",
+            "sequence mixing",
+            "scaled dot-product attention",
+            "multi-head attention",
+            "encoder",
+            "decoder",
+            "cross-attention",
+            "causal mask",
+            "recurrent bottleneck",
+            "parallelization"
+          ],
+          "required_outputs": [
+            "scratch attention metrics json",
+            "scratch svg figure",
+            "framework attention metrics json",
+            "observed analysis report",
+            "stable analysis markdown",
+            "reflection markdown"
+          ],
+          "analysis_questions": [
+            "attention output을 왜 sequence mixing 결과라고 설명할 수 있는가?",
+            "row sum이 1이라는 사실이 value mixing 해석과 어떻게 연결되는가?",
+            "multi-head는 어떤 점에서 single-head보다 더 풍부한 관찰 틀을 주는가?",
+            "encoder와 decoder는 각각 어떤 정보 접근 규칙을 가지는가?",
+            "transformer는 recurrent bottleneck을 어떤 식으로 줄이고, 대신 어떤 길이 비용을 남기는가?"
+          ],
+          "checkpoints": [
+            "README",
+            "THEORY",
+            "PREREQS",
+            "scratch lab",
+            "framework lab",
+            "analysis script",
+            "analysis note",
+            "reflection"
+          ],
+          "cpu_safe": false,
+          "deterministic": false
+        },
+        {
+          "id": "05_autoencoders_and_representation_learning",
+          "title": "05 Autoencoders and Representation Learning",
+          "path": "02_deep_learning/05_autoencoders_and_representation_learning",
+          "status": "runnable",
+          "objective": "reconstruction objective, encoder-latent-decoder 역할, bottleneck 직관, denoising/compression variant를 CPU-safe toy autoencoder로 직접 관찰한다.",
+          "readme": "02_deep_learning/05_autoencoders_and_representation_learning/README.md",
+          "lesson": "02_deep_learning/05_autoencoders_and_representation_learning/lesson.yaml",
+          "prereqs": [
+            "입력/출력/latent tensor shape 읽기",
+            "activation과 reconstruction loss 구분",
+            "gradient와 backpropagation 기초",
+            "hidden representation과 feature 재사용 감각",
+            "차원 축소와 정보 손실 trade-off 이해"
+          ],
+          "key_terms": [
+            "autoencoder",
+            "encoder",
+            "decoder",
+            "latent representation",
+            "reconstruction objective",
+            "reconstruction loss",
+            "bottleneck",
+            "denoising autoencoder",
+            "compression",
+            "representation learning"
+          ],
+          "required_outputs": [
+            "scratch metrics json",
+            "scratch svg figure",
+            "framework metrics json",
+            "stable analysis markdown",
+            "observed analysis report",
+            "reflection worksheet"
+          ],
+          "analysis_questions": [
+            "reconstruction objective는 label 없이도 어떤 학습 신호를 제공하는가?",
+            "encoder, latent, decoder는 각각 어떤 역할을 하고 어디에서 병목이 생기는가?",
+            "bottleneck dimension을 줄이거나 늘리면 representation quality와 reconstruction quality는 어떻게 달라지는가?",
+            "denoising autoencoder와 compression-oriented autoencoder는 같은 구조를 어떻게 다르게 활용하는가?",
+            "latent representation이 downstream retrieval, clustering, generative modeling에 도움이 되려면 무엇을 더 관찰해야 하는가?"
+          ],
+          "checkpoints": [
+            "README",
+            "THEORY",
+            "PREREQS",
+            "scratch lab",
+            "framework lab",
+            "analysis script",
+            "analysis note",
+            "reflection"
+          ],
+          "cpu_safe": false,
+          "deterministic": false
+        },
+        {
+          "id": "06_generative_models_vae_gan",
+          "title": "06 Generative Models: VAE, GAN",
+          "path": "02_deep_learning/06_generative_models_vae_gan",
+          "status": "runnable",
+          "objective": "VAE와 GAN을 대비해 latent sampling, reparameterization trick, adversarial intuition, posterior collapse, mode collapse를 CPU-safe toy 예제로 직접 관찰한다.",
+          "readme": "02_deep_learning/06_generative_models_vae_gan/README.md",
+          "lesson": "02_deep_learning/06_generative_models_vae_gan/lesson.yaml",
+          "prereqs": [
+            "encoder/decoder/latent tensor shape 읽기",
+            "reconstruction loss와 KL divergence 기본 직관",
+            "평균, 분산, sampling 기초",
+            "gradient와 backpropagation 기초",
+            "adversarial training이 왜 불안정할 수 있는지에 대한 문제의식"
+          ],
+          "key_terms": [
+            "variational autoencoder",
+            "VAE",
+            "generative adversarial network",
+            "GAN",
+            "latent variable",
+            "latent sampling",
+            "reparameterization trick",
+            "KL divergence",
+            "adversarial training",
+            "posterior collapse",
+            "mode collapse"
+          ],
+          "required_outputs": [
+            "scratch metrics json",
+            "scratch svg figure",
+            "framework metrics json",
+            "stable analysis markdown",
+            "observed analysis report",
+            "reflection worksheet"
+          ],
+          "analysis_questions": [
+            "VAE는 reconstruction term과 KL term을 함께 보며 latent를 어떻게 샘플링 가능한 공간으로 만들려 하는가?",
+            "reparameterization trick은 단순 noise injection과 무엇이 다르고 왜 gradient 관점에서 중요한가?",
+            "posterior collapse가 일어나면 latent usage, KL, reconstruction 중 무엇이 먼저 경고를 주는가?",
+            "GAN adversarial loss가 그럴듯해 보여도 mode collapse를 놓칠 수 있는 이유는 무엇인가?",
+            "sample realism, coverage, stability 세 축으로 VAE와 GAN을 어떻게 비교할 수 있는가?"
+          ],
+          "checkpoints": [
+            "README",
+            "THEORY",
+            "PREREQS",
+            "scratch lab",
+            "framework lab",
+            "analysis script",
+            "analysis note",
+            "reflection"
+          ],
+          "cpu_safe": false,
+          "deterministic": false
+        },
+        {
+          "id": "07_training_recipes_and_debugging",
+          "title": "07 학습 레시피와 디버깅 (Training Recipes and Debugging)",
+          "path": "02_deep_learning/07_training_recipes_and_debugging",
+          "status": "runnable",
+          "objective": "learning rate, batch size, weight decay, scheduler가 tiny supervised 학습 곡선에 남기는 흔적을 읽고, overfit/underfit/divergence/data bug를 sanity check로 빠르게 분류하는 습관을 만든다.",
+          "readme": "02_deep_learning/07_training_recipes_and_debugging/README.md",
+          "lesson": "02_deep_learning/07_training_recipes_and_debugging/lesson.yaml",
+          "prereqs": [
+            "loss / metric / gradient 역할 구분",
+            "batch / epoch / optimizer step / global step 기본 용어",
+            "train/validation split과 기본 곡선 해석",
+            "label misalignment / NaN / shape mismatch 같은 data bug 기본 감각"
+          ],
+          "key_terms": [
+            "learning rate",
+            "batch size",
+            "weight decay",
+            "scheduler",
+            "overfitting",
+            "underfitting",
+            "divergence",
+            "gradient explosion",
+            "data bug",
+            "sanity check",
+            "single-batch overfit"
+          ],
+          "required_outputs": [
+            "scratch metrics json",
+            "scratch svg figure",
+            "framework metrics json",
+            "stable analysis markdown",
+            "observed analysis report"
+          ],
+          "analysis_questions": [
+            "baseline과 large batch recipe는 같은 epoch budget에서 어떤 train/validation 차이를 남겼는가?",
+            "weight decay와 scheduler를 함께 켰을 때 validation loss trade-off는 어떻게 달라졌는가?",
+            "high learning rate probe는 어느 시점에서 divergence 또는 gradient explosion을 만들었는가?",
+            "shifted-label bug와 overfit는 로그에서 어떻게 다르게 보였는가?",
+            "single-batch overfit sanity check는 왜 디버깅 첫 단계로 유용한가?"
+          ],
+          "checkpoints": [
+            "README",
+            "THEORY",
+            "PREREQS",
+            "scratch lab",
+            "framework lab",
+            "analysis script",
+            "analysis note",
+            "reflection"
+          ],
+          "cpu_safe": false,
+          "deterministic": false
+        }
+      ]
+    },
+    {
+      "id": "03_nlp_bridge",
+      "title": "03 NLP Bridge",
+      "order": 3,
+      "readme": "03_nlp_bridge/README.md",
+      "summary": "이 구간은 `02_deep_learning`에서 `04_nlp`로 넘어가기 전에 필요한 개념 다리다. 표형 데이터에서는 feature를 사람이 직접 설계했지만, NLP에서는 **문장을 토큰 id로 바꾸고 그 id를 embedding 공간으로 옮긴 뒤, 토큰끼리 attention으로 서로를 참고하게 만드는 과정**이 먼저 필요하다. 이 bridge는 그 전환을 한국어 예제로 천천히 연결한다.",
+      "units": [
+        {
+          "id": "01_tokenization_and_embeddings",
+          "title": "01 Tokenization and Embeddings",
+          "path": "03_nlp_bridge/01_tokenization_and_embeddings",
+          "status": "runnable",
+          "objective": "한국어 문장이 subword token, token id, embedding tensor, padding mask로 바뀌는 흐름을 구체적으로 이해한다.",
+          "readme": "03_nlp_bridge/01_tokenization_and_embeddings/README.md",
+          "lesson": "03_nlp_bridge/01_tokenization_and_embeddings/lesson.yaml",
+          "prereqs": [
+            "문자열과 리스트의 차이",
+            "인덱스와 lookup table 개념",
+            "기본 tensor shape 읽기"
+          ],
+          "key_terms": [
+            "tokenization",
+            "subword",
+            "vocabulary",
+            "token id",
+            "embedding lookup",
+            "padding mask",
+            "unknown token"
+          ],
+          "required_outputs": [
+            "scratch metrics json",
+            "framework metrics json",
+            "analysis markdown",
+            "observed analysis report"
+          ],
+          "analysis_questions": [
+            "whitespace 단어 수보다 subword token 수가 늘어나는 이유는 무엇인가?",
+            "[UNK]가 생기면 어떤 정보 손실이 생기는가?",
+            "embedding lookup 이후 shape가 어떻게 바뀌며, padding mask는 어디에 쓰이는가?"
+          ],
+          "checkpoints": [
+            "README",
+            "THEORY",
+            "PREREQS",
+            "scratch lab",
+            "framework lab",
+            "analysis script",
+            "analysis note",
+            "reflection"
+          ],
+          "cpu_safe": false,
+          "deterministic": false
+        },
+        {
+          "id": "02_attention_and_transformer_block",
+          "title": "02 Attention and Transformer Block",
+          "path": "03_nlp_bridge/02_attention_and_transformer_block",
+          "status": "runnable",
+          "objective": "attention weight, sequence mixing, padding/causal mask, transformer block의 shape 보존을 한국어 예제로 구체적으로 이해한다.",
+          "readme": "03_nlp_bridge/02_attention_and_transformer_block/README.md",
+          "lesson": "03_nlp_bridge/02_attention_and_transformer_block/lesson.yaml",
+          "prereqs": [
+            "batch/seq/dim shape 읽기",
+            "dot product와 softmax 기본 감각",
+            "embedding과 padding mask 기초"
+          ],
+          "key_terms": [
+            "self-attention",
+            "query",
+            "key",
+            "value",
+            "attention weights",
+            "padding mask",
+            "causal mask",
+            "transformer block",
+            "residual connection",
+            "feed-forward network"
+          ],
+          "required_outputs": [
+            "scratch attention metrics json",
+            "framework attention metrics json",
+            "analysis markdown",
+            "observed analysis report"
+          ],
+          "analysis_questions": [
+            "attention output이 왜 value들의 가중합이라고 말할 수 있는가?",
+            "padding mask와 causal mask는 각각 무엇을 막는가?",
+            "transformer block 안에서 shape는 유지되는데 표현은 어떻게 달라지는가?"
+          ],
+          "checkpoints": [
+            "README",
+            "THEORY",
+            "PREREQS",
+            "scratch lab",
+            "framework lab",
+            "analysis script",
+            "analysis note",
+            "reflection"
+          ],
+          "cpu_safe": false,
+          "deterministic": false
+        }
+      ]
+    },
+    {
+      "id": "04_nlp",
+      "title": "04 NLP",
+      "order": 4,
+      "readme": "04_nlp/README.md",
+      "summary": "이 트랙의 목표는 `텍스트 전처리 -> bag-of-words baseline -> pretrained LM finetuning -> error analysis` 흐름을 익히는 것이다.",
+      "units": [
+        {
+          "id": "01_text_classification",
+          "title": "01 Text Classification",
+          "path": "04_nlp/01_text_classification",
+          "status": "runnable",
+          "objective": "작은 한국어 예제로 bag-of-words baseline과 tiny PyTorch classifier를 비교하며 text classification의 첫 applied NLP 감각을 만든다.",
+          "readme": "04_nlp/01_text_classification/README.md",
+          "lesson": "04_nlp/01_text_classification/lesson.yaml",
+          "prereqs": [
+            "기본 Python 자료구조 읽기",
+            "간단한 확률과 빈도 해석",
+            "tensor shape 기초",
+            "tokenization과 embedding 기초"
+          ],
+          "key_terms": [
+            "text classification",
+            "bag-of-words",
+            "multinomial naive bayes",
+            "embedding average",
+            "logits",
+            "accuracy",
+            "macro F1",
+            "confusion matrix"
+          ],
+          "required_outputs": [
+            "scratch metrics json",
+            "scratch svg figure",
+            "framework metrics json",
+            "analysis markdown",
+            "observed analysis report"
+          ],
+          "analysis_questions": [
+            "bag-of-words baseline은 어떤 token을 긍정/부정 신호로 읽는가?",
+            "accuracy와 macro F1을 같이 볼 때 어떤 해석 차이가 생기는가?",
+            "tiny PyTorch classifier는 bag-of-words보다 무엇을 더 표현하려고 하는가?"
+          ],
+          "checkpoints": [
+            "README",
+            "THEORY",
+            "PREREQS",
+            "scratch lab",
+            "framework lab",
+            "analysis script",
+            "analysis note",
+            "reflection"
+          ],
+          "cpu_safe": false,
+          "deterministic": false
+        },
+        {
+          "id": "02_named_entity_recognition",
+          "title": "02 Named Entity Recognition",
+          "path": "04_nlp/02_named_entity_recognition",
+          "status": "runnable",
+          "objective": "작은 한국어 BIO 예제로 label alignment와 entity-level F1을 확인하며 named entity recognition의 첫 applied NLP 감각을 만든다.",
+          "readme": "04_nlp/02_named_entity_recognition/README.md",
+          "lesson": "04_nlp/02_named_entity_recognition/lesson.yaml",
+          "prereqs": [
+            "기본 Python 자료구조 읽기",
+            "sequence tensor shape 기초",
+            "tokenization과 padding 기초",
+            "BIO tagging 직관"
+          ],
+          "key_terms": [
+            "named entity recognition",
+            "BIO tagging",
+            "label alignment",
+            "token classification",
+            "entity-level F1",
+            "token accuracy",
+            "boundary error",
+            "PyTorch sequence labeler"
+          ],
+          "required_outputs": [
+            "scratch metrics json",
+            "scratch svg figure",
+            "framework metrics json",
+            "analysis markdown",
+            "observed analysis report"
+          ],
+          "analysis_questions": [
+            "alignment 후 BIO label은 어떤 규칙으로 늘어나는가?",
+            "token accuracy와 entity-level F1을 같이 보면 어떤 경계 오류가 드러나는가?",
+            "tiny PyTorch sequence labeler는 scratch baseline보다 어떤 문맥 정보를 더 읽으려 하는가?"
+          ],
+          "checkpoints": [
+            "README",
+            "THEORY",
+            "PREREQS",
+            "scratch lab",
+            "framework lab",
+            "analysis script",
+            "analysis note",
+            "reflection"
+          ],
+          "cpu_safe": false,
+          "deterministic": false
+        },
+        {
+          "id": "03_machine_reading_comprehension",
+          "title": "03 Machine Reading Comprehension",
+          "path": "04_nlp/03_machine_reading_comprehension",
+          "status": "runnable",
+          "objective": "작은 한국어 독해 예제로 heuristic span extraction baseline과 tiny PyTorch QA-style model을 비교하며 span extraction과 no-answer 판단의 첫 applied NLP 감각을 만든다.",
+          "readme": "04_nlp/03_machine_reading_comprehension/README.md",
+          "lesson": "04_nlp/03_machine_reading_comprehension/lesson.yaml",
+          "prereqs": [
+            "기본 Python 자료구조 읽기",
+            "tokenization과 padding 기초",
+            "tensor shape 기초",
+            "exact match와 token F1 해석",
+            "질문-문맥 결합 시퀀스 직관"
+          ],
+          "key_terms": [
+            "machine reading comprehension",
+            "span extraction",
+            "exact match",
+            "token F1",
+            "answerable",
+            "unanswerable",
+            "no-answer threshold",
+            "question-context alignment"
+          ],
+          "required_outputs": [
+            "scratch metrics json",
+            "scratch svg figure",
+            "framework metrics json",
+            "analysis markdown",
+            "observed analysis report"
+          ],
+          "analysis_questions": [
+            "heuristic baseline은 어떤 question-context overlap을 근거로 span extraction을 시도하는가?",
+            "exact match와 token F1을 같이 볼 때 어떤 boundary error가 드러나는가?",
+            "no-answer threshold는 answerable / unanswerable 균형에 어떤 영향을 주는가?",
+            "tiny PyTorch QA model이 개선되었다면 그 차이는 질문 조건부 표현 때문인가?"
+          ],
+          "checkpoints": [
+            "README",
+            "THEORY",
+            "PREREQS",
+            "scratch lab",
+            "framework lab",
+            "analysis script",
+            "analysis note",
+            "reflection"
+          ],
+          "cpu_safe": false,
+          "deterministic": false
+        }
+      ]
+    },
+    {
+      "id": "05_advanced_nlp_llm",
+      "title": "05 Advanced NLP + LLM",
+      "order": 5,
+      "readme": "05_advanced_nlp_llm/README.md",
+      "summary": "이 트랙은 `03_nlp_bridge`와 `04_nlp` 다음에 들어오는 **pretraining부터 post-training까지 포괄하는 advanced NLP+LLM** 구간이다. 기본 NLP 태스크를 한 번 돌려 본 뒤, 이제는 언어모델 objective, tokenizer/data mixture, domain adaptive pretraining, instruction tuning, preference optimizat",
+      "units": [
+        {
+          "id": "01_language_modeling_and_pretraining_objectives",
+          "title": "01 Language Modeling and Pretraining Objectives",
+          "path": "05_advanced_nlp_llm/01_language_modeling_and_pretraining_objectives",
+          "status": "runnable",
+          "objective": "causal LM, masked LM, span corruption을 target framing 관점에서 비교하고, loss-mask density와 context window intuition이 objective별로 어떻게 달라지는지 runnable toy 실험으로 이해한다.",
+          "readme": "05_advanced_nlp_llm/01_language_modeling_and_pretraining_objectives/README.md",
+          "lesson": "05_advanced_nlp_llm/01_language_modeling_and_pretraining_objectives/lesson.yaml",
+          "prereqs": [
+            "token, vocabulary, logit, cross entropy 기본 감각",
+            "autoregressive next-token prediction 이해",
+            "[MASK] 및 sentinel token의 역할 이해",
+            "encoder-only / decoder-only / encoder-decoder 구분",
+            "context window와 self-attention 기본 직관"
+          ],
+          "key_terms": [
+            "causal LM",
+            "masked LM",
+            "span corruption",
+            "target framing",
+            "loss-mask density",
+            "context window",
+            "sentinel token",
+            "denoising pretraining",
+            "next-token prediction"
+          ],
+          "required_outputs": [
+            "scratch metrics json",
+            "scratch svg figure",
+            "framework metrics json",
+            "observed analysis report",
+            "stable analysis markdown",
+            "reflection markdown"
+          ],
+          "analysis_questions": [
+            "causal LM, masked LM, span corruption은 각각 무엇을 입력으로 보고 무엇을 정답으로 삼는가?",
+            "target framing이 달라질 때 loss-mask density와 scored token 수는 어떻게 달라지는가?",
+            "같은 context window여도 causal LM, masked LM, span corruption의 visible context는 왜 다르게 느껴지는가?",
+            "span corruption에서 sentinel token은 어떤 bookkeeping 역할을 하는가?",
+            "이 비교는 다음 단위의 tokenizer/data mixture와 later domain-adaptive pretraining을 어떤 질문으로 바라보게 만드는가?"
+          ],
+          "checkpoints": [
+            "README",
+            "THEORY",
+            "PREREQS",
+            "scratch lab",
+            "framework lab",
+            "analysis script",
+            "analysis note",
+            "reflection"
+          ],
+          "cpu_safe": false,
+          "deterministic": false
+        },
+        {
+          "id": "02_corpus_tokenizer_and_data_mixture",
+          "title": "02 Corpus, Tokenizer, and Data Mixture",
+          "path": "05_advanced_nlp_llm/02_corpus_tokenizer_and_data_mixture",
+          "status": "runnable",
+          "objective": "CPU-safe toy corpus를 통해 corpus quality, tokenizer granularity, deduplication, contamination, domain balance, multilingual mixture, token budget이 pretraining data pipeline을 어떻게 바꾸는지 관찰한다.",
+          "readme": "05_advanced_nlp_llm/02_corpus_tokenizer_and_data_mixture/README.md",
+          "lesson": "05_advanced_nlp_llm/02_corpus_tokenizer_and_data_mixture/lesson.yaml",
+          "prereqs": [
+            "tokenization과 subword/embedding 기본 감각",
+            "next-token language modeling objective 이해",
+            "train/validation/test split과 leakage 개념",
+            "context window와 sequence length budget 읽기",
+            "데이터 분포 차이와 weighting 기초"
+          ],
+          "key_terms": [
+            "corpus curation",
+            "corpus quality",
+            "tokenizer",
+            "vocabulary size",
+            "subword granularity",
+            "sequence length",
+            "deduplication",
+            "contamination",
+            "benchmark leakage",
+            "data mixture",
+            "domain balance",
+            "multilingual mixture",
+            "token budget"
+          ],
+          "required_outputs": [
+            "scratch metrics json",
+            "scratch svg figure",
+            "framework metrics json",
+            "observed analysis report",
+            "stable analysis markdown",
+            "reflection markdown"
+          ],
+          "analysis_questions": [
+            "corpus quality는 단순 규모와 어떻게 다르고, 어떤 노이즈가 실제 학습 신호를 약화시키는가?",
+            "tokenizer vocabulary와 granularity를 바꾸면 compression, coverage, multilingual mixture fairness는 어떻게 달라지는가?",
+            "deduplication과 contamination check는 각각 무엇을 막고, 왜 둘 다 따로 봐야 하는가?",
+            "mixture 비율을 문서 기준이 아니라 token budget과 품질 가중치 기준으로 읽으면 어떤 판단이 달라지는가?",
+            "특정 언어/도메인이 tokenizer와 mixture 설계에서 동시에 불리해질 수 있는 경로는 무엇인가?"
+          ],
+          "checkpoints": [
+            "README",
+            "THEORY",
+            "PREREQS",
+            "scratch lab",
+            "framework lab",
+            "analysis script",
+            "analysis note",
+            "reflection"
+          ],
+          "cpu_safe": false,
+          "deterministic": false
+        },
+        {
+          "id": "03_domain_adaptive_pretraining",
+          "title": "03 Domain Adaptive Pretraining",
+          "path": "05_advanced_nlp_llm/03_domain_adaptive_pretraining",
+          "status": "runnable",
+          "objective": "base LM에 같은 pretraining objective를 유지한 채 특정 domain corpus로 continued pretraining을 수행할 때 specialization gain, catastrophic forgetting risk, data selection/stopping trade-off를 runnable toy 비교로 읽는다.",
+          "readme": "05_advanced_nlp_llm/03_domain_adaptive_pretraining/README.md",
+          "lesson": "05_advanced_nlp_llm/03_domain_adaptive_pretraining/lesson.yaml",
+          "prereqs": [
+            "causal / masked / span corruption objective 비교 감각",
+            "corpus quality, tokenizer, mixture 설계 기본 이해",
+            "validation loss / perplexity / held-out set 기초",
+            "domain shift와 distribution mismatch 직관",
+            "continued pretraining과 fine-tuning의 차이 이해",
+            "catastrophic forgetting 기본 개념"
+          ],
+          "key_terms": [
+            "domain adaptive pretraining",
+            "DAPT",
+            "continued pretraining",
+            "domain shift",
+            "specialization",
+            "catastrophic forgetting",
+            "retention",
+            "replay mixture",
+            "data selection",
+            "overspecialization",
+            "validation loss",
+            "stopping criterion",
+            "in-domain evaluation",
+            "general-domain retention"
+          ],
+          "required_outputs": [
+            "scratch metrics json",
+            "scratch svg figure",
+            "framework metrics json",
+            "observed analysis report",
+            "stable analysis markdown",
+            "reflection markdown"
+          ],
+          "analysis_questions": [
+            "DAPT는 from-scratch pretraining이나 일반 fine-tuning과 무엇이 다르고, 같은 objective를 유지한다는 점이 왜 중요한가?",
+            "domain shift가 vocabulary, 문체, 문서 형식, 최신성 차원에서 클 때 어떤 specialization 이득이 생길 수 있는가?",
+            "pure-domain continued pretraining과 replay mixture는 adaptation speed와 catastrophic forgetting을 어떻게 다르게 만드는가?",
+            "data selection에서 품질, 중복, 라이선스, contamination, 최신성은 왜 문서 수보다 먼저 검토돼야 하는가?",
+            "stopping 시점은 in-domain loss, general retention, downstream probe를 함께 볼 때 어떻게 달라지는가?"
+          ],
+          "checkpoints": [
+            "README",
+            "THEORY",
+            "PREREQS",
+            "scratch lab",
+            "framework lab",
+            "analysis script",
+            "analysis note",
+            "reflection"
+          ],
+          "cpu_safe": false,
+          "deterministic": false
+        },
+        {
+          "id": "04_instruction_tuning_and_sft",
+          "title": "04 Instruction Tuning and SFT",
+          "path": "05_advanced_nlp_llm/04_instruction_tuning_and_sft",
+          "status": "runnable",
+          "objective": "instruction format, supervised fine-tuning, input-output template, system/user/assistant role framing을 runnable toy SFT로 관찰하고 imitation vs helpfulness tradeoff와 preference optimization 필요성을 이해한다.",
+          "readme": "05_advanced_nlp_llm/04_instruction_tuning_and_sft/README.md",
+          "lesson": "05_advanced_nlp_llm/04_instruction_tuning_and_sft/lesson.yaml",
+          "prereqs": [
+            "causal LM과 next-token loss 기본 감각",
+            "prompt/response/template/EOS 기본 용어",
+            "role-based chat message 형식 기초",
+            "labeled fine-tuning dataset 구조 이해",
+            "loss mask와 ignored label 기초",
+            "format adherence와 factual correctness 구분"
+          ],
+          "key_terms": [
+            "instruction tuning",
+            "supervised fine-tuning",
+            "SFT",
+            "instruction format",
+            "input-output template",
+            "chat template",
+            "role framing",
+            "system/user/assistant",
+            "system prompt",
+            "user prompt",
+            "assistant response",
+            "serialization",
+            "loss mask",
+            "imitation",
+            "helpfulness",
+            "preference optimization"
+          ],
+          "required_outputs": [
+            "scratch metrics json",
+            "scratch svg figure",
+            "framework metrics json",
+            "observed analysis report",
+            "stable analysis markdown",
+            "reflection markdown"
+          ],
+          "analysis_questions": [
+            "instruction format은 base LM의 continuation behavior를 assistant interaction으로 어떻게 다시 framing하는가?",
+            "supervised fine-tuning은 next-token loss를 유지하면서 어떤 assistant response target을 모방하게 만드는가?",
+            "plain input-output template와 system/user/assistant chat template는 어떤 다른 conditioning signal을 제공하는가?",
+            "assistant-only loss mask는 prompt tokens와 assistant tokens를 어떻게 다르게 취급하는가?",
+            "system message는 role framing 안에서 응답 톤과 제약을 어떻게 바꾸는가?",
+            "imitation을 잘하는 것과 helpfulness가 높은 것은 어디서 갈라지며, 왜 preference optimization이 이어지는가?"
+          ],
+          "checkpoints": [
+            "README",
+            "THEORY",
+            "PREREQS",
+            "scratch lab",
+            "framework lab",
+            "analysis script",
+            "analysis note",
+            "reflection"
+          ],
+          "cpu_safe": false,
+          "deterministic": false
+        },
+        {
+          "id": "05_preference_optimization_dpo_orpo_kto",
+          "title": "05 Preference Optimization: DPO, ORPO, KTO",
+          "path": "05_advanced_nlp_llm/05_preference_optimization_dpo_orpo_kto",
+          "status": "runnable",
+          "objective": "chosen/rejected pair와 desirable/undesirable label을 이용해 DPO, ORPO, KTO가 full RL loop 없이 policy log-prob margin을 어떻게 움직이는지 이해한다.",
+          "readme": "05_advanced_nlp_llm/05_preference_optimization_dpo_orpo_kto/README.md",
+          "lesson": "05_advanced_nlp_llm/05_preference_optimization_dpo_orpo_kto/lesson.yaml",
+          "prereqs": [
+            "supervised fine-tuning(SFT) 기본 감각",
+            "token log-probability / negative log likelihood / log-prob margin 기초",
+            "chosen/rejected pair와 desirable/undesirable label 차이 이해",
+            "reference policy / anchor / KL-style drift guardrail 직관",
+            "offline alignment eval과 held-out regression 점검 이해"
+          ],
+          "key_terms": [
+            "preference optimization",
+            "chosen/rejected pair",
+            "desirability label",
+            "log-prob margin",
+            "DPO",
+            "direct preference optimization",
+            "ORPO",
+            "odds ratio preference optimization",
+            "KTO",
+            "Kahneman-Tversky optimization",
+            "reference policy",
+            "policy update without full RL",
+            "alignment eval tradeoff",
+            "length bias",
+            "style over factuality"
+          ],
+          "required_outputs": [
+            "runnable README with real execution examples",
+            "theory markdown",
+            "prereqs markdown",
+            "lesson metadata",
+            "scratch metrics json",
+            "scratch svg figure",
+            "framework metrics json",
+            "observed analysis report",
+            "stable analysis markdown",
+            "reflection markdown"
+          ],
+          "analysis_questions": [
+            "chosen/rejected pair는 정답/오답 label과 어떻게 다르고, log-prob margin 해석을 어떻게 바꾸는가?",
+            "DPO는 reference-relative chosen/rejected margin으로 policy drift와 preference separation을 어떻게 함께 보는가?",
+            "ORPO의 chosen likelihood anchor와 odds-ratio term은 imitation과 preference separation 사이에서 어떤 균형을 만드는가?",
+            "KTO는 strict pair 없이 desirable/undesirable label을 쓸 수 있지만 어떤 label noise와 imbalance 위험을 더 크게 받는가?",
+            "policy update without full RL로 개선된 offline margin이 실제 alignment eval tradeoff까지 해결했다는 뜻이 아닌 이유는 무엇인가?",
+            "win rate, factuality, refusal balance, verbosity, style bias를 어떻게 분리해서 평가할 것인가?"
+          ],
+          "checkpoints": [
+            "README",
+            "THEORY",
+            "PREREQS",
+            "scratch lab",
+            "framework lab",
+            "analysis script",
+            "analysis note",
+            "reflection"
+          ],
+          "cpu_safe": false,
+          "deterministic": false
+        },
+        {
+          "id": "06_rlhf_and_reasoning_rl",
+          "title": "06 RLHF and Reasoning RL",
+          "path": "05_advanced_nlp_llm/06_rlhf_and_reasoning_rl",
+          "status": "runnable",
+          "objective": "reward model intuition, PPO/RLHF high-level loop, verifier/judge signal, reasoning-oriented reward shaping을 연결해 RLHF와 reasoning RL이 어떤 policy update를 만들고 어떤 failure mode를 낳을 수 있는지 이해한다.",
+          "readme": "05_advanced_nlp_llm/06_rlhf_and_reasoning_rl/README.md",
+          "lesson": "05_advanced_nlp_llm/06_rlhf_and_reasoning_rl/lesson.yaml",
+          "prereqs": [
+            "supervised fine-tuning(SFT) 기본 감각",
+            "preference optimization(DPO / ORPO / KTO) high-level 이해",
+            "reward / policy / rollout / advantage / KL anchor 용어 직관",
+            "offline preference optimization과 online RLHF rollout 차이",
+            "verifier signal / judge score / factuality / safety가 다른 평가 축이라는 이해"
+          ],
+          "key_terms": [
+            "RLHF",
+            "reinforcement learning from human feedback",
+            "reward model",
+            "reward model intuition",
+            "preference proxy",
+            "online rollout",
+            "PPO/RLHF high-level loop",
+            "PPO-family policy update",
+            "advantage",
+            "KL anchor",
+            "reasoning RL",
+            "outcome reward",
+            "process reward",
+            "reasoning-oriented reward shaping",
+            "verifier/judge signal",
+            "reward hacking",
+            "verbosity inflation",
+            "over-refusal",
+            "judge length bias"
+          ],
+          "required_outputs": [
+            "runnable README with real execution examples",
+            "theory markdown",
+            "prereqs markdown",
+            "lesson metadata",
+            "scratch metrics json",
+            "scratch svg figure",
+            "framework metrics json",
+            "observed analysis report",
+            "stable analysis markdown",
+            "reflection markdown"
+          ],
+          "analysis_questions": [
+            "reward model intuition은 왜 reward를 truth engine이 아니라 preference proxy로 읽게 하는가?",
+            "PPO/RLHF high-level loop에서 rollout, reward scoring, policy update, regression eval은 어떤 순서로 이어지는가?",
+            "verifier/judge signal은 각각 어떤 장점과 bias를 갖는가?",
+            "reasoning-oriented reward shaping은 final answer reward와 process reward를 어떻게 섞어야 하는가?",
+            "reward hacking, verbosity inflation, over-refusal을 어떤 held-out eval slice로 관찰할 것인가?",
+            "KL anchor가 없을 때 PPO-family policy update가 어떤 drift 위험을 키울 수 있는가?"
+          ],
+          "checkpoints": [
+            "README",
+            "THEORY",
+            "PREREQS",
+            "scratch lab",
+            "framework lab",
+            "analysis script",
+            "analysis note",
+            "reflection"
+          ],
+          "cpu_safe": false,
+          "deterministic": false
+        },
+        {
+          "id": "07_retrieval_augmented_generation_and_eval",
+          "title": "07 Retrieval-Augmented Generation and Eval",
+          "path": "05_advanced_nlp_llm/07_retrieval_augmented_generation_and_eval",
+          "status": "runnable",
+          "objective": "retrieval로 외부 근거를 붙인 생성 시스템을 retriever-reader / retriever-generator, retrieval grounding, context injection, citation/evidence expectation, failure modes, eval harness metrics 관점에서 실행 가능한 toy RAG로 이해한다.",
+          "readme": "05_advanced_nlp_llm/07_retrieval_augmented_generation_and_eval/README.md",
+          "lesson": "05_advanced_nlp_llm/07_retrieval_augmented_generation_and_eval/lesson.yaml",
+          "prereqs": [
+            "embedding similarity / top-k retrieval / reranking 기초",
+            "question answering과 evidence reading 기본 감각",
+            "prompt / context window / context injection 기본 용어",
+            "chunking / metadata / source freshness가 retrieval에 주는 영향 이해",
+            "answer correctness와 groundedness / citation adequacy 구분",
+            "offline metric과 online product metric의 역할 차이 이해"
+          ],
+          "key_terms": [
+            "retrieval augmented generation",
+            "RAG",
+            "parametric memory",
+            "external memory",
+            "retriever",
+            "reranker",
+            "reader",
+            "generator",
+            "retriever-reader",
+            "retriever-generator",
+            "retrieval grounding",
+            "context injection",
+            "citation",
+            "evidence",
+            "unsupported claim",
+            "failure modes",
+            "eval harness",
+            "recall at k",
+            "MRR",
+            "nDCG",
+            "groundedness",
+            "citation precision",
+            "abstention"
+          ],
+          "required_outputs": [
+            "scratch metrics json",
+            "scratch svg figure",
+            "framework metrics json",
+            "observed analysis report",
+            "stable analysis markdown",
+            "reflection markdown"
+          ],
+          "analysis_questions": [
+            "retriever-reader와 retriever-generator는 evidence 사용 방식과 failure pattern이 어떻게 다른가?",
+            "retrieval grounding은 citation 개수보다 claim-level evidence support를 왜 우선해야 하는가?",
+            "context injection에서 metadata, chunk boundary, citation tag, prompt order는 어떤 failure modes를 줄이거나 키우는가?",
+            "citation/evidence expectation을 answer correctness와 어떻게 분리해 평가할 것인가?",
+            "retrieval metrics와 answer grounding metrics는 왜 따로 봐야 하며 offline/online metric split은 어디서 필요해지는가?",
+            "evidence가 부족하거나 source가 충돌할 때 answer, abstain, ask-back 중 무엇을 어떻게 평가해야 하는가?"
+          ],
+          "checkpoints": [
+            "README",
+            "THEORY",
+            "PREREQS",
+            "scratch lab",
+            "framework lab",
+            "analysis script",
+            "analysis note",
+            "reflection"
+          ],
+          "cpu_safe": false,
+          "deterministic": false
+        },
+        {
+          "id": "08_alignment_safety_and_model_behavior",
+          "title": "08 Alignment, Safety, and Model Behavior",
+          "path": "05_advanced_nlp_llm/08_alignment_safety_and_model_behavior",
+          "status": "runnable",
+          "objective": "alignment vs capability를 구분하고 refusal vs over-refusal, harmlessness and robustness, behavioral eval slice analysis, policy vs system-level safety를 deterministic toy behavior eval로 관찰한다.",
+          "readme": "05_advanced_nlp_llm/08_alignment_safety_and_model_behavior/README.md",
+          "lesson": "05_advanced_nlp_llm/08_alignment_safety_and_model_behavior/lesson.yaml",
+          "prereqs": [
+            "post-training 단계(SFT, preference optimization, RLHF) 큰 그림 이해",
+            "prompt/response/role framing이 행동 조건 신호가 된다는 점",
+            "behavioral eval slice analysis와 failure mode 관찰 기본 감각",
+            "refusal vs over-refusal / harmlessness and robustness 용어 구분",
+            "model policy와 system guardrail 책임 분리 이해",
+            "capability와 deployment behavior를 분리해 보는 태도"
+          ],
+          "key_terms": [
+            "alignment",
+            "capability",
+            "alignment vs capability",
+            "model behavior",
+            "refusal",
+            "over-refusal",
+            "refusal vs over-refusal",
+            "harmlessness and robustness",
+            "behavioral eval",
+            "behavioral eval slice analysis",
+            "slice analysis",
+            "safety slice",
+            "policy boundary",
+            "system guardrail",
+            "policy vs system-level safety",
+            "jailbreak robustness",
+            "safe alternative",
+            "deployment behavior"
+          ],
+          "required_outputs": [
+            "runnable README with real execution examples",
+            "theory markdown",
+            "prereqs markdown",
+            "lesson metadata",
+            "scratch metrics json",
+            "scratch svg figure",
+            "framework metrics json",
+            "observed analysis report",
+            "stable analysis markdown",
+            "reflection markdown"
+          ],
+          "analysis_questions": [
+            "alignment vs capability를 분리하지 않으면 capability score가 어떤 unsafe compliance를 숨길 수 있는가?",
+            "refusal vs over-refusal은 benign, harmful, borderline behavioral slice에서 어떻게 구분되는가?",
+            "harmlessness and robustness는 단순 refusal rate보다 어떤 추가 행동을 요구하는가?",
+            "behavioral eval slice analysis는 단일 judge score가 놓치는 어떤 failure mode를 보여 주는가?",
+            "jailbreak-style prompt뿐 아니라 paraphrase와 noisy prompt를 robustness 평가에 넣어야 하는 이유는 무엇인가?",
+            "policy vs system-level safety 관점에서 model policy와 system guardrail은 각각 어떤 안전 책임을 맡아야 하는가?"
+          ],
+          "checkpoints": [
+            "README",
+            "THEORY",
+            "PREREQS",
+            "scratch lab",
+            "framework lab",
+            "analysis script",
+            "analysis note",
+            "reflection"
+          ],
+          "cpu_safe": false,
+          "deterministic": false
+        }
+      ]
+    },
+    {
+      "id": "06_training_systems",
+      "title": "06 Training Systems",
+      "order": 6,
+      "readme": "06_training_systems/README.md",
+      "summary": "이 트랙은 `05_advanced_nlp_llm` 이후에 놓이는 **distributed / large-model systems** 구간이다. 모델 objective와 post-training 흐름을 이해한 뒤, 이제는 `그 모델을 실제 하드웨어 위에서 어떻게 안정적으로 학습시키는가`를 다룬다.",
+      "units": [
+        {
+          "id": "01_torchrun_and_ddp_basics",
+          "title": "01 Torchrun and DDP Basics",
+          "path": "06_training_systems/01_torchrun_and_ddp_basics",
+          "status": "runnable",
+          "objective": "torchrun이 만드는 rank/world-size 실행 계약과 DDP gradient averaging 직관을 CPU-safe simulation으로 이해한다.",
+          "readme": "06_training_systems/01_torchrun_and_ddp_basics/README.md",
+          "lesson": "06_training_systems/01_torchrun_and_ddp_basics/lesson.yaml",
+          "prereqs": [
+            "mini-batch와 gradient 기본 감각",
+            "optimizer step 이해",
+            "device와 process 구분"
+          ],
+          "key_terms": [
+            "torchrun",
+            "distributed data parallel",
+            "rank",
+            "local rank",
+            "world size",
+            "all-reduce",
+            "gradient averaging"
+          ],
+          "required_outputs": [
+            "scratch metrics json",
+            "scratch svg figure",
+            "framework metrics json",
+            "stable analysis markdown",
+            "observed analysis report"
+          ],
+          "analysis_questions": [
+            "rank와 local rank는 각각 무엇을 설명하는가?",
+            "DDP는 무엇을 복제하고 무엇을 평균내는가?",
+            "평균 gradient가 parameter update를 어떻게 바꾸는가?"
+          ],
+          "checkpoints": [
+            "README",
+            "THEORY",
+            "PREREQS",
+            "scratch lab",
+            "framework lab",
+            "analysis script",
+            "analysis note",
+            "reflection"
+          ],
+          "cpu_safe": false,
+          "deterministic": false
+        },
+        {
+          "id": "02_accelerate_workflows",
+          "title": "02 Accelerate Workflows",
+          "path": "06_training_systems/02_accelerate_workflows",
+          "status": "runnable",
+          "objective": "Accelerate를 PyTorch loop와 distributed backend 사이의 실행/장치 적응 계층으로 이해하고, 무엇을 단순화하며 무엇은 남기는지 구분한다.",
+          "readme": "06_training_systems/02_accelerate_workflows/README.md",
+          "lesson": "06_training_systems/02_accelerate_workflows/lesson.yaml",
+          "prereqs": [
+            "torchrun/DDP rank/world-size 기초",
+            "PyTorch training loop 기본 구조",
+            "device placement와 mixed precision 기본 감각"
+          ],
+          "key_terms": [
+            "Accelerate",
+            "Accelerator",
+            "prepare",
+            "device placement",
+            "mixed precision",
+            "distributed_type",
+            "accelerate launch"
+          ],
+          "required_outputs": [
+            "scratch metrics json",
+            "scratch svg figure",
+            "framework metrics json",
+            "stable analysis markdown",
+            "observed analysis report"
+          ],
+          "analysis_questions": [
+            "Accelerate는 어떤 boilerplate를 줄여 주는가?",
+            "`prepare()` 이후에도 사용자가 직접 이해해야 하는 것은 무엇인가?",
+            "mixed precision과 backend complexity는 왜 별개로 봐야 하는가?"
+          ],
+          "checkpoints": [
+            "README",
+            "THEORY",
+            "PREREQS",
+            "scratch lab",
+            "framework lab",
+            "analysis script",
+            "analysis note",
+            "reflection"
+          ],
+          "cpu_safe": false,
+          "deterministic": false
+        },
+        {
+          "id": "03_deepspeed_zero",
+          "title": "03 DeepSpeed ZeRO",
+          "path": "06_training_systems/03_deepspeed_zero",
+          "status": "runnable",
+          "objective": "ZeRO가 data parallel 중복 상태를 단계별로 shard해 per-rank memory를 줄이는 방식을 toy memory accounting으로 이해한다.",
+          "readme": "06_training_systems/03_deepspeed_zero/README.md",
+          "lesson": "06_training_systems/03_deepspeed_zero/lesson.yaml",
+          "prereqs": [
+            "DDP와 data parallel 기초",
+            "parameter / gradient / optimizer state 구분",
+            "rank/world size 실행 계약"
+          ],
+          "key_terms": [
+            "DeepSpeed",
+            "ZeRO",
+            "optimizer state",
+            "gradient sharding",
+            "parameter sharding",
+            "memory accounting",
+            "communication overhead"
+          ],
+          "required_outputs": [
+            "scratch metrics json",
+            "scratch svg figure",
+            "framework metrics json",
+            "stable analysis markdown",
+            "observed analysis report"
+          ],
+          "analysis_questions": [
+            "ZeRO stage별로 어떤 상태가 shard되는가?",
+            "per-rank memory는 얼마나 줄어드는가?",
+            "메모리 절약과 통신/복구 복잡도는 어떻게 trade-off를 이루는가?"
+          ],
+          "checkpoints": [
+            "README",
+            "THEORY",
+            "PREREQS",
+            "scratch lab",
+            "framework lab",
+            "analysis script",
+            "analysis note",
+            "reflection"
+          ],
+          "cpu_safe": false,
+          "deterministic": false
+        },
+        {
+          "id": "04_fsdp_checkpointing_and_offload",
+          "title": "04 FSDP, Checkpointing, and Offload",
+          "path": "06_training_systems/04_fsdp_checkpointing_and_offload",
+          "status": "runnable",
+          "objective": "FSDP가 parameter/gradient/optimizer state shard lifecycle을 어떻게 관리하는지, activation checkpointing과 offload가 어떤 memory-compute-I/O trade-off를 만드는지, 그리고 full/sharded checkpoint save-load 계약이 어떻게 달라지는지를 CPU-safe simulation으로 관찰한다.",
+          "readme": "06_training_systems/04_fsdp_checkpointing_and_offload/README.md",
+          "lesson": "06_training_systems/04_fsdp_checkpointing_and_offload/lesson.yaml",
+          "prereqs": [
+            "DDP와 ZeRO의 state replication / partition 기본 그림",
+            "parameter / gradient / optimizer state / activation 구분",
+            "collective communication(all-gather, reduce-scatter) 기초 감각",
+            "mixed precision이 memory/runtime에 주는 영향 이해",
+            "checkpoint save/load를 training state contract로 보는 관점",
+            "GPU memory bottleneck을 orchestration 문제로 읽는 태도"
+          ],
+          "key_terms": [
+            "FSDP",
+            "Fully Sharded Data Parallel",
+            "parameter shard",
+            "all-gather",
+            "reduce-scatter",
+            "activation checkpointing",
+            "recomputation",
+            "CPU offload",
+            "full state dict",
+            "sharded state dict",
+            "state_dict_type",
+            "peak memory"
+          ],
+          "required_outputs": [
+            "artifacts/scratch-manual/metrics.json",
+            "artifacts/scratch-manual/fsdp_memory_tradeoffs.svg",
+            "artifacts/framework-manual/metrics.json",
+            "artifacts/analysis-manual/latest_report.md"
+          ],
+          "analysis_questions": [
+            "FSDP는 parameter를 언제 모으고 언제 다시 shard하는 runtime으로 이해하면 좋은가?",
+            "activation checkpointing은 어떤 메모리를 줄이고, 그 대가로 어떤 recomputation 비용을 만드는가?",
+            "CPU offload는 메모리 절약과 step latency 사이에서 어떤 교환을 만드는가?",
+            "full state dict와 sharded state dict는 save/load/resume/export 관점에서 어떤 서로 다른 운영 계약을 가지는가?",
+            "이후 tensor parallelism이나 hybrid parallelism을 볼 때 FSDP가 해결하는 문제와 남겨 두는 문제는 무엇인가?"
+          ],
+          "checkpoints": [
+            "README",
+            "THEORY",
+            "PREREQS",
+            "scratch lab",
+            "framework lab",
+            "analysis script",
+            "analysis note",
+            "reflection"
+          ],
+          "cpu_safe": false,
+          "deterministic": false
+        },
+        {
+          "id": "05_tensor_parallelism",
+          "title": "05 Tensor Parallelism",
+          "path": "06_training_systems/05_tensor_parallelism",
+          "status": "runnable",
+          "objective": "tensor parallelism이 large Transformer 레이어 내부 행렬 연산을 여러 장치로 어떻게 분할하는지, 그 과정에서 activation/weight shard와 collective communication이 어떤 trade-off를 만드는지 이해해 later pipeline/hybrid parallelism의 기준선을 만든다.",
+          "readme": "06_training_systems/05_tensor_parallelism/README.md",
+          "lesson": "06_training_systems/05_tensor_parallelism/lesson.yaml",
+          "prereqs": [
+            "tensor shape와 matrix multiplication 기본 감각",
+            "Transformer attention/MLP 내부 차원 구조 이해",
+            "DDP와 sharding 접근의 큰 그림",
+            "collective communication 기본 직관",
+            "GPU memory bottleneck과 interconnect latency 감각"
+          ],
+          "key_terms": [
+            "tensor parallelism",
+            "model parallelism",
+            "intra-layer parallelism",
+            "column parallel linear",
+            "row parallel linear",
+            "weight shard",
+            "activation shard",
+            "attention head partition",
+            "all-gather",
+            "reduce-scatter",
+            "all-reduce",
+            "hidden size",
+            "latency",
+            "bandwidth",
+            "hybrid parallelism",
+            "matrix_shard",
+            "activation_shard",
+            "communication_overhead"
+          ],
+          "required_outputs": [
+            "runnable README",
+            "theory note",
+            "prerequisite checklist",
+            "lesson metadata",
+            "scratch metrics json",
+            "scratch tensor parallel SVG",
+            "framework simulation metrics json",
+            "stable analysis markdown",
+            "observed analysis json",
+            "reflection worksheet"
+          ],
+          "analysis_questions": [
+            "tensor parallelism은 상태 sharding 접근과 무엇이 다르며, 왜 intra-layer parallelism으로 따로 봐야 하는가?",
+            "large Transformer에서 어떤 차원을 나누면 row/column parallel linear 감각이 자연스럽게 생기는가?",
+            "column parallel과 row parallel은 각각 어떤 partial output을 만들고, 어떤 collective communication을 요구하는가?",
+            "activation shard를 full tensor로 다시 모으는 시점은 왜 latency와 메모리 둘 다에 영향을 주는가?",
+            "tensor parallelism은 메모리를 줄여 주는데도 왜 interconnect bandwidth와 latency에 민감한가?",
+            "pipeline parallelism과 hybrid parallelism으로 넘어갈 때 tensor parallel은 어떤 독립 축으로 작동하는가?"
+          ],
+          "checkpoints": [
+            "README",
+            "THEORY",
+            "PREREQS",
+            "scratch lab",
+            "framework lab",
+            "analysis script",
+            "analysis note",
+            "reflection"
+          ],
+          "cpu_safe": true,
+          "deterministic": true
+        },
+        {
+          "id": "06_pipeline_parallelism",
+          "title": "06 Pipeline Parallelism",
+          "path": "06_training_systems/06_pipeline_parallelism",
+          "status": "runnable",
+          "objective": "pipeline parallelism이 모델 레이어 스택을 pipeline stage로 나누고 microbatch schedule로 시간축 실행을 구성하는 방식임을 이해하며, bubble/throughput trade-off·activation transfer·partition balance를 later hybrid parallel 학습의 기준선으로 삼는다.",
+          "readme": "06_training_systems/06_pipeline_parallelism/README.md",
+          "lesson": "06_training_systems/06_pipeline_parallelism/lesson.yaml",
+          "prereqs": [
+            "transformer 같은 순차 레이어 스택 기본 구조 이해",
+            "forward/backward/activation memory 기본 감각",
+            "batch, microbatch, gradient accumulation 구분",
+            "torchrun/DDP의 rank / world size 기초",
+            "tensor parallel과 pipeline parallel의 차이를 받아들일 준비",
+            "GPU memory bottleneck과 communication bottleneck 기본 관점"
+          ],
+          "key_terms": [
+            "pipeline parallelism",
+            "pipeline_stage",
+            "stage_partition",
+            "partition_boundary",
+            "partition_balance",
+            "microbatch",
+            "microbatch_schedule",
+            "schedule_trace",
+            "GPipe",
+            "1F1B",
+            "warmup",
+            "steady_state",
+            "cooldown",
+            "pipeline_bubble",
+            "bubble_fraction",
+            "throughput",
+            "latency",
+            "activation_transfer",
+            "send_recv",
+            "load_imbalance"
+          ],
+          "required_outputs": [
+            "runnable README",
+            "theory note",
+            "prerequisite checklist",
+            "lesson metadata",
+            "scratch pipeline schedule metrics json",
+            "scratch pipeline schedule SVG",
+            "framework deterministic pipeline simulation metrics json",
+            "stable analysis markdown",
+            "observed analysis json",
+            "reflection worksheet"
+          ],
+          "analysis_questions": [
+            "pipeline parallelism은 모델 실행 경로를 stage로 나눈다는 점에서 data parallel / tensor parallel과 어떻게 다른가?",
+            "stage partition은 왜 메모리 적재 문제를 완화하면서도 single-batch latency를 자동으로 줄여 주지 않는가?",
+            "microbatch 수가 bubble fraction과 throughput에 어떤 영향을 주며, 왜 무한히 늘리는 것이 정답이 아닌가?",
+            "GPipe식 스케줄과 1F1B 스케줄은 activation 보관량과 runtime 관찰에서 어떻게 다르게 보이는가?",
+            "activation transfer와 partition boundary는 왜 단순 레이어 개수 균등 분할보다 더 중요한 설계 문제가 되는가?",
+            "이후 data parallel + grad accumulation, hybrid parallel topologies와 연결할 때 pipeline 축을 어떻게 설명할 수 있는가?"
+          ],
+          "checkpoints": [
+            "README",
+            "THEORY",
+            "PREREQS",
+            "scratch lab",
+            "framework lab",
+            "analysis script",
+            "analysis note",
+            "reflection"
+          ],
+          "cpu_safe": true,
+          "deterministic": true
+        },
+        {
+          "id": "07_data_parallel_grad_accumulation",
+          "title": "07 Data Parallel + Grad Accumulation",
+          "path": "06_training_systems/07_data_parallel_grad_accumulation",
+          "status": "runnable",
+          "objective": "data parallel과 grad accumulation을 함께 실행 가능한 CPU-safe simulation으로 관찰하며 local/global/effective batch, deferred sync/no_sync, optimizer step cadence, loss normalization, gradient clipping, throughput/memory trade-off를 later hybrid parallel 학습의 기준선으로 삼는다.",
+          "readme": "06_training_systems/07_data_parallel_grad_accumulation/README.md",
+          "lesson": "06_training_systems/07_data_parallel_grad_accumulation/lesson.yaml",
+          "prereqs": [
+            "backward와 optimizer step 기본 감각",
+            "local batch와 GPU memory pressure 관계 이해",
+            "DDP의 rank/world size/gradient synchronization 기초",
+            "effective batch와 learning-rate 해석 기본 관점",
+            "throughput, latency, utilization을 분리해서 보는 운영 감각"
+          ],
+          "key_terms": [
+            "data_parallel",
+            "data parallel",
+            "DDP",
+            "gradient_accumulation",
+            "grad accumulation",
+            "local batch size",
+            "global batch size",
+            "effective_batch",
+            "effective batch size",
+            "microstep",
+            "optimizer_step_cadence",
+            "deferred_sync",
+            "no_sync",
+            "all-reduce",
+            "loss_normalization",
+            "gradient clipping",
+            "scheduler step timing",
+            "throughput",
+            "latency",
+            "memory ceiling",
+            "optimizer noise"
+          ],
+          "required_outputs": [
+            "runnable README",
+            "theory note",
+            "prerequisite checklist",
+            "lesson metadata",
+            "scratch data-parallel accumulation metrics json",
+            "scratch cadence SVG",
+            "framework deterministic accumulation metrics json",
+            "stable analysis markdown",
+            "observed analysis json",
+            "reflection worksheet"
+          ],
+          "analysis_questions": [
+            "data parallel은 batch를 어떤 축으로 키우고, grad accumulation은 optimizer step을 어떤 방식으로 늦추는가?",
+            "local batch, global batch, effective batch를 구분하지 않으면 어떤 해석 오류가 생기는가?",
+            "accumulation step을 늘리면 memory fit은 좋아질 수 있는데도 throughput이 자동으로 개선되지 않는 이유는 무엇인가?",
+            "DDP에서 every-step sync와 accumulation-boundary deferred sync는 communication cadence에서 어떻게 다르게 보이는가?",
+            "loss normalization, gradient clipping, scheduler step timing은 왜 accumulation boundary와 함께 봐야 하는가?",
+            "later hybrid parallel topologies에서 data-parallel 축은 왜 batch budget과 optimizer-step cadence의 기준선으로 남는가?"
+          ],
+          "checkpoints": [
+            "README",
+            "THEORY",
+            "PREREQS",
+            "scratch lab",
+            "framework lab",
+            "analysis script",
+            "analysis note",
+            "reflection"
+          ],
+          "cpu_safe": true,
+          "deterministic": true
+        },
+        {
+          "id": "08_hybrid_parallel_topologies",
+          "title": "08 Hybrid Parallel Topologies",
+          "path": "06_training_systems/08_hybrid_parallel_topologies",
+          "status": "runnable",
+          "objective": "data parallel, tensor parallel, pipeline parallel, FSDP/state sharding을 한 장의 topology 설계 문제로 묶어 보고, 모델 규모·메모리 병목·통신 경로·하드웨어 링크 구조를 기준으로 hybrid parallel 구성을 선택하는 감각을 CPU-safe deterministic simulation으로 만든다.",
+          "readme": "06_training_systems/08_hybrid_parallel_topologies/README.md",
+          "lesson": "06_training_systems/08_hybrid_parallel_topologies/lesson.yaml",
+          "prereqs": [
+            "data parallel / tensor parallel / pipeline parallel / FSDP의 큰 그림",
+            "global batch, microbatch, gradient accumulation 구분",
+            "large Transformer의 parameter state / activation / intra-layer compute 병목 감각",
+            "collective communication(all-reduce, all-gather, reduce-scatter, send/recv) 기본 직관",
+            "node 내부 링크와 node 간 링크 차이에 대한 운영 감각",
+            "checkpoint save/load가 topology-aware contract가 될 수 있다는 이해"
+          ],
+          "key_terms": [
+            "hybrid parallelism",
+            "hybrid parallel topology",
+            "topology",
+            "device mesh",
+            "rank mesh",
+            "data parallel",
+            "tensor parallelism",
+            "pipeline parallelism",
+            "FSDP",
+            "ZeRO",
+            "state sharding",
+            "global batch",
+            "microbatch",
+            "gradient accumulation",
+            "all-reduce",
+            "all-gather",
+            "reduce-scatter",
+            "send/recv",
+            "interconnect",
+            "node-local link",
+            "memory budget",
+            "communication tradeoff",
+            "bottleneck reasoning",
+            "checkpoint portability",
+            "load balance"
+          ],
+          "required_outputs": [
+            "runnable README",
+            "theory note",
+            "prerequisite checklist",
+            "lesson metadata",
+            "scratch hybrid topology metrics json",
+            "scratch hybrid topology SVG",
+            "framework deterministic topology scoring metrics json",
+            "stable analysis markdown",
+            "observed analysis json",
+            "reflection worksheet"
+          ],
+          "analysis_questions": [
+            "hybrid parallel topology는 왜 여러 parallelism 옵션의 단순 조합이 아니라 모델-하드웨어 배치 설계 문제로 봐야 하는가?",
+            "data parallel, tensor parallel, pipeline parallel, FSDP는 각각 무엇을 나누며 어떤 병목을 완화하는가?",
+            "통신이 많은 축은 왜 더 빠른 링크 위에 두는 편이 유리하고, 그렇지 않으면 어떤 병목이 생기는가?",
+            "모델 크기, sequence length, global batch 목표가 달라지면 topology 후보 선택 기준은 어떻게 달라지는가?",
+            "memory fit, throughput, checkpoint portability, implementation complexity는 왜 동시에 최적화되기 어려운가?",
+            "profiling과 failure recovery로 넘어갈 때 topology 설계가 어떤 로그 / metric / failure mode 차이를 남기는가?"
+          ],
+          "checkpoints": [
+            "README",
+            "THEORY",
+            "PREREQS",
+            "scratch lab",
+            "framework lab",
+            "analysis script",
+            "analysis note",
+            "reflection"
+          ],
+          "cpu_safe": true,
+          "deterministic": true
+        },
+        {
+          "id": "09_profiling_monitoring_and_failure_recovery",
+          "title": "09 Profiling, Monitoring, and Failure Recovery",
+          "path": "06_training_systems/09_profiling_monitoring_and_failure_recovery",
+          "status": "runnable",
+          "objective": "profiling, monitoring, failure recovery를 한 runbook으로 묶어 large-model 학습에서 time/memory/communication 병목을 읽고 OOM·hang·divergence·checkpoint resume 문제를 체계적으로 triage하는 기준선을 CPU-safe deterministic simulation으로 만든다.",
+          "readme": "06_training_systems/09_profiling_monitoring_and_failure_recovery/README.md",
+          "lesson": "06_training_systems/09_profiling_monitoring_and_failure_recovery/lesson.yaml",
+          "prereqs": [
+            "training step과 throughput / step time 기본 감각",
+            "loss / grad norm / optimizer step 로그 해석 기본기",
+            "GPU memory allocated / reserved / peak 개념 이해",
+            "distributed runtime에서 rank 간 대기와 communication 병목 기초",
+            "checkpoint가 restart state 계약이라는 점에 대한 이해",
+            "OOM / hang / divergence를 구분해 보려는 운영 관점"
+          ],
+          "key_terms": [
+            "profiling",
+            "profiler trace",
+            "hotspot",
+            "step timeline",
+            "throughput",
+            "step time jitter",
+            "monitoring snapshot",
+            "heartbeat",
+            "GPU utilization",
+            "allocated memory",
+            "reserved memory",
+            "peak memory",
+            "fragmentation",
+            "communication wait",
+            "checkpoint",
+            "manifest",
+            "resume",
+            "recovery",
+            "recovery decision",
+            "retry policy",
+            "preemption",
+            "OOM",
+            "hang",
+            "divergence"
+          ],
+          "required_outputs": [
+            "runnable README",
+            "theory note",
+            "prerequisite checklist",
+            "lesson metadata",
+            "artifacts/scratch-manual/metrics.json",
+            "artifacts/scratch-manual/profiling_timeline.svg",
+            "artifacts/framework-manual/metrics.json",
+            "artifacts/analysis-manual/latest_report.md",
+            "stable analysis markdown",
+            "reflection worksheet"
+          ],
+          "analysis_questions": [
+            "느린 학습 run을 time / memory / communication 축으로 나누면 어떤 병목 가설을 더 빨리 세울 수 있는가?",
+            "average step time만으로는 놓치기 쉬운 jitter, tail latency, phase-boundary slowdown은 왜 중요한가?",
+            "allocated / reserved / peak memory와 checkpoint freshness, per-rank heartbeat를 함께 보면 어떤 failure를 더 빨리 구분할 수 있는가?",
+            "OOM, hang, divergence, storage/checkpoint failure는 각각 어떤 첫 관찰 포인트와 triage 순서를 요구하는가?",
+            "recoverable checkpoint는 어떤 state와 metadata를 포함해야 하며, post-resume validation은 왜 별도 단계로 필요할까?",
+            "retry와 recovery decision은 언제 안전하고, 언제 checkpoint quarantine이나 human escalation이 필요한가?",
+            "이 단위의 observability / recoverability 감각이 이후 frontier labs의 paper reproduction과 capstone 운영에 어떻게 이어지는가?"
+          ],
+          "checkpoints": [
+            "README",
+            "THEORY",
+            "PREREQS",
+            "scratch lab",
+            "framework lab",
+            "analysis script",
+            "analysis note",
+            "reflection"
+          ],
+          "cpu_safe": true,
+          "deterministic": true
+        }
+      ]
+    },
+    {
+      "id": "07_frontier_labs",
+      "title": "07 Frontier Labs",
+      "order": 7,
+      "readme": "07_frontier_labs/README.md",
+      "summary": "이 트랙은 `00 → 06`까지의 내용을 바탕으로 들어가는 **research / capstone / agentic sandbox** 구간이다. 앞선 트랙이 계단식 커리큘럼이었다면, 여기서는 그 재료를 조합해 `직접 재현하고, 만들고, 실패를 설계하는` 실험실 역할을 맡는다.",
+      "units": [
+        {
+          "id": "01_paper_reproduction_playground",
+          "title": "01 Paper Reproduction Playground",
+          "path": "07_frontier_labs/01_paper_reproduction_playground",
+          "status": "runnable",
+          "objective": "논문 전체를 복제하려 하기보다 핵심 claim을 claim/evidence matrix로 자르고, baseline/reported/reproduced comparison, scope control, variance/mismatch hypotheses, artifact hygiene를 갖춘 runnable paper reproduction playground를 만든다.",
+          "readme": "07_frontier_labs/01_paper_reproduction_playground/README.md",
+          "lesson": "07_frontier_labs/01_paper_reproduction_playground/lesson.yaml",
+          "prereqs": [
+            "baseline과 metric을 같은 조건에서 비교하는 기본 모델 해석 감각",
+            "learning curve / seed / batch / runtime budget이 결과에 주는 영향 이해",
+            "absolute result와 relative trend를 구분하는 습관",
+            "preprocessing / evaluator / hardware mismatch 가능성에 대한 인식",
+            "실험 로그와 metadata를 남겨야 재현성 논의가 가능하다는 이해"
+          ],
+          "key_terms": [
+            "paper reproduction",
+            "claim/evidence matrix",
+            "reproduction scope",
+            "scope control",
+            "baseline",
+            "reported result",
+            "reproduced result",
+            "baseline/reported/reproduced comparison",
+            "variance",
+            "mismatch hypothesis",
+            "preprocessing alignment",
+            "evaluation protocol",
+            "artifact hygiene",
+            "experiment card",
+            "reduced claim"
+          ],
+          "required_outputs": [
+            "scratch metrics json",
+            "scratch svg figure",
+            "framework metrics json",
+            "observed analysis report",
+            "stable analysis markdown",
+            "reflection markdown",
+            "claim/evidence matrix",
+            "baseline/reported/reproduced comparison",
+            "variance/mismatch hypotheses",
+            "artifact hygiene checklist"
+          ],
+          "analysis_questions": [
+            "full paper reproduction과 claim-level reproduction은 어떻게 다른가?",
+            "compute/time 제약이 있을 때 reproduction scope를 어디까지 줄이면 정직하고 해석 가능하다고 말할 수 있는가?",
+            "baseline은 왜 paper 표의 숫자만으로 충분하지 않고 같은 protocol 아래 재실행 비교가 필요한가?",
+            "baseline/reported/reproduced comparison에서 primary comparison은 어느 층이어야 하는가?",
+            "reported result와 reproduced result가 다를 때 variance, preprocessing, evaluator, hardware 차이를 어떤 순서로 의심해야 하는가?",
+            "mismatch hypothesis를 실패 핑계가 아니라 다음 실험 설계로 바꾸려면 어떤 artifact hygiene가 필요한가?"
+          ],
+          "checkpoints": [
+            "README",
+            "THEORY",
+            "PREREQS",
+            "scratch lab",
+            "framework lab",
+            "analysis script",
+            "analysis note",
+            "reflection"
+          ],
+          "cpu_safe": true,
+          "deterministic": true
+        },
+        {
+          "id": "02_capstone_model_building",
+          "title": "02 Capstone Model Building",
+          "path": "07_frontier_labs/02_capstone_model_building",
+          "status": "runnable",
+          "objective": "여러 선행 트랙 지식을 묶어 capstone 프로젝트를 막연한 아이디어가 아니라 problem statement / non-goal / dataset-model-eval / milestone / acceptance gate / risk register / failure analysis / report outline 계약으로 고정하고, 다음 agentic training loop에 넘길 수 있는 실행 가능한 프로젝트 보드를 만든다.",
+          "readme": "07_frontier_labs/02_capstone_model_building/README.md",
+          "lesson": "07_frontier_labs/02_capstone_model_building/lesson.yaml",
+          "prereqs": [
+            "claim/evidence를 작은 실험 계약으로 자르는 감각",
+            "baseline, metric, split, failure slice를 같은 조건에서 정의하는 습관",
+            "dataset leakage / label quality / protocol mismatch 위험에 대한 인식",
+            "runtime budget / hardware / logging / recovery 관점에서 프로젝트 범위를 보는 태도",
+            "success criterion과 non-goal을 문장으로 고정하는 기본 문서화 습관"
+          ],
+          "key_terms": [
+            "capstone",
+            "problem statement",
+            "problem framing",
+            "scope boundary",
+            "non-goal",
+            "dataset contract",
+            "model contract",
+            "eval contract",
+            "baseline",
+            "milestone",
+            "acceptance gate",
+            "report outline",
+            "failure analysis",
+            "risk register",
+            "error slice",
+            "artifact hygiene"
+          ],
+          "required_outputs": [
+            "runnable README",
+            "theory note",
+            "prerequisite checklist",
+            "lesson metadata",
+            "artifacts/scratch-manual/capstone_contract.json",
+            "artifacts/scratch-manual/milestone_gates.svg",
+            "artifacts/framework-manual/project_board.json",
+            "artifacts/analysis-manual/latest_report.md",
+            "stable analysis markdown",
+            "reflection worksheet",
+            "capstone problem statement and non-goal contract",
+            "milestone and acceptance gate plan contract",
+            "dataset/model/eval matrix contract",
+            "risk register and failure-analysis report outline"
+          ],
+          "analysis_questions": [
+            "아이디어를 어디까지 줄여야 정직하고 끝낼 수 있는 capstone scope가 되는가?",
+            "baseline은 왜 가장 화려한 모델보다 가장 해석 가능한 비교선에서 시작해야 하는가?",
+            "dataset / model / eval 계약 중 하나가 비어 있으면 어떤 혼란이 생기는가?",
+            "milestone은 코드 작업 목록이 아니라 어떤 의사결정과 artifact를 닫아야 하는가?",
+            "failure analysis는 왜 결과가 나쁜 경우의 부록이 아니라 처음부터 설계해야 하는 핵심 deliverable인가?",
+            "risk register는 어떤 관측 signal과 mitigation을 가져야 다음 실험으로 이어지는가?",
+            "이 단위의 capstone contract가 다음 agentic training / eval loop 단위에서 어떤 triage 기준과 자동화 경계로 이어지는가?"
+          ],
+          "checkpoints": [
+            "README",
+            "THEORY",
+            "PREREQS",
+            "scratch lab",
+            "framework lab",
+            "analysis script",
+            "analysis note",
+            "reflection"
+          ],
+          "cpu_safe": true,
+          "deterministic": true
+        },
+        {
+          "id": "03_agentic_training_and_eval_loops",
+          "title": "03 Agentic Training and Eval Loops",
+          "path": "07_frontier_labs/03_agentic_training_and_eval_loops",
+          "status": "runnable",
+          "objective": "capstone에서 고정한 문제/평가 계약을 planner-executor-verifier-critic 구조의 agentic training/eval loop로 옮기고, 자동 반복보다 evidence-first 운영과 stop/escalation 기준을 먼저 설계하는 감각을 CPU-safe deterministic simulation으로 만든다.",
+          "readme": "07_frontier_labs/03_agentic_training_and_eval_loops/README.md",
+          "lesson": "07_frontier_labs/03_agentic_training_and_eval_loops/lesson.yaml",
+          "prereqs": [
+            "capstone scope, acceptance gate, non-goal을 문장으로 고정하는 기본 문서화 감각",
+            "baseline / metric / split / failure slice를 같은 protocol에서 비교해야 한다는 이해",
+            "seed, config, hardware, runtime, artifact log가 결과 해석에 미치는 영향 이해",
+            "retry budget과 stop condition 없이 자동화를 붙이면 해석력보다 비용만 커질 수 있다는 문제의식",
+            "verifier / critic 역할이 과장 방지와 escalation 판단에 중요하다는 인식"
+          ],
+          "key_terms": [
+            "agentic loop",
+            "experiment contract",
+            "planner",
+            "executor",
+            "verifier",
+            "critic",
+            "iteration",
+            "retry budget",
+            "stop rule",
+            "stop condition",
+            "escalation rule",
+            "escalation",
+            "evidence bundle",
+            "protocol match",
+            "artifact completeness",
+            "triage",
+            "benchmark drift",
+            "failure slice",
+            "self-approval",
+            "rollback"
+          ],
+          "required_outputs": [
+            "runnable README",
+            "theory note",
+            "prerequisite checklist",
+            "lesson metadata",
+            "scratch agentic loop metrics json",
+            "scratch iteration trace jsonl",
+            "scratch agentic loop SVG",
+            "framework role contract metrics json",
+            "observed analysis markdown",
+            "observed analysis json",
+            "reflection worksheet"
+          ],
+          "analysis_questions": [
+            "agentic training/eval loop는 단순 job automation과 무엇이 다르고 왜 experiment contract가 먼저 필요한가?",
+            "planner / executor / verifier / critic를 분리하지 않으면 어떤 self-approval와 해석 왜곡이 생기는가?",
+            "retry는 언제 탐색을 돕고 언제 retry storm가 되어 정보량보다 비용만 키우는가?",
+            "verifier는 왜 metric checker가 아니라 artifact와 protocol 정합성을 확인하는 gatekeeper여야 하는가?",
+            "critic recommendation이 evidence 기반 triage인지 단순 추측인지 어떻게 판별할 수 있는가?",
+            "benchmark drift나 protocol mismatch가 관측되면 stop/escalation rule은 어떻게 작동해야 하는가?"
+          ],
+          "checkpoints": [
+            "README",
+            "THEORY",
+            "PREREQS",
+            "scratch lab",
+            "framework lab",
+            "analysis script",
+            "analysis note",
+            "reflection"
+          ],
+          "cpu_safe": true,
+          "deterministic": true
+        },
+        {
+          "id": "04_benchmark_and_dataset_construction",
+          "title": "04 Benchmark and Dataset Construction",
+          "path": "07_frontier_labs/04_benchmark_and_dataset_construction",
+          "status": "runnable",
+          "objective": "CPU-safe toy benchmark records로 benchmark card, task contract, dataset schema, source/split manifest, annotation QC, leakage / contamination / drift audit, versioning, report template를 직접 구성해 frontier 연구의 측정 계약을 runnable artifact로 만든다.",
+          "readme": "07_frontier_labs/04_benchmark_and_dataset_construction/README.md",
+          "lesson": "07_frontier_labs/04_benchmark_and_dataset_construction/lesson.yaml",
+          "prereqs": [
+            "baseline, metric, acceptance gate를 먼저 고정하는 실험 설계 감각",
+            "train/dev/test split과 leakage 문제에 대한 기본 이해",
+            "deduplication과 contamination audit가 서로 다른 목적을 가진다는 이해",
+            "annotation rubric, disagreement, adjudication이 label 품질에 미치는 영향 이해",
+            "slice evaluation과 long-tail failure를 함께 읽는 평가 관점",
+            "dataset versioning과 benchmark refresh의 trade-off에 대한 기본 인식"
+          ],
+          "key_terms": [
+            "benchmark card",
+            "task contract",
+            "dataset schema",
+            "source/split manifest",
+            "unit of record",
+            "split hygiene",
+            "holdout",
+            "annotation rubric",
+            "annotation QC",
+            "adjudication",
+            "leakage",
+            "contamination",
+            "benchmark drift",
+            "slice evaluation",
+            "versioning",
+            "report template"
+          ],
+          "required_outputs": [
+            "scratch metrics json",
+            "scratch svg figure",
+            "framework metrics json",
+            "observed analysis report",
+            "stable analysis markdown",
+            "reflection markdown"
+          ],
+          "analysis_questions": [
+            "task contract를 먼저 고정하면 benchmark score가 허용하는 claim boundary가 어떻게 선명해지는가?",
+            "dataset schema에는 source boundary, unit of record, license tier, version freeze가 왜 함께 들어가야 하는가?",
+            "source/split manifest는 random split을 넘어 어떤 축의 disjointness를 요구하고, 그 이유는 무엇인가?",
+            "annotation QC는 agreement score 외에 major disagreement와 adjudication rule을 왜 같이 남겨야 하는가?",
+            "leakage / contamination / drift audit는 각각 무엇이 다르고 benchmark report에서 어떤 warning으로 이어지는가?",
+            "benchmark versioning과 report template가 다음 open-ended research track의 stopping rule과 evidence 기준에 어떻게 연결되는가?"
+          ],
+          "checkpoints": [
+            "README",
+            "THEORY",
+            "PREREQS",
+            "scratch lab",
+            "framework lab",
+            "analysis script",
+            "analysis note",
+            "reflection"
+          ],
+          "cpu_safe": false,
+          "deterministic": false
+        },
+        {
+          "id": "05_open_ended_research_tracks",
+          "title": "05 Open-Ended Research Tracks",
+          "path": "07_frontier_labs/05_open_ended_research_tracks",
+          "status": "runnable",
+          "objective": "open-ended frontier research를 막연한 자유 탐색이 아니라 research scope·north-star question·hypothesis registry·iteration boundary·kill criteria·evidence standard·archive discipline으로 운영하고, negative result와 inconclusive result를 구분해 stop / pause / escalate / archive 결정을 내리는 기준선을 CPU-safe deterministic simulation으로 만든다.",
+          "readme": "07_frontier_labs/05_open_ended_research_tracks/README.md",
+          "lesson": "07_frontier_labs/05_open_ended_research_tracks/lesson.yaml",
+          "prereqs": [
+            "capstone goal, benchmark contract, non-goal을 문장으로 고정하는 기본 문서화 감각",
+            "planner / executor / verifier / critic 역할 분리가 실험 해석력을 지키는 이유에 대한 이해",
+            "baseline-relative comparison과 failure slice observation을 함께 남겨야 한다는 평가 감각",
+            "retry budget, stopping rule, escalation rule이 없는 탐색이 wandering으로 흐를 수 있다는 문제의식",
+            "benchmark drift / contamination / protocol mismatch가 exploratory result 해석을 보류하게 만들 수 있다는 인식",
+            "negative result와 inconclusive result를 구분해 archive해야 다음 행동을 다르게 고를 수 있다는 이해"
+          ],
+          "key_terms": [
+            "open-ended research",
+            "research scope",
+            "north-star question",
+            "out-of-scope",
+            "hypothesis registry",
+            "falsifiability",
+            "iteration boundary",
+            "kill criteria",
+            "evidence standard",
+            "baseline-relative signal",
+            "negative result",
+            "inconclusive result",
+            "stop decision",
+            "pause decision",
+            "escalate decision",
+            "archive decision",
+            "reopen condition",
+            "scope creep"
+          ],
+          "required_outputs": [
+            "runnable README",
+            "theory note",
+            "prerequisite checklist",
+            "lesson metadata",
+            "artifacts/scratch-manual/metrics.json",
+            "artifacts/scratch-manual/research_track_map.svg",
+            "artifacts/framework-manual/metrics.json",
+            "artifacts/analysis-manual/latest_report.md",
+            "stable analysis markdown",
+            "reflection worksheet"
+          ],
+          "analysis_questions": [
+            "open-ended research는 왜 자유 탐색이 아니라 research scope와 north-star question을 작게 자르는 운영 문제인가?",
+            "좋은 hypothesis registry는 어떤 claim / mechanism / iteration boundary / kill criteria / evidence standard 조합을 가져야 keep/kill 판단이 가능한가?",
+            "iteration boundary 없이 exploratory run을 반복하면 어떤 retrospective story-telling과 scope creep가 생기는가?",
+            "exploratory goal에서도 baseline-relative signal, slice observation, qualitative memo, negative result를 함께 남겨야 하는 이유는 무엇인가?",
+            "negative result와 inconclusive result를 각각 archive와 pause로 다뤄야 하는 이유는 무엇인가?",
+            "trust failure가 보이면 왜 더 실험하지 않고 escalate해야 하는가?",
+            "archive discipline과 reopen condition이 있어야 다음 사람이 같은 질문을 어떻게 더 싸고 정직하게 다시 열 수 있는가?"
+          ],
+          "checkpoints": [
+            "README",
+            "THEORY",
+            "PREREQS",
+            "scratch lab",
+            "framework lab",
+            "analysis script",
+            "analysis note",
+            "reflection"
+          ],
+          "cpu_safe": true,
+          "deterministic": true
+        }
+      ]
+    },
+    {
+      "id": "08_multimodal_bridge",
+      "title": "08 Multimodal Bridge",
+      "order": 8,
+      "readme": "08_multimodal_bridge/README.md",
+      "summary": "이 구간은 `04_nlp`에서 `09_multimodal`로 넘어가기 전에 필요한 연결 고리다. 텍스트만 보던 표현 학습 감각을 **이미지-텍스트 공동 표현 공간**으로 옮기는 데 초점을 둔다.",
+      "units": [
+        {
+          "id": "01_contrastive_alignment",
+          "title": "01 Contrastive Alignment",
+          "path": "08_multimodal_bridge/01_contrastive_alignment",
+          "status": "runnable",
+          "objective": "이미지 임베딩과 텍스트 임베딩을 같은 공간에 놓았을 때 contrastive alignment가 무엇을 최적화하는지 한국어 예제로 이해한다.",
+          "readme": "08_multimodal_bridge/01_contrastive_alignment/README.md",
+          "lesson": "08_multimodal_bridge/01_contrastive_alignment/lesson.yaml",
+          "prereqs": [
+            "cosine similarity와 dot product의 관계",
+            "softmax와 cross entropy 기본 개념",
+            "batch shape 읽기"
+          ],
+          "key_terms": [
+            "contrastive alignment",
+            "joint embedding space",
+            "similarity matrix",
+            "temperature",
+            "hard negative",
+            "bidirectional retrieval"
+          ],
+          "required_outputs": [
+            "scratch metrics json",
+            "scratch svg figure",
+            "framework metrics json",
+            "analysis markdown",
+            "observed analysis report"
+          ],
+          "analysis_questions": [
+            "왜 정답 이미지-텍스트 쌍은 similarity matrix의 대각선에 놓이는가?",
+            "mean positive similarity와 mean negative similarity 차이는 retrieval 난이도와 어떻게 연결되는가?",
+            "temperature를 낮추면 logits와 contrastive loss 해석이 어떻게 달라지는가?",
+            "image-to-text와 text-to-image를 둘 다 보는 이유는 무엇인가?"
+          ],
+          "checkpoints": [
+            "README",
+            "THEORY",
+            "PREREQS",
+            "scratch lab",
+            "framework lab",
+            "analysis script",
+            "analysis note",
+            "reflection"
+          ],
+          "cpu_safe": false,
+          "deterministic": false
+        }
+      ]
+    },
+    {
+      "id": "09_multimodal",
+      "title": "09 Multimodal",
+      "order": 9,
+      "readme": "09_multimodal/README.md",
+      "summary": "이 트랙의 목표는 `이미지와 텍스트를 같은 표현 공간에서 다루는 법` 과 `생성/추론 태스크에서 멀티모달 모델을 평가하는 법` 을 익히는 것이다.",
+      "units": [
+        {
+          "id": "01_image_text_retrieval",
+          "title": "01 Image-Text Retrieval",
+          "path": "09_multimodal/01_image_text_retrieval",
+          "status": "runnable",
+          "objective": "이미지-텍스트 retrieval를 Recall@K, hard negative, 양방향 ranking 관점으로 읽는다.",
+          "readme": "09_multimodal/01_image_text_retrieval/README.md",
+          "lesson": "09_multimodal/01_image_text_retrieval/lesson.yaml",
+          "prereqs": [
+            "cosine similarity 기본 감각",
+            "shared embedding space 직관",
+            "contrastive alignment 기초"
+          ],
+          "key_terms": [
+            "image-text retrieval",
+            "Recall@1",
+            "Recall@K",
+            "bidirectional retrieval",
+            "hard negative",
+            "shared embedding space"
+          ],
+          "required_outputs": [
+            "scratch metrics json",
+            "scratch svg figure",
+            "framework metrics json",
+            "analysis markdown"
+          ],
+          "analysis_questions": [
+            "왜 scratch에서는 image→text보다 text→image가 더 어려웠는가?",
+            "Recall@1과 Recall@2를 함께 읽으면 어떤 ranking 정보를 얻는가?",
+            "framework 학습 후 hard negative와 symmetric loss는 어떻게 달라졌는가?"
+          ],
+          "checkpoints": [
+            "README",
+            "THEORY",
+            "PREREQS",
+            "scratch lab",
+            "framework lab",
+            "analysis script",
+            "analysis note",
+            "reflection"
+          ],
+          "cpu_safe": false,
+          "deterministic": false
+        },
+        {
+          "id": "02_image_captioning",
+          "title": "02 Image Captioning",
+          "path": "09_multimodal/02_image_captioning",
+          "status": "runnable",
+          "objective": "이미지 조건부 텍스트 생성에서 decoder-style captioning, hallucination, 자동 지표와 사람 해석의 차이를 함께 읽는다.",
+          "readme": "09_multimodal/02_image_captioning/README.md",
+          "lesson": "09_multimodal/02_image_captioning/lesson.yaml",
+          "prereqs": [
+            "contrastive alignment와 retrieval 기본 감각",
+            "teacher forcing과 greedy decoding의 차이",
+            "unigram precision 같은 간단한 caption 지표 읽기"
+          ],
+          "key_terms": [
+            "image captioning",
+            "decoder",
+            "teacher forcing",
+            "greedy decoding",
+            "hallucination",
+            "BLEU-1"
+          ],
+          "required_outputs": [
+            "scratch metrics json",
+            "scratch svg figure",
+            "framework metrics json",
+            "stable analysis markdown",
+            "observed analysis report"
+          ],
+          "analysis_questions": [
+            "왜 scratch captioner는 자동 지표가 괜찮아 보여도 hallucination 사례를 만들었는가?",
+            "teacher forcing으로 학습한 decoder를 greedy decoding으로 평가할 때 무엇을 같이 봐야 하는가?",
+            "BLEU-1 또는 unigram precision이 높아도 사람이 읽는 품질이 낮을 수 있는 이유는 무엇인가?"
+          ],
+          "checkpoints": [
+            "README",
+            "THEORY",
+            "PREREQS",
+            "scratch lab",
+            "framework lab",
+            "analysis script",
+            "analysis note",
+            "reflection"
+          ],
+          "cpu_safe": false,
+          "deterministic": false
+        },
+        {
+          "id": "03_visual_question_answering",
+          "title": "03 Visual Question Answering",
+          "path": "09_multimodal/03_visual_question_answering",
+          "status": "runnable",
+          "objective": "이미지와 질문을 함께 읽는 tiny VQA 예제로 answer type breakdown, shortcut bias, grounded reasoning failure를 함께 해석한다.",
+          "readme": "09_multimodal/03_visual_question_answering/README.md",
+          "lesson": "09_multimodal/03_visual_question_answering/lesson.yaml",
+          "prereqs": [
+            "image-text grounding과 captioning failure 해석 감각",
+            "softmax 분류와 answer vocabulary 읽기",
+            "overall accuracy와 breakdown metric의 차이"
+          ],
+          "key_terms": [
+            "visual question answering",
+            "answer type",
+            "grounded reasoning",
+            "shortcut bias",
+            "multimodal fusion",
+            "count"
+          ],
+          "required_outputs": [
+            "scratch metrics json",
+            "scratch svg figure",
+            "framework metrics json",
+            "stable analysis markdown",
+            "observed analysis report"
+          ],
+          "analysis_questions": [
+            "overall accuracy만 보면 놓치는 answer type failure는 무엇인가?",
+            "scratch 규칙기는 왜 count 질문에서 shortcut bias를 보였는가?",
+            "framework tiny classifier가 count answer type을 회복했다면 어떤 multimodal fusion 신호가 추가된 것인가?"
+          ],
+          "checkpoints": [
+            "README",
+            "THEORY",
+            "PREREQS",
+            "scratch lab",
+            "framework lab",
+            "analysis script",
+            "analysis note",
+            "reflection"
+          ],
+          "cpu_safe": false,
+          "deterministic": false
+        }
+      ]
+    },
+    {
+      "id": "10_vla",
+      "title": "10 VLA",
+      "order": 10,
+      "readme": "10_vla/README.md",
+      "summary": "이 트랙은 `09_multimodal` 다음에 놓이는 **Vision-Language-Action(VLA) 연결 구간**이다. 이미지와 텍스트를 함께 이해하는 수준을 넘어, 관측 상태와 언어 지시를 action token, safety gate, trajectory/eval 관점으로 바꾸는 첫 단계를 다룬다.",
+      "units": [
+        {
+          "id": "01_vision_language_action_grounding",
+          "title": "01 VLA Vision-Language-Action Grounding",
+          "path": "10_vla/01_vision_language_action_grounding",
+          "status": "runnable",
+          "objective": "vision-language-action grounding에서 시각 상태와 언어 지시를 action token 및 safety gate로 바꾸는 최소 흐름을 익힌다.",
+          "readme": "10_vla/01_vision_language_action_grounding/README.md",
+          "lesson": "10_vla/01_vision_language_action_grounding/lesson.yaml",
+          "prereqs": [
+            "08_multimodal_bridge/01_contrastive_alignment",
+            "09_multimodal/03_visual_question_answering",
+            "05_advanced_nlp_llm/06_rlhf_and_reasoning_rl의 reward/policy 기본 용어"
+          ],
+          "key_terms": [
+            "VLA",
+            "vision-language-action",
+            "action token",
+            "policy head",
+            "safety gate",
+            "success rate",
+            "intervention count"
+          ],
+          "required_outputs": [
+            "scratch metrics json",
+            "scratch svg figure",
+            "framework metrics json",
+            "analysis markdown"
+          ],
+          "analysis_questions": [
+            "VQA answer와 VLA action token은 무엇이 다른가?",
+            "safety gate가 action accuracy와 별도 지표여야 하는 이유는 무엇인가?",
+            "실제 robot trajectory로 확장할 때 어떤 추가 로그가 필요한가?"
+          ],
+          "checkpoints": [
+            "README",
+            "THEORY",
+            "PREREQS",
+            "scratch lab",
+            "framework lab",
+            "analysis script",
+            "analysis note",
+            "reflection"
+          ],
+          "cpu_safe": true,
+          "deterministic": true
+        }
+      ]
+    }
+  ]
+}

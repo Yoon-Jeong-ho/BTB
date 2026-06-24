@@ -16,6 +16,7 @@
 - reward hacking, verbosity inflation, over-refusal이 왜 RLHF와 reasoning RL의 핵심 failure mode인지 말할 수 있는가?
 
 ## 먼저 다시 보면 좋은 단위
+- [RL Primer for RLHF](../../docs/05_rl_primer_for_rlhf.md) — reward/policy/rollout/advantage/KL/PPO 용어를 LLM post-training 맥락으로 먼저 정리한다.
 - [04_instruction_tuning_and_sft](../04_instruction_tuning_and_sft/README.md) — RLHF 이전 초기 policy를 만든다.
 - [05_preference_optimization_dpo_orpo_kto](../05_preference_optimization_dpo_orpo_kto/README.md) — offline preference objective와 online RLHF loop를 비교한다.
 - [02_deep_learning/07_training_recipes_and_debugging](../../02_deep_learning/07_training_recipes_and_debugging/README.md) — training regression과 failure slice 관찰 감각을 복습한다.

@@ -2,7 +2,7 @@
 
 이 트랙은 `00 → 06`까지의 내용을 바탕으로 들어가는 **research / capstone / agentic sandbox** 구간이다. 앞선 트랙이 계단식 커리큘럼이었다면, 여기서는 그 재료를 조합해 `직접 재현하고, 만들고, 실패를 설계하는` 실험실 역할을 맡는다.
 
-즉 `07`은 정답이 이미 정리된 강의형 단위라기보다, 논문 재현·모델 빌딩·agentic training/eval loop·benchmark 제작 같은 개방형 프로젝트를 안전하게 시작할 수 있게 하는 sandbox다. 이후 `08_multimodal_bridge`, `09_multimodal`로 갈 때도 이 연구 운영 습관이 그대로 이어진다.
+즉 `07`은 정답이 이미 정리된 강의형 단위라기보다, 논문 재현·모델 빌딩·agentic training/eval loop·benchmark 제작 같은 개방형 프로젝트를 안전하게 시작할 수 있게 하는 sandbox다. 초심자 LLM/VLA 압축 루트에서는 선택(optional) 고급 capstone sandbox로 나중에 돌아와도 되며, 큰 GPU 실험이나 연구 질문이 생겼을 때 가장 효과가 크다. 이후 `08_multimodal_bridge`, `09_multimodal`로 갈 때도 이 연구 운영 습관이 그대로 이어진다.
 
 ## 단위 구성
 
