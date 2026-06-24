@@ -6,6 +6,10 @@
 
 현재는 `01~08` 전 unit가 runnable toy lab 단계까지 올라와 있다. 즉 objective → corpus/tokenizer → DAPT → SFT → preference optimization → RLHF/reasoning-RL → RAG/eval → alignment/safety까지 직접 실행하며 따라갈 수 있다.
 
+## 들어가기 전 브리지
+
+`04_nlp`의 encoder/task-head 실습에서 바로 decoder-only LLM으로 넘어가면 generation loop가 갑자기 추상적으로 느껴질 수 있다. 먼저 [decoder generation bridge](../docs/06_decoder_generation_bridge.md)를 읽고 autoregressive decoding, temperature/top-k/top-p, prompt serialization, KV-cache를 말로 설명할 수 있는지 확인한다.
+
 ## 단위 구성
 
 | Unit | Status | Focus |

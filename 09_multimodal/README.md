@@ -6,6 +6,10 @@
 
 이 트랙은 세 unit로 채워져 있으며, retrieval·captioning·VQA를 각각 작은 runnable 실습과 qualitative failure 분석으로 연결한다.
 
+## 들어가기 전 브리지
+
+`08_multimodal_bridge/01_contrastive_alignment`만 읽으면 retrieval 감각은 생기지만 captioning/VQA의 cross-attention과 fusion이 갑자기 어려울 수 있다. [multimodal generation bridge](../docs/07_multimodal_generation_bridge.md)를 먼저 읽고 shared embedding retrieval, encoder-decoder generation, VQA answer-type breakdown, grounding failure를 구분한다.
+
 ## 단계 구성
 
 | Stage | 목적 | 추천 데이터셋 | 약한 베이스라인 | 강한 베이스라인 | 남길 figure |

@@ -56,21 +56,56 @@ async function withStaticServer(fn) {
 }
 
 async function assertNoHorizontalOverflow(page, label) {
-  const metrics = await page.evaluate(() => ({
-    innerWidth: window.innerWidth,
-    scrollWidth: document.documentElement.scrollWidth,
-    readerWidth: document.querySelector('.reader-panel')?.getBoundingClientRect().width || 0,
-    contentWidth: document.querySelector('.lesson-content')?.getBoundingClientRect().width || 0,
-    navWidth: document.querySelector('.track-panel')?.getBoundingClientRect().width || 0,
-  }));
-  if (metrics.scrollWidth > metrics.innerWidth + 1) {
-    throw new Error(`${label}: horizontal overflow ${metrics.scrollWidth} > ${metrics.innerWidth}`);
+  const metrics = await page.evaluate(() => {
+    const box = (selector) => {
+      const element = document.querySelector(selector);
+      if (!element) return null;
+      const rect = element.getBoundingClientRect();
+      return {
+        clientWidth: element.clientWidth,
+        scrollWidth: element.scrollWidth,
+        width: rect.width,
+        top: rect.top,
+        bottom: rect.bottom,
+      };
+    };
+    return {
+      innerWidth: window.innerWidth,
+      scrollWidth: document.documentElement.scrollWidth,
+      bodyScrollWidth: document.body.scrollWidth,
+      reader: box('.reader-panel'),
+      content: box('.lesson-content'),
+      sidebar: box('.study-sidebar'),
+      track: box('.track-panel'),
+      unit: box('.unit-panel'),
+      lessonReader: box('.lesson-reader'),
+      lessonWorkspace: box('.lesson-workspace'),
+      tabs: box('.document-tabs'),
+      codeBlock: box('.code-block'),
+    };
+  });
+  if (metrics.scrollWidth > metrics.innerWidth + 1 || metrics.bodyScrollWidth > metrics.innerWidth + 1) {
+    throw new Error(`${label}: horizontal overflow document=${metrics.scrollWidth}, body=${metrics.bodyScrollWidth}, viewport=${metrics.innerWidth}`);
   }
-  if (metrics.innerWidth >= 1200 && metrics.readerWidth < 850) {
-    throw new Error(`${label}: reader is too narrow (${metrics.readerWidth}px)`);
+  for (const [name, box] of Object.entries({
+    content: metrics.content,
+    lessonReader: metrics.lessonReader,
+    lessonWorkspace: metrics.lessonWorkspace,
+    tabs: metrics.tabs,
+    codeBlock: metrics.codeBlock,
+  })) {
+    if (box && box.scrollWidth > box.clientWidth + 1) {
+      throw new Error(`${label}: ${name} overflows horizontally ${box.scrollWidth} > ${box.clientWidth}`);
+    }
   }
-  if (metrics.innerWidth >= 1200 && metrics.navWidth > 380) {
-    throw new Error(`${label}: left navigation is too wide (${metrics.navWidth}px)`);
+  if (metrics.innerWidth >= 1200 && metrics.reader.width < 850) {
+    throw new Error(`${label}: reader is too narrow (${metrics.reader.width}px)`);
+  }
+  if (metrics.innerWidth >= 1200 && metrics.sidebar.width > 340) {
+    throw new Error(`${label}: left sidebar is too wide (${metrics.sidebar.width}px)`);
+  }
+  if (metrics.innerWidth >= 900 && Math.abs(metrics.unit.top - metrics.track.bottom) > 28) {
+    throw new Error(`${label}: unit list is detached from tracks (gap ${metrics.unit.top - metrics.track.bottom}px)`);
   }
   return metrics;
 }
@@ -102,6 +137,47 @@ function assertLocalOnlyRequests(externalRequests, label) {
   }
 }
 
+async function assertInjectedPythonComments(page, tabName) {
+  await page.getByRole('tab', { name: tabName }).click();
+  const codeText = await page.locator('.code-block code').innerText();
+  for (const token of ['# 학습자용 한글 주석', '# 이 파일은 무엇인가:', '# 어떻게 읽으면 좋은가:', '# 실행하면 남는 결과:', '# 아래부터 원본 Python 코드입니다.']) {
+    if (!codeText.includes(token)) {
+      throw new Error(`${tabName}: missing injected Korean code comment ${token}`);
+    }
+  }
+  const firstLines = codeText.trimStart().split('\n').slice(0, 8).join('\n');
+  if (!firstLines.includes('# 이 파일은 무엇인가:')) {
+    throw new Error(`${tabName}: Korean guidance comments should start the displayed code block`);
+  }
+  if (await page.locator('.learner-comment').count()) {
+    throw new Error(`${tabName}: guidance must be injected into code, not rendered as a separate learner-comment block`);
+  }
+}
+
+async function selectStudyUnit(page, trackText, unitText) {
+  await page.locator('.track-card', { hasText: trackText }).click();
+  await page.locator('.unit-card', { hasText: unitText }).click();
+  await page.locator('#detail-title', { hasText: unitText }).waitFor({ state: 'visible' });
+}
+
+async function assertResourceDocument(page, label, expectedText) {
+  await page.locator('.resource-button', { hasText: label }).click();
+  await page.locator('.document-title', { hasText: label }).waitFor({ state: 'visible' });
+  await page.locator('#lesson-content', { hasText: expectedText }).waitFor({ state: 'visible' });
+  return assertNoHorizontalOverflow(page, `resource-${label}`);
+}
+
+async function assertBridgeResources(page) {
+  await selectStudyUnit(page, '05 Advanced NLP + LLM', '01 Language Modeling and Pretraining Objectives');
+  await assertResourceDocument(page, 'Decoder generation bridge', 'KV-cache intuition');
+
+  await selectStudyUnit(page, '09 Multimodal', '02 Image Captioning');
+  await assertResourceDocument(page, 'Multimodal generation bridge', 'Grounding failure vs retrieval failure');
+
+  await selectStudyUnit(page, '10 VLA', '01 VLA Vision-Language-Action Grounding');
+  await assertResourceDocument(page, 'RL to VLA bridge', 'Behavior cloning vs RL vs offline RL');
+}
+
 async function runDesktopQa(browser, baseUrl) {
   const { context, externalRequests } = await newLocalOnlyContext(browser, baseUrl, { viewport: { width: 1440, height: 980 } });
   const page = await context.newPage();
@@ -112,17 +188,26 @@ async function runDesktopQa(browser, baseUrl) {
 
   await page.goto(`${baseUrl}/web/`, { waitUntil: 'domcontentloaded' });
   await page.evaluate(() => document.fonts?.ready);
-  await page.getByRole('tab', { name: 'scratch_lab.py' }).click();
+  await assertNoHorizontalOverflow(page, 'desktop-readme');
+  await assertInjectedPythonComments(page, 'scratch_lab.py');
   await page.getByText('코드 읽기 안내').waitFor({ state: 'visible' });
   await page.locator('.code-explanation dt', { hasText: '이 파일은 무엇인가' }).waitFor({ state: 'visible' });
   await page.locator('.code-explanation dt', { hasText: '실행하면 남는 결과' }).waitFor({ state: 'visible' });
-  await page.getByText('# 학습자용 한글 주석').waitFor({ state: 'visible' });
   await page.getByRole('button', { name: /scratch lab 체크/ }).click();
-  await page.getByRole('tab', { name: 'framework_lab.py' }).click();
+  await assertInjectedPythonComments(page, 'framework_lab.py');
   await page.getByText('framework_lab.py는 같은 아이디어').waitFor({ state: 'visible' });
+  await assertNoHorizontalOverflow(page, 'desktop-framework');
+  await assertInjectedPythonComments(page, 'analysis.py');
   await page.screenshot({ path: path.join(OUT_DIR, 'desktop-code-reader.png'), fullPage: false });
+  await page.getByRole('button', { name: /10 VLA/ }).click();
+  await page.getByRole('button', { name: /01 VLA Vision-Language-Action Grounding/ }).waitFor({ state: 'visible' });
+  await page.getByRole('button', { name: /01 VLA Vision-Language-Action Grounding/ }).click();
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await page.locator('.track-card[aria-pressed="true"]', { hasText: /10 VLA/ }).waitFor({ state: 'visible' });
+  await page.locator('.unit-card[aria-current="true"]', { hasText: /01 VLA Vision-Language-Action Grounding/ }).waitFor({ state: 'visible' });
   await page.getByRole('button', { name: 'Study guide' }).click();
   await page.getByText('02 Study Guide').waitFor({ state: 'visible' });
+  await assertBridgeResources(page);
 
   const metrics = await assertNoHorizontalOverflow(page, 'desktop');
   await page.screenshot({ path: path.join(OUT_DIR, 'desktop-study-guide.png'), fullPage: false });
@@ -135,13 +220,25 @@ async function runDesktopQa(browser, baseUrl) {
   return metrics;
 }
 
+async function runResponsiveQa(browser, baseUrl) {
+  const context = await browser.newContext({ viewport: { width: 1024, height: 900 } });
+  const page = await context.newPage();
+  await page.goto(`${baseUrl}/web/`, { waitUntil: 'domcontentloaded' });
+  await page.evaluate(() => document.fonts?.ready);
+  await page.getByRole('tab', { name: 'README' }).waitFor({ state: 'visible' });
+  const metrics = await assertNoHorizontalOverflow(page, 'tablet');
+  await page.screenshot({ path: path.join(OUT_DIR, 'tablet-reader.png'), fullPage: false });
+  await context.close();
+  return metrics;
+}
+
 async function runMobileQa(browser, baseUrl) {
   const { context, externalRequests } = await newLocalOnlyContext(browser, baseUrl, { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
   const page = await context.newPage();
   await page.goto(`${baseUrl}/web/`, { waitUntil: 'domcontentloaded' });
   await page.evaluate(() => document.fonts?.ready);
   await page.getByRole('tab', { name: 'README' }).waitFor({ state: 'visible' });
-  await page.getByRole('tab', { name: 'analysis.py' }).click();
+  await assertInjectedPythonComments(page, 'analysis.py');
   await page.getByText('analysis.py는 실행 결과').waitFor({ state: 'visible' });
   const metrics = await assertNoHorizontalOverflow(page, 'mobile');
   await page.screenshot({ path: path.join(OUT_DIR, 'mobile-code-reader.png'), fullPage: false });
@@ -156,8 +253,9 @@ async function main() {
     const browser = await chromium.launch({ headless: true });
     try {
       const desktop = await runDesktopQa(browser, baseUrl);
+      const tablet = await runResponsiveQa(browser, baseUrl);
       const mobile = await runMobileQa(browser, baseUrl);
-      console.log(JSON.stringify({ ok: true, baseUrl, outDir: OUT_DIR, desktop, mobile }, null, 2));
+      console.log(JSON.stringify({ ok: true, baseUrl, outDir: OUT_DIR, desktop, tablet, mobile }, null, 2));
     } finally {
       await browser.close();
     }

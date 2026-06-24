@@ -32,7 +32,7 @@ def load_lesson_metadata(path: Path) -> dict[str, LessonValue]:
             current_value = metadata.get(current_key)
             if not isinstance(current_value, list):
                 raise ValueError(f"{path}:{line_number}: key '{current_key}' does not accept list items")
-            current_value.append(raw_line[4:].strip())
+            current_value.append(_parse_scalar(raw_line[4:].strip()))
             continue
 
         if raw_line.startswith(" "):

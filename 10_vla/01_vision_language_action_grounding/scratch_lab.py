@@ -4,6 +4,8 @@ import json
 from html import escape
 from pathlib import Path
 
+from vla_probe_utils import failure_probe_payload
+
 
 UNIT = "vision_language_action_grounding"
 ROOT = Path(__file__).resolve().parent
@@ -116,6 +118,7 @@ def main() -> int:
         "safety_targets": safety_targets,
         "safety_gate_accuracy": sum(p == t for p, t in zip(safety_predictions, safety_targets)) / len(SCENARIOS),
         "figure_path": "artifacts/scratch-manual/action_policy_matrix.svg",
+        **failure_probe_payload(),
     }
     (ARTIFACT_DIR / "metrics.json").write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps(payload, ensure_ascii=False, indent=2))

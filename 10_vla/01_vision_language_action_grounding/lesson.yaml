@@ -8,12 +8,15 @@ prereqs:
   - 08_multimodal_bridge/01_contrastive_alignment
   - 09_multimodal/03_visual_question_answering
   - 05_advanced_nlp_llm/06_rlhf_and_reasoning_rl의 reward/policy 기본 용어
+  - docs/08_rl_to_vla_bridge의 MDP/trajectory/behavior cloning/offline RL 기본 구분
 key_terms:
   - VLA
   - vision-language-action
   - action token
   - policy head
   - safety gate
+  - behavior cloning
+  - trajectory
   - success rate
   - intervention count
 required_outputs:
@@ -25,3 +28,5 @@ analysis_questions:
   - VQA answer와 VLA action token은 무엇이 다른가?
   - safety gate가 action accuracy와 별도 지표여야 하는 이유는 무엇인가?
   - 실제 robot trajectory로 확장할 때 어떤 추가 로그가 필요한가?
+  - wrong action but safe와 right action but unsafe는 어떤 수정 방향을 다르게 요구하는가?
+  - ambiguous instruction과 observation noise를 별도 failure probe로 남겨야 하는 이유는 무엇인가?

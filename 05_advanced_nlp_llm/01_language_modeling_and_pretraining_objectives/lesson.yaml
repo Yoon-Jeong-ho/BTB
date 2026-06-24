@@ -3,7 +3,7 @@ status: runnable
 prereqs:
   - token, vocabulary, logit, cross entropy 기본 감각
   - autoregressive next-token prediction 이해
-  - [MASK] 및 sentinel token의 역할 이해
+  - "[MASK] 및 sentinel token의 역할 이해"
   - encoder-only / decoder-only / encoder-decoder 구분
   - context window와 self-attention 기본 직관
 key_terms:

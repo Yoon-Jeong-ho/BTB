@@ -11,3 +11,4 @@
 - 어떤 장면에서 action score가 가장 헷갈렸는가?
 - safety gate가 없다면 어떤 위험 행동이 실행될 수 있는가?
 - 다음 VLA 실험을 만든다면 action space를 어떻게 정의할 것인가?
+- wrong action but safe / right action but unsafe / ambiguous instruction / observation noise 중 이번 toy 실험이 가장 덜 다룬 실패는 무엇인가?

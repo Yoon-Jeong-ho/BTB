@@ -10,6 +10,7 @@
 ## 읽는 순서
 
 1. [01_contrastive_alignment](01_contrastive_alignment/README.md) — 이미지 임베딩과 텍스트 임베딩을 같은 공간에 놓고, 대각선 정답 쌍이 왜 중요해지는지 tiny 예제로 확인한다.
+2. [Multimodal generation bridge](../docs/07_multimodal_generation_bridge.md) — retrieval-style shared embedding에서 cross-attention, encoder-decoder captioning, VQA fusion, grounding failure로 넘어가는 개념 다리를 읽는다.
 
 ## 핵심 목표
 

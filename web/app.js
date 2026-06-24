@@ -325,7 +325,7 @@ async function loadLessonSection(unit, section) {
     const text = await fetchLessonDocument(section.href);
     if (requestId !== contentRequestId) return;
     if (section.type === 'code') {
-      content.innerHTML = `<div class="document-title"><span>${escapeHtml(section.label)}</span><code>${escapeHtml(cleanHref(section.href))}</code></div>${renderCodeExplanation(section, text)}${renderKoreanCodeComment(section, text)}<pre class="code-block"><code>${escapeHtml(text)}</code></pre>`;
+      content.innerHTML = `<div class="document-title"><span>${escapeHtml(section.label)}</span><code>${escapeHtml(cleanHref(section.href))}</code></div>${renderCodeExplanation(section, text)}<pre class="code-block"><code>${escapeHtml(annotateCodeWithKoreanComments(section, text))}</code></pre>`;
     } else {
       content.innerHTML = `<div class="document-title"><span>${escapeHtml(section.label)}</span><code>${escapeHtml(cleanHref(section.href))}</code></div>${renderMarkdown(text, section.href)}`;
       bindInlineDocLinks(unit, section.href);
@@ -359,16 +359,31 @@ function renderCodeExplanation(section, source) {
   </section>`;
 }
 
-function renderKoreanCodeComment(section, source) {
+function annotateCodeWithKoreanComments(section, source) {
   const explanation = codeExplanationFor(section, source);
-  const comment = [
+  const intro = [
     '# 학습자용 한글 주석',
     `# 이 파일은 무엇인가: ${explanation.what}`,
     `# 어떻게 읽으면 좋은가: ${explanation.howToRead}`,
     `# 실행하면 남는 결과: ${explanation.outputs}`,
     `# 핵심 함수: ${explanation.functions.join(', ') || '상단 설정값과 main 실행 흐름'}`,
+    '# 아래부터 원본 Python 코드입니다.',
+    '',
   ].join('\n');
-  return `<pre class="learner-comment"><code>${escapeHtml(comment)}</code></pre>`;
+  return intro + annotateCoreFunctions(source, explanation.functions);
+}
+
+function annotateCoreFunctions(source, functions) {
+  return functions.reduce((annotated, symbol) => {
+    const name = symbol.replace(/\(\)$/, '');
+    const pattern = new RegExp(`(^def\\s+${escapeRegExp(name)}\\s*\\()`, 'm');
+    if (!pattern.test(annotated)) return annotated;
+    return annotated.replace(pattern, `# 핵심 함수 ${symbol}: 이 함수부터 실행 흐름을 따라가세요.\n$1`);
+  }, source);
+}
+
+function escapeRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 function codeExplanationFor(section, source) {
@@ -633,10 +648,17 @@ function studyLinksFor(unit) {
   const links = [
     { href: '../docs/02_study_guide.md', label: 'Study guide', reason: '무기초 → LLM/RLHF/Multimodal/VLA 경로 확인' },
   ];
+  if (unit.path.startsWith('05_advanced_nlp_llm/')) {
+    links.push({ href: '../docs/06_decoder_generation_bridge.md', label: 'Decoder generation bridge', reason: 'autoregressive decoding, sampling, prompt serialization, KV-cache 연결' });
+  }
   if (unit.path.includes('05_advanced_nlp_llm/06_rlhf')) {
     links.push({ href: '../docs/05_rl_primer_for_rlhf.md', label: 'RL primer for RLHF', reason: 'reward/policy/rollout/KL/PPO 선행 정리' });
   }
+  if (unit.path.startsWith('08_multimodal_bridge/') || unit.path.startsWith('09_multimodal/') || unit.path.startsWith('10_vla/')) {
+    links.push({ href: '../docs/07_multimodal_generation_bridge.md', label: 'Multimodal generation bridge', reason: 'retrieval에서 captioning/VQA cross-attention과 grounding failure로 넘어가기' });
+  }
   if (unit.path.startsWith('10_vla/')) {
+    links.push({ href: '../docs/08_rl_to_vla_bridge.md', label: 'RL to VLA bridge', reason: 'MDP, trajectory, behavior cloning, offline RL, action space design 구분' });
     links.push({ href: '../09_multimodal/README.md', label: '09 Multimodal recap', reason: 'VQA에서 action grounding으로 넘어가기 전 복습' });
   }
   const trackReadme = `../${unit.path.split('/')[0]}/README.md`;

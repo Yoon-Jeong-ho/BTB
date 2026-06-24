@@ -123,9 +123,15 @@ class WebStudySiteContractTest(unittest.TestCase):
         self.assertNotIn('target="_blank"', app)
 
         self.assertIn("reader-panel", html)
+        self.assertIn("study-sidebar", html)
         self.assertIn("grid-template-areas", styles)
-        self.assertIn("minmax(280px, 20rem) minmax(0, 1fr)", styles)
+        self.assertIn('"sidebar reader"', styles)
+        self.assertIn("clamp(15rem, 22vw, 20rem) minmax(0, 1fr)", styles)
         self.assertNotIn("minmax(220px, 0.8fr) minmax(360px, 1.4fr) minmax(320px, 1fr)", styles)
+        self.assertIn("overflow-x: clip", styles)
+        self.assertIn(".study-sidebar", styles)
+        self.assertIn(".unit-panel { margin-top:", styles)
+        self.assertNotIn("top: calc(42vh + 2rem)", styles)
         self.assertIn("사이트 안에서", root_readme + web_readme)
         self.assertIn("README 파일을 새 탭으로 직접 여는 방식", root_readme + web_readme)
 
@@ -151,9 +157,11 @@ class WebStudySiteContractTest(unittest.TestCase):
             "실행하면 남는 결과",
             "핵심 함수",
             "학습자용 한글 주석",
-            "renderKoreanCodeComment",
+            "annotateCodeWithKoreanComments",
             "# 이 파일은 무엇인가",
             "# 실행하면 남는 결과",
+            "# 아래부터 원본 Python 코드입니다.",
+            "# 핵심 함수",
             "scratch_lab.py는",
             "framework_lab.py는",
             "analysis.py는",
@@ -163,6 +171,7 @@ class WebStudySiteContractTest(unittest.TestCase):
         self.assertIn("code-explanation", styles)
         self.assertIn("reader-shell", styles)
         self.assertIn("sticky", styles)
+        self.assertNotIn("learner-comment", app + styles)
         self.assertIn("npm run qa:web", readme)
         self.assertIn("Playwright", readme)
 
@@ -277,6 +286,20 @@ assert.strictEqual(recovered.users.carol.lessons['10_vla/01_vision_language_acti
         vla_units = catalog_units["10_vla"]
         self.assertIn("01_vision_language_action_grounding", vla_units)
         self.assertIn("VLA", vla_units["01_vision_language_action_grounding"]["title"])
+
+        nlp_tokenization = catalog_units["03_nlp_bridge"]["01_tokenization_and_embeddings"]
+        llm_objectives = catalog_units["05_advanced_nlp_llm"]["01_language_modeling_and_pretraining_objectives"]
+        accelerate = catalog_units["06_training_systems"]["02_accelerate_workflows"]
+        self.assertIn("[UNK]가 생기면 어떤 정보 손실이 생기는가?", nlp_tokenization["analysis_questions"])
+        self.assertIn("[MASK] 및 sentinel token의 역할 이해", llm_objectives["prereqs"])
+        self.assertIn("`prepare()` 이후에도 사용자가 직접 이해해야 하는 것은 무엇인가?", accelerate["analysis_questions"])
+        for unit in [nlp_tokenization, llm_objectives, accelerate]:
+            for field in ["prereqs", "key_terms", "required_outputs", "analysis_questions"]:
+                for item in unit[field]:
+                    self.assertFalse(
+                        (item.startswith('"') and item.endswith('"')) or (item.startswith("'") and item.endswith("'")),
+                        f"{unit['path']} {field} leaked YAML quote characters: {item}",
+                    )
 
     def test_committed_catalog_matches_builder_output(self) -> None:
         module = self._load_builder()

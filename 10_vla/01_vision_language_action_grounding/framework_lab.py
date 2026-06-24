@@ -7,6 +7,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from vla_probe_utils import failure_probe_payload
+
 
 UNIT = "vision_language_action_grounding"
 ROOT = Path(__file__).resolve().parent
@@ -78,6 +80,7 @@ def train_policy(device: torch.device) -> dict[str, object]:
         "safety_gate_accuracy": round(safety_gate_accuracy, 6),
         "loss_history_head": loss_history[:5],
         "loss_history_tail": loss_history[-5:],
+        **failure_probe_payload(),
     }
 
 

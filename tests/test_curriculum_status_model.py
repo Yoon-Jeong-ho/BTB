@@ -6,6 +6,8 @@ import unittest
 from pathlib import Path
 from typing import Any
 
+import yaml
+
 from tests.test_curriculum_topology import CANONICAL_CURRICULUM_LADDER
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -74,6 +76,25 @@ class TestCurriculumStatusModel(unittest.TestCase):
                     (ROOT / track_name / unit_name / 'README.md').exists(),
                     f'missing {track_name}/{unit_name}/README.md',
                 )
+
+    def test_declared_lesson_metadata_is_standard_yaml(self) -> None:
+        data = self._load_status()
+        lesson_paths = []
+        for track_name, units in data['tracks'].items():
+            for unit_name in units:
+                lesson_path = ROOT / track_name / unit_name / 'lesson.yaml'
+                if lesson_path.exists():
+                    lesson_paths.append(lesson_path)
+
+        self.assertTrue(lesson_paths, 'expected at least one lesson.yaml under declared units')
+        for lesson_path in lesson_paths:
+            with self.subTest(lesson=str(lesson_path.relative_to(ROOT))):
+                parsed = yaml.safe_load(lesson_path.read_text(encoding='utf-8'))
+                self.assertIsInstance(parsed, dict)
+                self.assertIsInstance(parsed.get('objective'), str)
+                for key in ['prereqs', 'key_terms', 'required_outputs', 'analysis_questions']:
+                    if key in parsed:
+                        self.assertIsInstance(parsed[key], list, f'{key} must be a list')
 
 
 if __name__ == '__main__':

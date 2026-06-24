@@ -99,6 +99,34 @@ class TestCurriculumTrackDocs(unittest.TestCase):
         ]:
             self.assertIn(rel, guide)
 
+    def test_study_guide_surfaces_learner_bridge_docs_for_llm_multimodal_and_vla(self) -> None:
+        guide = (ROOT / "docs" / "02_study_guide.md").read_text(encoding="utf-8")
+        vla = (ROOT / "10_vla" / "README.md").read_text(encoding="utf-8")
+        multimodal_bridge = (ROOT / "08_multimodal_bridge" / "README.md").read_text(encoding="utf-8")
+        multimodal = (ROOT / "09_multimodal" / "README.md").read_text(encoding="utf-8")
+        llm = (ROOT / "05_advanced_nlp_llm" / "README.md").read_text(encoding="utf-8")
+        app = (ROOT / "web" / "app.js").read_text(encoding="utf-8")
+
+        bridge_docs = {
+            "docs/06_decoder_generation_bridge.md": ["autoregressive", "temperature", "KV-cache"],
+            "docs/07_multimodal_generation_bridge.md": ["cross-attention", "VQA", "grounding failure"],
+            "docs/08_rl_to_vla_bridge.md": ["MDP", "trajectory", "behavior cloning", "offline RL"],
+        }
+        for rel, tokens in bridge_docs.items():
+            path = ROOT / rel
+            self.assertTrue(path.exists(), rel)
+            text = path.read_text(encoding="utf-8")
+            for token in tokens:
+                self.assertIn(token, text)
+            self.assertIn(rel, guide)
+
+        self.assertIn("../docs/06_decoder_generation_bridge.md", llm)
+        self.assertIn("../docs/07_multimodal_generation_bridge.md", multimodal_bridge + multimodal)
+        self.assertIn("../docs/08_rl_to_vla_bridge.md", vla)
+        self.assertIn("../docs/06_decoder_generation_bridge.md", app)
+        self.assertIn("../docs/07_multimodal_generation_bridge.md", app)
+        self.assertIn("../docs/08_rl_to_vla_bridge.md", app)
+
 
 if __name__ == "__main__":
     unittest.main()

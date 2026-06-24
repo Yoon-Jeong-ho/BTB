@@ -36,14 +36,22 @@ LLM과 VLA까지 목표라면 아래 체크포인트를 빠뜨리지 않는다.
 2. `01_ml`에서 baseline, metric, error analysis를 먼저 익힌다.
 3. `02_deep_learning/04_attention_and_transformers`와 `03_nlp_bridge/02_attention_and_transformer_block`으로 attention을 숫자 흐름으로 설명한다.
 4. `04_nlp` 전체를 통해 tokenizer/encoder/task head를 applied task에서 확인한다.
-5. `05_advanced_nlp_llm/01~05`로 pretraining objective, data mixture, DAPT, SFT, preference optimization을 본다.
+5. `05_advanced_nlp_llm/01~05`로 pretraining objective, data mixture, DAPT, SFT, preference optimization을 본다. 들어가기 전에 [decoder generation bridge](06_decoder_generation_bridge.md) (`docs/06_decoder_generation_bridge.md`)로 autoregressive decoding, temperature/top-p, prompt serialization, KV-cache 감각을 먼저 만든다.
 6. RLHF 전에 [RL primer](05_rl_primer_for_rlhf.md)를 읽고 reward/policy/rollout/advantage/KL/PPO 용어를 정리한다.
 7. `05_advanced_nlp_llm/06_rlhf_and_reasoning_rl`에서 RLHF/reasoning RL을 본다.
-8. `08_multimodal_bridge -> 09_multimodal`로 image-text retrieval/captioning/VQA를 실행한다.
-9. `10_vla/01_vision_language_action_grounding`에서 action token과 safety gate를 확인한다.
+8. `08_multimodal_bridge -> 09_multimodal`로 image-text retrieval/captioning/VQA를 실행한다. retrieval에서 captioning/VQA로 넘어가기 전 [multimodal generation bridge](07_multimodal_generation_bridge.md) (`docs/07_multimodal_generation_bridge.md`)로 cross-attention, fusion, grounding failure를 확인한다.
+9. `10_vla/01_vision_language_action_grounding` 전에 [RL to VLA bridge](08_rl_to_vla_bridge.md) (`docs/08_rl_to_vla_bridge.md`)로 MDP, trajectory, behavior cloning, offline RL, action space design을 읽고 action token과 safety gate를 확인한다.
 10. `06_training_systems`와 `07_frontier_labs`는 남는 GPU, 분산 학습, 논문 재현, capstone sandbox가 필요해지는 시점에 나중 선택 구간으로 되돌아온다.
 
-이 경로를 따르면 LLM base가 없는 학습자도 LLM, RLHF, multimodal, VLA 입구까지 같은 산출물 규칙으로 이어갈 수 있다. `10_vla/01_vision_language_action_grounding`은 VLA grounding entry point로, 실제 로봇 제어 전체가 아니라 multimodal 이해를 행동 토큰과 safety gate에 연결하는 최소 실험이다. 다만 일반 제어 RL 전체가 필요하면 별도 RL 교과 과정이 추가로 필요하다.
+이 경로를 따르면 LLM base가 없는 학습자도 LLM, RLHF, multimodal, VLA 입구까지 같은 산출물 규칙으로 이어갈 수 있다. `10_vla/01_vision_language_action_grounding`은 VLA grounding entry point로, 실제 로봇 제어 전체가 아니라 multimodal 이해를 행동 토큰과 safety gate에 연결하는 최소 실험이다. 다만 일반 제어 RL 전체가 필요하면 별도 RL 교과 과정이 추가로 필요하므로, BTB 안에서는 [RL to VLA bridge](08_rl_to_vla_bridge.md) (`docs/08_rl_to_vla_bridge.md`)를 “최소 연결 다리”로 먼저 읽는다.
+
+## 개념 브리지 문서
+
+학습자가 특정 트랙에서 갑자기 어려워지는 지점을 줄이기 위해 아래 bridge 문서를 먼저 읽는다.
+
+- [Decoder generation bridge](06_decoder_generation_bridge.md) (`docs/06_decoder_generation_bridge.md`): `04_nlp`의 encoder/task-head 감각에서 `05_advanced_nlp_llm`의 autoregressive decoder, sampling, temperature, top-k/top-p, prompt serialization, KV-cache로 넘어가는 다리.
+- [Multimodal generation bridge](07_multimodal_generation_bridge.md) (`docs/07_multimodal_generation_bridge.md`): retrieval-style shared embedding에서 cross-attention, encoder-decoder captioning, VQA fusion, grounding failure로 넘어가는 다리.
+- [RL to VLA bridge](08_rl_to_vla_bridge.md) (`docs/08_rl_to_vla_bridge.md`): RLHF reward/policy 언어와 VLA의 MDP, trajectory, behavior cloning, offline RL, action space design을 구분하는 다리.
 
 ## 딥러닝 코어 우선 루트
 

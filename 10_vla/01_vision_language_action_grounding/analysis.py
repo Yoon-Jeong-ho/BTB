@@ -28,13 +28,22 @@ def _require_keys(name: str, payload: dict[str, Any], keys: set[str]) -> None:
 
 def write_report(scratch: dict[str, Any], framework: dict[str, Any]) -> dict[str, Any]:
     ANALYSIS_DIR.mkdir(parents=True, exist_ok=True)
+    probe_rows = scratch["failure_probe_rows"]
+    probe_table = "\n".join(
+        "| {probe_label} | {target_action} | {predicted_action} | {safe_to_execute} | {safety_prediction} | {probe_passed} | {expected_behavior} |".format(
+            **row
+        )
+        for row in probe_rows
+    )
     payload = {
         "unit": UNIT,
         "status": "runnable",
         "scratch_action_accuracy": scratch["action_accuracy"],
         "scratch_safety_gate_accuracy": scratch["safety_gate_accuracy"],
+        "scratch_failure_probe_counts": scratch["failure_probe_counts"],
         "framework_action_accuracy": framework["action_accuracy"],
         "framework_safety_gate_accuracy": framework["safety_gate_accuracy"],
+        "framework_failure_probe_counts": framework["failure_probe_counts"],
         "framework_device": framework["device"],
     }
     report = f"""# 01 Vision-Language-Action Grounding 실행 관측
@@ -50,6 +59,17 @@ def write_report(scratch: dict[str, Any], framework: dict[str, Any]) -> dict[str
 ## 한국어 해석
 
 이 toy VLA 단위는 이미지-텍스트 이해를 `action token` 선택으로 확장한다. scratch policy matrix와 tiny framework policy head 모두 정답 action을 고르지만, 실제 VLA에서는 action만 맞는 것으로 충분하지 않다. 위험 장면에서 실행을 막는 `safety gate`가 별도 지표로 남아야 한다.
+
+## 실패 probe 관측
+
+아래 probe는 같은 “오답”으로 합치면 안 된다. action token이 틀린 경우, action은 맞지만 safety가 틀린 경우, 모호해서 멈춰야 하는 경우, observation noise로 vision grounding이 흔들리는 경우를 분리한다.
+
+| probe | target action | predicted action | safe target | safety prediction | passed | expected behavior |
+|---|---:|---:|---:|---:|---:|---|
+{probe_table}
+
+- scratch probe pass/fail: {scratch['failure_probe_counts']['passed']}/{scratch['failure_probe_counts']['failed']}
+- framework probe pass/fail: {framework['failure_probe_counts']['passed']}/{framework['failure_probe_counts']['failed']}
 
 ## 다음 실험으로 확장할 로그
 
@@ -72,8 +92,16 @@ def main() -> int:
     try:
         scratch = _load_json(SCRATCH_METRICS)
         framework = _load_json(FRAMEWORK_METRICS)
-        _require_keys("scratch", scratch, {"action_accuracy", "safety_gate_accuracy", "policy_matrix_shape"})
-        _require_keys("framework", framework, {"action_accuracy", "safety_gate_accuracy", "logits_shape", "device"})
+        _require_keys(
+            "scratch",
+            scratch,
+            {"action_accuracy", "safety_gate_accuracy", "policy_matrix_shape", "failure_probe_counts", "failure_probe_rows"},
+        )
+        _require_keys(
+            "framework",
+            framework,
+            {"action_accuracy", "safety_gate_accuracy", "logits_shape", "device", "failure_probe_counts", "failure_probe_rows"},
+        )
     except FileNotFoundError as exc:
         print(
             f"필수 VLA metrics 파일이 없습니다: {exc}. 먼저 scratch_lab.py와 framework_lab.py를 실행하세요.",

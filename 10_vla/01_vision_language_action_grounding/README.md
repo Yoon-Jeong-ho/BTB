@@ -48,3 +48,12 @@ $ python 10_vla/01_vision_language_action_grounding/framework_lab.py
 ## 다음 단계와의 연결
 
 이 단위는 완전한 robot policy가 아니라 VLA로 가는 입구다. 다음 확장에서는 behavior cloning dataset, trajectory error, intervention count, safety violation, sim-to-real gap을 별도 산출물로 남겨야 한다.
+
+## 실패 probe로 꼭 점검할 것
+
+- **wrong action but safe**: 안전하게 멈추거나 위험은 피했지만 목표 action token은 틀린 경우다.
+- **right action but unsafe**: 목표 action은 맞지만 장애물, 금지 영역, 사람 근접 같은 safety 조건을 위반한 경우다.
+- **ambiguous instruction**: 지시가 모호해서 바로 행동하기보다 stop/clarify가 더 안전한 경우다.
+- **observation noise**: 시각 상태가 흐리거나 일부 feature가 빠져 action과 safety gate가 흔들리는 경우다.
+
+분석할 때는 이 네 가지를 같은 “오답”으로 합치지 말고, action accuracy와 safety gate accuracy가 왜 서로 다른 실패를 드러내는지 적는다.

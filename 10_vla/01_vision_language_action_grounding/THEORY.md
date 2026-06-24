@@ -25,4 +25,15 @@ action accuracy가 높아도 위험한 장면에서 계속 움직이면 실제 �
 - success rate, trajectory error, intervention count, safety violation
 - simulation과 실제 장비 사이의 domain gap 기록
 
+## 실패 유형을 나누어 보는 이유
+
+VLA 평가는 “맞았다/틀렸다” 하나로 끝나면 안 된다. 최소한 아래 probe를 분리한다.
+
+- **wrong action but safe**: policy가 목표 행동은 틀렸지만 safety gate가 위험 실행을 막았다.
+- **right action but unsafe**: action token은 맞았지만 안전 조건을 무시해 실제 시스템에서는 실패다.
+- **ambiguous instruction**: 관측이나 지시가 모호해 실행보다 clarify/stop이 더 안전하다.
+- **observation noise**: 시각 feature가 일부 깨져 action score와 safety score가 함께 흔들린다.
+
+이 구분이 있어야 behavior cloning, offline RL, simulator rollout로 확장할 때 어떤 데이터나 reward 설계를 고쳐야 하는지 보인다.
+
 이 단위는 그 전에 “멀티모달 이해 결과가 어떻게 행동 선택 문제로 바뀌는가”를 최소 수치로 확인하는 역할을 한다.

@@ -20,5 +20,5 @@ required_outputs:
   - observed analysis report
 analysis_questions:
   - Accelerate는 어떤 boilerplate를 줄여 주는가?
-  - `prepare()` 이후에도 사용자가 직접 이해해야 하는 것은 무엇인가?
+  - "`prepare()` 이후에도 사용자가 직접 이해해야 하는 것은 무엇인가?"
   - mixed precision과 backend complexity는 왜 별개로 봐야 하는가?

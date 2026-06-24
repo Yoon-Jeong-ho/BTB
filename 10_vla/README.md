@@ -8,6 +8,7 @@
 - `02_deep_learning/04_attention_and_transformers`
 - `05_advanced_nlp_llm/06_rlhf_and_reasoning_rl`의 reward/policy 용어
 - `08_multimodal_bridge -> 09_multimodal`의 image-text alignment, captioning, VQA 감각
+- [RL to VLA bridge](../docs/08_rl_to_vla_bridge.md)의 MDP, trajectory, behavior cloning, offline RL, action space design 구분
 
 ## 단위 구성
 
@@ -21,3 +22,7 @@
 - VQA의 “답변”과 VLA의 “행동”은 평가 지표가 어떻게 다른가?
 - action accuracy만 높아도 safety gate가 틀리면 왜 실패인가?
 - 이후 behavior cloning, trajectory error, intervention count, safety violation 같은 지표로 어떻게 확장할 수 있는가?
+
+## VLA가 아직 다루지 않는 것
+
+현재 runnable unit은 VLA grounding entry point다. 실제 로봇 제어 전체가 아니라 discrete action token과 safety gate를 다룬다. continuous control, simulator rollout, offline RL policy improvement는 [RL to VLA bridge](../docs/08_rl_to_vla_bridge.md)의 확장 질문으로 남긴다.

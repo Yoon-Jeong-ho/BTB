@@ -23,35 +23,37 @@
     </header>
 
     <main class="layout">
-      <aside class="panel track-panel" aria-label="트랙 목록">
-        <div class="panel-heading">
-          <h2>트랙</h2>
-          <button id="reset-filters" type="button">필터 초기화</button>
-        </div>
-        <div id="track-list" class="track-list"></div>
-      </aside>
+      <aside class="study-sidebar" aria-label="트랙과 단원 선택">
+        <section class="panel track-panel" aria-label="트랙 목록">
+          <div class="panel-heading">
+            <h2>트랙</h2>
+            <button id="reset-filters" type="button">필터 초기화</button>
+          </div>
+          <div id="track-list" class="track-list"></div>
+        </section>
 
-      <section class="panel unit-panel" aria-label="단원 목록">
-        <div class="toolbar">
-          <label>
-            <span>검색</span>
-            <input id="search" type="search" placeholder="attention, RL, VLA…" />
-          </label>
-          <label>
-            <span>상태</span>
-            <select id="progress-filter">
-              <option value="all">전체</option>
-              <option value="not_started">시작 전</option>
-              <option value="in_progress">진행 중</option>
-              <option value="done">완료</option>
-              <option value="blocked">막힘</option>
-            </select>
-          </label>
-          <button id="resume" type="button">마지막 단원 열기</button>
-        </div>
-        <div id="unit-list" class="unit-list"></div>
-        <p id="empty-state" class="empty" hidden>조건에 맞는 단원이 없습니다. 검색어나 필터를 지워 보세요.</p>
-      </section>
+        <section class="panel unit-panel" aria-label="선택한 트랙의 단원 목록">
+          <div class="toolbar">
+            <label>
+              <span>검색</span>
+              <input id="search" type="search" placeholder="attention, RL, VLA…" />
+            </label>
+            <label>
+              <span>상태</span>
+              <select id="progress-filter">
+                <option value="all">전체</option>
+                <option value="not_started">시작 전</option>
+                <option value="in_progress">진행 중</option>
+                <option value="done">완료</option>
+                <option value="blocked">막힘</option>
+              </select>
+            </label>
+            <button id="resume" type="button">마지막 단원 열기</button>
+          </div>
+          <div id="unit-list" class="unit-list"></div>
+          <p id="empty-state" class="empty" hidden>조건에 맞는 단원이 없습니다. 검색어나 필터를 지워 보세요.</p>
+        </section>
+      </aside>
 
       <section class="panel detail-panel reader-panel" aria-labelledby="detail-title">
         <div class="profile-box">

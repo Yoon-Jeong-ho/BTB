@@ -18,6 +18,12 @@ SCRATCH_METRICS = SCRATCH_DIR / "metrics.json"
 SCRATCH_FIGURE = SCRATCH_DIR / "action_policy_matrix.svg"
 FRAMEWORK_METRICS = FRAMEWORK_DIR / "metrics.json"
 OBSERVED_REPORT = ANALYSIS_DIR / "latest_report.md"
+FAILURE_PROBE_LABELS = {
+    "wrong action but safe",
+    "right action but unsafe",
+    "ambiguous instruction",
+    "observation noise",
+}
 
 
 class VLAUnitContractTest(unittest.TestCase):
@@ -76,6 +82,10 @@ class VLAUnitContractTest(unittest.TestCase):
         self.assertIn("실행 결과 예시", readme)
         self.assertIn("VLA", readme)
         self.assertIn("action token", theory)
+        self.assertIn("wrong action but safe", readme + theory)
+        self.assertIn("right action but unsafe", readme + theory)
+        self.assertIn("ambiguous instruction", readme + theory)
+        self.assertIn("observation noise", readme + theory)
         self.assertIn("status: runnable", lesson)
         self.assertIn("vision-language-action", lesson)
         self.assertIn("safety gate", lesson)
@@ -98,6 +108,15 @@ class VLAUnitContractTest(unittest.TestCase):
         self.assertEqual(1.0, scratch["safety_gate_accuracy"])
         self.assertEqual([4, 4], scratch["policy_matrix_shape"])
         self.assertEqual("artifacts/scratch-manual/action_policy_matrix.svg", scratch["figure_path"])
+        self.assertEqual(FAILURE_PROBE_LABELS, set(scratch["failure_probe_labels"]))
+        self.assertEqual(4, scratch["failure_probe_counts"]["total"])
+        self.assertEqual(FAILURE_PROBE_LABELS, set(scratch["failure_probe_counts"]["by_label"]))
+        self.assertEqual(4, len(scratch["failure_probe_rows"]))
+        for row in scratch["failure_probe_rows"]:
+            self.assertIn(row["probe_label"], FAILURE_PROBE_LABELS)
+            self.assertIn("expected_behavior", row)
+            self.assertIn("observed_behavior", row)
+            self.assertIn("probe_passed", row)
         self.assertTrue(SCRATCH_METRICS.exists())
         self.assertTrue(SCRATCH_FIGURE.exists())
         self.assertIn("<svg", SCRATCH_FIGURE.read_text(encoding="utf-8"))
@@ -107,6 +126,10 @@ class VLAUnitContractTest(unittest.TestCase):
         self.assertIn(framework["device"], {"cpu", "cuda"})
         self.assertEqual([4, 4], framework["logits_shape"])
         self.assertEqual(1.0, framework["action_accuracy"])
+        self.assertEqual(FAILURE_PROBE_LABELS, set(framework["failure_probe_labels"]))
+        self.assertEqual(4, framework["failure_probe_counts"]["total"])
+        self.assertEqual(FAILURE_PROBE_LABELS, set(framework["failure_probe_counts"]["by_label"]))
+        self.assertEqual(4, len(framework["failure_probe_rows"]))
         self.assertLess(framework["loss_history_tail"][-1], framework["loss_history_head"][0])
         self.assertTrue(FRAMEWORK_METRICS.exists())
 
@@ -114,11 +137,16 @@ class VLAUnitContractTest(unittest.TestCase):
         self.assertEqual("runnable", analysis["status"])
         self.assertEqual(1.0, analysis["scratch_action_accuracy"])
         self.assertEqual(1.0, analysis["framework_action_accuracy"])
+        self.assertEqual(4, analysis["scratch_failure_probe_counts"]["total"])
+        self.assertEqual(4, analysis["framework_failure_probe_counts"]["total"])
         self.assertTrue(OBSERVED_REPORT.exists())
         report = OBSERVED_REPORT.read_text(encoding="utf-8")
         self.assertIn("# 01 Vision-Language-Action Grounding 실행 관측", report)
         self.assertIn("## 한국어 해석", report)
         self.assertIn("safety gate", report)
+        self.assertIn("## 실패 probe 관측", report)
+        for label in FAILURE_PROBE_LABELS:
+            self.assertIn(label, report)
         self.assertNotIn(str(ROOT), report)
 
 
