@@ -78,6 +78,7 @@
           </label>
           <div class="profile-actions">
             <button id="add-profile" type="button">프로필 추가</button>
+            <button id="review-mistakes" type="button">오답노트</button>
             <button id="export-progress" type="button">내보내기</button>
             <button id="import-progress" type="button">가져오기</button>
             <button id="reset-progress" type="button" class="danger">진행 기록 삭제</button>
@@ -98,6 +99,17 @@
         <menu>
           <button value="cancel">취소</button>
           <button id="confirm-import" value="default" type="button">가져오기</button>
+        </menu>
+      </form>
+    </dialog>
+
+    <dialog id="mistake-dialog">
+      <form method="dialog" class="dialog-body">
+        <h2>오답노트 다시보기</h2>
+        <p>틀렸던 문제와 메모는 현재 브라우저의 사용자 프로필에만 저장됩니다.</p>
+        <div id="mistake-review" class="mistake-review"></div>
+        <menu>
+          <button value="cancel">닫기</button>
         </menu>
       </form>
     </dialog>

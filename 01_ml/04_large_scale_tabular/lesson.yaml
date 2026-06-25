@@ -1,0 +1,25 @@
+objective: 큰 표형 데이터에서 chunking, memory budget, streaming metric을 사용해 같은 실험 계약을 더 큰 입력에서도 유지하는 방법을 익힌다.
+status: runnable
+prereqs:
+  - 표형 분류/회귀 stage 실행 경험
+  - batch 처리와 memory 사용량의 관계
+  - train/eval split과 primary metric 기록 습관
+key_terms:
+  - large scale tabular
+  - chunking
+  - streaming metric
+  - memory budget
+  - batch inference
+  - data drift
+  - throughput
+  - reproducibility
+required_outputs:
+  - large scale run metrics json
+  - memory or throughput summary
+  - sampled prediction table
+  - stable analysis markdown
+  - reflection worksheet
+analysis_questions:
+  - 한 번에 읽는 방식과 chunking 방식은 metric과 memory에서 어떻게 다르게 보이는가?
+  - throughput을 높일 때 reproducibility나 data ordering이 깨질 수 있는 지점은 어디인가?
+  - 작은 데이터 baseline에서 확인한 계약을 큰 입력에서도 유지하려면 어떤 로그가 필요한가?

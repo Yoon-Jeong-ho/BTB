@@ -1,0 +1,26 @@
+objective: 표형 회귀에서 target scale, residual, MAE/RMSE/R2를 비교하며 숫자 예측 baseline을 해석하는 습관을 만든다.
+status: runnable
+prereqs:
+  - feature matrix와 target vector 구분
+  - 평균 baseline과 residual의 의미
+  - train/validation/test split의 목적
+  - numeric feature scaling 기초
+key_terms:
+  - tabular regression
+  - target scale
+  - residual
+  - MAE
+  - RMSE
+  - R2
+  - baseline regressor
+  - calibration
+required_outputs:
+  - stage metrics json
+  - residual summary table
+  - prediction vs target figure
+  - stable analysis markdown
+  - reflection worksheet
+analysis_questions:
+  - MAE와 RMSE가 서로 다르게 움직이면 어떤 outlier를 의심해야 하는가?
+  - 평균 baseline 대비 모델이 개선됐다고 말하려면 어떤 residual evidence가 필요한가?
+  - target scale이 바뀌면 metric 해석은 어떻게 달라지는가?

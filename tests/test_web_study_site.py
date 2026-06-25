@@ -328,19 +328,43 @@ store.users.alice = { displayName: 'Alice', lessons: {} };
 store.users.bob = { displayName: 'Bob', lessons: {} };
 Progress.upsertLessonProgress(store, 'alice', '00_foundations/01_tensor_shapes', { state: 'done', percent: 100 }, '2026-06-24T00:00:00Z');
 Progress.upsertLessonProgress(store, 'bob', '00_foundations/01_tensor_shapes', { state: 'blocked', percent: 20 }, '2026-06-24T00:01:00Z');
-Progress.updateUserUI(store, 'alice', { selectedTrack: '00_foundations', selectedUnit: '00_foundations/01_tensor_shapes', filters: { query: 'tensor', progressState: 'done' } });
-Progress.updateUserUI(store, 'bob', { selectedTrack: '10_vla', selectedUnit: '10_vla/01_vision_language_action_grounding', filters: { query: 'VLA', progressState: 'blocked' } });
+Progress.upsertLessonProgress(store, 'alice', '10_vla/01_vision_language_action_grounding', {
+  state: 'in_progress',
+  percent: 40,
+  selfChecks: { goal: true },
+  note: 'wrong-note: action token vs safety gate',
+}, '2026-06-24T00:02:00Z');
+Progress.updateUserUI(store, 'alice', {
+  selectedTrack: '00_foundations',
+  selectedUnit: '00_foundations/01_tensor_shapes',
+  selectedRoute: 'systems',
+  filters: { query: 'tensor', progressState: 'done' },
+});
+Progress.updateUserUI(store, 'bob', {
+  selectedTrack: '10_vla',
+  selectedUnit: '10_vla/01_vision_language_action_grounding',
+  selectedRoute: 'multimodal',
+  filters: { query: 'VLA', progressState: 'blocked' },
+});
 assert.strictEqual(Progress.lessonState(store, 'alice', '00_foundations/01_tensor_shapes').state, 'done');
 assert.strictEqual(Progress.lessonState(store, 'bob', '00_foundations/01_tensor_shapes').state, 'blocked');
 assert.strictEqual(Progress.userUI(store, 'alice').selectedUnit, '00_foundations/01_tensor_shapes');
 assert.strictEqual(Progress.userUI(store, 'bob').selectedUnit, '10_vla/01_vision_language_action_grounding');
 assert.strictEqual(Progress.userUI(store, 'alice').filters.query, 'tensor');
 assert.strictEqual(Progress.userUI(store, 'bob').filters.query, 'VLA');
+assert.strictEqual(Progress.userUI(store, 'alice').selectedRoute, 'systems');
+assert.strictEqual(Progress.userUI(store, 'bob').selectedRoute, 'multimodal');
+assert.strictEqual(Progress.lessonState(store, 'alice', '10_vla/01_vision_language_action_grounding').selfChecks.goal, true);
+assert.strictEqual(Progress.lessonState(store, 'alice', '10_vla/01_vision_language_action_grounding').note, 'wrong-note: action token vs safety gate');
 
 const storage = Progress.createMemoryStorage();
 Progress.saveProgress(store, storage);
 const reloaded = Progress.loadProgress(storage);
 assert.strictEqual(reloaded.users.alice.lessons['00_foundations/01_tensor_shapes'].percent, 100);
+assert.strictEqual(reloaded.users.alice.lessons['10_vla/01_vision_language_action_grounding'].selfChecks.goal, true);
+assert.strictEqual(reloaded.users.alice.lessons['10_vla/01_vision_language_action_grounding'].note, 'wrong-note: action token vs safety gate');
+assert.strictEqual(reloaded.users.alice.ui.selectedRoute, 'systems');
+assert.strictEqual(reloaded.users.bob.ui.selectedRoute, 'multimodal');
 
 const corrupt = Progress.createMemoryStorage({ [Progress.PROGRESS_KEY]: '{broken-json' });
 const recovered = Progress.loadProgress(corrupt);
@@ -365,6 +389,41 @@ assert.strictEqual(recovered.users.carol.lessons['10_vla/01_vision_language_acti
             check=False,
         )
         self.assertEqual(0, result.returncode, result.stderr)
+
+    def test_remaining_roadmap_features_are_implemented(self) -> None:
+        app = (WEB / "app.js").read_text(encoding="utf-8")
+        server = (ROOT / "scripts" / "study_server.py").read_text(encoding="utf-8")
+        styles = (WEB / "styles.css").read_text(encoding="utf-8")
+        storage = (WEB / "progress-storage.js").read_text(encoding="utf-8")
+
+        for token in [
+            "quizForUnit",
+            "renderQuizPanel",
+            "data-quiz-submit",
+            "quizAnswers",
+            "wrongNotes",
+            "wrong-note-panel",
+            "openMistakeReview",
+            "예시와 비교 저장",
+            "자동 채점 대신 예시와 비교하세요",
+            "artifact-viewer",
+            "renderArtifactViewer",
+            "renderArtifactCard",
+            "artifact-grid",
+            "산출물 뷰어",
+            "이번 실행에서 새로",
+            "지표 요약",
+            "partial-experiment",
+            "cell-probe",
+            "renderCellProbe",
+            "선택 함수 미리보기",
+            "prereq-gate",
+            "data-prereq-href",
+            "llmFastPath",
+            "!nextCheckpoint && answered < quizItems.length",
+            "next-action-card",
+        ]:
+            self.assertIn(token, app + server + styles + storage)
 
     def test_documented_static_server_resolves_app_and_lesson_links(self) -> None:
         port = self._free_port()
@@ -429,6 +488,21 @@ assert.strictEqual(recovered.users.carol.lessons['10_vla/01_vision_language_acti
         else:
             self.fail(f"study_server.py did not start: {last_error}; stderr={server.stderr.read() if server.stderr else ''}")
 
+        artifact_dir = ROOT / "00_foundations" / "01_tensor_shapes" / "artifacts"
+        artifact_dir.mkdir(exist_ok=True)
+        stale_artifact = artifact_dir / "stale-from-test.txt"
+        stale_artifact.write_text("이 파일은 이번 실행 결과가 아닙니다.", encoding="utf-8")
+        self.addCleanup(lambda: stale_artifact.exists() and stale_artifact.unlink())
+        symlink_artifact = artifact_dir / "symlink-from-test.txt"
+        if symlink_artifact.exists() or symlink_artifact.is_symlink():
+            symlink_artifact.unlink()
+        if hasattr(symlink_artifact, "symlink_to"):
+            try:
+                symlink_artifact.symlink_to(ROOT / "README.md")
+                self.addCleanup(lambda: (symlink_artifact.exists() or symlink_artifact.is_symlink()) and symlink_artifact.unlink())
+            except OSError:
+                pass
+
         request = urllib.request.Request(
             f"{base}/api/run-python",
             data=json.dumps({"path": "00_foundations/01_tensor_shapes/scratch_lab.py"}).encode("utf-8"),
@@ -444,6 +518,32 @@ assert.strictEqual(recovered.users.carol.lessons['10_vla/01_vision_language_acti
         self.assertIn(payload["runner"]["device"], {"cpu", "cuda"})
         self.assertIn("python", payload["runner"])
         self.assertIn("environment", payload["runner"])
+        artifact_paths = [artifact["path"] for artifact in payload["artifacts"]]
+        self.assertTrue(
+            any(path.endswith("metrics.json") for path in artifact_paths),
+            f"run-python should return previewable artifacts, got: {artifact_paths}",
+        )
+        self.assertFalse(any("stale-from-test" in path for path in artifact_paths), artifact_paths)
+        self.assertFalse(any("symlink-from-test" in path for path in artifact_paths), artifact_paths)
+        metric_artifact = next(artifact for artifact in payload["artifacts"] if artifact["path"].endswith("metrics.json"))
+        self.assertEqual("json", metric_artifact["type"])
+        self.assertEqual("json", metric_artifact["preview"]["kind"])
+
+        cell_probe = urllib.request.Request(
+            f"{base}/api/partial-experiment",
+            data=json.dumps({"path": "00_foundations/01_tensor_shapes/scratch_lab.py", "symbol": "run"}).encode("utf-8"),
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        with urllib.request.urlopen(cell_probe, timeout=10) as response:
+            self.assertEqual(200, response.status)
+            cell_payload = json.loads(response.read().decode("utf-8"))
+        self.assertEqual(0, cell_payload["returncode"])
+        self.assertEqual("function_probe", cell_payload["cell"]["mode"])
+        self.assertEqual("run", cell_payload["cell"]["symbol"])
+        self.assertIn("line_range", cell_payload["cell"])
+        self.assertIn("source_excerpt", cell_payload["cell"])
+        self.assertIn("ARTIFACT_DIR", cell_payload["cell"]["artifact_names"])
 
         forbidden = urllib.request.Request(
             f"{base}/api/run-python",
@@ -479,6 +579,19 @@ assert.strictEqual(recovered.users.carol.lessons['10_vla/01_vision_language_acti
         self.assertEqual("cpu", runner["device"])
         self.assertEqual("", env["CUDA_VISIBLE_DEVICES"])
         self.assertEqual("cpu", env["BTB_DEVICE"])
+
+    def test_study_server_rejects_symlinked_artifact_roots(self) -> None:
+        server = self._load_study_server()
+        with tempfile.TemporaryDirectory(dir=ROOT) as unit_dir, tempfile.TemporaryDirectory() as external_dir:
+            unit_path = Path(unit_dir)
+            external_path = Path(external_dir)
+            script_path = unit_path / "scratch_lab.py"
+            script_path.write_text("print('ok')\n", encoding="utf-8")
+            (external_path / "secret_metrics.json").write_text('{"secret": true}', encoding="utf-8")
+            (unit_path / "artifacts").symlink_to(external_path, target_is_directory=True)
+
+            self.assertEqual({}, server._artifact_snapshot(script_path))
+            self.assertEqual([], server._collect_artifacts(script_path))
 
     def test_catalog_builder_covers_manifest_tracks_and_units(self) -> None:
         module = self._load_builder()
@@ -518,6 +631,9 @@ assert.strictEqual(recovered.users.carol.lessons['10_vla/01_vision_language_acti
         self.assertNotIn("framework_lab.py", ml_labels)
         self.assertIn("실습 구성", ml_unit["checkpoints"])
         self.assertTrue(ml_unit["objective"])
+        for unit in catalog_units["01_ml"].values():
+            for field in ["prereqs", "key_terms", "required_outputs", "analysis_questions"]:
+                self.assertTrue(unit[field], f"{unit['path']} needs learner-facing metadata for {field}")
 
         llm_track = next(track for track in catalog["tracks"] if track["id"] == "05_advanced_nlp_llm")
         self.assertFalse(llm_track["summary"].endswith("preference optimizat"))

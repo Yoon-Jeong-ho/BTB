@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import argparse
+import ast
+import base64
 import json
 import os
 import subprocess
@@ -17,6 +19,8 @@ from urllib.parse import unquote
 ROOT = Path(__file__).resolve().parents[1]
 RUNNABLE_NAMES = {"scratch_lab.py", "framework_lab.py", "analysis.py", "run_stage.py"}
 DEFAULT_TIMEOUT_SECONDS = 60
+MAX_ARTIFACTS = 12
+MAX_ARTIFACT_PREVIEW_BYTES = 96_000
 
 
 @dataclass(frozen=True)
@@ -52,6 +56,179 @@ def _resolve_runnable_path(raw_path: str) -> Path:
     if not candidate.is_file():
         raise FileNotFoundError(cleaned)
     return candidate
+
+
+def _safe_text_preview(path: Path, limit: int = MAX_ARTIFACT_PREVIEW_BYTES) -> str:
+    data = path.read_bytes()[:limit]
+    return data.decode("utf-8", errors="replace")
+
+
+def _artifact_type(path: Path) -> str:
+    suffix = path.suffix.lower()
+    if suffix == ".json":
+        return "json"
+    if suffix == ".svg":
+        return "svg"
+    if suffix in {".md", ".txt"}:
+        return "markdown"
+    if suffix == ".csv":
+        return "csv"
+    return suffix.lstrip(".") or "file"
+
+
+def _artifact_preview(path: Path) -> dict[str, Any]:
+    artifact_type = _artifact_type(path)
+    if path.stat().st_size > MAX_ARTIFACT_PREVIEW_BYTES and artifact_type != "svg":
+        return {"kind": "too_large", "message": "미리보기 한도를 넘는 파일입니다. 경로를 열어 직접 확인하세요."}
+
+    if artifact_type == "json":
+        text = _safe_text_preview(path)
+        try:
+            parsed = json.loads(text)
+        except json.JSONDecodeError:
+            return {"kind": "text", "text": text[:4000]}
+        return {"kind": "json", "json": parsed}
+    if artifact_type == "svg":
+        data = path.read_bytes()[:MAX_ARTIFACT_PREVIEW_BYTES]
+        return {
+            "kind": "svg",
+            "data_uri": f"data:image/svg+xml;base64,{base64.b64encode(data).decode('ascii')}",
+            "text": data.decode("utf-8", errors="replace")[:1200],
+        }
+    if artifact_type in {"markdown", "csv"}:
+        return {"kind": "text", "text": _safe_text_preview(path)[:4000]}
+    return {"kind": "file", "message": "브라우저 미리보기를 지원하지 않는 파일 형식입니다."}
+
+
+def _artifact_snapshot(script_path: Path) -> dict[str, tuple[int, int]]:
+    artifacts_dir = script_path.parent / "artifacts"
+    if not artifacts_dir.exists() or artifacts_dir.is_symlink():
+        return {}
+    snapshot: dict[str, tuple[int, int]] = {}
+    for path in artifacts_dir.rglob("*"):
+        if path.is_symlink() or not path.is_file():
+            continue
+        try:
+            resolved = path.resolve()
+            resolved.relative_to(artifacts_dir.resolve())
+        except (OSError, ValueError):
+            continue
+        stat = path.stat()
+        snapshot[str(path.relative_to(artifacts_dir))] = (stat.st_mtime_ns, stat.st_size)
+    return snapshot
+
+
+def _safe_artifact_files(script_path: Path) -> list[Path]:
+    artifacts_dir = script_path.parent / "artifacts"
+    if not artifacts_dir.exists() or artifacts_dir.is_symlink():
+        return []
+    root = artifacts_dir.resolve()
+    files = []
+    for path in artifacts_dir.rglob("*"):
+        if path.name == ".gitkeep" or path.is_symlink() or not path.is_file():
+            continue
+        try:
+            path.resolve().relative_to(root)
+        except (OSError, ValueError):
+            continue
+        files.append(path)
+    return files
+
+
+def _collect_artifacts(
+    script_path: Path,
+    *,
+    previous_snapshot: dict[str, tuple[int, int]] | None = None,
+    include_existing: bool = True,
+) -> list[dict[str, Any]]:
+    artifacts_dir = script_path.parent / "artifacts"
+    if not artifacts_dir.exists() or artifacts_dir.is_symlink():
+        return []
+    files = _safe_artifact_files(script_path)
+    if previous_snapshot is not None and not include_existing:
+        changed_files = []
+        for path in files:
+            stat = path.stat()
+            key = str(path.relative_to(artifacts_dir))
+            if previous_snapshot.get(key) != (stat.st_mtime_ns, stat.st_size):
+                changed_files.append(path)
+        files = changed_files
+    files.sort(key=lambda path: path.stat().st_mtime, reverse=True)
+    collected = []
+    for path in files[:MAX_ARTIFACTS]:
+        relative = path.relative_to(ROOT)
+        stat = path.stat()
+        collected.append(
+            {
+                "path": str(relative),
+                "type": _artifact_type(path),
+                "size_bytes": stat.st_size,
+                "modified_at": int(stat.st_mtime),
+                "preview": _artifact_preview(path),
+            }
+        )
+    return collected
+
+
+def _node_name(node: ast.AST) -> str:
+    if isinstance(node, ast.Name):
+        return node.id
+    if isinstance(node, ast.Attribute):
+        return node.attr
+    if isinstance(node, ast.Call):
+        return _node_name(node.func)
+    return type(node).__name__
+
+
+def _inspect_python_cell(script_path: Path, symbol: str | None = None) -> dict[str, Any]:
+    source = script_path.read_text(encoding="utf-8")
+    tree = ast.parse(source)
+    functions = [node for node in tree.body if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))]
+    selected = next((node for node in functions if node.name == symbol), None) if symbol else None
+    if selected is None and functions:
+        selected = functions[0]
+
+    artifact_names: list[str] = []
+    for node in tree.body:
+        if isinstance(node, ast.Assign):
+            targets = [target.id for target in node.targets if isinstance(target, ast.Name)]
+            if any(("ARTIFACT" in target or "REPORT" in target or "METRIC" in target) for target in targets):
+                artifact_names.extend(targets)
+
+    if selected is None:
+        return {
+            "mode": "module_probe",
+            "path": str(script_path.relative_to(ROOT)),
+            "functions": [],
+            "artifact_names": artifact_names,
+            "learning_note": "함수가 없는 파일입니다. 상단 설정값과 artifact 변수부터 읽으세요.",
+        }
+
+    args = [arg.arg for arg in selected.args.args]
+    calls = sorted({_node_name(node.func) for node in ast.walk(selected) if isinstance(node, ast.Call)})[:12]
+    locals_seen = sorted(
+        {
+            target.id
+            for node in ast.walk(selected)
+            for target in ([node] if isinstance(node, ast.Name) and isinstance(node.ctx, ast.Store) else [])
+        }
+    )[:16]
+    returns = sum(1 for node in ast.walk(selected) if isinstance(node, ast.Return))
+    snippet = ast.get_source_segment(source, selected) or ""
+    return {
+        "mode": "function_probe",
+        "path": str(script_path.relative_to(ROOT)),
+        "symbol": selected.name,
+        "signature": f"{selected.name}({', '.join(args)})",
+        "line_range": [selected.lineno, getattr(selected, "end_lineno", selected.lineno)],
+        "line_count": max(1, getattr(selected, "end_lineno", selected.lineno) - selected.lineno + 1),
+        "called_names": calls,
+        "local_variables": locals_seen,
+        "return_count": returns,
+        "artifact_names": artifact_names,
+        "source_excerpt": "\n".join(snippet.splitlines()[:40]),
+        "learning_note": "이 셀은 임의 코드를 실행하지 않고 함수 구조·호출·artifact 단서를 안전하게 분석합니다.",
+    }
 
 
 def _parse_nvidia_smi_rows(output: str) -> list[dict[str, int | str]]:
@@ -202,6 +379,9 @@ class StudyRequestHandler(SimpleHTTPRequestHandler):
         super().end_headers()
 
     def do_POST(self) -> None:  # noqa: N802 - http.server API
+        if self.path in {"/api/run-code-cell", "/api/partial-experiment"}:
+            self._handle_code_cell()
+            return
         if self.path != "/api/run-python":
             self._send_json(HTTPStatus.NOT_FOUND, {"error": "unknown endpoint"})
             return
@@ -225,6 +405,7 @@ class StudyRequestHandler(SimpleHTTPRequestHandler):
         started = time.monotonic()
         config: RunnerConfig = getattr(self.server, "runner_config", RunnerConfig())  # type: ignore[attr-defined]
         command, env_overlay, runner = _build_runner_invocation(script_path, config)
+        artifact_snapshot = _artifact_snapshot(script_path)
         try:
             env = os.environ.copy()
             env.update(env_overlay)
@@ -247,6 +428,7 @@ class StudyRequestHandler(SimpleHTTPRequestHandler):
                 "stderr": completed.stderr,
                 "duration_seconds": round(time.monotonic() - started, 3),
                 "runner": runner,
+                "artifacts": _collect_artifacts(script_path, previous_snapshot=artifact_snapshot, include_existing=False),
             }
         except FileNotFoundError as exc:
             status = HTTPStatus.INTERNAL_SERVER_ERROR
@@ -258,6 +440,7 @@ class StudyRequestHandler(SimpleHTTPRequestHandler):
                 "stderr": f"실행기를 찾을 수 없습니다: {exc.filename}",
                 "duration_seconds": round(time.monotonic() - started, 3),
                 "runner": runner,
+                "artifacts": _collect_artifacts(script_path, previous_snapshot=artifact_snapshot, include_existing=False),
             }
         except subprocess.TimeoutExpired as exc:
             status = HTTPStatus.REQUEST_TIMEOUT
@@ -269,9 +452,38 @@ class StudyRequestHandler(SimpleHTTPRequestHandler):
                 "stderr": f"실행 시간이 {timeout}초를 넘었습니다.",
                 "duration_seconds": round(time.monotonic() - started, 3),
                 "runner": runner,
+                "artifacts": _collect_artifacts(script_path, previous_snapshot=artifact_snapshot, include_existing=False),
             }
 
         self._send_json(status, payload)
+
+    def _handle_code_cell(self) -> None:
+        try:
+            length = int(self.headers.get("Content-Length", "0"))
+            body = self.rfile.read(length).decode("utf-8")
+            request = json.loads(body or "{}")
+            script_path = _resolve_runnable_path(str(request.get("path", "")))
+            symbol = str(request.get("symbol") or "").strip() or None
+            cell = _inspect_python_cell(script_path, symbol)
+        except PermissionError as exc:
+            self._send_json(HTTPStatus.FORBIDDEN, {"error": str(exc)})
+            return
+        except FileNotFoundError as exc:
+            self._send_json(HTTPStatus.NOT_FOUND, {"error": f"파일을 찾을 수 없습니다: {exc}"})
+            return
+        except Exception as exc:  # pragma: no cover - malformed client request
+            self._send_json(HTTPStatus.BAD_REQUEST, {"error": f"코드 셀 분석 요청이 올바르지 않습니다: {exc}"})
+            return
+
+        self._send_json(
+            HTTPStatus.OK,
+            {
+                "path": str(script_path.relative_to(ROOT)),
+                "returncode": 0,
+                "cell": cell,
+                "artifacts": _collect_artifacts(script_path),
+            },
+        )
 
     def _send_json(self, status: HTTPStatus, payload: dict[str, Any]) -> None:
         data = _json_bytes(payload)

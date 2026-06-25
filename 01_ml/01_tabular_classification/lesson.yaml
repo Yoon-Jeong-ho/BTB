@@ -1,0 +1,26 @@
+objective: 표형 분류 문제에서 데이터 split, baseline 모델, primary metric, error slice를 한 번에 연결해 supervised ML의 기본 실험 루프를 익힌다.
+status: runnable
+prereqs:
+  - train/validation/test split의 목적
+  - categorical feature와 numeric feature의 차이
+  - accuracy, F1, ROC-AUC 같은 분류 지표의 직관
+  - overfitting과 baseline 비교 감각
+key_terms:
+  - tabular classification
+  - feature matrix
+  - label
+  - baseline model
+  - train validation split
+  - primary metric
+  - confusion matrix
+  - error slice
+required_outputs:
+  - stage metrics json
+  - model comparison table
+  - confusion matrix or error slice figure
+  - stable analysis markdown
+  - reflection worksheet
+analysis_questions:
+  - majority baseline과 학습 모델의 차이가 어떤 지표에서 가장 먼저 보이는가?
+  - categorical feature 처리가 실패하면 어떤 class나 slice에서 오류가 늘어나는가?
+  - primary metric 하나만 볼 때 놓치는 실패 사례는 무엇인가?

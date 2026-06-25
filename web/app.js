@@ -116,6 +116,7 @@ function bindEvents() {
     if (last) selectUnit(last);
   });
   $('#add-profile').addEventListener('click', addProfile);
+  $('#review-mistakes').addEventListener('click', openMistakeReview);
   $('#export-progress').addEventListener('click', exportProgress);
   $('#import-progress').addEventListener('click', () => $('#import-dialog').showModal());
   $('#confirm-import').addEventListener('click', importProgress);
@@ -147,6 +148,7 @@ function renderProfiles() {
     .join('');
   profileSelect.value = activeUserId;
   routeSelect.value = activeUI().selectedRoute || 'full';
+  $('#review-mistakes').textContent = `오답노트 ${allWrongNotes().length}`;
 }
 
 function renderTracks() {
@@ -213,6 +215,9 @@ function renderDetail() {
   const selfChecks = progress.selfChecks || {};
   const selfCheckItems = selfChecksFor(unit);
   const selfCheckStats = selfCheckProgress(selfCheckItems, selfChecks);
+  const quizItems = quizForUnit(unit);
+  const quizAnswers = progress.quizAnswers || {};
+  const wrongNotes = progress.wrongNotes || {};
   const percent = completionPercent(checkpoints, checked, progress.state);
   const sections = lessonSectionsFor(unit);
   const selectedSection = sections.find((section) => hrefEquals(section.href, selectedResourceHref)) || sections[0];
@@ -226,6 +231,7 @@ function renderDetail() {
         ${scopeGateFor(unit)}
       </div>
       <div>
+        <div class="next-action-card">${nextActionFor(unit, progress, selfCheckStats, quizItems, quizAnswers, checkpoints, checked)}</div>
         <div class="status-buttons" aria-label="진행 상태 변경">
           ${STATES.map((state) => `<button type="button" data-state="${state}" class="${state === progress.state ? 'active' : ''}">${STATE_LABELS[state]}</button>`).join('')}
         </div>
@@ -235,6 +241,7 @@ function renderDetail() {
     <div class="lesson-workspace reader-shell">
       <aside class="lesson-guide" aria-label="학습 진행 가이드">
         <div class="start-callout">처음이라면 README와 THEORY로 목표를 잡고, 코드 실행 → 결과 해석 → 메모 순서로 진행하세요.</div>
+        ${prerequisiteReadinessFor(unit)}
         <h3>학습 순서</h3>
         <ol class="learning-steps">
           ${learningStepsFor(unit).map((step) => `<li><strong>${escapeHtml(step.label)}</strong><span>${escapeHtml(step.description)}</span></li>`).join('')}
@@ -258,6 +265,8 @@ function renderDetail() {
         <ul class="self-checklist">
           ${selfCheckItems.map((item) => `<li><label><input type="checkbox" data-self-check="${escapeHtml(item.id)}" ${selfChecks[item.id] ? 'checked' : ''}/> ${escapeHtml(item.label)}</label><span>${escapeHtml(item.hint)}</span></li>`).join('')}
         </ul>
+        ${renderQuizPanel(unit, quizItems, quizAnswers, wrongNotes)}
+        ${renderWrongNotesPanel(unit, wrongNotes)}
         <h3>내 메모</h3>
         <textarea class="notes" id="unit-note" placeholder="헷갈린 개념, 다시 볼 코드, 다음 질문을 적어 두세요. 이 브라우저에만 저장됩니다.">${escapeHtml(progress.note || '')}</textarea>
       </aside>
@@ -277,6 +286,7 @@ function renderDetail() {
     </div>`;
 
   bindDetailEvents(unit, checkpoints, checked, selfChecks, progress.state, selectedSection);
+  bindQuizEvents(unit, quizItems, quizAnswers, wrongNotes);
   loadLessonSection(unit, selectedSection);
 }
 
@@ -320,7 +330,99 @@ function bindDetailEvents(unit, checkpoints, checked, selfChecks, currentState, 
       loadLessonSection(unit, section);
     });
   });
+  detail.querySelectorAll('[data-prereq-unit]').forEach((button) => {
+    button.addEventListener('click', () => selectUnit(button.dataset.prereqUnit));
+  });
+  detail.querySelectorAll('[data-prereq-href]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const section = {
+        id: `prereq-${button.dataset.prereqLabel}`,
+        label: button.dataset.prereqLabel || '선행 문서',
+        href: button.dataset.prereqHref,
+        type: 'markdown',
+        checkpoint: '',
+      };
+      selectedResourceHref = section.href;
+      loadLessonSection(unit, section);
+    });
+  });
   $('#unit-note').addEventListener('change', (event) => updateLesson(unit.path, { note: event.target.value }));
+}
+
+function bindQuizEvents(unit, quizItems, quizAnswers, wrongNotes) {
+  detail.querySelectorAll('[data-quiz-submit]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const question = quizItems.find((item) => item.id === button.dataset.quizSubmit);
+      if (!question) return;
+      const answer = readQuizAnswer(question);
+      const correct = question.type === 'short' ? null : isQuizCorrect(question, answer);
+      const now = new Date().toISOString();
+      const nextAnswers = {
+        ...quizAnswers,
+        [question.id]: { answer, correct, reviewOnly: question.type === 'short', submittedAt: now },
+      };
+      const nextWrongNotes = { ...wrongNotes };
+      if (question.type === 'short') {
+        if (nextWrongNotes[question.id]) nextWrongNotes[question.id] = { ...nextWrongNotes[question.id], recovered: true, recoveredAt: now };
+      } else if (correct) {
+        if (nextWrongNotes[question.id]) nextWrongNotes[question.id] = { ...nextWrongNotes[question.id], recovered: true, recoveredAt: now };
+      } else {
+        nextWrongNotes[question.id] = {
+          id: question.id,
+          unitPath: unit.path,
+          unitTitle: unit.title,
+          question: question.prompt,
+          learnerAnswer: formatQuizAnswer(question, answer),
+          correctAnswer: correctAnswerFor(question),
+          explanation: question.explanation,
+          memo: nextWrongNotes[question.id]?.memo || '',
+          recovered: false,
+          updatedAt: now,
+        };
+      }
+      updateLesson(unit.path, { quizAnswers: nextAnswers, wrongNotes: nextWrongNotes, state: lessonState(unit.path).state === 'not_started' ? 'in_progress' : lessonState(unit.path).state });
+    });
+  });
+  detail.querySelectorAll('[data-wrong-note-memo]').forEach((textarea) => {
+    textarea.addEventListener('change', () => {
+      const id = textarea.dataset.wrongNoteMemo;
+      const nextWrongNotes = {
+        ...wrongNotes,
+        [id]: { ...wrongNotes[id], memo: textarea.value, updatedAt: new Date().toISOString() },
+      };
+      updateLesson(unit.path, { wrongNotes: nextWrongNotes });
+    });
+  });
+}
+
+function readQuizAnswer(question) {
+  if (question.type === 'multi') {
+    return Array.from(detail.querySelectorAll(`[data-quiz-id="${question.id}"]:checked`)).map((input) => input.value).sort();
+  }
+  if (question.type === 'short') {
+    return detail.querySelector(`[data-quiz-id="${question.id}"]`)?.value.trim() || '';
+  }
+  return detail.querySelector(`[data-quiz-id="${question.id}"]:checked`)?.value || '';
+}
+
+function isQuizCorrect(question, answer) {
+  const expected = question.options.filter((option) => option.correct).map((option) => option.id).sort();
+  const actual = Array.isArray(answer) ? [...answer].sort() : [answer].filter(Boolean);
+  return expected.length === actual.length && expected.every((value, index) => value === actual[index]);
+}
+
+function formatQuizAnswer(question, answer) {
+  if (Array.isArray(answer)) return answer.map((id) => optionLabel(question, id)).join(', ') || '(선택 없음)';
+  return question.type === 'short' ? (answer || '(빈 답변)') : optionLabel(question, answer) || '(선택 없음)';
+}
+
+function correctAnswerFor(question) {
+  if (question.type === 'short') return question.expected || '핵심 용어를 자기 말로 설명한 짧은 답변';
+  return question.options.filter((option) => option.correct).map((option) => option.label).join(', ');
+}
+
+function optionLabel(question, id) {
+  return question.options?.find((option) => option.id === id)?.label || id;
 }
 
 function lessonSectionsFor(unit) {
@@ -365,8 +467,9 @@ async function loadLessonSection(unit, section) {
     const text = await fetchLessonDocument(section.href);
     if (requestId !== contentRequestId) return;
     if (section.type === 'code') {
-      content.innerHTML = `<div class="document-title"><span>${escapeHtml(section.label)}</span><code>${escapeHtml(cleanHref(section.href))}</code></div>${renderCodeExplanation(section, text)}${renderRunPanel(section, unit)}<pre class="code-block"><code>${escapeHtml(annotateCodeWithInlineHints(section, text))}</code></pre>`;
+      content.innerHTML = `<div class="document-title"><span>${escapeHtml(section.label)}</span><code>${escapeHtml(cleanHref(section.href))}</code></div>${renderCodeExplanation(section, text)}${renderRunPanel(section, unit, text)}<pre class="code-block"><code>${escapeHtml(annotateCodeWithInlineHints(section, text))}</code></pre>`;
       bindRunButton(section, unit);
+      bindCellProbeButton(section, unit);
     } else {
       content.innerHTML = `<div class="document-title"><span>${escapeHtml(section.label)}</span><code>${escapeHtml(cleanHref(section.href))}</code></div>${renderMarkdown(text, section.href)}`;
       bindInlineDocLinks(unit, section.href);
@@ -383,9 +486,10 @@ async function fetchLessonDocument(href) {
   return response.text();
 }
 
-function renderRunPanel(section, unit) {
+function renderRunPanel(section, unit, source = '') {
   if (!isRunnableCodeSection(section)) return '';
   const plan = runPlanFor(section, unit);
+  const symbols = extractPythonSymbols(source).map((symbol) => symbol.replace(/\(\)$/, ''));
   return `<section class="run-panel" aria-label="Python 코드 실행">
     <div>
       <p class="eyebrow">실행 결과</p>
@@ -404,7 +508,19 @@ function renderRunPanel(section, unit) {
         <div><dt>좋은 결과 기준</dt><dd>${escapeHtml(plan.goodOutcome)}</dd></div>
       </dl>
     </div>
+    <div class="cell-probe" aria-label="선택 함수 미리보기">
+      <strong>선택 함수 미리보기</strong>
+      <p>전체 파일을 돌리기 전에 선택 함수의 입력·호출·산출물 단서를 안전하게 분석합니다. 임의 코드는 실행하지 않습니다.</p>
+      <div class="cell-actions">
+        <select data-cell-symbol aria-label="분석할 함수">
+          ${symbols.length ? symbols.map((symbol) => `<option value="${escapeHtml(symbol)}">${escapeHtml(symbol)}()</option>`).join('') : '<option value="">파일 전체 구조</option>'}
+        </select>
+        <button type="button" data-run-cell>함수 구조 보기</button>
+      </div>
+      <div class="cell-output" data-cell-output hidden></div>
+    </div>
     <div class="run-insights" data-run-insights hidden></div>
+    <div class="artifact-viewer" data-artifact-viewer hidden></div>
     <pre class="run-output" data-run-output hidden></pre>
   </section>`;
 }
@@ -419,11 +535,18 @@ function bindRunButton(section, unit) {
   button.addEventListener('click', () => runPythonSection(section, button, unit));
 }
 
+function bindCellProbeButton(section, unit) {
+  const button = $('#lesson-content [data-run-cell]');
+  if (!button) return;
+  button.addEventListener('click', () => runCodeCellProbe(section, button, unit));
+}
+
 async function runPythonSection(section, button, unit) {
   const panel = button.closest('.run-panel');
   const output = panel?.querySelector('[data-run-output]');
   const status = panel?.querySelector('[data-run-status]');
   const insights = panel?.querySelector('[data-run-insights]');
+  const artifactViewer = panel?.querySelector('[data-artifact-viewer]');
   if (!output || !status) return;
 
   button.disabled = true;
@@ -431,6 +554,10 @@ async function runPythonSection(section, button, unit) {
   if (insights) {
     insights.hidden = true;
     insights.innerHTML = '';
+  }
+  if (artifactViewer) {
+    artifactViewer.hidden = true;
+    artifactViewer.innerHTML = '';
   }
   output.textContent = '실행 중입니다...';
   status.textContent = '실행 중';
@@ -457,10 +584,40 @@ async function runPythonSection(section, button, unit) {
       insights.innerHTML = renderRunInsights(payload, section, unit);
       insights.hidden = false;
     }
+    if (artifactViewer) {
+      artifactViewer.innerHTML = renderArtifactViewer(payload, section, unit);
+      artifactViewer.hidden = false;
+    }
     status.textContent = payload.returncode === 0 ? '실행 완료' : `종료 코드 ${payload.returncode}`;
   } catch (error) {
     output.textContent = staticServerHelp(error.message);
     status.textContent = '실행 서버 필요';
+  } finally {
+    button.disabled = false;
+  }
+}
+
+async function runCodeCellProbe(section, button, unit) {
+  const panel = button.closest('.run-panel');
+  const output = panel?.querySelector('[data-cell-output]');
+  const select = panel?.querySelector('[data-cell-symbol]');
+  if (!output) return;
+  button.disabled = true;
+  output.hidden = false;
+  output.innerHTML = '<p class="empty">선택 셀을 분석하는 중입니다...</p>';
+  try {
+    const response = await fetch('/api/partial-experiment', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ path: cleanHref(section.href), symbol: select?.value || '' }),
+    });
+    const payload = response.headers.get('content-type')?.includes('application/json')
+      ? await response.json()
+      : { error: await response.text(), status: response.status };
+    if (!response.ok) throw new Error(payload.error || `HTTP ${response.status}`);
+    output.innerHTML = renderCellProbe(payload, unit);
+  } catch (error) {
+    output.textContent = staticServerHelp(error.message);
   } finally {
     button.disabled = false;
   }
@@ -545,6 +702,110 @@ function renderRunInsights(payload, section, unit) {
     <p>${escapeHtml(plan.goodOutcome)}</p>
     <h5>다음 질문</h5>
     <ul>${nextQuestions.map((question) => `<li>${escapeHtml(question)}</li>`).join('')}</ul>
+  </section>`;
+}
+
+function renderArtifactViewer(payload, section, unit) {
+  const artifacts = Array.isArray(payload.artifacts) ? payload.artifacts : [];
+  const expected = expectedArtifactsForRun(section, unit);
+  const missing = expected.filter((item) => !artifacts.some((artifact) => artifact.path?.toLowerCase().includes(keywordForArtifact(item))));
+  return `<section aria-label="산출물 뷰어">
+    <p class="eyebrow">산출물 뷰어</p>
+    <h4>실행 산출물 바로 보기</h4>
+    <p>이번 실행에서 새로 만들어지거나 갱신된 지표, 그림, 표, 분석 노트를 먼저 확인하세요.</p>
+    ${missing.length ? `<div class="artifact-missing"><strong>확인 필요</strong><span>예상 산출물 중 아직 보이지 않는 항목: ${escapeHtml(missing.slice(0, 3).join(', '))}. 전체 실행 순서나 analysis 의존 artifact를 확인하세요.</span></div>` : ''}
+    <div class="artifact-grid">
+      ${artifacts.length ? artifacts.map((artifact) => renderArtifactCard(artifact)).join('') : '<p class="empty">이번 실행에서 새로 갱신된 산출물이 없습니다. 파일이 읽기 전용이거나, 선행 실험 산출물이 필요한 analysis일 수 있습니다.</p>'}
+    </div>
+  </section>`;
+}
+
+function keywordForArtifact(label) {
+  const text = String(label || '').toLowerCase();
+  if (text.includes('scratch')) return 'scratch';
+  if (text.includes('framework')) return 'framework';
+  if (text.includes('analysis') || text.includes('report')) return 'analysis';
+  if (text.includes('figure') || text.includes('svg')) return '.svg';
+  if (text.includes('metric') || text.includes('json')) return '.json';
+  return text.split(/[\\s/_.-]+/).find((part) => part.length > 3) || text;
+}
+
+function artifactLabel(artifact) {
+  const path = String(artifact.path || '').toLowerCase();
+  if (path.endsWith('.svg')) return '결과 그림';
+  if (path.endsWith('.csv')) return '예측/샘플 표';
+  if (path.endsWith('.md')) return '분석 노트';
+  if (path.endsWith('.json') && path.includes('metric')) return '지표 요약';
+  if (path.endsWith('.json')) return '구조화 결과';
+  return '실행 산출물';
+}
+
+function renderArtifactCard(artifact) {
+  const preview = artifact.preview || {};
+  return `<article class="artifact-card">
+    <div class="artifact-head">
+      <strong>${escapeHtml(artifactLabel(artifact))}</strong>
+      <code>${escapeHtml(artifact.path || '')}</code>
+    </div>
+    <p>${escapeHtml(artifact.type || 'file')} · ${escapeHtml(formatBytes(artifact.size_bytes || 0))}</p>
+    ${renderArtifactPreview(preview)}
+  </article>`;
+}
+
+function formatBytes(size) {
+  const bytes = Number(size) || 0;
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
+}
+
+function renderArtifactPreview(preview) {
+  if (preview.kind === 'json') {
+    return `<pre class="artifact-json">${escapeHtml(JSON.stringify(preview.json, null, 2).slice(0, 5000))}</pre>`;
+  }
+  if (preview.kind === 'svg' && preview.data_uri) {
+    return `<img class="artifact-image" alt="실행 산출물 SVG 미리보기" src="${escapeHtml(preview.data_uri)}" />`;
+  }
+  if (preview.kind === 'text') {
+    const text = String(preview.text || '');
+    if (text.includes(',') && text.includes('\n')) return renderCsvPreview(text);
+    return `<pre class="artifact-text">${escapeHtml(text.slice(0, 3000))}</pre>`;
+  }
+  return `<p class="empty">${escapeHtml(preview.message || '이 파일은 아직 브라우저 미리보기를 지원하지 않습니다.')}</p>`;
+}
+
+function renderCsvPreview(text) {
+  const rows = text.trim().split('\n').slice(0, 7).map((line) => line.split(',').slice(0, 6));
+  if (!rows.length) return '<p class="empty">표 미리보기를 만들 수 없습니다.</p>';
+  const [head, ...body] = rows;
+  return `<div class="table-wrap"><table class="artifact-table">
+    <thead><tr>${head.map((cell) => `<th>${escapeHtml(cell)}</th>`).join('')}</tr></thead>
+    <tbody>${body.map((row) => `<tr>${row.map((cell) => `<td>${escapeHtml(cell)}</td>`).join('')}</tr>`).join('')}</tbody>
+  </table></div>`;
+}
+
+function renderCellProbe(payload, unit) {
+  const cell = payload.cell || {};
+  if (cell.mode === 'module_probe') {
+    return `<section>
+      <p class="eyebrow">선택 함수 미리보기</p>
+      <h5>모듈 구조 분석</h5>
+      <p>${escapeHtml(cell.learning_note || '')}</p>
+      <p><strong>산출물 단서:</strong> ${escapeHtml((cell.artifact_names || []).join(', ') || '상단 경로 변수를 확인하세요.')}</p>
+    </section>`;
+  }
+  return `<section>
+    <p class="eyebrow">선택 함수 미리보기</p>
+    <h5>${escapeHtml(cell.signature || '선택 함수')}</h5>
+    <p>${escapeHtml(cell.learning_note || '')}</p>
+    <dl class="cell-facts">
+      <div><dt>줄 범위</dt><dd>${escapeHtml((cell.line_range || []).join('–'))}</dd></div>
+      <div><dt>호출하는 이름</dt><dd>${escapeHtml((cell.called_names || []).join(', ') || '직접 계산')}</dd></div>
+      <div><dt>중간 변수</dt><dd>${escapeHtml((cell.local_variables || []).join(', ') || '상단 설정값 중심')}</dd></div>
+      <div><dt>산출물 단서</dt><dd>${escapeHtml((cell.artifact_names || []).join(', ') || (unit.required_outputs || []).slice(0, 2).join(', ') || '실행 후 산출물 확인')}</dd></div>
+    </dl>
+    <h5>작게 읽어볼 코드</h5>
+    <pre class="artifact-text">${escapeHtml(cell.source_excerpt || '')}</pre>
   </section>`;
 }
 
@@ -1046,6 +1307,52 @@ function recommendedStartingUnit() {
 }
 
 function routeDefinitions() {
+  const llmFastPath = [
+    '00_foundations/01_tensor_shapes',
+    '00_foundations/02_activation_and_loss',
+    '00_foundations/03_gradients_and_backpropagation',
+    '01_ml/01_tabular_classification',
+    '01_ml/03_model_selection_and_interpretation',
+    '02_deep_learning/01_perceptron_and_mlp',
+    '02_deep_learning/03_sequence_models_rnn_lstm_gru',
+    '02_deep_learning/04_attention_and_transformers',
+    '02_deep_learning/07_training_recipes_and_debugging',
+    '03_nlp_bridge/01_tokenization_and_embeddings',
+    '03_nlp_bridge/02_attention_and_transformer_block',
+    '04_nlp/01_text_classification',
+    '05_advanced_nlp_llm/01_language_modeling_and_pretraining_objectives',
+    '05_advanced_nlp_llm/02_corpus_tokenizer_and_data_mixture',
+    '05_advanced_nlp_llm/04_instruction_tuning_and_sft',
+    '05_advanced_nlp_llm/05_preference_optimization_dpo_orpo_kto',
+    '05_advanced_nlp_llm/06_rlhf_and_reasoning_rl',
+  ];
+  const multimodalVlaPath = [
+    ...llmFastPath,
+    '08_multimodal_bridge/01_contrastive_alignment',
+    '09_multimodal/01_image_text_retrieval',
+    '09_multimodal/02_image_captioning',
+    '09_multimodal/03_visual_question_answering',
+    '10_vla/01_vision_language_action_grounding',
+  ];
+  const systemsPath = [
+    '00_foundations/01_tensor_shapes',
+    '00_foundations/05_gpu_memory_runtime',
+    '02_deep_learning/07_training_recipes_and_debugging',
+    '06_training_systems/01_torchrun_and_ddp_basics',
+    '06_training_systems/02_accelerate_workflows',
+    '06_training_systems/03_deepspeed_zero',
+    '06_training_systems/04_fsdp_checkpointing_and_offload',
+    '06_training_systems/05_tensor_parallelism',
+    '06_training_systems/06_pipeline_parallelism',
+    '06_training_systems/07_data_parallel_grad_accumulation',
+    '06_training_systems/08_hybrid_parallel_topologies',
+    '06_training_systems/09_profiling_monitoring_and_failure_recovery',
+    '07_frontier_labs/01_paper_reproduction_playground',
+    '07_frontier_labs/02_capstone_model_building',
+    '07_frontier_labs/03_agentic_training_and_eval_loops',
+    '07_frontier_labs/04_benchmark_and_dataset_construction',
+    '07_frontier_labs/05_open_ended_research_tracks',
+  ];
   return [
     {
       id: 'full',
@@ -1056,20 +1363,20 @@ function routeDefinitions() {
     {
       id: 'llm',
       label: 'LLM/RLHF 빠른 경로',
-      description: '기초·ML·DL·NLP를 거쳐 LLM pretraining, SFT, preference/RLHF까지 우선 도달합니다.',
-      include: (unit) => ['00_foundations', '01_ml', '02_deep_learning', '03_nlp_bridge', '04_nlp', '05_advanced_nlp_llm'].includes(unit.path.split('/')[0]),
+      description: '트랙 전체가 아니라 필수 단원만 압축해 LLM pretraining, SFT, preference/RLHF까지 먼저 도달합니다.',
+      include: (unit) => llmFastPath.includes(unit.path),
     },
     {
       id: 'multimodal',
       label: 'Multimodal/VLA 경로',
-      description: 'LLM 기반을 만든 뒤 multimodal bridge, applied multimodal, VLA action-token 입구로 이어집니다.',
-      include: (unit) => ['00_foundations', '01_ml', '02_deep_learning', '03_nlp_bridge', '04_nlp', '05_advanced_nlp_llm', '08_multimodal_bridge', '09_multimodal', '10_vla'].includes(unit.path.split('/')[0]),
+      description: 'LLM 빠른 경로 위에 contrastive alignment, VQA, action-token grounding을 순서대로 붙입니다.',
+      include: (unit) => multimodalVlaPath.includes(unit.path),
     },
     {
       id: 'systems',
       label: 'Systems 심화 경로',
       description: '모델 학습 감각 이후 distributed/system, frontier lab 실험 운영 능력을 강화합니다.',
-      include: (unit) => ['00_foundations', '02_deep_learning', '06_training_systems', '07_frontier_labs'].includes(unit.path.split('/')[0]),
+      include: (unit) => systemsPath.includes(unit.path),
     },
   ];
 }
@@ -1143,6 +1450,211 @@ function learningStepsFor(unit) {
     if (step.label.includes('reflection')) return unit.checkpoints.includes('reflection');
     return true;
   });
+}
+
+function nextActionFor(unit, progress, selfCheckStats, quizItems, quizAnswers, checkpoints, checked) {
+  const firstCode = lessonSectionsFor(unit).find((section) => section.type === 'code');
+  const answered = quizItems.filter((question) => quizAnswers?.[question.id]).length;
+  const prereqs = prerequisiteUnitsFor(unit);
+  const unmetPrereq = prereqs.find((item) => item.path && lessonState(item.path).state !== 'done');
+  if (unmetPrereq && /^(05_advanced_nlp_llm|08_multimodal_bridge|09_multimodal|10_vla)\//.test(unit.path)) {
+    return `<strong>다음 행동: 선행 복습 먼저</strong><span>${escapeHtml(unmetPrereq.label)}을(를) 확인하면 이 단원의 코드와 실패 사례가 덜 막힙니다.</span>`;
+  }
+  const nextCheckpoint = (checkpoints || []).find((checkpoint) => !checked?.[checkpoint]);
+  let action = 'README부터 읽기';
+  let detail = '목표와 선행 개념을 먼저 잡으세요.';
+  if (nextCheckpoint) {
+    action = checkpointActionLabel(nextCheckpoint, firstCode);
+    detail = checkpointActionDetail(nextCheckpoint);
+  }
+  if (!nextCheckpoint && answered < quizItems.length && selfCheckStats.done > 0) {
+    action = '미니 퀴즈 풀기';
+    detail = '틀린 문제는 오답노트에 자동 저장됩니다.';
+  }
+  if (selfCheckStats.done === selfCheckStats.total && answered === quizItems.length && progress.state !== 'done') {
+    action = '완료 표시 또는 다음 단원';
+    detail = '자가 점검과 퀴즈를 끝냈다면 다음 추천 단원으로 넘어가세요.';
+  }
+  return `<strong>다음 행동: ${escapeHtml(action)}</strong><span>${escapeHtml(detail)}</span>`;
+}
+
+function checkpointActionLabel(checkpoint, firstCode) {
+  const normalized = String(checkpoint || '').toLowerCase();
+  if (normalized === 'readme') return 'README 읽고 완료 체크';
+  if (normalized === 'theory') return 'THEORY로 원리 확인';
+  if (normalized === 'prereqs') return 'PREREQS로 선행 확인';
+  if (normalized.includes('scratch')) return `${firstCode?.label || 'scratch_lab.py'} 실행`;
+  if (normalized.includes('framework')) return 'framework_lab.py 실행';
+  if (normalized.includes('analysis')) return 'analysis 결과 정리';
+  if (normalized.includes('reflection')) return 'reflection 작성';
+  if (normalized.includes('실습 구성')) return 'dataset.py/experiment.py 읽기';
+  if (normalized.includes('실행 명령')) return 'run_stage.py 실행';
+  return `${checkpoint} 진행`;
+}
+
+function checkpointActionDetail(checkpoint) {
+  const normalized = String(checkpoint || '').toLowerCase();
+  if (['readme', 'theory', 'prereqs'].includes(normalized)) return '코드를 돌리기 전에 왜 배우는지, 어떤 선행 개념이 필요한지 먼저 닫으세요.';
+  if (normalized.includes('scratch') || normalized.includes('framework') || normalized.includes('실행 명령')) return '실행 후 산출물 뷰어에서 이번 실행이 만든 지표와 그림을 확인하세요.';
+  if (normalized.includes('analysis')) return '숫자를 결론으로 바꾸고, 실패 사례와 다음 실험 질문을 남기세요.';
+  if (normalized.includes('reflection')) return '헷갈린 개념, 오답 이유, 다음 단원에서 확인할 질문을 한 줄 이상 남기세요.';
+  return '완료하지 않은 체크포인트를 하나씩 닫으면 다음 행동이 갱신됩니다.';
+}
+
+function prerequisiteReadinessFor(unit) {
+  const advanced = /^(05_advanced_nlp_llm|08_multimodal_bridge|09_multimodal|10_vla)\//.test(unit.path);
+  if (!advanced) return '';
+  const prereqs = prerequisiteUnitsFor(unit);
+  const rows = prereqs.map((item) => {
+    if (item.href) {
+      return `<li><span class="chip in_progress">읽기 권장</span><button type="button" class="inline-doc-link" data-prereq-href="${escapeHtml(item.href)}" data-prereq-label="${escapeHtml(item.label)}">${escapeHtml(item.label)}</button></li>`;
+    }
+    const state = lessonState(item.path).state;
+    const ready = state === 'done';
+    return `<li><span class="chip ${ready ? 'done' : 'in_progress'}">${ready ? '확인됨' : '복습 권장'}</span><button type="button" class="inline-doc-link" data-prereq-unit="${escapeHtml(item.path)}">${escapeHtml(item.label)}</button></li>`;
+  }).join('');
+  return `<section class="prereq-gate" aria-label="선행 준비도">
+    <strong>선행 준비도</strong>
+    <p>고급 단원은 막지 않고 열어두지만, 아래 개념이 약하면 먼저 복습하는 편이 좋습니다.</p>
+    <ul>${rows}</ul>
+  </section>`;
+}
+
+function prerequisiteUnitsFor(unit) {
+  const base = [
+    { path: '00_foundations/01_tensor_shapes', label: 'Tensor shape와 broadcasting' },
+    { path: '02_deep_learning/04_attention_and_transformers', label: 'Attention/Transformer block' },
+  ];
+  if (unit.path === '05_advanced_nlp_llm/06_rlhf_and_reasoning_rl') {
+    return [
+      ...base,
+      { path: '05_advanced_nlp_llm/04_instruction_tuning_and_sft', label: 'SFT가 초기 assistant policy를 만드는 흐름' },
+      { path: '05_advanced_nlp_llm/05_preference_optimization_dpo_orpo_kto', label: 'chosen/rejected pair와 preference objective' },
+      { href: '../docs/05_rl_primer_for_rlhf.md', label: 'RLHF용 RL 용어 입문 문서' },
+    ];
+  }
+  if (unit.path.startsWith('05_advanced_nlp_llm/')) {
+    return [...base, { path: '03_nlp_bridge/01_tokenization_and_embeddings', label: 'Tokenization/embedding' }];
+  }
+  if (unit.path.startsWith('08_multimodal_bridge/')) {
+    return [
+      ...base,
+      { path: '05_advanced_nlp_llm/01_language_modeling_and_pretraining_objectives', label: 'Language modeling objective' },
+      { href: '../docs/07_multimodal_generation_bridge.md', label: '멀티모달 생성 bridge 문서' },
+    ];
+  }
+  if (unit.path.startsWith('09_multimodal/')) {
+    return [
+      ...base,
+      { path: '05_advanced_nlp_llm/01_language_modeling_and_pretraining_objectives', label: 'Language modeling objective' },
+      { path: '08_multimodal_bridge/01_contrastive_alignment', label: '이미지-텍스트 표현 정렬 감각' },
+      { href: '../docs/07_multimodal_generation_bridge.md', label: '멀티모달 생성 bridge 문서' },
+    ];
+  }
+  if (unit.path.startsWith('10_vla/')) {
+    return [
+      ...base,
+      { path: '08_multimodal_bridge/01_contrastive_alignment', label: '이미지-텍스트 표현 정렬 감각' },
+      { path: '09_multimodal/03_visual_question_answering', label: 'VQA와 grounding failure' },
+      { path: '05_advanced_nlp_llm/06_rlhf_and_reasoning_rl', label: 'reward/policy/rollout/KL 용어' },
+      { href: '../docs/08_rl_to_vla_bridge.md', label: 'RL→VLA bridge: MDP, trajectory, behavior cloning, offline RL' },
+    ];
+  }
+  return base;
+}
+
+function quizForUnit(unit) {
+  const keyTerms = unit.key_terms || [];
+  const outputs = (unit.required_outputs || []).filter((item) => !/^runnable README|theory note|prerequisite checklist$/i.test(item));
+  const analysis = unit.analysis_questions || [];
+  return [
+    {
+      id: 'goal',
+      type: 'single',
+      prompt: '이 단원의 가장 중요한 학습 목표는 무엇인가요?',
+      explanation: `정답은 단원 목표와 직접 연결됩니다: ${unit.objective || 'README의 첫 설명을 자기 말로 바꾸는 것'}`,
+      options: [
+        { id: 'objective', label: unit.objective || 'README/THEORY의 핵심 목표를 코드와 연결해 설명한다.', correct: true, explain: '단원 목표를 먼저 잡아야 실행 결과를 해석할 수 있습니다.' },
+        { id: 'skip', label: '일단 모든 파일을 순서 없이 실행한다.', correct: false, explain: '실행은 중요하지만 목표 없이 돌리면 숫자의 의미를 놓치기 쉽습니다.' },
+        { id: 'memorize', label: '용어를 영어 이름 그대로 외운다.', correct: false, explain: '암기보다 shape, metric, artifact로 확인하는 것이 BTB의 흐름입니다.' },
+      ],
+    },
+    {
+      id: 'artifacts',
+      type: 'multi',
+      prompt: '실행 후 확인해야 할 산출물을 고르세요.',
+      explanation: 'artifact는 학습 결과의 증거입니다. 경로·숫자·그림을 함께 확인해야 다음 analysis 질문에 답할 수 있습니다.',
+      options: [
+        { id: 'expected-a', label: outputs[0] || 'metrics json', correct: true, explain: 'metric은 이번 실행을 비교할 기준입니다.' },
+        { id: 'expected-b', label: outputs[1] || 'analysis markdown 또는 figure', correct: true, explain: '그림/분석 문서는 숫자를 사람이 읽는 결론으로 바꿉니다.' },
+        { id: 'terminal-only', label: '터미널 글자만 보고 닫기', correct: false, explain: '원문 로그만 보면 다시 확인할 수 있는 근거가 남지 않습니다.' },
+      ],
+    },
+    {
+      id: 'concept',
+      type: 'short',
+      prompt: `${keyTerms[0] || '핵심 용어'}를 자기 말로 한 문장으로 설명해 보세요.`,
+      expected: analysis[0] || `${keyTerms[0] || '핵심 개념'}이 실행 결과와 어떻게 연결되는지 설명`,
+      explanation: '짧은 답변은 자동 정답 하나로 고정하지 않습니다. 자기 말 설명을 남기고, 아래 기준과 비교하세요.',
+      options: [],
+    },
+  ];
+}
+
+function renderQuizPanel(unit, quizItems, quizAnswers, wrongNotes) {
+  const answered = quizItems.filter((item) => quizAnswers[item.id]).length;
+  return `<section class="quiz-panel" aria-label="미니 퀴즈">
+    <h3>미니 퀴즈 <span>${answered}/${quizItems.length} 완료</span></h3>
+    ${quizItems.map((question) => renderQuizQuestion(question, quizAnswers[question.id], wrongNotes[question.id])).join('')}
+  </section>`;
+}
+
+function renderQuizQuestion(question, answerState, wrongNote) {
+  const stateClass = answerState ? (question.type === 'short' ? 'in_progress' : (answerState.correct ? 'done' : 'blocked')) : 'not_started';
+  const submitLabel = question.type === 'short' ? '예시와 비교 저장' : '정답 확인';
+  return `<article class="quiz-question ${stateClass}">
+    <strong>${escapeHtml(question.prompt)}</strong>
+    ${renderQuizInputs(question, answerState?.answer)}
+    <button type="button" data-quiz-submit="${escapeHtml(question.id)}">${submitLabel}</button>
+    ${answerState ? renderQuizFeedback(question, answerState, wrongNote) : ''}
+  </article>`;
+}
+
+function renderQuizInputs(question, answer) {
+  if (question.type === 'short') {
+    return `<textarea data-quiz-id="${escapeHtml(question.id)}" rows="2" placeholder="짧게 자기 말로 적어 보세요.">${escapeHtml(answer || '')}</textarea>`;
+  }
+  const current = Array.isArray(answer) ? answer : [answer].filter(Boolean);
+  const type = question.type === 'multi' ? 'checkbox' : 'radio';
+  return `<div class="quiz-options">${question.options.map((option) => `<label><input type="${type}" name="quiz-${escapeHtml(question.id)}" data-quiz-id="${escapeHtml(question.id)}" value="${escapeHtml(option.id)}" ${current.includes(option.id) ? 'checked' : ''}/> ${escapeHtml(option.label)}</label>`).join('')}</div>`;
+}
+
+function renderQuizFeedback(question, answerState, wrongNote) {
+  if (question.type === 'short') {
+    return `<div class="quiz-feedback review">
+      <strong>자동 채점 대신 예시와 비교하세요</strong>
+      <p>${escapeHtml(question.explanation)}</p>
+      <p><b>비교 기준:</b> ${escapeHtml(question.expected || question.explanation)}</p>
+      <p>이 답변은 진행 기록에 저장되지만 “맞았습니다”로 처리하지 않습니다. 기준과 다르면 아래 내 메모나 오답노트에 복습 질문을 남기세요.</p>
+    </div>`;
+  }
+  const correct = answerState.correct;
+  const optionHints = (question.options || []).map((option) => `<li><strong>${escapeHtml(option.label)}</strong>: ${escapeHtml(option.explain || '')}</li>`).join('');
+  return `<div class="quiz-feedback ${correct ? 'done' : 'blocked'}">
+    <strong>${correct ? '맞았습니다' : '다시 확인'}</strong>
+    <p>${escapeHtml(question.explanation)}</p>
+    ${optionHints ? `<ul>${optionHints}</ul>` : `<p>비교 기준: ${escapeHtml(question.expected || question.explanation)}</p>`}
+    ${!correct ? `<label>왜 헷갈렸나요?<textarea data-wrong-note-memo="${escapeHtml(question.id)}" rows="2" placeholder="오답 이유를 적으면 오답노트에 저장됩니다.">${escapeHtml(wrongNote?.memo || '')}</textarea></label>` : ''}
+  </div>`;
+}
+
+function renderWrongNotesPanel(unit, wrongNotes) {
+  const notes = Object.values(wrongNotes || {}).filter((note) => !note.recovered);
+  if (!notes.length) return '<section class="wrong-note-panel"><h3>오답노트</h3><p class="empty">아직 열린 오답이 없습니다.</p></section>';
+  return `<section class="wrong-note-panel" aria-label="단원 오답노트">
+    <h3>오답노트</h3>
+    ${notes.map((note) => `<article><strong>${escapeHtml(note.question)}</strong><p>내 답: ${escapeHtml(note.learnerAnswer)}</p><p>정답: ${escapeHtml(note.correctAnswer)}</p><p>${escapeHtml(note.memo || '오답 이유 메모를 아직 남기지 않았습니다.')}</p></article>`).join('')}
+  </section>`;
 }
 
 function selfCheckProgress(items, checked) {
@@ -1281,6 +1793,34 @@ function addProfile() {
   restoreActiveView();
   persistProgress();
   render();
+}
+
+function allWrongNotes() {
+  const lessons = currentUser().lessons || {};
+  return Object.values(lessons)
+    .flatMap((lesson) => Object.values(lesson.wrongNotes || {}))
+    .filter((note) => note && !note.recovered)
+    .sort((a, b) => String(b.updatedAt || '').localeCompare(String(a.updatedAt || '')));
+}
+
+function openMistakeReview() {
+  const notes = allWrongNotes();
+  const container = $('#mistake-review');
+  container.innerHTML = notes.length ? notes.map((note) => `<article class="mistake-card">
+      <strong>${escapeHtml(note.unitTitle || note.unitPath)}</strong>
+      <p>${escapeHtml(note.question)}</p>
+      <p><b>내 답</b>: ${escapeHtml(note.learnerAnswer)}</p>
+      <p><b>정답</b>: ${escapeHtml(note.correctAnswer)}</p>
+      <p><b>메모</b>: ${escapeHtml(note.memo || '아직 메모 없음')}</p>
+      <button type="button" data-mistake-unit="${escapeHtml(note.unitPath)}">이 단원 열기</button>
+    </article>`).join('') : '<p class="empty">현재 열린 오답이 없습니다. 틀린 퀴즈가 생기면 여기에 모입니다.</p>';
+  container.querySelectorAll('[data-mistake-unit]').forEach((button) => {
+    button.addEventListener('click', () => {
+      $('#mistake-dialog').close();
+      selectUnit(button.dataset.mistakeUnit);
+    });
+  });
+  $('#mistake-dialog').showModal();
 }
 
 function exportProgress() {

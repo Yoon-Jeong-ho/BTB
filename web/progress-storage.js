@@ -109,6 +109,8 @@
       percent: 0,
       checkpoints: {},
       selfChecks: {},
+      quizAnswers: {},
+      wrongNotes: {},
       note: '',
     };
   }

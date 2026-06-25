@@ -129,6 +129,20 @@ async function assertNoHorizontalOverflow(page, label) {
   return metrics;
 }
 
+async function assertReaderBeforeGuideOnNarrow(page, label) {
+  const order = await page.evaluate(() => {
+    const reader = document.querySelector('.lesson-reader')?.getBoundingClientRect();
+    const guide = document.querySelector('.lesson-guide')?.getBoundingClientRect();
+    return {
+      readerTop: reader?.top ?? 0,
+      guideTop: guide?.top ?? 0,
+    };
+  });
+  if (order.readerTop > order.guideTop) {
+    throw new Error(`${label}: lesson reader should appear before guide on narrow screens (${order.readerTop} > ${order.guideTop})`);
+  }
+}
+
 function isAllowedRequest(urlText, baseUrl) {
   const url = new URL(urlText);
   if (['about:', 'blob:', 'data:'].includes(url.protocol)) return true;
@@ -189,6 +203,7 @@ async function assertTrackMarkdownRendered(page) {
 
 async function assertRunButton(page, tabName, expectedText) {
   await page.getByRole('tab', { name: tabName }).click();
+  await page.locator('.cell-probe', { hasText: '선택 함수 미리보기' }).waitFor({ state: 'visible' });
   await page.locator('[data-run-code]', { hasText: `${tabName} 실행` }).click();
   const output = page.locator('[data-run-output]');
   await output.waitFor({ state: 'visible' });
@@ -208,8 +223,47 @@ async function assertRunButton(page, tabName, expectedText) {
   await insights.locator('text=예상 산출물').waitFor({ state: 'visible' });
   await insights.locator('text=봐야 할 숫자').waitFor({ state: 'visible' });
   await insights.locator(`text=${expectedText}`).waitFor({ state: 'visible' });
+  await insights.locator('strong', { hasText: '산출물' }).waitFor({ state: 'visible' });
   await insights.locator('text=좋은 결과 기준').waitFor({ state: 'visible' });
   await insights.locator('text=다음 질문').waitFor({ state: 'visible' });
+  const artifactViewer = page.locator('.artifact-viewer');
+  await artifactViewer.locator('text=실행 산출물 바로 보기').waitFor({ state: 'visible' });
+  await artifactViewer.locator('text=지표 요약').first().waitFor({ state: 'visible' });
+  await artifactViewer.locator('code', { hasText: 'metrics.json' }).first().waitFor({ state: 'visible' });
+
+  await page.locator('[data-run-cell]').click();
+  const cellOutput = page.locator('[data-cell-output]');
+  await cellOutput.locator('text=선택 함수 미리보기').waitFor({ state: 'visible' });
+  await cellOutput.locator('text=줄 범위').waitFor({ state: 'visible' });
+  await cellOutput.locator('text=ARTIFACT_DIR').first().waitFor({ state: 'visible' });
+}
+
+async function assertQuizAndWrongNotes(page) {
+  await page.locator('.quiz-panel', { hasText: '미니 퀴즈' }).waitFor({ state: 'visible' });
+  const goalQuestion = page.locator('.quiz-question', { hasText: '가장 중요한 학습 목표' }).first();
+  await goalQuestion.getByLabel('일단 모든 파일을 순서 없이 실행한다.').check();
+  await goalQuestion.getByRole('button', { name: '정답 확인' }).click();
+  await goalQuestion.locator('text=다시 확인').waitFor({ state: 'visible' });
+  await goalQuestion.locator('[data-wrong-note-memo]').fill('목표보다 실행 순서를 먼저 생각함');
+  await goalQuestion.locator('[data-wrong-note-memo]').dispatchEvent('change');
+  await page.locator('.wrong-note-panel', { hasText: '목표보다 실행 순서를 먼저 생각함' }).waitFor({ state: 'visible' });
+
+  const conceptQuestion = page.locator('.quiz-question', { hasText: '자기 말로 한 문장' }).first();
+  await conceptQuestion.locator('textarea[data-quiz-id="concept"]').fill('shape가 계산 결과와 연결되는 방식');
+  await conceptQuestion.getByRole('button', { name: '예시와 비교 저장' }).click();
+  await page.locator('.quiz-feedback.review', { hasText: '자동 채점 대신 예시와 비교하세요' }).waitFor({ state: 'visible' });
+
+  await page.locator('#review-mistakes').click();
+  await page.locator('#mistake-dialog', { hasText: '목표보다 실행 순서를 먼저 생각함' }).waitFor({ state: 'visible' });
+  await page.locator('#mistake-dialog button[value="cancel"]').click();
+
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await page.locator('.quiz-panel', { hasText: '미니 퀴즈' }).waitFor({ state: 'visible' });
+  await page.locator('#review-mistakes').click();
+  await page.locator('#mistake-dialog', { hasText: '목표보다 실행 순서를 먼저 생각함' }).waitFor({ state: 'visible' });
+  await page.locator('#mistake-dialog button[value="cancel"]').click();
+  await page.getByRole('tab', { name: 'scratch_lab.py' }).click();
+  await page.getByText('코드 읽기 안내').waitFor({ state: 'visible' });
 }
 
 async function selectStudyUnit(page, trackText, unitText) {
@@ -269,6 +323,8 @@ async function assertLearningRouteAndSelfChecks(page) {
   await page.locator('.self-checklist [data-self-check]').first().check();
   await page.locator('[data-self-check-summary]', { hasText: '1/' }).waitFor({ state: 'visible' });
   await page.locator('.self-checklist', { hasText: '설명할 수 있다' }).waitFor({ state: 'visible' });
+  await page.locator('#unit-note').fill('wrong-note: route persists after reload');
+  await page.locator('#unit-note').dispatchEvent('change');
 
   await page.reload({ waitUntil: 'domcontentloaded' });
   await page.locator('#route-card', { hasText: 'Multimodal/VLA 경로' }).waitFor({ state: 'visible' });
@@ -276,6 +332,10 @@ async function assertLearningRouteAndSelfChecks(page) {
   const checkedAfterReload = await page.locator('.self-checklist [data-self-check]').first().isChecked();
   if (!checkedAfterReload) {
     throw new Error('self-check progress should persist after reload');
+  }
+  const noteAfterReload = await page.locator('#unit-note').inputValue();
+  if (noteAfterReload !== 'wrong-note: route persists after reload') {
+    throw new Error(`unit note should persist after reload, got: ${noteAfterReload}`);
   }
 
   await page.locator('#route-card [data-route-next]').click();
@@ -297,6 +357,7 @@ async function runDesktopQa(browser, baseUrl) {
   await assertLearningRouteAndSelfChecks(page);
   await assertInjectedPythonComments(page, 'scratch_lab.py');
   await assertRunButton(page, 'scratch_lab.py', 'matmul_shape');
+  await assertQuizAndWrongNotes(page);
   await page.screenshot({ path: path.join(OUT_DIR, 'desktop-run-output.png'), fullPage: false });
   await page.getByText('코드 읽기 안내').waitFor({ state: 'visible' });
   await page.locator('.code-explanation dt', { hasText: '이 파일은 무엇인가' }).waitFor({ state: 'visible' });
@@ -335,6 +396,7 @@ async function runResponsiveQa(browser, baseUrl) {
   await page.goto(`${baseUrl}/web/`, { waitUntil: 'domcontentloaded' });
   await page.evaluate(() => document.fonts?.ready);
   await page.getByRole('tab', { name: 'README' }).waitFor({ state: 'visible' });
+  await assertReaderBeforeGuideOnNarrow(page, 'tablet');
   const metrics = await assertNoHorizontalOverflow(page, 'tablet');
   await page.screenshot({ path: path.join(OUT_DIR, 'tablet-reader.png'), fullPage: false });
   await context.close();
@@ -347,6 +409,7 @@ async function runMobileQa(browser, baseUrl) {
   await page.goto(`${baseUrl}/web/`, { waitUntil: 'domcontentloaded' });
   await page.evaluate(() => document.fonts?.ready);
   await page.getByRole('tab', { name: 'README' }).waitFor({ state: 'visible' });
+  await assertReaderBeforeGuideOnNarrow(page, 'mobile');
   await assertInjectedPythonComments(page, 'analysis.py');
   await page.getByText('analysis.py는 실행 결과').waitFor({ state: 'visible' });
   const metrics = await assertNoHorizontalOverflow(page, 'mobile');
@@ -360,6 +423,7 @@ async function runStaticServerRunHelpQa(browser, baseUrl) {
   const { context, externalRequests } = await newLocalOnlyContext(browser, baseUrl, { viewport: { width: 1280, height: 900 } });
   const page = await context.newPage();
   await page.goto(`${baseUrl}/web/`, { waitUntil: 'domcontentloaded' });
+  await selectStudyUnit(page, '00 Foundations', '01 Tensor Shapes');
   await page.getByRole('tab', { name: 'scratch_lab.py' }).click();
   await page.locator('[data-run-code]', { hasText: 'scratch_lab.py 실행' }).click();
   const output = page.locator('[data-run-output]');

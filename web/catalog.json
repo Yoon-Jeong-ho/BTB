@@ -581,13 +581,37 @@
           "title": "01 Tabular Classification",
           "path": "01_ml/01_tabular_classification",
           "status": "runnable",
-          "objective": "이 stage 는 “분류 모델을 하나 돌려 보기”가 아니라, **분류 문제를 읽는 언어를 배우는 단계**다. 특히 표형 데이터에서 자주 나오는 질문들을 실제 실험과 연결해 이해하도록 구성한다.",
+          "objective": "표형 분류 문제에서 데이터 split, baseline 모델, primary metric, error slice를 한 번에 연결해 supervised ML의 기본 실험 루프를 익힌다.",
           "readme": "01_ml/01_tabular_classification/README.md",
-          "lesson": "",
-          "prereqs": [],
-          "key_terms": [],
-          "required_outputs": [],
-          "analysis_questions": [],
+          "lesson": "01_ml/01_tabular_classification/lesson.yaml",
+          "prereqs": [
+            "train/validation/test split의 목적",
+            "categorical feature와 numeric feature의 차이",
+            "accuracy, F1, ROC-AUC 같은 분류 지표의 직관",
+            "overfitting과 baseline 비교 감각"
+          ],
+          "key_terms": [
+            "tabular classification",
+            "feature matrix",
+            "label",
+            "baseline model",
+            "train validation split",
+            "primary metric",
+            "confusion matrix",
+            "error slice"
+          ],
+          "required_outputs": [
+            "stage metrics json",
+            "model comparison table",
+            "confusion matrix or error slice figure",
+            "stable analysis markdown",
+            "reflection worksheet"
+          ],
+          "analysis_questions": [
+            "majority baseline과 학습 모델의 차이가 어떤 지표에서 가장 먼저 보이는가?",
+            "categorical feature 처리가 실패하면 어떤 class나 slice에서 오류가 늘어나는가?",
+            "primary metric 하나만 볼 때 놓치는 실패 사례는 무엇인가?"
+          ],
           "resources": [
             {
               "id": "README-md",
@@ -670,13 +694,37 @@
           "title": "02 표형 회귀",
           "path": "01_ml/02_tabular_regression",
           "status": "runnable",
-          "objective": "이 장은 **회귀 지표를 읽는 법**과 **오차 구조를 해석하는 법**을 익히는 학습 노트다. 단순히 모델을 한 번 돌리는 장이 아니라, **왜 이런 지표가 생겼는지**, **각 지표가 어떤 문제를 해결하는지**, **어떤 구간에서 계속 틀리는지**를 함께 본다.",
+          "objective": "표형 회귀에서 target scale, residual, MAE/RMSE/R2를 비교하며 숫자 예측 baseline을 해석하는 습관을 만든다.",
           "readme": "01_ml/02_tabular_regression/README.md",
-          "lesson": "",
-          "prereqs": [],
-          "key_terms": [],
-          "required_outputs": [],
-          "analysis_questions": [],
+          "lesson": "01_ml/02_tabular_regression/lesson.yaml",
+          "prereqs": [
+            "feature matrix와 target vector 구분",
+            "평균 baseline과 residual의 의미",
+            "train/validation/test split의 목적",
+            "numeric feature scaling 기초"
+          ],
+          "key_terms": [
+            "tabular regression",
+            "target scale",
+            "residual",
+            "MAE",
+            "RMSE",
+            "R2",
+            "baseline regressor",
+            "calibration"
+          ],
+          "required_outputs": [
+            "stage metrics json",
+            "residual summary table",
+            "prediction vs target figure",
+            "stable analysis markdown",
+            "reflection worksheet"
+          ],
+          "analysis_questions": [
+            "MAE와 RMSE가 서로 다르게 움직이면 어떤 outlier를 의심해야 하는가?",
+            "평균 baseline 대비 모델이 개선됐다고 말하려면 어떤 residual evidence가 필요한가?",
+            "target scale이 바뀌면 metric 해석은 어떻게 달라지는가?"
+          ],
           "resources": [
             {
               "id": "README-md",
@@ -759,13 +807,36 @@
           "title": "03 Model Selection And Interpretation",
           "path": "01_ml/03_model_selection_and_interpretation",
           "status": "runnable",
-          "objective": "이 단계는 단순히 점수를 높이는 실습이 아니다. **시간축이 있는 표형 데이터에서 어떤 검증이 타당한지**, **어떤 모델이 운영 관점에서 안전한지**, **왜 그런 결론이 나왔는지 설명할 수 있는지**를 배우는 단계다.",
+          "objective": "여러 모델과 hyperparameter를 비교하되, validation score와 해석 가능한 feature importance를 함께 보고 선택 근거를 남긴다.",
           "readme": "01_ml/03_model_selection_and_interpretation/README.md",
-          "lesson": "",
-          "prereqs": [],
-          "key_terms": [],
-          "required_outputs": [],
-          "analysis_questions": [],
+          "lesson": "01_ml/03_model_selection_and_interpretation/lesson.yaml",
+          "prereqs": [
+            "classification/regression baseline 비교 경험",
+            "validation set과 test set을 분리해야 하는 이유",
+            "overfitting과 leakage의 기본 감각"
+          ],
+          "key_terms": [
+            "model selection",
+            "hyperparameter",
+            "cross validation",
+            "validation score",
+            "feature importance",
+            "leakage",
+            "ablation",
+            "model card"
+          ],
+          "required_outputs": [
+            "model suite metrics json",
+            "validation comparison table",
+            "feature importance report",
+            "stable analysis markdown",
+            "reflection worksheet"
+          ],
+          "analysis_questions": [
+            "validation 성능이 높은 모델이 항상 좋은 선택이 아닌 이유는 무엇인가?",
+            "feature importance가 데이터 leakage나 spurious correlation을 의심하게 만드는 경우는 무엇인가?",
+            "최종 모델 선택 근거를 metric, 안정성, 해석 가능성으로 나누면 어떻게 정리되는가?"
+          ],
           "resources": [
             {
               "id": "README-md",
@@ -848,13 +919,36 @@
           "title": "04 Large Scale Tabular",
           "path": "01_ml/04_large_scale_tabular",
           "status": "runnable",
-          "objective": "이 단계는 **대규모 표형 분류를 어떻게 읽고, 어떻게 비교하고, 무엇을 의심해야 하는지**를 익히는 공부 노트다. 작은 데이터에서는 점수표 하나만으로도 모델을 고를 수 있지만, 큰 데이터에서는 그렇지 않다. 여기서는 품질, class 균형성, 학습 비용, 추론 비용을 함께 읽어야 한다.",
+          "objective": "큰 표형 데이터에서 chunking, memory budget, streaming metric을 사용해 같은 실험 계약을 더 큰 입력에서도 유지하는 방법을 익힌다.",
           "readme": "01_ml/04_large_scale_tabular/README.md",
-          "lesson": "",
-          "prereqs": [],
-          "key_terms": [],
-          "required_outputs": [],
-          "analysis_questions": [],
+          "lesson": "01_ml/04_large_scale_tabular/lesson.yaml",
+          "prereqs": [
+            "표형 분류/회귀 stage 실행 경험",
+            "batch 처리와 memory 사용량의 관계",
+            "train/eval split과 primary metric 기록 습관"
+          ],
+          "key_terms": [
+            "large scale tabular",
+            "chunking",
+            "streaming metric",
+            "memory budget",
+            "batch inference",
+            "data drift",
+            "throughput",
+            "reproducibility"
+          ],
+          "required_outputs": [
+            "large scale run metrics json",
+            "memory or throughput summary",
+            "sampled prediction table",
+            "stable analysis markdown",
+            "reflection worksheet"
+          ],
+          "analysis_questions": [
+            "한 번에 읽는 방식과 chunking 방식은 metric과 memory에서 어떻게 다르게 보이는가?",
+            "throughput을 높일 때 reproducibility나 data ordering이 깨질 수 있는 지점은 어디인가?",
+            "작은 데이터 baseline에서 확인한 계약을 큰 입력에서도 유지하려면 어떤 로그가 필요한가?"
+          ],
           "resources": [
             {
               "id": "README-md",

@@ -1,0 +1,25 @@
+objective: 여러 모델과 hyperparameter를 비교하되, validation score와 해석 가능한 feature importance를 함께 보고 선택 근거를 남긴다.
+status: runnable
+prereqs:
+  - classification/regression baseline 비교 경험
+  - validation set과 test set을 분리해야 하는 이유
+  - overfitting과 leakage의 기본 감각
+key_terms:
+  - model selection
+  - hyperparameter
+  - cross validation
+  - validation score
+  - feature importance
+  - leakage
+  - ablation
+  - model card
+required_outputs:
+  - model suite metrics json
+  - validation comparison table
+  - feature importance report
+  - stable analysis markdown
+  - reflection worksheet
+analysis_questions:
+  - validation 성능이 높은 모델이 항상 좋은 선택이 아닌 이유는 무엇인가?
+  - feature importance가 데이터 leakage나 spurious correlation을 의심하게 만드는 경우는 무엇인가?
+  - 최종 모델 선택 근거를 metric, 안정성, 해석 가능성으로 나누면 어떻게 정리되는가?
