@@ -1,6 +1,6 @@
-# BTB Study Website
+# BTB 학습 지도
 
-`web/`는 BTB 커리큘럼을 브라우저에서 보기 위한 정적 사이트다. 단원 README, THEORY, PREREQS, scratch/framework/analysis 코드를 README 파일을 새 탭으로 직접 여는 방식이 아니라 사이트 안에서 렌더링해 읽고 체크할 수 있게 한다.
+`web/`는 BTB 커리큘럼을 브라우저에서 따라가기 위한 학습 지도다. 파일 이름을 그대로 눌러 새 탭으로 이동하는 대신, 사이트 안에서 “단원 안내”, “핵심 이론”, “준비 확인”, 실습 코드를 한 흐름으로 읽고 체크할 수 있게 한다.
 
 ```bash
 python scripts/build_web_catalog.py
@@ -19,7 +19,7 @@ python scripts/study_server.py --port 8000 --device auto
 # http://localhost:8000/web/ 열기
 ```
 
-`study_server.py`는 임의 명령을 실행하지 않고, 저장소 안의 `scratch_lab.py`, `framework_lab.py`, `analysis.py`, `run_stage.py`만 허용 목록으로 실행한다. 실행 결과, 종료 코드, 선택된 실행 환경은 코드 블록 위의 결과 패널에 표시된다. 실행이 끝나면 이번 실행에서 새로 만들어지거나 갱신된 JSON/SVG/표 산출물을 “산출물 뷰어”에서 바로 열어 보고, 전체 파일을 돌리기 전에는 “선택 함수 미리보기”로 함수의 입력·호출·저장 단서를 먼저 훑을 수 있다.
+`study_server.py`는 임의 명령을 실행하지 않고, 저장소 안의 `scratch_lab.py`, `framework_lab.py`, `analysis.py`, `run_stage.py`만 허용 목록으로 실행한다. 실행 버튼은 코드 블록 아래에 있고, 실행 결과·종료 코드·선택된 실행 환경은 그 아래 결과 패널에 표시된다. 실행이 끝나면 이번 실행에서 새로 만들어지거나 갱신된 JSON/SVG/표 산출물을 “산출물 뷰어”에서 바로 열어 보고, 전체 파일을 돌리기 전에는 “선택 함수 미리보기”로 함수의 입력·호출·저장 단서를 먼저 훑을 수 있다.
 
 conda 환경이나 GPU 선택을 명시하고 싶다면 아래처럼 실행한다.
 
@@ -56,16 +56,16 @@ python scripts/build_web_catalog.py --output web/catalog.json
 
 ## 보는 방식
 
-- 왼쪽 좁은 영역에서 track과 unit을 고르고, 오른쪽 넓은 reader에서 README/THEORY/PREREQS/실습 코드를 바로 읽는다.
+- 왼쪽에서 트랙과 단원을 고르고, 오른쪽 넓은 reader에서 단원 안내·핵심 이론·준비 확인·실습 코드를 바로 읽는다.
 - 사용자 프로필 옆의 학습 경로에서 `전체 1-pass`, `LLM/RLHF 빠른 경로`, `Multimodal/VLA 경로`, `Systems 심화 경로` 중 하나를 고르면 해당 경로 기준 진행률과 다음 단원 추천이 표시된다. 빠른 경로는 트랙 전체가 아니라 필수 unit만 압축해 보여준다.
-- 문서 안의 로컬 `.md` 링크도 가능한 한 사이트 안에서 이어서 열리므로, raw README 파일이 깨져 보이는 흐름을 피한다.
-- `study_server.py --device auto`로 열면 Python 코드 탭에서 버튼 하나로 실행하고 결과를 바로 아래에서 확인한다.
+- 문서 안의 로컬 `.md` 링크도 가능한 한 사이트 안에서 이어서 열리므로, 원본 문서 파일이 그대로 깨져 보이는 흐름을 피한다.
+- `study_server.py --device auto`로 열면 Python 코드 아래의 버튼으로 실행하고 결과를 바로 아래에서 확인한다.
 - 실행 후에는 원문 로그뿐 아니라 실행 관찰 카드에서 봐야 할 숫자, 이번 실행의 산출물 위치, 다음 질문을 먼저 확인한다.
-- 산출물 뷰어에서 이번 실행이 갱신한 metrics JSON, SVG 그림, CSV/텍스트 표를 바로 확인하고 analysis 질문과 연결한다.
+- 산출물 뷰어에서 이번 실행이 갱신한 지표 JSON, SVG 그림, CSV/텍스트 표를 바로 확인하고 분석 질문과 연결한다.
 - 선택 함수 미리보기는 코드를 임의 실행하지 않고 AST로 함수 구조, 호출 이름, 중간 변수, 산출물 단서를 보여준다.
 - 단원별 자가 점검과 미니 퀴즈를 통해 “목표 설명 → 실행 관찰 → 분석 질문 답변”까지 끝났는지 스스로 확인한다. 짧은 서술형은 자동 정답 처리하지 않고 예시 기준과 비교한다.
 - 틀린 퀴즈와 메모는 오답노트에 저장되며, 사용자 프로필마다 현재 브라우저에만 남는다.
-- 체크리스트와 자료 완료 표시는 사용자별 localStorage에만 누적된다.
+- 체크리스트와 읽음 표시는 사용자별 localStorage에만 누적된다.
 
 자세한 UX 발전 방향과 참고 사이트는 [docs/09_web_learning_experience_roadmap.md](../docs/09_web_learning_experience_roadmap.md)에 정리했다.
 

@@ -141,10 +141,10 @@ class WebStudySiteContractTest(unittest.TestCase):
         self.assertIn("VLA 범위 확인", app)
         self.assertIn("학습 순서", app)
         self.assertIn("이론 읽기", app)
-        self.assertIn("scratch 실행", app)
-        self.assertIn("framework 실행", app)
-        self.assertIn("analysis 정리", app)
-        self.assertIn("reflection 작성", app)
+        self.assertIn("기초 실습하기", app)
+        self.assertIn("도구로 다시 확인하기", app)
+        self.assertIn("결과 정리하기", app)
+        self.assertIn("회고 남기기", app)
         self.assertIn("recommendedStartingUnit", app)
 
         self.assertIn("학습 자료", app)
@@ -155,6 +155,8 @@ class WebStudySiteContractTest(unittest.TestCase):
         self.assertIn("실습 구성", app)
         for label in ["README", "THEORY", "PREREQS", "scratch_lab.py", "framework_lab.py", "analysis.py", "reflection.md"]:
             self.assertIn(label, app)
+        for display_label in ["단원 안내", "핵심 이론", "준비 확인", "기초 실습 코드", "프레임워크 실습 코드", "결과 해석 코드"]:
+            self.assertIn(display_label, app)
         self.assertNotIn("README 열기", app)
         self.assertNotIn('target="_blank"', app)
 
@@ -169,10 +171,25 @@ class WebStudySiteContractTest(unittest.TestCase):
         self.assertIn(".unit-panel { margin-top:", styles)
         self.assertNotIn("top: calc(42vh + 2rem)", styles)
         self.assertIn("사이트 안에서", root_readme + web_readme)
-        self.assertIn("README 파일을 새 탭으로 직접 여는 방식", root_readme + web_readme)
-        self.assertIn("이 브라우저에만 저장", html)
+        self.assertIn("문서 파일을 새 탭으로 직접 여는 방식", root_readme + web_readme)
+        self.assertIn("현재 브라우저에만 저장", html)
+        self.assertIn("기초부터 VLA까지", html)
+        self.assertIn("이 브라우저의 진행률", html)
+        self.assertNotIn("읽고, 실행하고", html)
+        self.assertNotIn("AI 학습 여정", html)
+        self.assertNotIn("현재 사용자별 진행률", html)
+        self.assertNotIn("0% ·", html + app)
+        self.assertNotIn("내 상태:", app)
+        self.assertIn("documentSourceLabel", app)
+        self.assertIn("source-badge", app + styles)
+        self.assertIn("읽고 바로 실행", app)
         self.assertIn("질문 필요", html + app + (WEB / "progress-storage.js").read_text(encoding="utf-8"))
-        self.assertIn("실행 결과", app)
+        self.assertIn("읽은 뒤 실행", app)
+        self.assertIn("이 코드를 내 환경에서 확인하기", app)
+        code_branch = app.split("if (section.type === 'code')", 1)[1].split("} else", 1)[0]
+        self.assertIn('<span class="source-badge">${escapeHtml(documentSourceLabel(section))}</span>', code_branch)
+        self.assertNotIn("<span>${escapeHtml(sectionLabel)}</span><code>${escapeHtml(cleanHref(section.href))}</code>", code_branch)
+        self.assertLess(code_branch.find("<pre class=\"code-block\""), code_branch.find("${renderRunPanel"))
         self.assertIn("학습 안내", app)
         self.assertIn("트랙 안내", app)
         self.assertNotIn("Study guide", app)
@@ -268,13 +285,15 @@ class WebStudySiteContractTest(unittest.TestCase):
             "formatRunnerSummary",
             "data-run-code",
             "run-output",
+            "읽은 뒤 실행",
+            "이 코드를 내 환경에서 확인하기",
             "501 Unsupported method",
-            "scratch_lab.py는",
-            "framework_lab.py는",
-            "analysis.py는",
-            "run_stage.py는",
-            "dataset.py는",
-            "experiment.py는",
+            "기초 실습 코드: 작은 숫자로 원리 확인하기",
+            "프레임워크 실습 코드: 실제 도구로 같은 아이디어 확인하기",
+            "결과 해석 코드: 실행 결과를 공부 노트로 바꾸기",
+            "실험 실행 코드: 한 번에 실행하고 결과 모으기",
+            "데이터 준비 코드: 실험에 넣을 표 만들기",
+            "실험 흐름 코드: 준비·학습·평가 연결하기",
             "formatStaticServerDetail",
         ]:
             self.assertIn(token, app)

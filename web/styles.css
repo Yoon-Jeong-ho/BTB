@@ -102,6 +102,7 @@ textarea { width: 100%; font-family: inherit; }
 .document-title { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.75rem; color: var(--muted); border-bottom: 1px solid var(--line); padding-bottom: 0.65rem; margin-bottom: 1rem; }
 .document-title span { min-width: 0; color: var(--accent-2); font-weight: 900; overflow-wrap: anywhere; }
 .document-title code { min-width: 0; overflow-wrap: anywhere; word-break: break-word; white-space: normal; }
+.document-title .source-badge { color: var(--muted); background: var(--soft); border: 1px solid var(--line); border-radius: 999px; padding: 0.18rem 0.55rem; font-weight: 800; font-size: 0.86rem; }
 .code-explanation { display: grid; grid-template-columns: minmax(220px, 0.36fr) minmax(0, 1fr); gap: 1rem; border: 1px solid color-mix(in srgb, var(--accent-2) 30%, var(--line)); border-radius: 18px; background: color-mix(in srgb, var(--accent-2) 7%, white); padding: 1rem; margin: 0 0 1rem; }
 .code-explanation h4 { margin: 0.15rem 0 0.4rem; }
 .code-explanation p { margin: 0; color: var(--muted); }

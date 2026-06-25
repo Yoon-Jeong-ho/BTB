@@ -9,6 +9,36 @@ let progressStore = Progress.loadProgress();
 let activeUserId = progressStore.activeUserId;
 let contentRequestId = 0;
 
+
+const SECTION_DISPLAY_LABELS = {
+  README: '단원 안내',
+  THEORY: '핵심 이론',
+  PREREQS: '준비 확인',
+  'scratch_lab.py': '기초 실습 코드',
+  'framework_lab.py': '프레임워크 실습 코드',
+  'analysis.py': '결과 해석 코드',
+  'analysis.md': '해석 노트',
+  'reflection.md': '회고 메모',
+  'dataset.py': '데이터 준비 코드',
+  'models.py': '모델 코드',
+  'experiment.py': '실험 흐름 코드',
+  'run_stage.py': '실험 실행 코드',
+  'report.py': '리포트 코드',
+};
+
+const CHECKPOINT_DISPLAY_LABELS = {
+  readme: '단원 안내',
+  theory: '핵심 이론',
+  prereqs: '준비 확인',
+  'scratch lab': '기초 실습 실행',
+  'framework lab': '프레임워크 실습 실행',
+  'analysis script': '결과 해석 코드 실행',
+  'analysis note': '해석 노트 확인',
+  reflection: '회고 메모 작성',
+  '실습 구성': '실습 구성 확인',
+  '실행 명령': '실험 실행',
+};
+
 const $ = (selector) => document.querySelector(selector);
 const trackList = $('#track-list');
 const unitList = $('#unit-list');
@@ -151,13 +181,82 @@ function renderProfiles() {
   $('#review-mistakes').textContent = `오답노트 ${allWrongNotes().length}`;
 }
 
+
+function displaySectionLabel(sectionOrLabel) {
+  const raw = typeof sectionOrLabel === 'string' ? sectionOrLabel : sectionOrLabel?.label;
+  return SECTION_DISPLAY_LABELS[raw] || raw || '자료';
+}
+
+function checkpointDisplayLabel(checkpoint) {
+  const key = String(checkpoint || '').trim().toLowerCase();
+  return CHECKPOINT_DISPLAY_LABELS[key] || checkpoint || '자료';
+}
+
+function unitStatusLabel(status) {
+  if (status === 'runnable') return '실습 가능';
+  if (status === 'planned') return '준비 중';
+  if (status === 'partial') return '보강 중';
+  return status || '상태 확인 전';
+}
+
+function humanUnitPath(unitPath) {
+  return String(unitPath || '')
+    .split('/')
+    .filter(Boolean)
+    .map((part) => part.replace(/^\d+_?/, '').replaceAll('_', ' '))
+    .map((part) => part.replace(/\b\w/g, (letter) => letter.toUpperCase()))
+    .join(' › ');
+}
+
+function friendlyDocumentLabel(label, href) {
+  const raw = String(label || '').trim();
+  const file = String(href || '').split('#')[0].split('/').pop();
+  if (/^readme(\.md)?$/i.test(raw) || /^README\.md$/i.test(file)) return '단원 안내';
+  if (/^theory(\.md)?$/i.test(raw) || /^THEORY\.md$/i.test(file)) return '핵심 이론';
+  if (/^prereqs(\.md)?$/i.test(raw) || /^PREREQS\.md$/i.test(file)) return '준비 확인';
+  return raw;
+}
+
+
+function documentSourceLabel(section) {
+  const label = displaySectionLabel(section);
+  if (label === '단원 안내') return '목표와 학습 순서';
+  if (label === '핵심 이론') return '개념 설명';
+  if (label === '준비 확인') return '선행 점검';
+  if (section?.type === 'code') return '읽고 바로 실행';
+  if (label === '해석 노트') return '결과 정리';
+  if (label === '회고 메모') return '내 생각 정리';
+  return '참고 자료';
+}
+
+function displayOutputLabel(item) {
+  const raw = String(item || '').trim();
+  const lower = raw.toLowerCase();
+  if (!raw) return '학습 산출물';
+  if (lower.includes('scratch') && (lower.includes('metric') || lower.includes('json'))) return '기초 실습 지표';
+  if (lower.includes('framework') && (lower.includes('metric') || lower.includes('json'))) return '프레임워크 지표';
+  if (lower.includes('stage') && (lower.includes('metric') || lower.includes('json'))) return '단계별 실험 지표';
+  if (lower.includes('analysis') && (lower.includes('markdown') || lower.includes('.md') || lower.includes('report'))) return '해석 노트';
+  if (lower.includes('summary') || raw.includes('실행 요약') || raw.includes('실습 요약')) return '실행 요약';
+  if (lower.includes('prediction')) return '예측 샘플';
+  if (lower.includes('figure') || lower.includes('svg')) return '그림/도표';
+  if (lower.includes('config')) return '실험 설정';
+  if (lower.includes('metric') || lower.includes('json')) return '지표 파일';
+  if (lower.includes('report')) return '리포트';
+  return raw;
+}
+
+function displayOutputList(items) {
+  return (items || []).map(displayOutputLabel);
+}
+
 function renderTracks() {
   trackList.innerHTML = catalog.tracks.map((track) => {
     const stats = trackStats(track);
     return `<button class="track-card" type="button" aria-pressed="${track.id === selectedTrackId}" data-track="${escapeHtml(track.id)}">
       <div class="track-top"><span class="track-title">${escapeHtml(track.title)}</span><span class="track-meta">${stats.done}/${stats.total}</span></div>
       <div class="track-meta">${escapeHtml(track.id)}</div>
-      <p>${renderInlineSummary(track.summary || '이 트랙의 README에서 학습 방향을 확인한다.')}</p>
+      <p>${renderInlineSummary(track.summary || '이 트랙에서 무엇을 익히는지 확인합니다.')}</p>
       <div class="progress-bar" aria-hidden="true"><span style="width:${stats.percent}%"></span></div>
     </button>`;
   }).join('');
@@ -194,11 +293,11 @@ function renderUnits() {
 
 function unitCard(unit) {
   const progress = lessonState(unit.path);
-  const outputChips = (unit.required_outputs || []).slice(0, 3).map((item) => `<span class="chip">${escapeHtml(item)}</span>`).join('');
+  const outputChips = displayOutputList(unit.required_outputs || []).slice(0, 3).map((item) => `<span class="chip">${escapeHtml(item)}</span>`).join('');
   return `<button class="unit-card" type="button" data-unit="${escapeHtml(unit.path)}" aria-current="${unit.path === selectedUnitPath}">
     <div class="unit-top"><span class="unit-title">${escapeHtml(unit.title)}</span><span class="chip ${progress.state}">${STATE_LABELS[progress.state]}</span></div>
-    <div class="unit-meta">${escapeHtml(unit.path)} · ${escapeHtml(unit.status)}</div>
-    <p>${renderInlineSummary(unit.objective || '목표 설명은 사이트 안의 README 탭에서 확인하세요.')}</p>
+    <div class="unit-meta">${escapeHtml(humanUnitPath(unit.path))} · ${escapeHtml(unitStatusLabel(unit.status))}</div>
+    <p>${renderInlineSummary(unit.objective || '단원 안내에서 목표를 확인하세요.')}</p>
     <div class="chips">${outputChips}</div>
   </button>`;
 }
@@ -226,7 +325,7 @@ function renderDetail() {
   detail.innerHTML = `<section class="lesson-hero">
       <div>
         <h2 id="detail-title">${escapeHtml(unit.title)}</h2>
-        <p class="unit-meta">${escapeHtml(unit.path)} · ${escapeHtml(executionLabelFor(unit))} · 내 상태: ${STATE_LABELS[progress.state]}</p>
+        <p class="unit-meta">진행: ${escapeHtml(STATE_LABELS[progress.state])} · 방식: ${escapeHtml(executionLabelFor(unit))} · 위치: ${escapeHtml(humanUnitPath(unit.path))}</p>
         <p>${renderInlineSummary(unit.objective || '')}</p>
         ${scopeGateFor(unit)}
       </div>
@@ -240,7 +339,7 @@ function renderDetail() {
     </section>
     <div class="lesson-workspace reader-shell">
       <aside class="lesson-guide" aria-label="학습 진행 가이드">
-        <div class="start-callout">처음이라면 README와 THEORY로 목표를 잡고, 코드 실행 → 결과 해석 → 메모 순서로 진행하세요.</div>
+        <div class="start-callout">처음이라면 단원 안내와 핵심 이론으로 목표를 잡고, 코드 읽기 → 실행 → 결과 해석 → 메모 순서로 진행하세요.</div>
         ${prerequisiteReadinessFor(unit)}
         <h3>학습 순서</h3>
         <ol class="learning-steps">
@@ -248,16 +347,16 @@ function renderDetail() {
         </ol>
         <h3>체크리스트</h3>
         <ul class="checklist">
-          ${checkpoints.map((item) => `<li><label><input type="checkbox" data-checkpoint="${escapeHtml(item)}" ${checked[item] ? 'checked' : ''}/> ${escapeHtml(item)}</label></li>`).join('')}
+          ${checkpoints.map((item) => `<li><label><input type="checkbox" data-checkpoint="${escapeHtml(item)}" ${checked[item] ? 'checked' : ''}/> ${escapeHtml(checkpointDisplayLabel(item))}</label></li>`).join('')}
         </ul>
         <h3>선행 확인</h3>
         <ul>${(unit.prereqs || []).map((item) => `<li>${escapeHtml(item)}</li>`).join('') || '<li>이전 트랙과 study guide를 먼저 확인한다.</li>'}</ul>
         <h3>학습 방향</h3>
         <div class="resource-list">${studyLinksFor(unit).map((link) => `<button type="button" class="resource-button" data-resource-href="${escapeHtml(link.href)}" data-resource-label="${escapeHtml(link.label)}">${escapeHtml(link.label)}<span>${escapeHtml(link.reason)}</span></button>`).join('')}</div>
         <h3>핵심 용어</h3>
-        <div class="chips">${(unit.key_terms || []).map((item) => `<span class="chip">${escapeHtml(item)}</span>`).join('') || '<span class="chip">README 참고</span>'}</div>
+        <div class="chips">${(unit.key_terms || []).map((item) => `<span class="chip">${escapeHtml(item)}</span>`).join('') || '<span class="chip">단원 안내 참고</span>'}</div>
         <h3>남길 산출물</h3>
-        <ul>${(unit.required_outputs || []).map((item) => `<li>${escapeHtml(item)}</li>`).join('') || '<li>README와 analysis를 확인한다.</li>'}</ul>
+        <ul>${displayOutputList(unit.required_outputs || []).map((item) => `<li>${escapeHtml(item)}</li>`).join('') || '<li>단원 안내와 결과 해석을 확인한다.</li>'}</ul>
         <h3>분석 질문</h3>
         <ul>${(unit.analysis_questions || []).map((item) => `<li>${escapeHtml(item)}</li>`).join('') || '<li>이 단원이 다음 트랙과 어떻게 연결되는지 설명한다.</li>'}</ul>
         <h3 class="self-check-heading">자가 점검 <span data-self-check-summary>${selfCheckStats.done}/${selfCheckStats.total} 완료</span></h3>
@@ -274,12 +373,12 @@ function renderDetail() {
         <div class="reader-header">
           <div>
             <p class="eyebrow">학습 자료</p>
-            <h3>사이트 안에서 읽고 실습 흐름으로 넘어가기</h3>
+            <h3>오늘 볼 자료</h3>
           </div>
-          <button id="mark-section-complete" type="button">이 자료 완료 표시</button>
+          <button id="mark-section-complete" type="button">읽음으로 표시</button>
         </div>
         <div class="document-tabs" role="tablist" aria-label="단원 자료">
-          ${sections.map((section) => `<button type="button" role="tab" data-section-href="${escapeHtml(section.href)}" aria-selected="${hrefEquals(section.href, selectedSection.href)}">${escapeHtml(section.label)}</button>`).join('')}
+          ${sections.map((section) => `<button type="button" role="tab" data-section-href="${escapeHtml(section.href)}" aria-selected="${hrefEquals(section.href, selectedSection.href)}">${escapeHtml(displaySectionLabel(section))}</button>`).join('')}
         </div>
         <article id="lesson-content" class="lesson-content"><p class="empty">자료를 불러오는 중입니다.</p></article>
       </section>
@@ -461,22 +560,23 @@ async function loadLessonSection(unit, section) {
     button.setAttribute('aria-selected', String(selected));
   });
 
-  content.innerHTML = `<p class="empty">${escapeHtml(section.label)} 자료를 사이트 안으로 불러오는 중입니다.</p>`;
+  const sectionLabel = displaySectionLabel(section);
+  content.innerHTML = `<p class="empty">${escapeHtml(sectionLabel)} 자료를 사이트 안으로 불러오는 중입니다.</p>`;
   updateMarkSectionButton(unit, section, markButton);
   try {
     const text = await fetchLessonDocument(section.href);
     if (requestId !== contentRequestId) return;
     if (section.type === 'code') {
-      content.innerHTML = `<div class="document-title"><span>${escapeHtml(section.label)}</span><code>${escapeHtml(cleanHref(section.href))}</code></div>${renderCodeExplanation(section, text)}${renderRunPanel(section, unit, text)}<pre class="code-block"><code>${escapeHtml(annotateCodeWithInlineHints(section, text))}</code></pre>`;
+      content.innerHTML = `<div class="document-title"><span>${escapeHtml(sectionLabel)}</span><span class="source-badge">${escapeHtml(documentSourceLabel(section))}</span></div>${renderCodeExplanation(section, text)}<pre class="code-block"><code>${escapeHtml(annotateCodeWithInlineHints(section, text))}</code></pre>${renderRunPanel(section, unit, text)}`;
       bindRunButton(section, unit);
       bindCellProbeButton(section, unit);
     } else {
-      content.innerHTML = `<div class="document-title"><span>${escapeHtml(section.label)}</span><code>${escapeHtml(cleanHref(section.href))}</code></div>${renderMarkdown(text, section.href)}`;
+      content.innerHTML = `<div class="document-title"><span>${escapeHtml(sectionLabel)}</span><span class="source-badge">${escapeHtml(documentSourceLabel(section))}</span></div>${renderMarkdown(text, section.href)}`;
       bindInlineDocLinks(unit, section.href);
     }
   } catch (error) {
     if (requestId !== contentRequestId) return;
-    content.innerHTML = `<p class="empty">${escapeHtml(section.label)}을 사이트 안에서 불러오지 못했습니다. 저장소 루트에서 <code>python -m http.server 8000</code>을 실행했는지 확인하세요.<br><code>${escapeHtml(cleanHref(section.href))}</code></p>`;
+    content.innerHTML = `<p class="empty">${escapeHtml(sectionLabel)}을 사이트 안에서 불러오지 못했습니다. 저장소 루트에서 <code>python -m http.server 8000</code>을 실행했는지 확인하세요.<br><code>${escapeHtml(cleanHref(section.href))}</code></p>`;
   }
 }
 
@@ -492,18 +592,18 @@ function renderRunPanel(section, unit, source = '') {
   const symbols = extractPythonSymbols(source).map((symbol) => symbol.replace(/\(\)$/, ''));
   return `<section class="run-panel" aria-label="Python 코드 실행">
     <div>
-      <p class="eyebrow">실행 결과</p>
-      <h4>코드를 실행해 관측값 확인하기</h4>
-      <p>클릭하면 이 파일을 실행하고, 아래에 종료 코드·선택된 장치·출력을 정리해 보여줍니다. 실행 서버는 idle GPU를 찾고 없으면 CPU로 내려갑니다.</p>
+      <p class="eyebrow">읽은 뒤 실행</p>
+      <h4>이 코드를 내 환경에서 확인하기</h4>
+      <p>위 코드를 먼저 훑은 다음 실행해 보세요. 종료 코드, 선택된 CPU/GPU, 출력과 산출물이 아래에 정리됩니다.</p>
     </div>
     <div class="run-actions">
-      <button type="button" data-run-code data-run-path="${escapeHtml(cleanHref(section.href))}">${escapeHtml(section.label)} 실행</button>
+      <button type="button" data-run-code data-run-path="${escapeHtml(cleanHref(section.href))}">${escapeHtml(displaySectionLabel(section))} 실행</button>
       <span class="run-status" data-run-status>아직 실행 전입니다.</span>
     </div>
     <div class="run-primer" aria-label="실행 전 확인">
       <strong>실행 전에 볼 것</strong>
       <dl>
-        <div><dt>예상 산출물</dt><dd>${escapeHtml(plan.artifacts.join(', '))}</dd></div>
+        <div><dt>예상 산출물</dt><dd>${escapeHtml(displayOutputList(plan.artifacts).join(', '))}</dd></div>
         <div><dt>봐야 할 숫자</dt><dd>${escapeHtml(plan.metrics.join(', '))}</dd></div>
         <div><dt>좋은 결과 기준</dt><dd>${escapeHtml(plan.goodOutcome)}</dd></div>
       </dl>
@@ -654,30 +754,30 @@ function expectedArtifactsForRun(section, unit) {
   const path = cleanHref(section.href);
   const declared = (unit?.required_outputs || []).filter((item) => !/^runnable README|theory note|prerequisite checklist$/i.test(item));
   if (path.endsWith('run_stage.py')) return declared.length ? declared : ['artifacts/<timestamp>/metrics.json', 'figures/', 'predictions/', 'summary.md'];
-  if (path.endsWith('analysis.py')) return ['analysis markdown 또는 latest_report.md', 'observed metrics json', ...declared.filter((item) => /analysis|report|observed/i.test(item))].slice(0, 4);
-  if (path.endsWith('framework_lab.py')) return declared.filter((item) => /framework|figure|svg|metrics/i.test(item)).slice(0, 4).concat(['framework 실행 요약']).slice(0, 4);
-  if (path.endsWith('scratch_lab.py')) return declared.filter((item) => /scratch|figure|svg|metrics/i.test(item)).slice(0, 4).concat(['scratch 실행 요약']).slice(0, 4);
-  return declared.length ? declared.slice(0, 4) : ['metrics json', 'figure 또는 markdown report'];
+  if (path.endsWith('analysis.py')) return ['해석 노트', '관찰 지표', ...declared.filter((item) => /analysis|report|observed/i.test(item))].slice(0, 4);
+  if (path.endsWith('framework_lab.py')) return declared.filter((item) => /framework|figure|svg|metrics/i.test(item)).slice(0, 4).concat(['프레임워크 실습 요약']).slice(0, 4);
+  if (path.endsWith('scratch_lab.py')) return declared.filter((item) => /scratch|figure|svg|metrics/i.test(item)).slice(0, 4).concat(['기초 실습 요약']).slice(0, 4);
+  return declared.length ? declared.slice(0, 4) : ['지표 파일', 'figure 또는 markdown report'];
 }
 
 function importantNumbersForRun(section, unit) {
   const path = cleanHref(section.href);
   const terms = unit?.key_terms || [];
-  if (path.endsWith('run_stage.py')) return ['primary metric', 'baseline 대비 best model', 'train/eval split 또는 sample count'];
-  if (path.endsWith('analysis.py')) return ['missing artifact 수', '실패 사례 수', 'analysis가 강조한 핵심 metric'];
-  if (path.endsWith('framework_lab.py')) return ['loss 또는 accuracy 추세', 'scratch와 같은 shape/metric인지', 'device와 seed'];
-  if (path.endsWith('scratch_lab.py')) return ['입력/출력 shape', '핵심 계산 결과', terms[0] ? `${terms[0]} 관측값` : '작은 toy metric'];
-  return ['return code', 'metric', 'artifact path'];
+  if (path.endsWith('run_stage.py')) return ['주요 평가 지표', '기준 모델 대비 좋은 모델', '학습/평가 데이터 수'];
+  if (path.endsWith('analysis.py')) return ['빠진 결과물 수', '실패 사례 수', '해석 노트가 강조한 핵심 지표'];
+  if (path.endsWith('framework_lab.py')) return ['loss 또는 accuracy 추세', '기초 실습과 같은 모양/지표인지', '실행 장치와 재실행 기준값'];
+  if (path.endsWith('scratch_lab.py')) return ['입력/출력 모양', '핵심 계산 결과', terms[0] ? `${terms[0]} 관측값` : '작은 예제 지표'];
+  return ['종료 코드', '지표', '결과물 위치'];
 }
 
 function goodOutcomeForRun(section, unit) {
   const path = cleanHref(section.href);
-  const deterministic = unit?.deterministic ? ' 같은 seed로 재실행해도 핵심 숫자가 유지되어야 합니다.' : '';
-  if (path.endsWith('run_stage.py')) return `종료 코드 0, metrics/figure/prediction artifact가 생기고 README의 baseline 질문에 답할 수 있으면 좋습니다.${deterministic}`;
-  if (path.endsWith('analysis.py')) return `이전 실행 산출물을 빠짐없이 읽고 analysis markdown에 실패 사례와 다음 실험 질문이 남으면 좋습니다.${deterministic}`;
-  if (path.endsWith('framework_lab.py')) return `framework 결과가 scratch 기준선과 설명 가능한 차이만 보이고, device/seed가 출력에 남으면 좋습니다.${deterministic}`;
-  if (path.endsWith('scratch_lab.py')) return `작은 입력에서 shape와 계산값을 직접 설명할 수 있고, metrics json/그림이 analysis 기준선으로 남으면 좋습니다.${deterministic}`;
-  return `종료 코드 0과 재확인 가능한 artifact path가 남으면 좋습니다.${deterministic}`;
+  const deterministic = unit?.deterministic ? ' 같은 설정으로 재실행해도 핵심 숫자가 유지되어야 합니다.' : '';
+  if (path.endsWith('run_stage.py')) return `종료 코드 0, 지표·그림·예측 샘플이 생기고 단원 안내의 기준 모델 질문에 답할 수 있으면 좋습니다.${deterministic}`;
+  if (path.endsWith('analysis.py')) return `이전 실행 결과물을 빠짐없이 읽고 해석 노트에 실패 사례와 다음 실험 질문이 남으면 좋습니다.${deterministic}`;
+  if (path.endsWith('framework_lab.py')) return `프레임워크 결과가 기초 실습 기준선과 설명 가능한 차이만 보이고, 실행 환경과 재실행 기준값이 출력에 남으면 좋습니다.${deterministic}`;
+  if (path.endsWith('scratch_lab.py')) return `작은 입력에서 모양과 계산값을 직접 설명할 수 있고, 지표 파일/그림이 해석 기준선으로 남으면 좋습니다.${deterministic}`;
+  return `종료 코드 0과 다시 확인할 수 있는 결과물 위치가 남으면 좋습니다.${deterministic}`;
 }
 
 function renderRunInsights(payload, section, unit) {
@@ -695,7 +795,7 @@ function renderRunInsights(payload, section, unit) {
       <div><strong>산출물</strong><span>${escapeHtml(artifactHint)}</span></div>
     </div>
     <h5>예상 산출물</h5>
-    <ul>${plan.artifacts.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul>
+    <ul>${plan.artifacts.map((item) => `<li>${escapeHtml(displayOutputLabel(item))}</li>`).join('')}</ul>
     <h5>봐야 할 숫자</h5>
     <ul>${highlights.length ? highlights.map((item) => `<li><code>${escapeHtml(item.path)}</code>: ${escapeHtml(item.value)}</li>`).join('') : plan.metrics.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul>
     <h5>좋은 결과 기준</h5>
@@ -713,9 +813,9 @@ function renderArtifactViewer(payload, section, unit) {
     <p class="eyebrow">산출물 뷰어</p>
     <h4>실행 산출물 바로 보기</h4>
     <p>이번 실행에서 새로 만들어지거나 갱신된 지표, 그림, 표, 분석 노트를 먼저 확인하세요.</p>
-    ${missing.length ? `<div class="artifact-missing"><strong>확인 필요</strong><span>예상 산출물 중 아직 보이지 않는 항목: ${escapeHtml(missing.slice(0, 3).join(', '))}. 전체 실행 순서나 analysis 의존 artifact를 확인하세요.</span></div>` : ''}
+    ${missing.length ? `<div class="artifact-missing"><strong>확인 필요</strong><span>예상 결과물 중 아직 보이지 않는 항목: ${escapeHtml(displayOutputList(missing).slice(0, 3).join(', '))}. 전체 실행 순서나 해석 단계에 필요한 결과물을 확인하세요.</span></div>` : ''}
     <div class="artifact-grid">
-      ${artifacts.length ? artifacts.map((artifact) => renderArtifactCard(artifact)).join('') : '<p class="empty">이번 실행에서 새로 갱신된 산출물이 없습니다. 파일이 읽기 전용이거나, 선행 실험 산출물이 필요한 analysis일 수 있습니다.</p>'}
+      ${artifacts.length ? artifacts.map((artifact) => renderArtifactCard(artifact)).join('') : '<p class="empty">이번 실행에서 새로 갱신된 결과물이 없습니다. 파일이 읽기 전용이거나, 선행 실험 결과물이 필요한 해석 단계일 수 있습니다.</p>'}
     </div>
   </section>`;
 }
@@ -866,10 +966,10 @@ function parseJsonFromStdout(stdout) {
 
 function artifactHintForRun(section, payload, unit) {
   const path = cleanHref(section.href);
-  if (path.endsWith('analysis.py')) return 'analysis.md 또는 observed metrics가 갱신됐는지 확인하세요.';
-  if (path.endsWith('run_stage.py')) return 'stage artifacts 아래 metrics, figures, predictions, summary를 확인하세요.';
-  if (path.endsWith('framework_lab.py')) return 'framework metrics와 figure를 scratch 결과와 나란히 비교하세요.';
-  if (path.endsWith('scratch_lab.py')) return 'scratch metrics json과 작은 표/그림이 analysis의 기준선입니다.';
+  if (path.endsWith('analysis.py')) return '해석 노트나 관찰 지표가 갱신됐는지 확인하세요.';
+  if (path.endsWith('run_stage.py')) return '결과 폴더에서 지표, 그림, 예측 샘플, 요약을 확인하세요.';
+  if (path.endsWith('framework_lab.py')) return '프레임워크 지표와 그림을 기초 실습 결과와 나란히 비교하세요.';
+  if (path.endsWith('scratch_lab.py')) return '기초 실습 지표 파일과 작은 표/그림이 해석의 기준선입니다.';
   const expected = expectedArtifactsForRun(section, unit)[0];
   if (payload.path) return `${payload.path} 실행 결과와 ${expected}를 확인하세요.`;
   return `실행 결과와 ${expected}를 확인하세요.`;
@@ -884,15 +984,15 @@ function runFollowupQuestions(section, payload, highlights, unit) {
     return questions;
   }
   if (highlights.length) {
-    questions.push('가장 중요한 숫자 하나를 README의 성공 기준이나 analysis 질문과 연결해 설명해 보세요.');
+    questions.push('가장 중요한 숫자 하나를 단원 안내의 성공 기준이나 분석 질문과 연결해 설명해 보세요.');
   } else {
-    questions.push('출력 원문에서 shape, loss, accuracy, 저장 경로 중 무엇을 확인해야 하는지 표시해 보세요.');
+    questions.push('출력 원문에서 입력 모양, loss, accuracy, 저장 위치 중 무엇을 확인해야 하는지 표시해 보세요.');
   }
   if (unit?.analysis_questions?.[0]) questions.push(`분석 질문과 연결: ${unit.analysis_questions[0]}`);
-  if (path.endsWith('scratch_lab.py')) questions.push('scratch 결과가 framework 결과와 같아야 하는 부분과 달라도 되는 부분을 구분하세요.');
-  else if (path.endsWith('framework_lab.py')) questions.push('framework가 자동으로 처리한 부분이 scratch 코드의 어느 줄과 대응되는지 찾아보세요.');
-  else if (path.endsWith('analysis.py')) questions.push('analysis가 말하는 실패 사례나 다음 실험 질문을 내 메모에 한 줄로 남기세요.');
-  else if (path.endsWith('run_stage.py')) questions.push('dataset.py와 experiment.py 중 어떤 단계가 이 숫자에 가장 크게 영향을 줬는지 추적하세요.');
+  if (path.endsWith('scratch_lab.py')) questions.push('기초 실습 결과와 프레임워크 결과가 같아야 하는 부분과 달라도 되는 부분을 구분하세요.');
+  else if (path.endsWith('framework_lab.py')) questions.push('프레임워크가 자동으로 처리한 부분이 기초 실습 코드의 어느 줄과 대응되는지 찾아보세요.');
+  else if (path.endsWith('analysis.py')) questions.push('해석 노트가 말하는 실패 사례나 다음 실험 질문을 내 메모에 한 줄로 남기세요.');
+  else if (path.endsWith('run_stage.py')) questions.push('데이터 준비와 실험 흐름 중 어떤 단계가 이 숫자에 가장 크게 영향을 줬는지 추적하세요.');
   questions.push('다음 단원으로 가기 전에 자가 점검을 체크할 수 있는지 확인하세요.');
   return questions.slice(0, 4);
 }
@@ -953,7 +1053,7 @@ function annotateCodeWithInlineHints(section, source) {
 }
 
 function annotateArtifactLocations(source, section) {
-  const artifactHint = '# 학습 포인트: 이 경로가 실행 후 metrics/figure/report가 남는 위치입니다.';
+  const artifactHint = '# 학습 포인트: 이 경로가 실행 후 지표/그림/리포트가 남는 위치입니다.';
   const reportHint = '# 학습 포인트: analysis.py가 최종 해석 문서를 쓰는 위치입니다.';
   let annotated = source;
   if (/^ARTIFACT_DIR\s*=/m.test(annotated)) {
@@ -963,10 +1063,10 @@ function annotateArtifactLocations(source, section) {
     annotated = annotated.replace(/(^REPORT\s*=)/m, `${reportHint}\n$1`);
   }
   if (cleanHref(section.href).endsWith('analysis.py') && /^SCRATCH\s*=/m.test(annotated)) {
-    annotated = annotated.replace(/(^SCRATCH\s*=)/m, '# 학습 포인트: scratch/framework metrics를 analysis 입력으로 다시 읽습니다.\n$1');
+    annotated = annotated.replace(/(^SCRATCH\s*=)/m, '# 학습 포인트: 기초/프레임워크 지표를 해석 입력으로 다시 읽습니다.\n$1');
   }
   if (cleanHref(section.href).endsWith('analysis.py') && /^ANALYSIS_PATH\s*=/m.test(annotated)) {
-    annotated = annotated.replace(/(^ANALYSIS_PATH\s*=)/m, '# 학습 포인트: 분석 결과 markdown이 저장되는 위치입니다.\n$1');
+    annotated = annotated.replace(/(^ANALYSIS_PATH\s*=)/m, '# 학습 포인트: 분석 결과 문서가 저장되는 위치입니다.\n$1');
   }
   if (/^with\s+torch\.no_grad\(\):/m.test(annotated)) {
     annotated = annotated.replace(/(^with\s+torch\.no_grad\(\):)/m, '# 학습 포인트: 여기부터는 학습이 아니라 평가/추론 구간입니다.\n$1');
@@ -1001,21 +1101,21 @@ function roleHintForFunction(name, section) {
   if (normalized === 'run' || normalized === 'main') return sectionSpecificRunHint(section);
   if (normalized.includes('forward')) return 'tensor 입력이 logit·embedding·action 같은 모델 출력으로 바뀌는 계산 경로입니다.';
   if (normalized.includes('train')) return 'batch → loss → optimizer step이 연결되는 학습 루프입니다.';
-  if (normalized.includes('evaluate') || normalized.includes('metric') || normalized.includes('score')) return '단원에서 비교할 지표를 계산하므로 README의 성공 기준과 나란히 확인하세요.';
-  if (normalized.includes('compute') || normalized.includes('calculate')) return '중간 텐서나 수치를 최종 metrics로 바꾸는 계산입니다.';
-  if (normalized.includes('build') || normalized.includes('create') || normalized.includes('prepare') || normalized.includes('make')) return 'toy data, model, config 중 무엇을 고정해 실험 조건을 만드는지 확인하세요.';
-  if (normalized.includes('generate') || normalized.includes('sample') || normalized.includes('decode')) return '모델 출력이 사람이 읽을 수 있는 token·caption·action으로 바뀌는 지점입니다.';
-  if (normalized.includes('write') || normalized.includes('save')) return '브라우저와 analysis.py가 다시 읽을 artifact를 파일로 남기는 지점입니다.';
+  if (normalized.includes('evaluate') || normalized.includes('metric') || normalized.includes('score')) return '단원에서 비교할 지표를 계산하므로 단원 안내의 성공 기준과 나란히 확인하세요.';
+  if (normalized.includes('compute') || normalized.includes('calculate')) return '중간 텐서나 수치를 최종 지표로 바꾸는 계산입니다.';
+  if (normalized.includes('build') || normalized.includes('create') || normalized.includes('prepare') || normalized.includes('make')) return '작은 데이터, 모델, 설정 중 무엇을 고정해 비교 조건을 만드는지 확인하세요.';
+  if (normalized.includes('generate') || normalized.includes('sample') || normalized.includes('decode')) return '모델 출력이 사람이 읽을 수 있는 토큰·설명·행동으로 바뀌는 지점입니다.';
+  if (normalized.includes('write') || normalized.includes('save')) return '브라우저와 해석 노트가 다시 볼 결과물을 저장하는 지점입니다.';
   if (normalized.includes('load') || normalized.includes('read')) return '이전 실행 산출물을 다시 읽어 분석 입력으로 바꾸는 지점입니다.';
   return '';
 }
 
 function sectionSpecificRunHint(section) {
   const path = cleanHref(section.href);
-  if (path.endsWith('scratch_lab.py')) return '작은 입력 예제를 만들고 직접 계산한 뒤 metrics/artifacts로 남기는 흐름입니다.';
-  if (path.endsWith('framework_lab.py')) return '프레임워크 모델·학습/평가 설정을 묶어 scratch 결과와 비교할 metrics를 만듭니다.';
-  if (path.endsWith('analysis.py')) return 'scratch/framework 산출물을 읽고 빠진 결과를 확인한 뒤 analysis.md 또는 요약을 작성합니다.';
-  if (path.endsWith('run_stage.py')) return 'CLI 인자를 받아 실제 stage 실행 함수로 넘기는 연결부입니다.';
+  if (path.endsWith('scratch_lab.py')) return '작은 입력 예제를 만들고 직접 계산한 뒤 지표와 그림으로 남기는 흐름입니다.';
+  if (path.endsWith('framework_lab.py')) return '프레임워크 모델·학습/평가 설정을 묶어 기초 실습 결과와 비교할 지표를 만듭니다.';
+  if (path.endsWith('analysis.py')) return '앞선 두 실습의 결과물을 읽고 빠진 부분을 확인한 뒤 해석 노트나 요약을 작성합니다.';
+  if (path.endsWith('run_stage.py')) return '실행 옵션을 받아 실험 전체를 한 번에 시작하는 연결부입니다.';
   return '';
 }
 
@@ -1028,70 +1128,70 @@ function codeExplanationFor(section, source) {
   const functions = extractPythonSymbols(source);
   if (path.endsWith('scratch_lab.py')) {
     return {
-      title: 'scratch_lab.py는 개념을 직접 계산해 보는 코드입니다.',
-      summary: '라이브러리 편의 기능에 기대기 전에, 작은 숫자와 단계별 계산으로 이 단원의 핵심 원리를 확인합니다.',
-      what: '이 파일은 모델이나 metric을 아주 작은 예제로 직접 구성해, README/THEORY의 설명이 실제 숫자로 어떻게 바뀌는지 보여주는 scratch 실습입니다.',
-      howToRead: '위쪽의 데이터/설정 → 중간의 계산 함수 → 아래쪽의 artifact 저장 순서로 읽으면 됩니다. 먼저 입력 shape와 중간 변수 이름을 보고, 마지막에 저장되는 metrics를 확인하세요.',
-      outputs: '보통 artifacts 아래 scratch metrics json, 작은 svg/표, 또는 실행 요약이 남습니다. 이 결과는 analysis.py가 비교·해석하는 기준선입니다.',
+      title: '기초 실습 코드: 작은 숫자로 원리 확인하기',
+      summary: '라이브러리 편의 기능보다 먼저, 눈으로 따라갈 수 있는 작은 계산으로 단원 핵심을 확인합니다.',
+      what: '작은 예제 데이터를 만들고 계산 과정을 단계별로 저장해, 이론 설명이 어떤 숫자와 그림으로 드러나는지 보여줍니다.',
+      howToRead: '위쪽의 데이터/설정 → 중간의 계산 함수 → 아래쪽의 결과 저장 순서로 읽으면 됩니다. 먼저 입력 모양과 중간 변수 이름을 보고, 마지막에 저장되는 지표를 확인하세요.',
+      outputs: '보통 기초 실습 지표, 작은 그림/표, 실행 요약이 남습니다. 이 결과는 뒤의 해석 단계에서 비교 기준이 됩니다.',
       functions,
     };
   }
   if (path.endsWith('framework_lab.py')) {
     return {
-      title: 'framework_lab.py는 같은 아이디어를 프레임워크로 확인하는 코드입니다.',
-      summary: 'scratch에서 본 계산을 PyTorch/sklearn 같은 도구로 다시 실행해, 실제 연구·개발 코드의 구조와 결과를 비교합니다.',
-      what: '이 파일은 단원의 핵심 개념을 프레임워크 API로 구현해 재현성, 학습 루프, metric 계산, 저장 포맷을 확인하는 실습입니다.',
-      howToRead: '데이터 준비 → 모델/파이프라인 정의 → 학습 또는 추론 → metrics/artifacts 저장 순서로 따라가세요. scratch와 같은 이름의 지표가 어떻게 대응되는지 비교하면 좋습니다.',
-      outputs: '보통 framework metrics json, 결과 figure, predictions 샘플이 남습니다. scratch 결과와 나란히 보며 프레임워크가 자동으로 처리한 부분을 찾습니다.',
+      title: '프레임워크 실습 코드: 실제 도구로 같은 아이디어 확인하기',
+      summary: '기초 실습에서 본 계산을 PyTorch나 sklearn 같은 도구로 다시 실행해, 손계산 감각과 실제 도구의 결과를 비교합니다.',
+      what: '단원의 핵심 개념을 프레임워크로 구현해 학습 흐름, 평가 지표, 저장 형식이 어떻게 이어지는지 확인합니다.',
+      howToRead: '데이터 준비 → 모델/파이프라인 정의 → 학습 또는 추론 → 결과 저장 순서로 따라가세요. 기초 실습과 같은 지표가 어떻게 대응되는지 비교하면 좋습니다.',
+      outputs: '보통 프레임워크 지표, 결과 그림, 예측 샘플이 남습니다. 기초 실습 결과와 나란히 보며 도구가 자동으로 처리한 부분을 찾습니다.',
       functions,
     };
   }
   if (path.endsWith('analysis.py')) {
     return {
-      title: 'analysis.py는 실행 결과를 공부 가능한 해석으로 바꾸는 코드입니다.',
-      summary: 'scratch/framework가 만든 metrics와 artifacts를 읽고, 무엇이 잘 됐고 어디서 실패했는지 한국어 분석 노트로 정리합니다.',
-      what: '이 파일은 실험 산출물을 검증하고, 핵심 수치·실패 사례·다음 질문을 analysis.md나 summary 형태로 정리하는 분석 스크립트입니다.',
-      howToRead: '입력 파일을 읽는 부분 → metric 검증/집계 → markdown 문장 생성 → 저장 경로 순서로 읽으세요. 예외 메시지는 어떤 산출물이 빠졌는지 알려주는 체크리스트 역할을 합니다.',
-      outputs: 'analysis.md, summary.md, observed metrics json 같은 해석 산출물이 남습니다. 단원을 완료할 때는 이 파일의 질문에 답할 수 있어야 합니다.',
+      title: '결과 해석 코드: 실행 결과를 공부 노트로 바꾸기',
+      summary: '앞선 두 실습이 만든 지표와 결과물을 읽고, 무엇이 잘 됐고 어디서 실패했는지 한국어 분석 노트로 정리합니다.',
+      what: '실험 결과물을 검증하고, 핵심 수치·실패 사례·다음 질문을 해석 노트나 요약으로 정리하는 단계입니다.',
+      howToRead: '입력 결과를 읽는 부분 → 지표 검증/집계 → 설명 문장 생성 → 저장 경로 순서로 읽으세요. 오류 메시지는 어떤 결과물이 빠졌는지 알려주는 체크리스트 역할을 합니다.',
+      outputs: '해석 노트, 요약, 관찰 지표 같은 결과물이 남습니다. 단원을 완료할 때는 이 노트의 질문에 답할 수 있어야 합니다.',
       functions,
     };
   }
   if (path.endsWith('dataset.py')) {
     return {
-      title: 'dataset.py는 ML stage의 입력 표를 만드는 코드입니다.',
-      summary: '원본 데이터를 읽고, feature matrix X와 label y가 어떤 기준으로 나뉘는지 확인하는 출발점입니다.',
-      what: '이 파일은 stage 전용 데이터 로딩, train/test split, feature/label 구성, 결측·범주형 처리 준비를 담당합니다.',
-      howToRead: '데이터를 불러오는 함수 → feature column 선택 → target 생성 → split/전처리 입력 형태 순서로 읽으세요. 마지막에 experiment.py가 기대하는 반환 shape를 확인합니다.',
-      outputs: '대개 직접 artifact를 저장하기보다, experiment.py가 학습과 평가에 사용할 X/y 또는 dataset bundle을 넘깁니다.',
+      title: '데이터 준비 코드: 실험에 넣을 표 만들기',
+      summary: '원본 데이터를 읽고, 입력 표와 정답 열이 어떤 기준으로 나뉘는지 확인하는 출발점입니다.',
+      what: '이 단계는 데이터 불러오기, 학습/평가 나누기, 입력/정답 구성, 결측·범주형 처리 준비를 담당합니다.',
+      howToRead: '데이터를 불러오는 함수 → 입력 열 선택 → 정답 생성 → 나누기/전처리 입력 형태 순서로 읽으세요. 마지막에 다음 실험 단계가 기대하는 반환 모양을 확인합니다.',
+      outputs: '대개 직접 결과 파일을 저장하기보다, 다음 실험 단계가 학습과 평가에 사용할 입력 묶음을 넘깁니다.',
       functions,
     };
   }
   if (path.endsWith('experiment.py')) {
     return {
-      title: 'experiment.py는 ML stage의 실제 실험 흐름입니다.',
-      summary: 'baseline, 전처리, 모델 학습, metric 계산, artifact 저장이 한곳에서 연결되므로 이 stage의 핵심 로직입니다.',
-      what: '이 파일은 dataset.py가 만든 입력을 받아 모델을 학습·비교하고, metrics/figures/predictions를 저장하는 orchestration 코드입니다.',
-      howToRead: '설정값 → 데이터 준비 호출 → baseline/model 정의 → fit/predict → metric 저장 순서로 읽으세요. run_stage.py는 보통 이 흐름을 CLI에서 호출만 합니다.',
-      outputs: 'artifacts 아래 config, metrics, prediction sample, figure가 남고 report.py나 analysis.py가 이를 읽어 해석합니다.',
+      title: '실험 흐름 코드: 준비·학습·평가 연결하기',
+      summary: '기준 모델, 전처리, 모델 학습, 지표 계산, 결과 저장이 한곳에서 연결되므로 이 단원의 핵심 흐름입니다.',
+      what: '데이터 준비 단계가 만든 입력을 받아 모델을 학습·비교하고, 지표·그림·예측 샘플을 저장하는 연결 코드입니다.',
+      howToRead: '설정값 → 데이터 준비 호출 → 기준 모델/모델 정의 → 학습/예측 → 지표 저장 순서로 읽으세요. 실험 실행 코드는 보통 이 흐름을 한 번에 호출합니다.',
+      outputs: '실험 설정, 지표, 예측 샘플, 그림이 남고 리포트/해석 단계가 이를 읽어 결론을 만듭니다.',
       functions,
     };
   }
   if (path.endsWith('run_stage.py')) {
     return {
-      title: 'run_stage.py는 ML stage를 한 번에 실행하는 진입 코드입니다.',
-      summary: 'dataset.py와 experiment.py에 흩어진 준비·학습·평가 흐름을 CLI에서 재현 가능하게 묶습니다.',
-      what: '이 파일은 stage 전용 실험을 실행하고, 선택된 CPU/GPU 환경에서 metrics와 figures를 artifacts 폴더에 남기도록 연결하는 작은 실행 스크립트입니다.',
-      howToRead: '인자 파싱 → seed/device 설정 → experiment.run_stage 호출 → JSON 요약 출력 순서로 읽으세요. 실제 모델 비교와 저장 로직은 experiment.py에서 이어서 확인합니다.',
-      outputs: 'artifacts 아래 metrics, config, predictions, figures와 터미널 JSON 요약이 남습니다. 실패하면 실행 환경이나 의존성 확인이 필요한 지점입니다.',
+      title: '실험 실행 코드: 한 번에 실행하고 결과 모으기',
+      summary: '데이터 준비와 실험 흐름에 흩어진 준비·학습·평가 과정을 한 번에 재현 가능하게 묶습니다.',
+      what: '이 단계는 단원 실험을 실행하고, 선택된 CPU/GPU 환경에서 지표와 그림을 결과 폴더에 남기도록 연결합니다.',
+      howToRead: '실행 옵션 확인 → 재실행 기준값/장치 설정 → 실험 흐름 호출 → 요약 출력 순서로 읽으세요. 실제 모델 비교와 저장 로직은 실험 흐름 코드에서 이어서 확인합니다.',
+      outputs: '결과 폴더에 지표, 설정, 예측 샘플, 그림과 실행 요약이 남습니다. 실패하면 실행 환경이나 의존성 확인이 필요한 지점입니다.',
       functions,
     };
   }
   return {
-    title: `${section.label} 코드 설명`,
+    title: `${displaySectionLabel(section)} 설명`,
     summary: '이 코드는 단원 실습을 재현 가능하게 실행하기 위한 보조 코드입니다.',
-    what: '파일 이름과 README의 실행 순서를 함께 보며 역할을 확인하세요.',
+    what: '자료 탭과 단원 안내의 실행 순서를 함께 보며 역할을 확인하세요.',
     howToRead: '상단 설정, 데이터 준비, 계산/호출 지점, 저장 로직 순서로 읽으면 됩니다.',
-    outputs: '실행 요약, metrics json, markdown, figure 중 하나 이상의 산출물을 남깁니다.',
+    outputs: '실행 요약, 지표 파일, 해석 노트, 그림 중 하나 이상의 결과물을 남깁니다.',
     functions,
   };
 }
@@ -1111,7 +1211,8 @@ function updateMarkSectionButton(unit, section, button) {
   }
   const checked = lessonState(unit.path).checkpoints || {};
   button.disabled = Boolean(checked[section.checkpoint]);
-  button.textContent = checked[section.checkpoint] ? '완료 표시됨' : `${section.checkpoint} 완료 표시`;
+  const label = checkpointDisplayLabel(section.checkpoint);
+  button.textContent = checked[section.checkpoint] ? '읽음 표시됨' : `${label} 완료로 표시`;
   button.onclick = () => markSectionComplete(unit, section);
 }
 
@@ -1253,7 +1354,8 @@ function inlineMarkdown(text, baseHref) {
     const clean = href.replace(/&amp;/g, '&');
     if (isLocalMarkdownHref(clean)) {
       const resolved = resolveDocHref(clean, baseHref);
-      return `<button type="button" class="inline-doc-link" data-doc-href="${escapeHtml(resolved)}" data-doc-label="${escapeHtml(label)}">${label}</button>`;
+      const displayLabel = friendlyDocumentLabel(label, clean);
+      return `<button type="button" class="inline-doc-link" data-doc-href="${escapeHtml(resolved)}" data-doc-label="${escapeHtml(displayLabel)}">${displayLabel}</button>`;
     }
     return `<a href="${escapeHtml(clean)}" rel="noreferrer">${label}</a>`;
   });
@@ -1430,24 +1532,24 @@ function renderRouteCard() {
 function learningStepsFor(unit) {
   const hasMlRunner = (unit.resources || []).some((resource) => resource.label === 'run_stage.py');
   const steps = hasMlRunner ? [
-    { label: '이론 읽기', description: 'README / THEORY로 데이터셋, baseline, metric의 역할을 먼저 잡는다.' },
-    { label: '실습 구성', description: 'dataset.py와 experiment.py에서 데이터 생성, 모델, 평가 지표가 어떻게 연결되는지 본다.' },
-    { label: '실행 명령', description: 'run_stage.py를 기준으로 어떤 stage가 어떤 산출물을 만드는지 확인한다.' },
-    { label: 'analysis 정리', description: 'analysis.py와 report.py로 결과를 해석하고 다음 실험 질문을 남긴다.' },
+    { key: 'theory', label: '이론 읽기', description: '단원 안내와 핵심 이론으로 데이터셋, 기준 모델, 평가 지표의 역할을 먼저 잡는다.' },
+    { key: 'lab-setup', label: '실습 구성 살펴보기', description: '데이터 준비 코드와 실험 흐름 코드에서 데이터 생성, 모델, 평가 지표가 어떻게 연결되는지 본다.' },
+    { key: 'run-stage', label: '실험 실행하기', description: '실험 실행 코드에서 어떤 단계가 어떤 결과물을 만드는지 확인한다.' },
+    { key: 'analysis', label: '결과 정리하기', description: '결과 해석 코드와 리포트 코드로 결과를 해석하고 다음 실험 질문을 남긴다.' },
   ] : [
-    { label: '이론 읽기', description: 'README / THEORY / PREREQS로 왜 배우는지와 선행 개념을 잡는다.' },
-    { label: 'scratch 실행', description: 'scratch_lab.py로 작은 수치와 직접 계산을 확인한다.' },
-    { label: 'framework 실행', description: 'framework_lab.py로 PyTorch나 프레임워크 관측을 비교한다.' },
-    { label: 'analysis 정리', description: 'analysis.py와 analysis.md로 관측값을 한국어 해석으로 남긴다.' },
-    { label: 'reflection 작성', description: 'reflection.md에 헷갈린 점, 실패 사례, 다음 질문을 적는다.' },
+    { key: 'theory', label: '이론 읽기', description: '단원 안내, 핵심 이론, 준비 확인으로 왜 배우는지와 선행 개념을 잡는다.' },
+    { key: 'scratch', label: '기초 실습하기', description: '기초 실습 코드로 작은 수치와 직접 계산을 확인한다.' },
+    { key: 'framework', label: '도구로 다시 확인하기', description: '프레임워크 실습 코드로 PyTorch나 sklearn 관측을 비교한다.' },
+    { key: 'analysis', label: '결과 정리하기', description: '결과 해석 코드와 해석 노트로 관측값을 한국어 설명으로 남긴다.' },
+    { key: 'reflection', label: '회고 남기기', description: '회고 메모에 헷갈린 점, 실패 사례, 다음 질문을 적는다.' },
   ];
   return steps.filter((step) => {
-    if (step.label.includes('scratch')) return unit.checkpoints.includes('scratch lab');
-    if (step.label.includes('framework')) return unit.checkpoints.includes('framework lab');
-    if (step.label.includes('실습 구성')) return unit.checkpoints.includes('실습 구성');
-    if (step.label.includes('실행 명령')) return unit.checkpoints.includes('실행 명령');
-    if (step.label.includes('analysis')) return unit.checkpoints.includes('analysis script') || unit.checkpoints.includes('analysis note');
-    if (step.label.includes('reflection')) return unit.checkpoints.includes('reflection');
+    if (step.key === 'scratch') return unit.checkpoints.includes('scratch lab');
+    if (step.key === 'framework') return unit.checkpoints.includes('framework lab');
+    if (step.key === 'lab-setup') return unit.checkpoints.includes('실습 구성');
+    if (step.key === 'run-stage') return unit.checkpoints.includes('실행 명령');
+    if (step.key === 'analysis') return unit.checkpoints.includes('analysis script') || unit.checkpoints.includes('analysis note');
+    if (step.key === 'reflection') return unit.checkpoints.includes('reflection');
     return true;
   });
 }
@@ -1461,7 +1563,7 @@ function nextActionFor(unit, progress, selfCheckStats, quizItems, quizAnswers, c
     return `<strong>다음 행동: 선행 복습 먼저</strong><span>${escapeHtml(unmetPrereq.label)}을(를) 확인하면 이 단원의 코드와 실패 사례가 덜 막힙니다.</span>`;
   }
   const nextCheckpoint = (checkpoints || []).find((checkpoint) => !checked?.[checkpoint]);
-  let action = 'README부터 읽기';
+  let action = '단원 안내부터 읽기';
   let detail = '목표와 선행 개념을 먼저 잡으세요.';
   if (nextCheckpoint) {
     action = checkpointActionLabel(nextCheckpoint, firstCode);
@@ -1472,7 +1574,7 @@ function nextActionFor(unit, progress, selfCheckStats, quizItems, quizAnswers, c
     detail = '틀린 문제는 오답노트에 자동 저장됩니다.';
   }
   if (selfCheckStats.done === selfCheckStats.total && answered === quizItems.length && progress.state !== 'done') {
-    action = '완료 표시 또는 다음 단원';
+    action = '마무리하고 다음 단원으로';
     detail = '자가 점검과 퀴즈를 끝냈다면 다음 추천 단원으로 넘어가세요.';
   }
   return `<strong>다음 행동: ${escapeHtml(action)}</strong><span>${escapeHtml(detail)}</span>`;
@@ -1480,21 +1582,21 @@ function nextActionFor(unit, progress, selfCheckStats, quizItems, quizAnswers, c
 
 function checkpointActionLabel(checkpoint, firstCode) {
   const normalized = String(checkpoint || '').toLowerCase();
-  if (normalized === 'readme') return 'README 읽고 완료 체크';
-  if (normalized === 'theory') return 'THEORY로 원리 확인';
-  if (normalized === 'prereqs') return 'PREREQS로 선행 확인';
-  if (normalized.includes('scratch')) return `${firstCode?.label || 'scratch_lab.py'} 실행`;
-  if (normalized.includes('framework')) return 'framework_lab.py 실행';
-  if (normalized.includes('analysis')) return 'analysis 결과 정리';
-  if (normalized.includes('reflection')) return 'reflection 작성';
-  if (normalized.includes('실습 구성')) return 'dataset.py/experiment.py 읽기';
-  if (normalized.includes('실행 명령')) return 'run_stage.py 실행';
+  if (normalized === 'readme') return '단원 안내 읽기';
+  if (normalized === 'theory') return '핵심 이론으로 원리 확인';
+  if (normalized === 'prereqs') return '준비 확인으로 선행 개념 점검';
+  if (normalized.includes('scratch')) return `${firstCode ? displaySectionLabel(firstCode) : '기초 실습 코드'} 실행`;
+  if (normalized.includes('framework')) return '프레임워크 실습 코드 실행';
+  if (normalized.includes('analysis')) return '결과 해석 정리';
+  if (normalized.includes('reflection')) return '회고 메모 작성';
+  if (normalized.includes('실습 구성')) return '데이터 준비와 실험 흐름 읽기';
+  if (normalized.includes('실행 명령')) return '실험 실행 코드 실행';
   return `${checkpoint} 진행`;
 }
 
 function checkpointActionDetail(checkpoint) {
   const normalized = String(checkpoint || '').toLowerCase();
-  if (['readme', 'theory', 'prereqs'].includes(normalized)) return '코드를 돌리기 전에 왜 배우는지, 어떤 선행 개념이 필요한지 먼저 닫으세요.';
+  if (['readme', 'theory', 'prereqs'].includes(normalized)) return '코드를 돌리기 전에 왜 배우는지, 어떤 선행 개념이 필요한지 먼저 확인하세요.';
   if (normalized.includes('scratch') || normalized.includes('framework') || normalized.includes('실행 명령')) return '실행 후 산출물 뷰어에서 이번 실행이 만든 지표와 그림을 확인하세요.';
   if (normalized.includes('analysis')) return '숫자를 결론으로 바꾸고, 실패 사례와 다음 실험 질문을 남기세요.';
   if (normalized.includes('reflection')) return '헷갈린 개념, 오답 이유, 다음 단원에서 확인할 질문을 한 줄 이상 남기세요.';
@@ -1565,28 +1667,28 @@ function prerequisiteUnitsFor(unit) {
 
 function quizForUnit(unit) {
   const keyTerms = unit.key_terms || [];
-  const outputs = (unit.required_outputs || []).filter((item) => !/^runnable README|theory note|prerequisite checklist$/i.test(item));
+  const outputs = displayOutputList((unit.required_outputs || []).filter((item) => !/^runnable README|theory note|prerequisite checklist$/i.test(item)));
   const analysis = unit.analysis_questions || [];
   return [
     {
       id: 'goal',
       type: 'single',
       prompt: '이 단원의 가장 중요한 학습 목표는 무엇인가요?',
-      explanation: `정답은 단원 목표와 직접 연결됩니다: ${unit.objective || 'README의 첫 설명을 자기 말로 바꾸는 것'}`,
+      explanation: `정답은 단원 목표와 직접 연결됩니다: ${unit.objective || '단원 안내의 첫 설명을 자기 말로 바꾸는 것'}`,
       options: [
-        { id: 'objective', label: unit.objective || 'README/THEORY의 핵심 목표를 코드와 연결해 설명한다.', correct: true, explain: '단원 목표를 먼저 잡아야 실행 결과를 해석할 수 있습니다.' },
+        { id: 'objective', label: unit.objective || '단원 안내와 핵심 이론의 목표를 코드와 연결해 설명한다.', correct: true, explain: '단원 목표를 먼저 잡아야 실행 결과를 해석할 수 있습니다.' },
         { id: 'skip', label: '일단 모든 파일을 순서 없이 실행한다.', correct: false, explain: '실행은 중요하지만 목표 없이 돌리면 숫자의 의미를 놓치기 쉽습니다.' },
-        { id: 'memorize', label: '용어를 영어 이름 그대로 외운다.', correct: false, explain: '암기보다 shape, metric, artifact로 확인하는 것이 BTB의 흐름입니다.' },
+        { id: 'memorize', label: '용어를 영어 이름 그대로 외운다.', correct: false, explain: '암기보다 입력 모양, 지표, 결과물로 확인하는 것이 BTB의 흐름입니다.' },
       ],
     },
     {
       id: 'artifacts',
       type: 'multi',
       prompt: '실행 후 확인해야 할 산출물을 고르세요.',
-      explanation: 'artifact는 학습 결과의 증거입니다. 경로·숫자·그림을 함께 확인해야 다음 analysis 질문에 답할 수 있습니다.',
+      explanation: '결과물은 학습의 증거입니다. 위치·숫자·그림을 함께 확인해야 다음 분석 질문에 답할 수 있습니다.',
       options: [
-        { id: 'expected-a', label: outputs[0] || 'metrics json', correct: true, explain: 'metric은 이번 실행을 비교할 기준입니다.' },
-        { id: 'expected-b', label: outputs[1] || 'analysis markdown 또는 figure', correct: true, explain: '그림/분석 문서는 숫자를 사람이 읽는 결론으로 바꿉니다.' },
+        { id: 'expected-a', label: outputs[0] || '지표 파일', correct: true, explain: '지표는 이번 실행을 비교할 기준입니다.' },
+        { id: 'expected-b', label: outputs[1] || '해석 노트 또는 그림', correct: true, explain: '그림/분석 문서는 숫자를 사람이 읽는 결론으로 바꿉니다.' },
         { id: 'terminal-only', label: '터미널 글자만 보고 닫기', correct: false, explain: '원문 로그만 보면 다시 확인할 수 있는 근거가 남지 않습니다.' },
       ],
     },
@@ -1672,19 +1774,19 @@ function selfChecksFor(unit) {
     {
       id: 'goal',
       label: '이 단원의 목표를 한 문장으로 설명할 수 있다',
-      hint: unit.objective || 'README 첫 단락을 자기 말로 바꿔 보세요.',
+      hint: unit.objective || '단원 안내 첫 단락을 자기 말로 바꿔 보세요.',
     },
     {
       id: 'run-observe',
       label: '코드 실행 결과에서 봐야 할 숫자와 산출물을 짚을 수 있다',
-      hint: (unit.required_outputs || []).slice(0, 2).join(', ') || 'metrics, figure, analysis.md 중 무엇이 남는지 확인하세요.',
+      hint: (unit.required_outputs || []).slice(0, 2).join(', ') || '지표 파일, 그림, 해석 노트 중 무엇이 남는지 확인하세요.',
     },
   ];
   (unit.analysis_questions || []).slice(0, 2).forEach((question, index) => {
     checks.push({
       id: `analysis-${index + 1}`,
       label: `분석 질문에 답할 수 있다: ${question}`,
-      hint: '실행 관찰 카드와 analysis 문서를 보고 2~3문장으로 답해 보세요.',
+      hint: '실행 관찰 카드와 해석 노트를 보고 2~3문장으로 답해 보세요.',
     });
   });
   if (unit.key_terms?.length) {
@@ -1732,7 +1834,7 @@ function scopeGateFor(unit) {
 
 function executionLabelFor(unit) {
   const labels = (unit.resources || []).map((resource) => resource.label);
-  if (labels.includes('run_stage.py')) return 'ML stage 실습';
+  if (labels.includes('run_stage.py')) return 'ML 단계 실습';
   if (labels.includes('scratch_lab.py') || labels.includes('framework_lab.py')) return '표준 실습';
   if (labels.some((label) => label.endsWith('.py'))) return '코드 읽기 실습';
   return '문서 학습';
@@ -1760,8 +1862,7 @@ function trackStats(track) {
 function renderOverallProgress() {
   const route = selectedRouteDefinition();
   const stats = routeProgress(route.id);
-  const profileName = currentUser().displayName || activeUserId;
-  $('#overall-progress').textContent = `${stats.percent}% · ${profileName}`;
+  $('#overall-progress').textContent = stats.percent ? `${stats.percent}% 완료` : '학습 전';
 }
 
 function completionPercent(checkpoints, checked, state) {

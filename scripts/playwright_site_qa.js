@@ -262,7 +262,7 @@ async function assertQuizAndWrongNotes(page) {
   await page.locator('#review-mistakes').click();
   await page.locator('#mistake-dialog', { hasText: '목표보다 실행 순서를 먼저 생각함' }).waitFor({ state: 'visible' });
   await page.locator('#mistake-dialog button[value="cancel"]').click();
-  await page.getByRole('tab', { name: 'scratch_lab.py' }).click();
+  await page.getByRole('tab', { name: '기초 실습 코드' }).click();
   await page.getByText('코드 읽기 안내').waitFor({ state: 'visible' });
 }
 
@@ -293,20 +293,20 @@ async function assertBridgeResources(page) {
 async function assertMlRunnerResources(page) {
   await selectStudyUnit(page, '01 ML', '01 Tabular Classification');
   await assertResourceDocument(page, 'ML→DL 연결 문서', 'DataLoader');
-  await page.getByRole('tab', { name: 'dataset.py' }).waitFor({ state: 'visible' });
-  await page.getByRole('tab', { name: 'experiment.py' }).waitFor({ state: 'visible' });
-  await page.getByRole('tab', { name: 'run_stage.py' }).waitFor({ state: 'visible' });
-  if (await page.getByRole('tab', { name: 'scratch_lab.py' }).count()) {
+  await page.getByRole('tab', { name: '데이터 준비 코드' }).waitFor({ state: 'visible' });
+  await page.getByRole('tab', { name: '실험 흐름 코드' }).waitFor({ state: 'visible' });
+  await page.getByRole('tab', { name: '실험 실행 코드' }).waitFor({ state: 'visible' });
+  if (await page.getByRole('tab', { name: '기초 실습 코드' }).count()) {
     throw new Error('01_ml should not show missing scratch_lab.py tab');
   }
-  await page.getByRole('tab', { name: 'dataset.py' }).click();
-  await page.locator('.code-explanation', { hasText: 'dataset.py는 ML stage의 입력 표를 만드는 코드입니다.' }).waitFor({ state: 'visible' });
-  await page.getByRole('tab', { name: 'experiment.py' }).click();
-  await page.locator('.code-explanation', { hasText: 'experiment.py는 ML stage의 실제 실험 흐름입니다.' }).waitFor({ state: 'visible' });
-  await page.getByRole('tab', { name: 'run_stage.py' }).click();
+  await page.getByRole('tab', { name: '데이터 준비 코드' }).click();
+  await page.locator('.code-explanation', { hasText: '데이터 준비 코드: 실험에 넣을 표 만들기' }).waitFor({ state: 'visible' });
+  await page.getByRole('tab', { name: '실험 흐름 코드' }).click();
+  await page.locator('.code-explanation', { hasText: '실험 흐름 코드: 준비·학습·평가 연결하기' }).waitFor({ state: 'visible' });
+  await page.getByRole('tab', { name: '실험 실행 코드' }).click();
   await page.locator('.code-block code', { hasText: '# 코드 읽기 힌트:' }).waitFor({ state: 'visible' });
   await page.locator('.code-block code', { hasText: 'run_stage(device)' }).waitFor({ state: 'visible' });
-  await page.locator('[data-run-code]', { hasText: 'run_stage.py 실행' }).waitFor({ state: 'visible' });
+  await page.locator('[data-run-code]', { hasText: '실험 실행 코드 실행' }).waitFor({ state: 'visible' });
 }
 
 async function assertLearningRouteAndSelfChecks(page) {
@@ -355,18 +355,18 @@ async function runDesktopQa(browser, baseUrl) {
   await assertTrackMarkdownRendered(page);
   await assertNoHorizontalOverflow(page, 'desktop-readme');
   await assertLearningRouteAndSelfChecks(page);
-  await assertInjectedPythonComments(page, 'scratch_lab.py');
-  await assertRunButton(page, 'scratch_lab.py', 'matmul_shape');
+  await assertInjectedPythonComments(page, '기초 실습 코드');
+  await assertRunButton(page, '기초 실습 코드', 'matmul_shape');
   await assertQuizAndWrongNotes(page);
   await page.screenshot({ path: path.join(OUT_DIR, 'desktop-run-output.png'), fullPage: false });
   await page.getByText('코드 읽기 안내').waitFor({ state: 'visible' });
   await page.locator('.code-explanation dt', { hasText: '이 파일은 무엇인가' }).waitFor({ state: 'visible' });
   await page.locator('.code-explanation dt', { hasText: '실행하면 남는 결과' }).waitFor({ state: 'visible' });
-  await page.getByRole('button', { name: /scratch lab 완료 표시/ }).click();
-  await assertInjectedPythonComments(page, 'framework_lab.py');
-  await page.getByText('framework_lab.py는 같은 아이디어').waitFor({ state: 'visible' });
+  await page.getByRole('button', { name: /기초 실습 실행 완료로 표시/ }).click();
+  await assertInjectedPythonComments(page, '프레임워크 실습 코드');
+  await page.getByText('프레임워크 실습 코드: 실제 도구').waitFor({ state: 'visible' });
   await assertNoHorizontalOverflow(page, 'desktop-framework');
-  await assertInjectedPythonComments(page, 'analysis.py');
+  await assertInjectedPythonComments(page, '결과 해석 코드');
   await page.screenshot({ path: path.join(OUT_DIR, 'desktop-code-reader.png'), fullPage: false });
   await page.getByRole('button', { name: /10 VLA/ }).click();
   await page.getByRole('button', { name: /01 VLA Vision-Language-Action Grounding/ }).waitFor({ state: 'visible' });
@@ -395,7 +395,7 @@ async function runResponsiveQa(browser, baseUrl) {
   const page = await context.newPage();
   await page.goto(`${baseUrl}/web/`, { waitUntil: 'domcontentloaded' });
   await page.evaluate(() => document.fonts?.ready);
-  await page.getByRole('tab', { name: 'README' }).waitFor({ state: 'visible' });
+  await page.getByRole('tab', { name: '단원 안내' }).waitFor({ state: 'visible' });
   await assertReaderBeforeGuideOnNarrow(page, 'tablet');
   const metrics = await assertNoHorizontalOverflow(page, 'tablet');
   await page.screenshot({ path: path.join(OUT_DIR, 'tablet-reader.png'), fullPage: false });
@@ -408,10 +408,10 @@ async function runMobileQa(browser, baseUrl) {
   const page = await context.newPage();
   await page.goto(`${baseUrl}/web/`, { waitUntil: 'domcontentloaded' });
   await page.evaluate(() => document.fonts?.ready);
-  await page.getByRole('tab', { name: 'README' }).waitFor({ state: 'visible' });
+  await page.getByRole('tab', { name: '단원 안내' }).waitFor({ state: 'visible' });
   await assertReaderBeforeGuideOnNarrow(page, 'mobile');
-  await assertInjectedPythonComments(page, 'analysis.py');
-  await page.getByText('analysis.py는 실행 결과').waitFor({ state: 'visible' });
+  await assertInjectedPythonComments(page, '결과 해석 코드');
+  await page.getByText('결과 해석 코드: 실행 결과').waitFor({ state: 'visible' });
   const metrics = await assertNoHorizontalOverflow(page, 'mobile');
   await page.screenshot({ path: path.join(OUT_DIR, 'mobile-code-reader.png'), fullPage: false });
   await context.close();
@@ -424,8 +424,8 @@ async function runStaticServerRunHelpQa(browser, baseUrl) {
   const page = await context.newPage();
   await page.goto(`${baseUrl}/web/`, { waitUntil: 'domcontentloaded' });
   await selectStudyUnit(page, '00 Foundations', '01 Tensor Shapes');
-  await page.getByRole('tab', { name: 'scratch_lab.py' }).click();
-  await page.locator('[data-run-code]', { hasText: 'scratch_lab.py 실행' }).click();
+  await page.getByRole('tab', { name: '기초 실습 코드' }).click();
+  await page.locator('[data-run-code]', { hasText: '기초 실습 코드 실행' }).click();
   const output = page.locator('[data-run-output]');
   await output.locator('text=읽기 전용 서버').waitFor({ state: 'visible' });
   const text = await output.innerText();
