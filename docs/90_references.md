@@ -102,3 +102,16 @@
     https://git-lfs.com/
 43. Hugging Face Hub model uploading documentation  
     https://huggingface.co/docs/hub/en/models-uploading
+
+## Learning site / UX references
+
+44. Google Machine Learning Crash Course
+    https://developers.google.com/machine-learning/crash-course
+45. Google ML EDU Help: About Machine Learning Crash Course
+    https://support.google.com/machinelearningeducation/answer/7652516?hl=en
+46. fast.ai Practical Deep Learning for Coders
+    https://course.fast.ai/
+47. fast.ai Lesson 1: Getting started
+    https://course.fast.ai/Lessons/lesson1.html
+48. Hugging Face LLM Course introduction
+    https://huggingface.co/learn/llm-course/en/chapter1/1

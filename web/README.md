@@ -57,9 +57,14 @@ python scripts/build_web_catalog.py --output web/catalog.json
 ## 보는 방식
 
 - 왼쪽 좁은 영역에서 track과 unit을 고르고, 오른쪽 넓은 reader에서 README/THEORY/PREREQS/실습 코드를 바로 읽는다.
+- 사용자 프로필 옆의 학습 경로에서 `전체 1-pass`, `LLM/RLHF 빠른 경로`, `Multimodal/VLA 경로`, `Systems 심화 경로` 중 하나를 고르면 해당 경로 기준 진행률과 다음 단원 추천이 표시된다.
 - 문서 안의 로컬 `.md` 링크도 가능한 한 사이트 안에서 이어서 열리므로, raw README 파일이 깨져 보이는 흐름을 피한다.
 - `study_server.py --device auto`로 열면 Python 코드 탭에서 버튼 하나로 실행하고 결과를 바로 아래에서 확인한다.
+- 실행 후에는 원문 로그뿐 아니라 실행 관찰 카드에서 봐야 할 숫자, 산출물 위치, 다음 질문을 먼저 확인한다.
+- 단원별 자가 점검을 체크해 “목표 설명 → 실행 관찰 → 분석 질문 답변”까지 끝났는지 스스로 확인한다.
 - 체크리스트와 자료 완료 표시는 사용자별 localStorage에만 누적된다.
+
+자세한 UX 발전 방향과 참고 사이트는 [docs/09_web_learning_experience_roadmap.md](../docs/09_web_learning_experience_roadmap.md)에 정리했다.
 
 ## Playwright QA
 

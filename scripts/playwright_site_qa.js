@@ -200,6 +200,16 @@ async function assertRunButton(page, tabName, expectedText) {
   if (!text.includes('실행 환경:')) {
     throw new Error(`${tabName}: run output should show the selected Python/conda and CPU/GPU runner:\n${text}`);
   }
+  await page.locator('.run-primer', { hasText: '실행 전에 볼 것' }).waitFor({ state: 'visible' });
+  await page.locator('.run-primer', { hasText: '예상 산출물' }).waitFor({ state: 'visible' });
+  await page.locator('.run-primer', { hasText: '좋은 결과 기준' }).waitFor({ state: 'visible' });
+  const insights = page.locator('[data-run-insights]');
+  await insights.locator('text=실행 관찰 카드').waitFor({ state: 'visible' });
+  await insights.locator('text=예상 산출물').waitFor({ state: 'visible' });
+  await insights.locator('text=봐야 할 숫자').waitFor({ state: 'visible' });
+  await insights.locator(`text=${expectedText}`).waitFor({ state: 'visible' });
+  await insights.locator('text=좋은 결과 기준').waitFor({ state: 'visible' });
+  await insights.locator('text=다음 질문').waitFor({ state: 'visible' });
 }
 
 async function selectStudyUnit(page, trackText, unitText) {
@@ -245,6 +255,33 @@ async function assertMlRunnerResources(page) {
   await page.locator('[data-run-code]', { hasText: 'run_stage.py 실행' }).waitFor({ state: 'visible' });
 }
 
+async function assertLearningRouteAndSelfChecks(page) {
+  await selectStudyUnit(page, '06 Training Systems', '01 Torchrun and DDP Basics');
+  const titleBeforeRouteChange = await page.locator('#detail-title').innerText();
+
+  await page.locator('#route-select').selectOption('multimodal');
+  await page.locator('.route-box', { hasText: '학습 경로 먼저 선택' }).waitFor({ state: 'visible' });
+  await page.locator('.route-box', { hasText: '현재 읽던 단원은 유지' }).waitFor({ state: 'visible' });
+  await page.locator('#route-card', { hasText: 'Multimodal/VLA 경로' }).waitFor({ state: 'visible' });
+  await page.locator('#route-card', { hasText: '다음 단원 추천' }).waitFor({ state: 'visible' });
+  await page.locator('#detail-title', { hasText: titleBeforeRouteChange }).waitFor({ state: 'visible' });
+
+  await page.locator('.self-checklist [data-self-check]').first().check();
+  await page.locator('[data-self-check-summary]', { hasText: '1/' }).waitFor({ state: 'visible' });
+  await page.locator('.self-checklist', { hasText: '설명할 수 있다' }).waitFor({ state: 'visible' });
+
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await page.locator('#route-card', { hasText: 'Multimodal/VLA 경로' }).waitFor({ state: 'visible' });
+  await page.locator('#detail-title', { hasText: titleBeforeRouteChange }).waitFor({ state: 'visible' });
+  const checkedAfterReload = await page.locator('.self-checklist [data-self-check]').first().isChecked();
+  if (!checkedAfterReload) {
+    throw new Error('self-check progress should persist after reload');
+  }
+
+  await page.locator('#route-card [data-route-next]').click();
+  await page.locator('#detail-title', { hasText: '01 Tensor Shapes' }).waitFor({ state: 'visible' });
+}
+
 async function runDesktopQa(browser, baseUrl) {
   const { context, externalRequests } = await newLocalOnlyContext(browser, baseUrl, { viewport: { width: 1440, height: 980 } });
   const page = await context.newPage();
@@ -257,6 +294,7 @@ async function runDesktopQa(browser, baseUrl) {
   await page.evaluate(() => document.fonts?.ready);
   await assertTrackMarkdownRendered(page);
   await assertNoHorizontalOverflow(page, 'desktop-readme');
+  await assertLearningRouteAndSelfChecks(page);
   await assertInjectedPythonComments(page, 'scratch_lab.py');
   await assertRunButton(page, 'scratch_lab.py', 'matmul_shape');
   await page.screenshot({ path: path.join(OUT_DIR, 'desktop-run-output.png'), fullPage: false });

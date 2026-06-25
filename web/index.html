@@ -56,6 +56,21 @@
       </aside>
 
       <section class="panel detail-panel reader-panel" aria-labelledby="detail-title">
+        <div class="route-box" aria-label="학습 경로 선택">
+          <div class="route-controls">
+            <label>
+              <span>학습 경로 먼저 선택</span>
+              <select id="route-select">
+                <option value="full">전체 1-pass</option>
+                <option value="llm">LLM/RLHF 빠른 경로</option>
+                <option value="multimodal">Multimodal/VLA 경로</option>
+                <option value="systems">Systems 심화 경로</option>
+              </select>
+            </label>
+            <p>경로를 바꿔도 현재 읽던 단원은 유지됩니다. 이동은 “다음 단원 추천”을 눌렀을 때만 일어납니다.</p>
+          </div>
+          <div id="route-card" class="route-card" aria-live="polite"></div>
+        </div>
         <div class="profile-box">
           <label>
             <span>사용자 프로필</span>

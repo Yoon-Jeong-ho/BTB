@@ -12,6 +12,7 @@
     return {
       selectedTrack: '',
       selectedUnit: '',
+      selectedRoute: 'full',
       filters: { progressState: 'all', query: '' },
     };
   }
@@ -41,10 +42,12 @@
       parsed.activeUserId = firstUser;
     }
     if (!parsed.ui) parsed.ui = defaultUI();
+    if (!parsed.ui.selectedRoute) parsed.ui.selectedRoute = 'full';
     if (!parsed.ui.filters) parsed.ui.filters = { progressState: 'all', query: '' };
     for (const user of Object.values(parsed.users)) {
       if (!user.lessons) user.lessons = {};
       if (!user.ui) user.ui = { ...defaultUI(), ...parsed.ui, filters: { ...defaultUI().filters, ...(parsed.ui.filters || {}) } };
+      if (!user.ui.selectedRoute) user.ui.selectedRoute = parsed.ui.selectedRoute || 'full';
       if (!user.ui.filters) user.ui.filters = { progressState: 'all', query: '' };
     }
     return parsed;
@@ -105,6 +108,7 @@
       state: 'not_started',
       percent: 0,
       checkpoints: {},
+      selfChecks: {},
       note: '',
     };
   }

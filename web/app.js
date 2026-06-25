@@ -17,6 +17,7 @@ const emptyState = $('#empty-state');
 const searchInput = $('#search');
 const progressFilter = $('#progress-filter');
 const profileSelect = $('#profile-select');
+const routeSelect = $('#route-select');
 
 init();
 
@@ -54,6 +55,9 @@ function updateActiveUI(patch) {
 
 function restoreActiveView() {
   const ui = activeUI();
+  if (!routeDefinitions().some((route) => route.id === ui.selectedRoute)) {
+    updateActiveUI({ selectedRoute: 'full' });
+  }
   const recommended = recommendedStartingUnit();
   selectedUnitPath = findUnit(ui.selectedUnit) ? ui.selectedUnit : recommended?.path || '';
   const unitTrackId = selectedUnitPath ? selectedUnitPath.split('/')[0] : '';
@@ -82,6 +86,7 @@ function updateLesson(unitPath, patch) {
 function bindEvents() {
   searchInput.value = activeUI().filters?.query || '';
   progressFilter.value = activeUI().filters?.progressState || 'all';
+  routeSelect.value = activeUI().selectedRoute || 'full';
 
   searchInput.addEventListener('input', () => {
     updateActiveUI({ filters: { query: searchInput.value } });
@@ -92,6 +97,12 @@ function bindEvents() {
     updateActiveUI({ filters: { progressState: progressFilter.value } });
     persistProgress();
     renderUnits();
+  });
+  routeSelect.addEventListener('change', () => {
+    updateActiveUI({ selectedRoute: routeSelect.value });
+    persistProgress();
+    renderOverallProgress();
+    renderRouteCard();
   });
   $('#reset-filters').addEventListener('click', () => {
     searchInput.value = '';
@@ -115,6 +126,7 @@ function bindEvents() {
     restoreActiveView();
     searchInput.value = activeUI().filters?.query || '';
     progressFilter.value = activeUI().filters?.progressState || 'all';
+    routeSelect.value = activeUI().selectedRoute || 'full';
     persistProgress();
     render();
   });
@@ -126,6 +138,7 @@ function render() {
   renderUnits();
   renderDetail();
   renderOverallProgress();
+  renderRouteCard();
 }
 
 function renderProfiles() {
@@ -133,6 +146,7 @@ function renderProfiles() {
     .map(([id, user]) => `<option value="${escapeHtml(id)}">${escapeHtml(user.displayName || id)}</option>`)
     .join('');
   profileSelect.value = activeUserId;
+  routeSelect.value = activeUI().selectedRoute || 'full';
 }
 
 function renderTracks() {
@@ -196,6 +210,9 @@ function renderDetail() {
   const progress = lessonState(unit.path);
   const checkpoints = unit.checkpoints.length ? unit.checkpoints : ['README'];
   const checked = progress.checkpoints || {};
+  const selfChecks = progress.selfChecks || {};
+  const selfCheckItems = selfChecksFor(unit);
+  const selfCheckStats = selfCheckProgress(selfCheckItems, selfChecks);
   const percent = completionPercent(checkpoints, checked, progress.state);
   const sections = lessonSectionsFor(unit);
   const selectedSection = sections.find((section) => hrefEquals(section.href, selectedResourceHref)) || sections[0];
@@ -236,6 +253,11 @@ function renderDetail() {
         <ul>${(unit.required_outputs || []).map((item) => `<li>${escapeHtml(item)}</li>`).join('') || '<li>README와 analysis를 확인한다.</li>'}</ul>
         <h3>분석 질문</h3>
         <ul>${(unit.analysis_questions || []).map((item) => `<li>${escapeHtml(item)}</li>`).join('') || '<li>이 단원이 다음 트랙과 어떻게 연결되는지 설명한다.</li>'}</ul>
+        <h3 class="self-check-heading">자가 점검 <span data-self-check-summary>${selfCheckStats.done}/${selfCheckStats.total} 완료</span></h3>
+        <div class="self-check-meter" aria-label="자가 점검 ${selfCheckStats.percent}% 완료"><span style="width:${selfCheckStats.percent}%"></span></div>
+        <ul class="self-checklist">
+          ${selfCheckItems.map((item) => `<li><label><input type="checkbox" data-self-check="${escapeHtml(item.id)}" ${selfChecks[item.id] ? 'checked' : ''}/> ${escapeHtml(item.label)}</label><span>${escapeHtml(item.hint)}</span></li>`).join('')}
+        </ul>
         <h3>내 메모</h3>
         <textarea class="notes" id="unit-note" placeholder="헷갈린 개념, 다시 볼 코드, 다음 질문을 적어 두세요. 이 브라우저에만 저장됩니다.">${escapeHtml(progress.note || '')}</textarea>
       </aside>
@@ -254,11 +276,11 @@ function renderDetail() {
       </section>
     </div>`;
 
-  bindDetailEvents(unit, checkpoints, checked, progress.state, selectedSection);
+  bindDetailEvents(unit, checkpoints, checked, selfChecks, progress.state, selectedSection);
   loadLessonSection(unit, selectedSection);
 }
 
-function bindDetailEvents(unit, checkpoints, checked, currentState, selectedSection) {
+function bindDetailEvents(unit, checkpoints, checked, selfChecks, currentState, selectedSection) {
   detail.querySelectorAll('[data-state]').forEach((button) => {
     button.addEventListener('click', () => updateLesson(unit.path, { state: button.dataset.state, percent: completionPercent(checkpoints, checked, button.dataset.state) }));
   });
@@ -268,6 +290,13 @@ function bindDetailEvents(unit, checkpoints, checked, currentState, selectedSect
       const nextPercent = completionPercent(checkpoints, next, currentState);
       const nextState = nextPercent === 100 ? 'done' : (currentState === 'not_started' ? 'in_progress' : currentState);
       updateLesson(unit.path, { checkpoints: next, percent: nextPercent, state: nextState });
+    });
+  });
+  detail.querySelectorAll('[data-self-check]').forEach((checkbox) => {
+    checkbox.addEventListener('change', () => {
+      const next = { ...selfChecks, [checkbox.dataset.selfCheck]: checkbox.checked };
+      const nextState = currentState === 'not_started' ? 'in_progress' : currentState;
+      updateLesson(unit.path, { selfChecks: next, state: nextState });
     });
   });
   detail.querySelectorAll('[data-section-href]').forEach((button) => {
@@ -336,8 +365,8 @@ async function loadLessonSection(unit, section) {
     const text = await fetchLessonDocument(section.href);
     if (requestId !== contentRequestId) return;
     if (section.type === 'code') {
-      content.innerHTML = `<div class="document-title"><span>${escapeHtml(section.label)}</span><code>${escapeHtml(cleanHref(section.href))}</code></div>${renderCodeExplanation(section, text)}${renderRunPanel(section)}<pre class="code-block"><code>${escapeHtml(annotateCodeWithInlineHints(section, text))}</code></pre>`;
-      bindRunButton(section);
+      content.innerHTML = `<div class="document-title"><span>${escapeHtml(section.label)}</span><code>${escapeHtml(cleanHref(section.href))}</code></div>${renderCodeExplanation(section, text)}${renderRunPanel(section, unit)}<pre class="code-block"><code>${escapeHtml(annotateCodeWithInlineHints(section, text))}</code></pre>`;
+      bindRunButton(section, unit);
     } else {
       content.innerHTML = `<div class="document-title"><span>${escapeHtml(section.label)}</span><code>${escapeHtml(cleanHref(section.href))}</code></div>${renderMarkdown(text, section.href)}`;
       bindInlineDocLinks(unit, section.href);
@@ -354,8 +383,9 @@ async function fetchLessonDocument(href) {
   return response.text();
 }
 
-function renderRunPanel(section) {
+function renderRunPanel(section, unit) {
   if (!isRunnableCodeSection(section)) return '';
+  const plan = runPlanFor(section, unit);
   return `<section class="run-panel" aria-label="Python 코드 실행">
     <div>
       <p class="eyebrow">실행 결과</p>
@@ -366,6 +396,15 @@ function renderRunPanel(section) {
       <button type="button" data-run-code data-run-path="${escapeHtml(cleanHref(section.href))}">${escapeHtml(section.label)} 실행</button>
       <span class="run-status" data-run-status>아직 실행 전입니다.</span>
     </div>
+    <div class="run-primer" aria-label="실행 전 확인">
+      <strong>실행 전에 볼 것</strong>
+      <dl>
+        <div><dt>예상 산출물</dt><dd>${escapeHtml(plan.artifacts.join(', '))}</dd></div>
+        <div><dt>봐야 할 숫자</dt><dd>${escapeHtml(plan.metrics.join(', '))}</dd></div>
+        <div><dt>좋은 결과 기준</dt><dd>${escapeHtml(plan.goodOutcome)}</dd></div>
+      </dl>
+    </div>
+    <div class="run-insights" data-run-insights hidden></div>
     <pre class="run-output" data-run-output hidden></pre>
   </section>`;
 }
@@ -374,20 +413,25 @@ function isRunnableCodeSection(section) {
   return section.type === 'code' && /(?:scratch_lab|framework_lab|analysis|run_stage)\.py$/.test(cleanHref(section.href));
 }
 
-function bindRunButton(section) {
+function bindRunButton(section, unit) {
   const button = $('#lesson-content [data-run-code]');
   if (!button) return;
-  button.addEventListener('click', () => runPythonSection(section, button));
+  button.addEventListener('click', () => runPythonSection(section, button, unit));
 }
 
-async function runPythonSection(section, button) {
+async function runPythonSection(section, button, unit) {
   const panel = button.closest('.run-panel');
   const output = panel?.querySelector('[data-run-output]');
   const status = panel?.querySelector('[data-run-status]');
+  const insights = panel?.querySelector('[data-run-insights]');
   if (!output || !status) return;
 
   button.disabled = true;
   output.hidden = false;
+  if (insights) {
+    insights.hidden = true;
+    insights.innerHTML = '';
+  }
   output.textContent = '실행 중입니다...';
   status.textContent = '실행 중';
   try {
@@ -409,6 +453,10 @@ async function runPythonSection(section, button) {
       throw new Error(payload.error || `HTTP ${response.status}`);
     }
     output.textContent = formatRunResult(payload);
+    if (insights) {
+      insights.innerHTML = renderRunInsights(payload, section, unit);
+      insights.hidden = false;
+    }
     status.textContent = payload.returncode === 0 ? '실행 완료' : `종료 코드 ${payload.returncode}`;
   } catch (error) {
     output.textContent = staticServerHelp(error.message);
@@ -435,6 +483,157 @@ function formatRunResult(payload) {
 function formatRunnerSummary(runner) {
   const gpu = runner.gpu_index !== undefined && runner.gpu_index !== null ? `, gpu=${runner.gpu_index}` : '';
   return `${runner.environment || 'current python'}, device=${runner.device || 'unknown'}${gpu} (${runner.device_reason || 'runner selected'})`;
+}
+
+function runPlanFor(section, unit) {
+  return {
+    artifacts: expectedArtifactsForRun(section, unit),
+    metrics: importantNumbersForRun(section, unit),
+    goodOutcome: goodOutcomeForRun(section, unit),
+  };
+}
+
+function expectedArtifactsForRun(section, unit) {
+  const path = cleanHref(section.href);
+  const declared = (unit?.required_outputs || []).filter((item) => !/^runnable README|theory note|prerequisite checklist$/i.test(item));
+  if (path.endsWith('run_stage.py')) return declared.length ? declared : ['artifacts/<timestamp>/metrics.json', 'figures/', 'predictions/', 'summary.md'];
+  if (path.endsWith('analysis.py')) return ['analysis markdown 또는 latest_report.md', 'observed metrics json', ...declared.filter((item) => /analysis|report|observed/i.test(item))].slice(0, 4);
+  if (path.endsWith('framework_lab.py')) return declared.filter((item) => /framework|figure|svg|metrics/i.test(item)).slice(0, 4).concat(['framework 실행 요약']).slice(0, 4);
+  if (path.endsWith('scratch_lab.py')) return declared.filter((item) => /scratch|figure|svg|metrics/i.test(item)).slice(0, 4).concat(['scratch 실행 요약']).slice(0, 4);
+  return declared.length ? declared.slice(0, 4) : ['metrics json', 'figure 또는 markdown report'];
+}
+
+function importantNumbersForRun(section, unit) {
+  const path = cleanHref(section.href);
+  const terms = unit?.key_terms || [];
+  if (path.endsWith('run_stage.py')) return ['primary metric', 'baseline 대비 best model', 'train/eval split 또는 sample count'];
+  if (path.endsWith('analysis.py')) return ['missing artifact 수', '실패 사례 수', 'analysis가 강조한 핵심 metric'];
+  if (path.endsWith('framework_lab.py')) return ['loss 또는 accuracy 추세', 'scratch와 같은 shape/metric인지', 'device와 seed'];
+  if (path.endsWith('scratch_lab.py')) return ['입력/출력 shape', '핵심 계산 결과', terms[0] ? `${terms[0]} 관측값` : '작은 toy metric'];
+  return ['return code', 'metric', 'artifact path'];
+}
+
+function goodOutcomeForRun(section, unit) {
+  const path = cleanHref(section.href);
+  const deterministic = unit?.deterministic ? ' 같은 seed로 재실행해도 핵심 숫자가 유지되어야 합니다.' : '';
+  if (path.endsWith('run_stage.py')) return `종료 코드 0, metrics/figure/prediction artifact가 생기고 README의 baseline 질문에 답할 수 있으면 좋습니다.${deterministic}`;
+  if (path.endsWith('analysis.py')) return `이전 실행 산출물을 빠짐없이 읽고 analysis markdown에 실패 사례와 다음 실험 질문이 남으면 좋습니다.${deterministic}`;
+  if (path.endsWith('framework_lab.py')) return `framework 결과가 scratch 기준선과 설명 가능한 차이만 보이고, device/seed가 출력에 남으면 좋습니다.${deterministic}`;
+  if (path.endsWith('scratch_lab.py')) return `작은 입력에서 shape와 계산값을 직접 설명할 수 있고, metrics json/그림이 analysis 기준선으로 남으면 좋습니다.${deterministic}`;
+  return `종료 코드 0과 재확인 가능한 artifact path가 남으면 좋습니다.${deterministic}`;
+}
+
+function renderRunInsights(payload, section, unit) {
+  const highlights = extractMetricHighlights(payload);
+  const ok = Number(payload.returncode) === 0;
+  const runner = payload.runner || {};
+  const plan = runPlanFor(section, unit);
+  const artifactHint = artifactHintForRun(section, payload, unit);
+  const nextQuestions = runFollowupQuestions(section, payload, highlights, unit);
+  return `<section aria-label="실행 관찰 카드">
+    <p class="eyebrow">실행 관찰 카드</p>
+    <div class="insight-grid">
+      <div><strong>상태</strong><span>${ok ? '정상 실행' : `확인 필요 · 종료 코드 ${escapeHtml(payload.returncode)}`}</span></div>
+      <div><strong>실행 환경</strong><span>${escapeHtml(runner.device || 'unknown')}${runner.gpu_index !== undefined && runner.gpu_index !== null ? ` · GPU ${escapeHtml(runner.gpu_index)}` : ''}</span></div>
+      <div><strong>산출물</strong><span>${escapeHtml(artifactHint)}</span></div>
+    </div>
+    <h5>예상 산출물</h5>
+    <ul>${plan.artifacts.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul>
+    <h5>봐야 할 숫자</h5>
+    <ul>${highlights.length ? highlights.map((item) => `<li><code>${escapeHtml(item.path)}</code>: ${escapeHtml(item.value)}</li>`).join('') : plan.metrics.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}</ul>
+    <h5>좋은 결과 기준</h5>
+    <p>${escapeHtml(plan.goodOutcome)}</p>
+    <h5>다음 질문</h5>
+    <ul>${nextQuestions.map((question) => `<li>${escapeHtml(question)}</li>`).join('')}</ul>
+  </section>`;
+}
+
+function extractMetricHighlights(payload) {
+  const parsed = parseJsonFromStdout(payload.stdout || '');
+  if (!parsed) return [];
+  const candidates = [];
+  const visit = (value, path) => {
+    if (candidates.length >= 8) return;
+    if (typeof value === 'number' || typeof value === 'boolean') {
+      candidates.push({ path, value: String(value) });
+      return;
+    }
+    if (typeof value === 'string' && value.length <= 80 && /shape|device|path|file|artifact|metric|loss|accuracy|f1|rmse|score/i.test(path)) {
+      candidates.push({ path, value });
+      return;
+    }
+    if (Array.isArray(value)) {
+      if (value.length && value.length <= 8 && value.every((item) => typeof item === 'number' || typeof item === 'string')) {
+        candidates.push({ path, value: `[${value.join(', ')}]` });
+      }
+      return;
+    }
+    if (value && typeof value === 'object') {
+      for (const [key, child] of Object.entries(value)) {
+        const nextPath = path ? `${path}.${key}` : key;
+        if (/loss|accuracy|f1|rmse|mae|score|shape|count|rate|device|artifact|saved|path|metric/i.test(nextPath)) {
+          visit(child, nextPath);
+        } else if (typeof child === 'object' && child !== null && !Array.isArray(child)) {
+          visit(child, nextPath);
+        }
+        if (candidates.length >= 8) break;
+      }
+    }
+  };
+  visit(parsed, '');
+  return candidates.slice(0, 5);
+}
+
+function parseJsonFromStdout(stdout) {
+  const text = String(stdout || '').trim();
+  if (!text) return null;
+  try {
+    return JSON.parse(text);
+  } catch (_) {
+    const start = text.indexOf('{');
+    const end = text.lastIndexOf('}');
+    if (start >= 0 && end > start) {
+      try {
+        return JSON.parse(text.slice(start, end + 1));
+      } catch (_) {
+        return null;
+      }
+    }
+  }
+  return null;
+}
+
+function artifactHintForRun(section, payload, unit) {
+  const path = cleanHref(section.href);
+  if (path.endsWith('analysis.py')) return 'analysis.md 또는 observed metrics가 갱신됐는지 확인하세요.';
+  if (path.endsWith('run_stage.py')) return 'stage artifacts 아래 metrics, figures, predictions, summary를 확인하세요.';
+  if (path.endsWith('framework_lab.py')) return 'framework metrics와 figure를 scratch 결과와 나란히 비교하세요.';
+  if (path.endsWith('scratch_lab.py')) return 'scratch metrics json과 작은 표/그림이 analysis의 기준선입니다.';
+  const expected = expectedArtifactsForRun(section, unit)[0];
+  if (payload.path) return `${payload.path} 실행 결과와 ${expected}를 확인하세요.`;
+  return `실행 결과와 ${expected}를 확인하세요.`;
+}
+
+function runFollowupQuestions(section, payload, highlights, unit) {
+  const path = cleanHref(section.href);
+  const questions = [];
+  if (Number(payload.returncode) !== 0) {
+    questions.push('오류 출력에서 missing file, dependency, timeout 중 무엇이 원인인지 분류하세요.');
+    questions.push('CPU/GPU/conda 환경을 바꿔 재실행해야 하는지 확인하세요.');
+    return questions;
+  }
+  if (highlights.length) {
+    questions.push('가장 중요한 숫자 하나를 README의 성공 기준이나 analysis 질문과 연결해 설명해 보세요.');
+  } else {
+    questions.push('출력 원문에서 shape, loss, accuracy, 저장 경로 중 무엇을 확인해야 하는지 표시해 보세요.');
+  }
+  if (unit?.analysis_questions?.[0]) questions.push(`분석 질문과 연결: ${unit.analysis_questions[0]}`);
+  if (path.endsWith('scratch_lab.py')) questions.push('scratch 결과가 framework 결과와 같아야 하는 부분과 달라도 되는 부분을 구분하세요.');
+  else if (path.endsWith('framework_lab.py')) questions.push('framework가 자동으로 처리한 부분이 scratch 코드의 어느 줄과 대응되는지 찾아보세요.');
+  else if (path.endsWith('analysis.py')) questions.push('analysis가 말하는 실패 사례나 다음 실험 질문을 내 메모에 한 줄로 남기세요.');
+  else if (path.endsWith('run_stage.py')) questions.push('dataset.py와 experiment.py 중 어떤 단계가 이 숫자에 가장 크게 영향을 줬는지 추적하세요.');
+  questions.push('다음 단원으로 가기 전에 자가 점검을 체크할 수 있는지 확인하세요.');
+  return questions.slice(0, 4);
 }
 
 function staticServerHelp(detail) {
@@ -842,8 +1041,83 @@ function hrefEquals(left, right) {
 }
 
 function recommendedStartingUnit() {
-  const units = catalog.tracks.flatMap((track) => track.units);
+  const units = routeUnits(activeUI().selectedRoute || 'full');
   return units.find((unit) => lessonState(unit.path).state !== 'done') || units[0] || null;
+}
+
+function routeDefinitions() {
+  return [
+    {
+      id: 'full',
+      label: '전체 1-pass',
+      description: '00부터 10까지 모든 트랙을 한 번씩 지나가는 가장 촘촘한 경로입니다.',
+      include: () => true,
+    },
+    {
+      id: 'llm',
+      label: 'LLM/RLHF 빠른 경로',
+      description: '기초·ML·DL·NLP를 거쳐 LLM pretraining, SFT, preference/RLHF까지 우선 도달합니다.',
+      include: (unit) => ['00_foundations', '01_ml', '02_deep_learning', '03_nlp_bridge', '04_nlp', '05_advanced_nlp_llm'].includes(unit.path.split('/')[0]),
+    },
+    {
+      id: 'multimodal',
+      label: 'Multimodal/VLA 경로',
+      description: 'LLM 기반을 만든 뒤 multimodal bridge, applied multimodal, VLA action-token 입구로 이어집니다.',
+      include: (unit) => ['00_foundations', '01_ml', '02_deep_learning', '03_nlp_bridge', '04_nlp', '05_advanced_nlp_llm', '08_multimodal_bridge', '09_multimodal', '10_vla'].includes(unit.path.split('/')[0]),
+    },
+    {
+      id: 'systems',
+      label: 'Systems 심화 경로',
+      description: '모델 학습 감각 이후 distributed/system, frontier lab 실험 운영 능력을 강화합니다.',
+      include: (unit) => ['00_foundations', '02_deep_learning', '06_training_systems', '07_frontier_labs'].includes(unit.path.split('/')[0]),
+    },
+  ];
+}
+
+function selectedRouteDefinition() {
+  const selected = activeUI().selectedRoute || 'full';
+  return routeDefinitions().find((route) => route.id === selected) || routeDefinitions()[0];
+}
+
+function routeUnits(routeId) {
+  const route = routeDefinitions().find((candidate) => candidate.id === routeId) || routeDefinitions()[0];
+  return catalog.tracks.flatMap((track) => track.units).filter((unit) => route.include(unit));
+}
+
+function routeProgress(routeId) {
+  const units = routeUnits(routeId);
+  const done = units.filter((unit) => lessonState(unit.path).state === 'done').length;
+  const inProgress = units.filter((unit) => lessonState(unit.path).state === 'in_progress').length;
+  return {
+    total: units.length,
+    done,
+    inProgress,
+    percent: units.length ? Math.round((done / units.length) * 100) : 0,
+  };
+}
+
+function nextUnitForRoute(routeId) {
+  const units = routeUnits(routeId);
+  return units.find((unit) => lessonState(unit.path).state !== 'done') || units[0] || null;
+}
+
+function renderRouteCard() {
+  const container = $('#route-card');
+  if (!container) return;
+  const route = selectedRouteDefinition();
+  const stats = routeProgress(route.id);
+  const next = nextUnitForRoute(route.id);
+  container.innerHTML = `<div>
+      <p class="eyebrow">학습 경로</p>
+      <strong>${escapeHtml(route.label)}</strong>
+      <span>${escapeHtml(route.description)}</span>
+    </div>
+    <div>
+      <strong>${stats.percent}%</strong>
+      <span>${stats.done}/${stats.total} 완료 · 진행 중 ${stats.inProgress}</span>
+      ${next ? `<button type="button" data-route-next="${escapeHtml(next.path)}">다음 단원 추천: ${escapeHtml(next.title)}</button>` : '<span>추천할 단원이 없습니다.</span>'}
+    </div>`;
+  container.querySelector('[data-route-next]')?.addEventListener('click', (event) => selectUnit(event.currentTarget.dataset.routeNext));
 }
 
 function learningStepsFor(unit) {
@@ -869,6 +1143,46 @@ function learningStepsFor(unit) {
     if (step.label.includes('reflection')) return unit.checkpoints.includes('reflection');
     return true;
   });
+}
+
+function selfCheckProgress(items, checked) {
+  const total = items.length;
+  const done = items.filter((item) => checked?.[item.id]).length;
+  return {
+    total,
+    done,
+    percent: total ? Math.round((done / total) * 100) : 0,
+  };
+}
+
+function selfChecksFor(unit) {
+  const checks = [
+    {
+      id: 'goal',
+      label: '이 단원의 목표를 한 문장으로 설명할 수 있다',
+      hint: unit.objective || 'README 첫 단락을 자기 말로 바꿔 보세요.',
+    },
+    {
+      id: 'run-observe',
+      label: '코드 실행 결과에서 봐야 할 숫자와 산출물을 짚을 수 있다',
+      hint: (unit.required_outputs || []).slice(0, 2).join(', ') || 'metrics, figure, analysis.md 중 무엇이 남는지 확인하세요.',
+    },
+  ];
+  (unit.analysis_questions || []).slice(0, 2).forEach((question, index) => {
+    checks.push({
+      id: `analysis-${index + 1}`,
+      label: `분석 질문에 답할 수 있다: ${question}`,
+      hint: '실행 관찰 카드와 analysis 문서를 보고 2~3문장으로 답해 보세요.',
+    });
+  });
+  if (unit.key_terms?.length) {
+    checks.push({
+      id: 'terms',
+      label: `${unit.key_terms.slice(0, 3).join(', ')}를 구분해서 설명할 수 있다`,
+      hint: '헷갈리는 용어는 내 메모에 남기고 다음 단원으로 넘어가세요.',
+    });
+  }
+  return checks.slice(0, 5);
 }
 
 function studyLinksFor(unit) {
@@ -932,10 +1246,10 @@ function trackStats(track) {
 }
 
 function renderOverallProgress() {
-  const units = catalog.tracks.flatMap((track) => track.units);
-  const done = units.filter((unit) => lessonState(unit.path).state === 'done').length;
+  const route = selectedRouteDefinition();
+  const stats = routeProgress(route.id);
   const profileName = currentUser().displayName || activeUserId;
-  $('#overall-progress').textContent = units.length ? `${Math.round((done / units.length) * 100)}% · ${profileName}` : `0% · ${profileName}`;
+  $('#overall-progress').textContent = `${stats.percent}% · ${profileName}`;
 }
 
 function completionPercent(checkpoints, checked, state) {

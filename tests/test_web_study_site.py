@@ -184,6 +184,59 @@ class WebStudySiteContractTest(unittest.TestCase):
         self.assertNotIn("로컬 캐시", html)
         self.assertNotIn("막힘", html + app + (WEB / "progress-storage.js").read_text(encoding="utf-8"))
 
+    def test_site_guides_execution_reflection_and_next_route(self) -> None:
+        app = (WEB / "app.js").read_text(encoding="utf-8")
+        html = (WEB / "index.html").read_text(encoding="utf-8")
+        styles = (WEB / "styles.css").read_text(encoding="utf-8")
+        storage = (WEB / "progress-storage.js").read_text(encoding="utf-8")
+
+        self.assertIn('id="route-select"', html)
+        self.assertIn("route-box", html + styles)
+        self.assertIn("학습 경로 먼저 선택", html)
+        self.assertIn("현재 읽던 단원은 유지", html)
+        self.assertIn("LLM/RLHF 빠른 경로", html + app)
+        self.assertIn("Multimodal/VLA 경로", html + app)
+        self.assertIn("Systems 심화 경로", html + app)
+        self.assertIn("selectedRoute", storage + app)
+        self.assertIn("routeDefinitions", app)
+        self.assertIn("routeUnits", app)
+        self.assertIn("routeProgress", app)
+        self.assertIn("nextUnitForRoute", app)
+        self.assertIn("다음 단원 추천", app)
+
+        self.assertIn("renderRunInsights", app)
+        self.assertIn("runPlanFor", app)
+        self.assertIn("expectedArtifactsForRun", app)
+        self.assertIn("importantNumbersForRun", app)
+        self.assertIn("goodOutcomeForRun", app)
+        self.assertIn("run-primer", app + styles)
+        self.assertIn("extractMetricHighlights", app)
+        self.assertIn("실행 관찰 카드", app)
+        self.assertIn("봐야 할 숫자", app)
+        self.assertIn("예상 산출물", app)
+        self.assertIn("좋은 결과 기준", app)
+        self.assertIn("다음 질문", app)
+        self.assertIn("data-run-insights", app)
+
+        self.assertIn("자가 점검", app)
+        self.assertIn("selfChecksFor", app)
+        self.assertIn("selfCheckProgress", app)
+        self.assertIn("data-self-check", app)
+        self.assertIn("data-self-check-summary", app)
+        self.assertIn("self-check-meter", app + styles)
+        self.assertIn("설명할 수 있다", app)
+        self.assertIn("selfChecks", storage + app)
+
+        route_change_block = app.split("routeSelect.addEventListener('change'", 1)[1].split("$('#reset-filters')", 1)[0]
+        self.assertNotIn("selectedUnitPath =", route_change_block)
+        self.assertNotIn("selectedResourceHref = ''", route_change_block)
+        self.assertIn("renderRouteCard", route_change_block)
+
+        self.assertIn("route-card", styles)
+        self.assertIn("run-insights", styles)
+        self.assertIn("self-checklist", styles)
+        self.assertIn("-webkit-line-clamp: 2", styles)
+
     def test_site_has_playwright_qa_and_code_reading_guidance(self) -> None:
         package_path = ROOT / "package.json"
         self.assertTrue(package_path.is_file(), "Playwright should be installed through package.json")
