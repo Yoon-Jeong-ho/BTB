@@ -7,6 +7,7 @@
 - 기본 루트에서는 [00_foundations](../00_foundations/README.md) 를 먼저 끝내고 들어온다.
 - 특히 `01_tensor_shapes`, `02_activation_and_loss`, `05_gpu_memory_runtime` 을 보고 오면 feature matrix, loss, inference/runtime 해석이 더 잘 연결된다.
 - 딥러닝 코어를 먼저 보고 싶다면 foundations를 끝낸 뒤 `02_deep_learning`의 핵심 unit와 `03_nlp_bridge`로 바로 갔다가, 나중에 다시 이 트랙으로 돌아와도 된다.
+- `02_deep_learning`로 넘어가기 전에는 [feature matrix to neural training bridge](../docs/04_feature_matrix_to_neural_training_bridge.md)를 읽고 feature matrix / metric discipline이 tensor batch / training loop로 어떻게 이어지는지 확인한다.
 
 ## 어디부터 보면 좋은가
 

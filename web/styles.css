@@ -72,6 +72,9 @@ textarea { width: 100%; font-family: inherit; }
 .unit-detail { min-width: 0; line-height: 1.65; }
 .lesson-hero { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1rem; align-items: start; border-bottom: 1px solid var(--line); padding-bottom: 1rem; margin-bottom: 1rem; }
 .lesson-hero h2 { margin: 0.2rem 0 0.5rem; font-size: clamp(1.6rem, 3vw, 2.5rem); }
+.scope-gate { display: grid; gap: 0.25rem; margin-top: 0.8rem; border: 1px solid color-mix(in srgb, var(--warn) 32%, var(--line)); border-radius: 16px; background: color-mix(in srgb, var(--warn) 8%, white); padding: 0.8rem 0.95rem; }
+.scope-gate strong { color: var(--warn); }
+.scope-gate span { color: var(--ink); line-height: 1.55; }
 .lesson-workspace { display: grid; grid-template-columns: minmax(200px, 0.22fr) minmax(0, 1fr); gap: 1rem; align-items: start; }
 .reader-shell { width: 100%; }
 .lesson-guide { position: sticky; top: 1rem; border-right: 1px solid var(--line); padding-right: 1rem; max-height: calc(100vh - 3rem); overflow: auto; }

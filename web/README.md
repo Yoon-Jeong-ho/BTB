@@ -19,7 +19,7 @@ python scripts/study_server.py --port 8000 --device auto
 # http://localhost:8000/web/ 열기
 ```
 
-`study_server.py`는 임의 명령을 실행하지 않고, 저장소 안의 `scratch_lab.py`, `framework_lab.py`, `analysis.py`만 허용 목록으로 실행한다. 실행 결과의 stdout/stderr, 종료 코드, 선택된 실행 환경은 코드 블록 위의 결과 패널에 표시된다.
+`study_server.py`는 임의 명령을 실행하지 않고, 저장소 안의 `scratch_lab.py`, `framework_lab.py`, `analysis.py`, `run_stage.py`만 허용 목록으로 실행한다. 실행 결과의 표준 출력/오류 출력, 종료 코드, 선택된 실행 환경은 코드 블록 위의 결과 패널에 표시된다.
 
 conda 환경이나 GPU 선택을 명시하고 싶다면 아래처럼 실행한다.
 
@@ -59,7 +59,7 @@ python scripts/build_web_catalog.py --output web/catalog.json
 - 왼쪽 좁은 영역에서 track과 unit을 고르고, 오른쪽 넓은 reader에서 README/THEORY/PREREQS/실습 코드를 바로 읽는다.
 - 문서 안의 로컬 `.md` 링크도 가능한 한 사이트 안에서 이어서 열리므로, raw README 파일이 깨져 보이는 흐름을 피한다.
 - `study_server.py --device auto`로 열면 Python 코드 탭에서 버튼 하나로 실행하고 결과를 바로 아래에서 확인한다.
-- 체크리스트와 현재 자료 체크는 사용자별 localStorage에만 누적된다.
+- 체크리스트와 자료 완료 표시는 사용자별 localStorage에만 누적된다.
 
 ## Playwright QA
 

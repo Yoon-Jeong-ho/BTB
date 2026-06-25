@@ -37,6 +37,72 @@
             "어떤 연산에서 shape mismatch가 났는가?",
             "broadcasting이 편하지만 위험한 이유는 무엇인가?"
           ],
+          "resources": [
+            {
+              "id": "README-md",
+              "label": "README",
+              "href": "00_foundations/01_tensor_shapes/README.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "README"
+            },
+            {
+              "id": "THEORY-md",
+              "label": "THEORY",
+              "href": "00_foundations/01_tensor_shapes/THEORY.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "THEORY"
+            },
+            {
+              "id": "PREREQS-md",
+              "label": "PREREQS",
+              "href": "00_foundations/01_tensor_shapes/PREREQS.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "PREREQS"
+            },
+            {
+              "id": "scratch-lab-py",
+              "label": "scratch_lab.py",
+              "href": "00_foundations/01_tensor_shapes/scratch_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "scratch lab"
+            },
+            {
+              "id": "framework-lab-py",
+              "label": "framework_lab.py",
+              "href": "00_foundations/01_tensor_shapes/framework_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "framework lab"
+            },
+            {
+              "id": "analysis-py",
+              "label": "analysis.py",
+              "href": "00_foundations/01_tensor_shapes/analysis.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "analysis script"
+            },
+            {
+              "id": "analysis-md",
+              "label": "analysis.md",
+              "href": "00_foundations/01_tensor_shapes/analysis.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "analysis note"
+            },
+            {
+              "id": "reflection-md",
+              "label": "reflection.md",
+              "href": "00_foundations/01_tensor_shapes/reflection.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "reflection"
+            }
+          ],
           "checkpoints": [
             "README",
             "THEORY",
@@ -85,6 +151,72 @@
             "BCE와 cross entropy는 각각 어떤 target 형식을 기대하는가?",
             "logits를 바로 loss에 넣는 이유를 실행 결과와 함께 설명할 수 있는가?"
           ],
+          "resources": [
+            {
+              "id": "README-md",
+              "label": "README",
+              "href": "00_foundations/02_activation_and_loss/README.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "README"
+            },
+            {
+              "id": "THEORY-md",
+              "label": "THEORY",
+              "href": "00_foundations/02_activation_and_loss/THEORY.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "THEORY"
+            },
+            {
+              "id": "PREREQS-md",
+              "label": "PREREQS",
+              "href": "00_foundations/02_activation_and_loss/PREREQS.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "PREREQS"
+            },
+            {
+              "id": "scratch-lab-py",
+              "label": "scratch_lab.py",
+              "href": "00_foundations/02_activation_and_loss/scratch_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "scratch lab"
+            },
+            {
+              "id": "framework-lab-py",
+              "label": "framework_lab.py",
+              "href": "00_foundations/02_activation_and_loss/framework_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "framework lab"
+            },
+            {
+              "id": "analysis-py",
+              "label": "analysis.py",
+              "href": "00_foundations/02_activation_and_loss/analysis.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "analysis script"
+            },
+            {
+              "id": "analysis-md",
+              "label": "analysis.md",
+              "href": "00_foundations/02_activation_and_loss/analysis.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "analysis note"
+            },
+            {
+              "id": "reflection-md",
+              "label": "reflection.md",
+              "href": "00_foundations/02_activation_and_loss/reflection.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "reflection"
+            }
+          ],
           "checkpoints": [
             "README",
             "THEORY",
@@ -131,6 +263,72 @@
             "analytic gradient와 finite-difference gradient가 얼마나 가깝게 맞았는가?",
             "backpropagation에서 어떤 local gradient들이 곱해졌는가?",
             "한 번의 parameter update 뒤 loss는 어떻게 바뀌었는가?"
+          ],
+          "resources": [
+            {
+              "id": "README-md",
+              "label": "README",
+              "href": "00_foundations/03_gradients_and_backpropagation/README.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "README"
+            },
+            {
+              "id": "THEORY-md",
+              "label": "THEORY",
+              "href": "00_foundations/03_gradients_and_backpropagation/THEORY.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "THEORY"
+            },
+            {
+              "id": "PREREQS-md",
+              "label": "PREREQS",
+              "href": "00_foundations/03_gradients_and_backpropagation/PREREQS.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "PREREQS"
+            },
+            {
+              "id": "scratch-lab-py",
+              "label": "scratch_lab.py",
+              "href": "00_foundations/03_gradients_and_backpropagation/scratch_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "scratch lab"
+            },
+            {
+              "id": "framework-lab-py",
+              "label": "framework_lab.py",
+              "href": "00_foundations/03_gradients_and_backpropagation/framework_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "framework lab"
+            },
+            {
+              "id": "analysis-py",
+              "label": "analysis.py",
+              "href": "00_foundations/03_gradients_and_backpropagation/analysis.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "analysis script"
+            },
+            {
+              "id": "analysis-md",
+              "label": "analysis.md",
+              "href": "00_foundations/03_gradients_and_backpropagation/analysis.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "analysis note"
+            },
+            {
+              "id": "reflection-md",
+              "label": "reflection.md",
+              "href": "00_foundations/03_gradients_and_backpropagation/reflection.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "reflection"
+            }
           ],
           "checkpoints": [
             "README",
@@ -180,6 +378,72 @@
             "weight decay는 loss 감소와 weight norm 사이 균형을 어떻게 바꿨는가?",
             "LayerNorm과 dropout은 tiny tensor에서도 어떤 규칙성을 보여주는가?"
           ],
+          "resources": [
+            {
+              "id": "README-md",
+              "label": "README",
+              "href": "00_foundations/04_regularization_and_normalization/README.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "README"
+            },
+            {
+              "id": "THEORY-md",
+              "label": "THEORY",
+              "href": "00_foundations/04_regularization_and_normalization/THEORY.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "THEORY"
+            },
+            {
+              "id": "PREREQS-md",
+              "label": "PREREQS",
+              "href": "00_foundations/04_regularization_and_normalization/PREREQS.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "PREREQS"
+            },
+            {
+              "id": "scratch-lab-py",
+              "label": "scratch_lab.py",
+              "href": "00_foundations/04_regularization_and_normalization/scratch_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "scratch lab"
+            },
+            {
+              "id": "framework-lab-py",
+              "label": "framework_lab.py",
+              "href": "00_foundations/04_regularization_and_normalization/framework_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "framework lab"
+            },
+            {
+              "id": "analysis-py",
+              "label": "analysis.py",
+              "href": "00_foundations/04_regularization_and_normalization/analysis.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "analysis script"
+            },
+            {
+              "id": "analysis-md",
+              "label": "analysis.md",
+              "href": "00_foundations/04_regularization_and_normalization/analysis.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "analysis note"
+            },
+            {
+              "id": "reflection-md",
+              "label": "reflection.md",
+              "href": "00_foundations/04_regularization_and_normalization/reflection.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "reflection"
+            }
+          ],
           "checkpoints": [
             "README",
             "THEORY",
@@ -224,6 +488,72 @@
             "training과 inference의 차이는 무엇인가?",
             "fp32와 fp16 추정 메모리 차이는 얼마나 되는가?"
           ],
+          "resources": [
+            {
+              "id": "README-md",
+              "label": "README",
+              "href": "00_foundations/05_gpu_memory_runtime/README.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "README"
+            },
+            {
+              "id": "THEORY-md",
+              "label": "THEORY",
+              "href": "00_foundations/05_gpu_memory_runtime/THEORY.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "THEORY"
+            },
+            {
+              "id": "PREREQS-md",
+              "label": "PREREQS",
+              "href": "00_foundations/05_gpu_memory_runtime/PREREQS.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "PREREQS"
+            },
+            {
+              "id": "scratch-lab-py",
+              "label": "scratch_lab.py",
+              "href": "00_foundations/05_gpu_memory_runtime/scratch_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "scratch lab"
+            },
+            {
+              "id": "framework-lab-py",
+              "label": "framework_lab.py",
+              "href": "00_foundations/05_gpu_memory_runtime/framework_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "framework lab"
+            },
+            {
+              "id": "analysis-py",
+              "label": "analysis.py",
+              "href": "00_foundations/05_gpu_memory_runtime/analysis.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "analysis script"
+            },
+            {
+              "id": "analysis-md",
+              "label": "analysis.md",
+              "href": "00_foundations/05_gpu_memory_runtime/analysis.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "analysis note"
+            },
+            {
+              "id": "reflection-md",
+              "label": "reflection.md",
+              "href": "00_foundations/05_gpu_memory_runtime/reflection.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "reflection"
+            }
+          ],
           "checkpoints": [
             "README",
             "THEORY",
@@ -258,9 +588,78 @@
           "key_terms": [],
           "required_outputs": [],
           "analysis_questions": [],
+          "resources": [
+            {
+              "id": "README-md",
+              "label": "README",
+              "href": "01_ml/01_tabular_classification/README.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "README"
+            },
+            {
+              "id": "THEORY-md",
+              "label": "THEORY",
+              "href": "01_ml/01_tabular_classification/THEORY.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "THEORY"
+            },
+            {
+              "id": "dataset-py",
+              "label": "dataset.py",
+              "href": "01_ml/01_tabular_classification/dataset.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "실습 구성"
+            },
+            {
+              "id": "models-py",
+              "label": "models.py",
+              "href": "01_ml/01_tabular_classification/models.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": ""
+            },
+            {
+              "id": "experiment-py",
+              "label": "experiment.py",
+              "href": "01_ml/01_tabular_classification/experiment.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "실험 실행"
+            },
+            {
+              "id": "run-stage-py",
+              "label": "run_stage.py",
+              "href": "01_ml/01_tabular_classification/run_stage.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "실행 명령"
+            },
+            {
+              "id": "analysis-py",
+              "label": "analysis.py",
+              "href": "01_ml/01_tabular_classification/analysis.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "analysis script"
+            },
+            {
+              "id": "report-py",
+              "label": "report.py",
+              "href": "01_ml/01_tabular_classification/report.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": ""
+            }
+          ],
           "checkpoints": [
             "README",
             "THEORY",
+            "실습 구성",
+            "실험 실행",
+            "실행 명령",
             "analysis script"
           ],
           "cpu_safe": false,
@@ -278,9 +677,78 @@
           "key_terms": [],
           "required_outputs": [],
           "analysis_questions": [],
+          "resources": [
+            {
+              "id": "README-md",
+              "label": "README",
+              "href": "01_ml/02_tabular_regression/README.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "README"
+            },
+            {
+              "id": "THEORY-md",
+              "label": "THEORY",
+              "href": "01_ml/02_tabular_regression/THEORY.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "THEORY"
+            },
+            {
+              "id": "dataset-py",
+              "label": "dataset.py",
+              "href": "01_ml/02_tabular_regression/dataset.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "실습 구성"
+            },
+            {
+              "id": "models-py",
+              "label": "models.py",
+              "href": "01_ml/02_tabular_regression/models.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": ""
+            },
+            {
+              "id": "experiment-py",
+              "label": "experiment.py",
+              "href": "01_ml/02_tabular_regression/experiment.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "실험 실행"
+            },
+            {
+              "id": "run-stage-py",
+              "label": "run_stage.py",
+              "href": "01_ml/02_tabular_regression/run_stage.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "실행 명령"
+            },
+            {
+              "id": "analysis-py",
+              "label": "analysis.py",
+              "href": "01_ml/02_tabular_regression/analysis.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "analysis script"
+            },
+            {
+              "id": "report-py",
+              "label": "report.py",
+              "href": "01_ml/02_tabular_regression/report.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": ""
+            }
+          ],
           "checkpoints": [
             "README",
             "THEORY",
+            "실습 구성",
+            "실험 실행",
+            "실행 명령",
             "analysis script"
           ],
           "cpu_safe": false,
@@ -298,9 +766,78 @@
           "key_terms": [],
           "required_outputs": [],
           "analysis_questions": [],
+          "resources": [
+            {
+              "id": "README-md",
+              "label": "README",
+              "href": "01_ml/03_model_selection_and_interpretation/README.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "README"
+            },
+            {
+              "id": "THEORY-md",
+              "label": "THEORY",
+              "href": "01_ml/03_model_selection_and_interpretation/THEORY.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "THEORY"
+            },
+            {
+              "id": "dataset-py",
+              "label": "dataset.py",
+              "href": "01_ml/03_model_selection_and_interpretation/dataset.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "실습 구성"
+            },
+            {
+              "id": "models-py",
+              "label": "models.py",
+              "href": "01_ml/03_model_selection_and_interpretation/models.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": ""
+            },
+            {
+              "id": "experiment-py",
+              "label": "experiment.py",
+              "href": "01_ml/03_model_selection_and_interpretation/experiment.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "실험 실행"
+            },
+            {
+              "id": "run-stage-py",
+              "label": "run_stage.py",
+              "href": "01_ml/03_model_selection_and_interpretation/run_stage.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "실행 명령"
+            },
+            {
+              "id": "analysis-py",
+              "label": "analysis.py",
+              "href": "01_ml/03_model_selection_and_interpretation/analysis.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "analysis script"
+            },
+            {
+              "id": "report-py",
+              "label": "report.py",
+              "href": "01_ml/03_model_selection_and_interpretation/report.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": ""
+            }
+          ],
           "checkpoints": [
             "README",
             "THEORY",
+            "실습 구성",
+            "실험 실행",
+            "실행 명령",
             "analysis script"
           ],
           "cpu_safe": false,
@@ -318,9 +855,78 @@
           "key_terms": [],
           "required_outputs": [],
           "analysis_questions": [],
+          "resources": [
+            {
+              "id": "README-md",
+              "label": "README",
+              "href": "01_ml/04_large_scale_tabular/README.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "README"
+            },
+            {
+              "id": "THEORY-md",
+              "label": "THEORY",
+              "href": "01_ml/04_large_scale_tabular/THEORY.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "THEORY"
+            },
+            {
+              "id": "dataset-py",
+              "label": "dataset.py",
+              "href": "01_ml/04_large_scale_tabular/dataset.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "실습 구성"
+            },
+            {
+              "id": "models-py",
+              "label": "models.py",
+              "href": "01_ml/04_large_scale_tabular/models.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": ""
+            },
+            {
+              "id": "experiment-py",
+              "label": "experiment.py",
+              "href": "01_ml/04_large_scale_tabular/experiment.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "실험 실행"
+            },
+            {
+              "id": "run-stage-py",
+              "label": "run_stage.py",
+              "href": "01_ml/04_large_scale_tabular/run_stage.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "실행 명령"
+            },
+            {
+              "id": "analysis-py",
+              "label": "analysis.py",
+              "href": "01_ml/04_large_scale_tabular/analysis.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "analysis script"
+            },
+            {
+              "id": "report-py",
+              "label": "report.py",
+              "href": "01_ml/04_large_scale_tabular/report.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": ""
+            }
+          ],
           "checkpoints": [
             "README",
             "THEORY",
+            "실습 구성",
+            "실험 실행",
+            "실행 명령",
             "analysis script"
           ],
           "cpu_safe": false,
@@ -375,6 +981,72 @@
             "single neuron의 XOR 실패를 optimizer 문제가 아니라 표현력 한계라고 설명하려면 어떤 관측이 필요한가?",
             "tiny MLP가 같은 toy data에서 개선을 보일 때, hidden layer와 nonlinearity의 역할을 어떻게 말로 설명할 수 있는가?"
           ],
+          "resources": [
+            {
+              "id": "README-md",
+              "label": "README",
+              "href": "02_deep_learning/01_perceptron_and_mlp/README.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "README"
+            },
+            {
+              "id": "THEORY-md",
+              "label": "THEORY",
+              "href": "02_deep_learning/01_perceptron_and_mlp/THEORY.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "THEORY"
+            },
+            {
+              "id": "PREREQS-md",
+              "label": "PREREQS",
+              "href": "02_deep_learning/01_perceptron_and_mlp/PREREQS.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "PREREQS"
+            },
+            {
+              "id": "scratch-lab-py",
+              "label": "scratch_lab.py",
+              "href": "02_deep_learning/01_perceptron_and_mlp/scratch_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "scratch lab"
+            },
+            {
+              "id": "framework-lab-py",
+              "label": "framework_lab.py",
+              "href": "02_deep_learning/01_perceptron_and_mlp/framework_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "framework lab"
+            },
+            {
+              "id": "analysis-py",
+              "label": "analysis.py",
+              "href": "02_deep_learning/01_perceptron_and_mlp/analysis.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "analysis script"
+            },
+            {
+              "id": "analysis-md",
+              "label": "analysis.md",
+              "href": "02_deep_learning/01_perceptron_and_mlp/analysis.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "analysis note"
+            },
+            {
+              "id": "reflection-md",
+              "label": "reflection.md",
+              "href": "02_deep_learning/01_perceptron_and_mlp/reflection.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "reflection"
+            }
+          ],
           "checkpoints": [
             "README",
             "THEORY",
@@ -428,6 +1100,72 @@
             "pooling은 무엇을 남기고 무엇을 버리며, 왜 classification baseline에 도움이 되는가?",
             "입력 channel과 출력 feature map 수는 각각 무엇을 의미하는가?",
             "toy image classification baseline에서 pooled feature map 평균을 class score처럼 읽을 수 있는 이유는 무엇인가?"
+          ],
+          "resources": [
+            {
+              "id": "README-md",
+              "label": "README",
+              "href": "02_deep_learning/02_cnn_and_image_classification/README.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "README"
+            },
+            {
+              "id": "THEORY-md",
+              "label": "THEORY",
+              "href": "02_deep_learning/02_cnn_and_image_classification/THEORY.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "THEORY"
+            },
+            {
+              "id": "PREREQS-md",
+              "label": "PREREQS",
+              "href": "02_deep_learning/02_cnn_and_image_classification/PREREQS.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "PREREQS"
+            },
+            {
+              "id": "scratch-lab-py",
+              "label": "scratch_lab.py",
+              "href": "02_deep_learning/02_cnn_and_image_classification/scratch_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "scratch lab"
+            },
+            {
+              "id": "framework-lab-py",
+              "label": "framework_lab.py",
+              "href": "02_deep_learning/02_cnn_and_image_classification/framework_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "framework lab"
+            },
+            {
+              "id": "analysis-py",
+              "label": "analysis.py",
+              "href": "02_deep_learning/02_cnn_and_image_classification/analysis.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "analysis script"
+            },
+            {
+              "id": "analysis-md",
+              "label": "analysis.md",
+              "href": "02_deep_learning/02_cnn_and_image_classification/analysis.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "analysis note"
+            },
+            {
+              "id": "reflection-md",
+              "label": "reflection.md",
+              "href": "02_deep_learning/02_cnn_and_image_classification/reflection.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "reflection"
+            }
           ],
           "checkpoints": [
             "README",
@@ -485,6 +1223,72 @@
             "teacher forcing은 왜 유용하고, inference에서는 어떤 mismatch를 남기는가?",
             "recurrence의 병목을 이해하면 transformer attention을 어떻게 더 자연스럽게 받아들일 수 있는가?"
           ],
+          "resources": [
+            {
+              "id": "README-md",
+              "label": "README",
+              "href": "02_deep_learning/03_sequence_models_rnn_lstm_gru/README.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "README"
+            },
+            {
+              "id": "THEORY-md",
+              "label": "THEORY",
+              "href": "02_deep_learning/03_sequence_models_rnn_lstm_gru/THEORY.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "THEORY"
+            },
+            {
+              "id": "PREREQS-md",
+              "label": "PREREQS",
+              "href": "02_deep_learning/03_sequence_models_rnn_lstm_gru/PREREQS.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "PREREQS"
+            },
+            {
+              "id": "scratch-lab-py",
+              "label": "scratch_lab.py",
+              "href": "02_deep_learning/03_sequence_models_rnn_lstm_gru/scratch_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "scratch lab"
+            },
+            {
+              "id": "framework-lab-py",
+              "label": "framework_lab.py",
+              "href": "02_deep_learning/03_sequence_models_rnn_lstm_gru/framework_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "framework lab"
+            },
+            {
+              "id": "analysis-py",
+              "label": "analysis.py",
+              "href": "02_deep_learning/03_sequence_models_rnn_lstm_gru/analysis.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "analysis script"
+            },
+            {
+              "id": "analysis-md",
+              "label": "analysis.md",
+              "href": "02_deep_learning/03_sequence_models_rnn_lstm_gru/analysis.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "analysis note"
+            },
+            {
+              "id": "reflection-md",
+              "label": "reflection.md",
+              "href": "02_deep_learning/03_sequence_models_rnn_lstm_gru/reflection.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "reflection"
+            }
+          ],
           "checkpoints": [
             "README",
             "THEORY",
@@ -540,6 +1344,72 @@
             "encoder와 decoder는 각각 어떤 정보 접근 규칙을 가지는가?",
             "transformer는 recurrent bottleneck을 어떤 식으로 줄이고, 대신 어떤 길이 비용을 남기는가?"
           ],
+          "resources": [
+            {
+              "id": "README-md",
+              "label": "README",
+              "href": "02_deep_learning/04_attention_and_transformers/README.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "README"
+            },
+            {
+              "id": "THEORY-md",
+              "label": "THEORY",
+              "href": "02_deep_learning/04_attention_and_transformers/THEORY.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "THEORY"
+            },
+            {
+              "id": "PREREQS-md",
+              "label": "PREREQS",
+              "href": "02_deep_learning/04_attention_and_transformers/PREREQS.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "PREREQS"
+            },
+            {
+              "id": "scratch-lab-py",
+              "label": "scratch_lab.py",
+              "href": "02_deep_learning/04_attention_and_transformers/scratch_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "scratch lab"
+            },
+            {
+              "id": "framework-lab-py",
+              "label": "framework_lab.py",
+              "href": "02_deep_learning/04_attention_and_transformers/framework_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "framework lab"
+            },
+            {
+              "id": "analysis-py",
+              "label": "analysis.py",
+              "href": "02_deep_learning/04_attention_and_transformers/analysis.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "analysis script"
+            },
+            {
+              "id": "analysis-md",
+              "label": "analysis.md",
+              "href": "02_deep_learning/04_attention_and_transformers/analysis.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "analysis note"
+            },
+            {
+              "id": "reflection-md",
+              "label": "reflection.md",
+              "href": "02_deep_learning/04_attention_and_transformers/reflection.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "reflection"
+            }
+          ],
           "checkpoints": [
             "README",
             "THEORY",
@@ -594,6 +1464,72 @@
             "bottleneck dimension을 줄이거나 늘리면 representation quality와 reconstruction quality는 어떻게 달라지는가?",
             "denoising autoencoder와 compression-oriented autoencoder는 같은 구조를 어떻게 다르게 활용하는가?",
             "latent representation이 downstream retrieval, clustering, generative modeling에 도움이 되려면 무엇을 더 관찰해야 하는가?"
+          ],
+          "resources": [
+            {
+              "id": "README-md",
+              "label": "README",
+              "href": "02_deep_learning/05_autoencoders_and_representation_learning/README.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "README"
+            },
+            {
+              "id": "THEORY-md",
+              "label": "THEORY",
+              "href": "02_deep_learning/05_autoencoders_and_representation_learning/THEORY.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "THEORY"
+            },
+            {
+              "id": "PREREQS-md",
+              "label": "PREREQS",
+              "href": "02_deep_learning/05_autoencoders_and_representation_learning/PREREQS.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "PREREQS"
+            },
+            {
+              "id": "scratch-lab-py",
+              "label": "scratch_lab.py",
+              "href": "02_deep_learning/05_autoencoders_and_representation_learning/scratch_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "scratch lab"
+            },
+            {
+              "id": "framework-lab-py",
+              "label": "framework_lab.py",
+              "href": "02_deep_learning/05_autoencoders_and_representation_learning/framework_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "framework lab"
+            },
+            {
+              "id": "analysis-py",
+              "label": "analysis.py",
+              "href": "02_deep_learning/05_autoencoders_and_representation_learning/analysis.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "analysis script"
+            },
+            {
+              "id": "analysis-md",
+              "label": "analysis.md",
+              "href": "02_deep_learning/05_autoencoders_and_representation_learning/analysis.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "analysis note"
+            },
+            {
+              "id": "reflection-md",
+              "label": "reflection.md",
+              "href": "02_deep_learning/05_autoencoders_and_representation_learning/reflection.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "reflection"
+            }
           ],
           "checkpoints": [
             "README",
@@ -651,6 +1587,72 @@
             "GAN adversarial loss가 그럴듯해 보여도 mode collapse를 놓칠 수 있는 이유는 무엇인가?",
             "sample realism, coverage, stability 세 축으로 VAE와 GAN을 어떻게 비교할 수 있는가?"
           ],
+          "resources": [
+            {
+              "id": "README-md",
+              "label": "README",
+              "href": "02_deep_learning/06_generative_models_vae_gan/README.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "README"
+            },
+            {
+              "id": "THEORY-md",
+              "label": "THEORY",
+              "href": "02_deep_learning/06_generative_models_vae_gan/THEORY.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "THEORY"
+            },
+            {
+              "id": "PREREQS-md",
+              "label": "PREREQS",
+              "href": "02_deep_learning/06_generative_models_vae_gan/PREREQS.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "PREREQS"
+            },
+            {
+              "id": "scratch-lab-py",
+              "label": "scratch_lab.py",
+              "href": "02_deep_learning/06_generative_models_vae_gan/scratch_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "scratch lab"
+            },
+            {
+              "id": "framework-lab-py",
+              "label": "framework_lab.py",
+              "href": "02_deep_learning/06_generative_models_vae_gan/framework_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "framework lab"
+            },
+            {
+              "id": "analysis-py",
+              "label": "analysis.py",
+              "href": "02_deep_learning/06_generative_models_vae_gan/analysis.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "analysis script"
+            },
+            {
+              "id": "analysis-md",
+              "label": "analysis.md",
+              "href": "02_deep_learning/06_generative_models_vae_gan/analysis.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "analysis note"
+            },
+            {
+              "id": "reflection-md",
+              "label": "reflection.md",
+              "href": "02_deep_learning/06_generative_models_vae_gan/reflection.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "reflection"
+            }
+          ],
           "checkpoints": [
             "README",
             "THEORY",
@@ -704,6 +1706,72 @@
             "high learning rate probe는 어느 시점에서 divergence 또는 gradient explosion을 만들었는가?",
             "shifted-label bug와 overfit는 로그에서 어떻게 다르게 보였는가?",
             "single-batch overfit sanity check는 왜 디버깅 첫 단계로 유용한가?"
+          ],
+          "resources": [
+            {
+              "id": "README-md",
+              "label": "README",
+              "href": "02_deep_learning/07_training_recipes_and_debugging/README.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "README"
+            },
+            {
+              "id": "THEORY-md",
+              "label": "THEORY",
+              "href": "02_deep_learning/07_training_recipes_and_debugging/THEORY.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "THEORY"
+            },
+            {
+              "id": "PREREQS-md",
+              "label": "PREREQS",
+              "href": "02_deep_learning/07_training_recipes_and_debugging/PREREQS.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "PREREQS"
+            },
+            {
+              "id": "scratch-lab-py",
+              "label": "scratch_lab.py",
+              "href": "02_deep_learning/07_training_recipes_and_debugging/scratch_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "scratch lab"
+            },
+            {
+              "id": "framework-lab-py",
+              "label": "framework_lab.py",
+              "href": "02_deep_learning/07_training_recipes_and_debugging/framework_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "framework lab"
+            },
+            {
+              "id": "analysis-py",
+              "label": "analysis.py",
+              "href": "02_deep_learning/07_training_recipes_and_debugging/analysis.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "analysis script"
+            },
+            {
+              "id": "analysis-md",
+              "label": "analysis.md",
+              "href": "02_deep_learning/07_training_recipes_and_debugging/analysis.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "analysis note"
+            },
+            {
+              "id": "reflection-md",
+              "label": "reflection.md",
+              "href": "02_deep_learning/07_training_recipes_and_debugging/reflection.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "reflection"
+            }
           ],
           "checkpoints": [
             "README",
@@ -760,6 +1828,72 @@
             "[UNK]가 생기면 어떤 정보 손실이 생기는가?",
             "embedding lookup 이후 shape가 어떻게 바뀌며, padding mask는 어디에 쓰이는가?"
           ],
+          "resources": [
+            {
+              "id": "README-md",
+              "label": "README",
+              "href": "03_nlp_bridge/01_tokenization_and_embeddings/README.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "README"
+            },
+            {
+              "id": "THEORY-md",
+              "label": "THEORY",
+              "href": "03_nlp_bridge/01_tokenization_and_embeddings/THEORY.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "THEORY"
+            },
+            {
+              "id": "PREREQS-md",
+              "label": "PREREQS",
+              "href": "03_nlp_bridge/01_tokenization_and_embeddings/PREREQS.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "PREREQS"
+            },
+            {
+              "id": "scratch-lab-py",
+              "label": "scratch_lab.py",
+              "href": "03_nlp_bridge/01_tokenization_and_embeddings/scratch_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "scratch lab"
+            },
+            {
+              "id": "framework-lab-py",
+              "label": "framework_lab.py",
+              "href": "03_nlp_bridge/01_tokenization_and_embeddings/framework_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "framework lab"
+            },
+            {
+              "id": "analysis-py",
+              "label": "analysis.py",
+              "href": "03_nlp_bridge/01_tokenization_and_embeddings/analysis.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "analysis script"
+            },
+            {
+              "id": "analysis-md",
+              "label": "analysis.md",
+              "href": "03_nlp_bridge/01_tokenization_and_embeddings/analysis.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "analysis note"
+            },
+            {
+              "id": "reflection-md",
+              "label": "reflection.md",
+              "href": "03_nlp_bridge/01_tokenization_and_embeddings/reflection.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "reflection"
+            }
+          ],
           "checkpoints": [
             "README",
             "THEORY",
@@ -808,6 +1942,72 @@
             "attention output이 왜 value들의 가중합이라고 말할 수 있는가?",
             "padding mask와 causal mask는 각각 무엇을 막는가?",
             "transformer block 안에서 shape는 유지되는데 표현은 어떻게 달라지는가?"
+          ],
+          "resources": [
+            {
+              "id": "README-md",
+              "label": "README",
+              "href": "03_nlp_bridge/02_attention_and_transformer_block/README.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "README"
+            },
+            {
+              "id": "THEORY-md",
+              "label": "THEORY",
+              "href": "03_nlp_bridge/02_attention_and_transformer_block/THEORY.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "THEORY"
+            },
+            {
+              "id": "PREREQS-md",
+              "label": "PREREQS",
+              "href": "03_nlp_bridge/02_attention_and_transformer_block/PREREQS.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "PREREQS"
+            },
+            {
+              "id": "scratch-lab-py",
+              "label": "scratch_lab.py",
+              "href": "03_nlp_bridge/02_attention_and_transformer_block/scratch_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "scratch lab"
+            },
+            {
+              "id": "framework-lab-py",
+              "label": "framework_lab.py",
+              "href": "03_nlp_bridge/02_attention_and_transformer_block/framework_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "framework lab"
+            },
+            {
+              "id": "analysis-py",
+              "label": "analysis.py",
+              "href": "03_nlp_bridge/02_attention_and_transformer_block/analysis.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "analysis script"
+            },
+            {
+              "id": "analysis-md",
+              "label": "analysis.md",
+              "href": "03_nlp_bridge/02_attention_and_transformer_block/analysis.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "analysis note"
+            },
+            {
+              "id": "reflection-md",
+              "label": "reflection.md",
+              "href": "03_nlp_bridge/02_attention_and_transformer_block/reflection.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "reflection"
+            }
           ],
           "checkpoints": [
             "README",
@@ -867,6 +2067,72 @@
             "accuracy와 macro F1을 같이 볼 때 어떤 해석 차이가 생기는가?",
             "tiny PyTorch classifier는 bag-of-words보다 무엇을 더 표현하려고 하는가?"
           ],
+          "resources": [
+            {
+              "id": "README-md",
+              "label": "README",
+              "href": "04_nlp/01_text_classification/README.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "README"
+            },
+            {
+              "id": "THEORY-md",
+              "label": "THEORY",
+              "href": "04_nlp/01_text_classification/THEORY.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "THEORY"
+            },
+            {
+              "id": "PREREQS-md",
+              "label": "PREREQS",
+              "href": "04_nlp/01_text_classification/PREREQS.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "PREREQS"
+            },
+            {
+              "id": "scratch-lab-py",
+              "label": "scratch_lab.py",
+              "href": "04_nlp/01_text_classification/scratch_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "scratch lab"
+            },
+            {
+              "id": "framework-lab-py",
+              "label": "framework_lab.py",
+              "href": "04_nlp/01_text_classification/framework_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "framework lab"
+            },
+            {
+              "id": "analysis-py",
+              "label": "analysis.py",
+              "href": "04_nlp/01_text_classification/analysis.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "analysis script"
+            },
+            {
+              "id": "analysis-md",
+              "label": "analysis.md",
+              "href": "04_nlp/01_text_classification/analysis.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "analysis note"
+            },
+            {
+              "id": "reflection-md",
+              "label": "reflection.md",
+              "href": "04_nlp/01_text_classification/reflection.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "reflection"
+            }
+          ],
           "checkpoints": [
             "README",
             "THEORY",
@@ -915,6 +2181,72 @@
             "alignment 후 BIO label은 어떤 규칙으로 늘어나는가?",
             "token accuracy와 entity-level F1을 같이 보면 어떤 경계 오류가 드러나는가?",
             "tiny PyTorch sequence labeler는 scratch baseline보다 어떤 문맥 정보를 더 읽으려 하는가?"
+          ],
+          "resources": [
+            {
+              "id": "README-md",
+              "label": "README",
+              "href": "04_nlp/02_named_entity_recognition/README.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "README"
+            },
+            {
+              "id": "THEORY-md",
+              "label": "THEORY",
+              "href": "04_nlp/02_named_entity_recognition/THEORY.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "THEORY"
+            },
+            {
+              "id": "PREREQS-md",
+              "label": "PREREQS",
+              "href": "04_nlp/02_named_entity_recognition/PREREQS.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "PREREQS"
+            },
+            {
+              "id": "scratch-lab-py",
+              "label": "scratch_lab.py",
+              "href": "04_nlp/02_named_entity_recognition/scratch_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "scratch lab"
+            },
+            {
+              "id": "framework-lab-py",
+              "label": "framework_lab.py",
+              "href": "04_nlp/02_named_entity_recognition/framework_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "framework lab"
+            },
+            {
+              "id": "analysis-py",
+              "label": "analysis.py",
+              "href": "04_nlp/02_named_entity_recognition/analysis.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "analysis script"
+            },
+            {
+              "id": "analysis-md",
+              "label": "analysis.md",
+              "href": "04_nlp/02_named_entity_recognition/analysis.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "analysis note"
+            },
+            {
+              "id": "reflection-md",
+              "label": "reflection.md",
+              "href": "04_nlp/02_named_entity_recognition/reflection.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "reflection"
+            }
           ],
           "checkpoints": [
             "README",
@@ -967,6 +2299,72 @@
             "no-answer threshold는 answerable / unanswerable 균형에 어떤 영향을 주는가?",
             "tiny PyTorch QA model이 개선되었다면 그 차이는 질문 조건부 표현 때문인가?"
           ],
+          "resources": [
+            {
+              "id": "README-md",
+              "label": "README",
+              "href": "04_nlp/03_machine_reading_comprehension/README.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "README"
+            },
+            {
+              "id": "THEORY-md",
+              "label": "THEORY",
+              "href": "04_nlp/03_machine_reading_comprehension/THEORY.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "THEORY"
+            },
+            {
+              "id": "PREREQS-md",
+              "label": "PREREQS",
+              "href": "04_nlp/03_machine_reading_comprehension/PREREQS.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "PREREQS"
+            },
+            {
+              "id": "scratch-lab-py",
+              "label": "scratch_lab.py",
+              "href": "04_nlp/03_machine_reading_comprehension/scratch_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "scratch lab"
+            },
+            {
+              "id": "framework-lab-py",
+              "label": "framework_lab.py",
+              "href": "04_nlp/03_machine_reading_comprehension/framework_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "framework lab"
+            },
+            {
+              "id": "analysis-py",
+              "label": "analysis.py",
+              "href": "04_nlp/03_machine_reading_comprehension/analysis.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "analysis script"
+            },
+            {
+              "id": "analysis-md",
+              "label": "analysis.md",
+              "href": "04_nlp/03_machine_reading_comprehension/analysis.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "analysis note"
+            },
+            {
+              "id": "reflection-md",
+              "label": "reflection.md",
+              "href": "04_nlp/03_machine_reading_comprehension/reflection.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "reflection"
+            }
+          ],
           "checkpoints": [
             "README",
             "THEORY",
@@ -987,7 +2385,7 @@
       "title": "05 Advanced NLP + LLM",
       "order": 5,
       "readme": "05_advanced_nlp_llm/README.md",
-      "summary": "이 트랙은 `03_nlp_bridge`와 `04_nlp` 다음에 들어오는 **pretraining부터 post-training까지 포괄하는 advanced NLP+LLM** 구간이다. 기본 NLP 태스크를 한 번 돌려 본 뒤, 이제는 언어모델 objective, tokenizer/data mixture, domain adaptive pretraining, instruction tuning, preference optimizat",
+      "summary": "이 트랙은 `03_nlp_bridge`와 `04_nlp` 다음에 들어오는 **pretraining부터 post-training까지 포괄하는 advanced NLP+LLM** 구간이다. 기본 NLP 태스크를 한 번 돌려 본 뒤, 이제는 언어모델 objective, tokenizer/data mixture, domain adaptive pretraining, instruction tuning, preference optimization, RLHF, RAG, alignment를 한 흐름으로 묶어 본다.",
       "units": [
         {
           "id": "01_language_modeling_and_pretraining_objectives",
@@ -1029,6 +2427,72 @@
             "같은 context window여도 causal LM, masked LM, span corruption의 visible context는 왜 다르게 느껴지는가?",
             "span corruption에서 sentinel token은 어떤 bookkeeping 역할을 하는가?",
             "이 비교는 다음 단위의 tokenizer/data mixture와 later domain-adaptive pretraining을 어떤 질문으로 바라보게 만드는가?"
+          ],
+          "resources": [
+            {
+              "id": "README-md",
+              "label": "README",
+              "href": "05_advanced_nlp_llm/01_language_modeling_and_pretraining_objectives/README.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "README"
+            },
+            {
+              "id": "THEORY-md",
+              "label": "THEORY",
+              "href": "05_advanced_nlp_llm/01_language_modeling_and_pretraining_objectives/THEORY.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "THEORY"
+            },
+            {
+              "id": "PREREQS-md",
+              "label": "PREREQS",
+              "href": "05_advanced_nlp_llm/01_language_modeling_and_pretraining_objectives/PREREQS.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "PREREQS"
+            },
+            {
+              "id": "scratch-lab-py",
+              "label": "scratch_lab.py",
+              "href": "05_advanced_nlp_llm/01_language_modeling_and_pretraining_objectives/scratch_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "scratch lab"
+            },
+            {
+              "id": "framework-lab-py",
+              "label": "framework_lab.py",
+              "href": "05_advanced_nlp_llm/01_language_modeling_and_pretraining_objectives/framework_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "framework lab"
+            },
+            {
+              "id": "analysis-py",
+              "label": "analysis.py",
+              "href": "05_advanced_nlp_llm/01_language_modeling_and_pretraining_objectives/analysis.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "analysis script"
+            },
+            {
+              "id": "analysis-md",
+              "label": "analysis.md",
+              "href": "05_advanced_nlp_llm/01_language_modeling_and_pretraining_objectives/analysis.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "analysis note"
+            },
+            {
+              "id": "reflection-md",
+              "label": "reflection.md",
+              "href": "05_advanced_nlp_llm/01_language_modeling_and_pretraining_objectives/reflection.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "reflection"
+            }
           ],
           "checkpoints": [
             "README",
@@ -1087,6 +2551,72 @@
             "deduplication과 contamination check는 각각 무엇을 막고, 왜 둘 다 따로 봐야 하는가?",
             "mixture 비율을 문서 기준이 아니라 token budget과 품질 가중치 기준으로 읽으면 어떤 판단이 달라지는가?",
             "특정 언어/도메인이 tokenizer와 mixture 설계에서 동시에 불리해질 수 있는 경로는 무엇인가?"
+          ],
+          "resources": [
+            {
+              "id": "README-md",
+              "label": "README",
+              "href": "05_advanced_nlp_llm/02_corpus_tokenizer_and_data_mixture/README.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "README"
+            },
+            {
+              "id": "THEORY-md",
+              "label": "THEORY",
+              "href": "05_advanced_nlp_llm/02_corpus_tokenizer_and_data_mixture/THEORY.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "THEORY"
+            },
+            {
+              "id": "PREREQS-md",
+              "label": "PREREQS",
+              "href": "05_advanced_nlp_llm/02_corpus_tokenizer_and_data_mixture/PREREQS.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "PREREQS"
+            },
+            {
+              "id": "scratch-lab-py",
+              "label": "scratch_lab.py",
+              "href": "05_advanced_nlp_llm/02_corpus_tokenizer_and_data_mixture/scratch_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "scratch lab"
+            },
+            {
+              "id": "framework-lab-py",
+              "label": "framework_lab.py",
+              "href": "05_advanced_nlp_llm/02_corpus_tokenizer_and_data_mixture/framework_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "framework lab"
+            },
+            {
+              "id": "analysis-py",
+              "label": "analysis.py",
+              "href": "05_advanced_nlp_llm/02_corpus_tokenizer_and_data_mixture/analysis.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "analysis script"
+            },
+            {
+              "id": "analysis-md",
+              "label": "analysis.md",
+              "href": "05_advanced_nlp_llm/02_corpus_tokenizer_and_data_mixture/analysis.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "analysis note"
+            },
+            {
+              "id": "reflection-md",
+              "label": "reflection.md",
+              "href": "05_advanced_nlp_llm/02_corpus_tokenizer_and_data_mixture/reflection.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "reflection"
+            }
           ],
           "checkpoints": [
             "README",
@@ -1147,6 +2677,72 @@
             "pure-domain continued pretraining과 replay mixture는 adaptation speed와 catastrophic forgetting을 어떻게 다르게 만드는가?",
             "data selection에서 품질, 중복, 라이선스, contamination, 최신성은 왜 문서 수보다 먼저 검토돼야 하는가?",
             "stopping 시점은 in-domain loss, general retention, downstream probe를 함께 볼 때 어떻게 달라지는가?"
+          ],
+          "resources": [
+            {
+              "id": "README-md",
+              "label": "README",
+              "href": "05_advanced_nlp_llm/03_domain_adaptive_pretraining/README.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "README"
+            },
+            {
+              "id": "THEORY-md",
+              "label": "THEORY",
+              "href": "05_advanced_nlp_llm/03_domain_adaptive_pretraining/THEORY.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "THEORY"
+            },
+            {
+              "id": "PREREQS-md",
+              "label": "PREREQS",
+              "href": "05_advanced_nlp_llm/03_domain_adaptive_pretraining/PREREQS.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "PREREQS"
+            },
+            {
+              "id": "scratch-lab-py",
+              "label": "scratch_lab.py",
+              "href": "05_advanced_nlp_llm/03_domain_adaptive_pretraining/scratch_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "scratch lab"
+            },
+            {
+              "id": "framework-lab-py",
+              "label": "framework_lab.py",
+              "href": "05_advanced_nlp_llm/03_domain_adaptive_pretraining/framework_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "framework lab"
+            },
+            {
+              "id": "analysis-py",
+              "label": "analysis.py",
+              "href": "05_advanced_nlp_llm/03_domain_adaptive_pretraining/analysis.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "analysis script"
+            },
+            {
+              "id": "analysis-md",
+              "label": "analysis.md",
+              "href": "05_advanced_nlp_llm/03_domain_adaptive_pretraining/analysis.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "analysis note"
+            },
+            {
+              "id": "reflection-md",
+              "label": "reflection.md",
+              "href": "05_advanced_nlp_llm/03_domain_adaptive_pretraining/reflection.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "reflection"
+            }
           ],
           "checkpoints": [
             "README",
@@ -1210,6 +2806,72 @@
             "assistant-only loss mask는 prompt tokens와 assistant tokens를 어떻게 다르게 취급하는가?",
             "system message는 role framing 안에서 응답 톤과 제약을 어떻게 바꾸는가?",
             "imitation을 잘하는 것과 helpfulness가 높은 것은 어디서 갈라지며, 왜 preference optimization이 이어지는가?"
+          ],
+          "resources": [
+            {
+              "id": "README-md",
+              "label": "README",
+              "href": "05_advanced_nlp_llm/04_instruction_tuning_and_sft/README.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "README"
+            },
+            {
+              "id": "THEORY-md",
+              "label": "THEORY",
+              "href": "05_advanced_nlp_llm/04_instruction_tuning_and_sft/THEORY.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "THEORY"
+            },
+            {
+              "id": "PREREQS-md",
+              "label": "PREREQS",
+              "href": "05_advanced_nlp_llm/04_instruction_tuning_and_sft/PREREQS.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "PREREQS"
+            },
+            {
+              "id": "scratch-lab-py",
+              "label": "scratch_lab.py",
+              "href": "05_advanced_nlp_llm/04_instruction_tuning_and_sft/scratch_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "scratch lab"
+            },
+            {
+              "id": "framework-lab-py",
+              "label": "framework_lab.py",
+              "href": "05_advanced_nlp_llm/04_instruction_tuning_and_sft/framework_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "framework lab"
+            },
+            {
+              "id": "analysis-py",
+              "label": "analysis.py",
+              "href": "05_advanced_nlp_llm/04_instruction_tuning_and_sft/analysis.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "analysis script"
+            },
+            {
+              "id": "analysis-md",
+              "label": "analysis.md",
+              "href": "05_advanced_nlp_llm/04_instruction_tuning_and_sft/analysis.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "analysis note"
+            },
+            {
+              "id": "reflection-md",
+              "label": "reflection.md",
+              "href": "05_advanced_nlp_llm/04_instruction_tuning_and_sft/reflection.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "reflection"
+            }
           ],
           "checkpoints": [
             "README",
@@ -1275,6 +2937,72 @@
             "KTO는 strict pair 없이 desirable/undesirable label을 쓸 수 있지만 어떤 label noise와 imbalance 위험을 더 크게 받는가?",
             "policy update without full RL로 개선된 offline margin이 실제 alignment eval tradeoff까지 해결했다는 뜻이 아닌 이유는 무엇인가?",
             "win rate, factuality, refusal balance, verbosity, style bias를 어떻게 분리해서 평가할 것인가?"
+          ],
+          "resources": [
+            {
+              "id": "README-md",
+              "label": "README",
+              "href": "05_advanced_nlp_llm/05_preference_optimization_dpo_orpo_kto/README.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "README"
+            },
+            {
+              "id": "THEORY-md",
+              "label": "THEORY",
+              "href": "05_advanced_nlp_llm/05_preference_optimization_dpo_orpo_kto/THEORY.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "THEORY"
+            },
+            {
+              "id": "PREREQS-md",
+              "label": "PREREQS",
+              "href": "05_advanced_nlp_llm/05_preference_optimization_dpo_orpo_kto/PREREQS.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "PREREQS"
+            },
+            {
+              "id": "scratch-lab-py",
+              "label": "scratch_lab.py",
+              "href": "05_advanced_nlp_llm/05_preference_optimization_dpo_orpo_kto/scratch_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "scratch lab"
+            },
+            {
+              "id": "framework-lab-py",
+              "label": "framework_lab.py",
+              "href": "05_advanced_nlp_llm/05_preference_optimization_dpo_orpo_kto/framework_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "framework lab"
+            },
+            {
+              "id": "analysis-py",
+              "label": "analysis.py",
+              "href": "05_advanced_nlp_llm/05_preference_optimization_dpo_orpo_kto/analysis.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "analysis script"
+            },
+            {
+              "id": "analysis-md",
+              "label": "analysis.md",
+              "href": "05_advanced_nlp_llm/05_preference_optimization_dpo_orpo_kto/analysis.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "analysis note"
+            },
+            {
+              "id": "reflection-md",
+              "label": "reflection.md",
+              "href": "05_advanced_nlp_llm/05_preference_optimization_dpo_orpo_kto/reflection.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "reflection"
+            }
           ],
           "checkpoints": [
             "README",
@@ -1344,6 +3072,72 @@
             "reasoning-oriented reward shaping은 final answer reward와 process reward를 어떻게 섞어야 하는가?",
             "reward hacking, verbosity inflation, over-refusal을 어떤 held-out eval slice로 관찰할 것인가?",
             "KL anchor가 없을 때 PPO-family policy update가 어떤 drift 위험을 키울 수 있는가?"
+          ],
+          "resources": [
+            {
+              "id": "README-md",
+              "label": "README",
+              "href": "05_advanced_nlp_llm/06_rlhf_and_reasoning_rl/README.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "README"
+            },
+            {
+              "id": "THEORY-md",
+              "label": "THEORY",
+              "href": "05_advanced_nlp_llm/06_rlhf_and_reasoning_rl/THEORY.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "THEORY"
+            },
+            {
+              "id": "PREREQS-md",
+              "label": "PREREQS",
+              "href": "05_advanced_nlp_llm/06_rlhf_and_reasoning_rl/PREREQS.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "PREREQS"
+            },
+            {
+              "id": "scratch-lab-py",
+              "label": "scratch_lab.py",
+              "href": "05_advanced_nlp_llm/06_rlhf_and_reasoning_rl/scratch_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "scratch lab"
+            },
+            {
+              "id": "framework-lab-py",
+              "label": "framework_lab.py",
+              "href": "05_advanced_nlp_llm/06_rlhf_and_reasoning_rl/framework_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "framework lab"
+            },
+            {
+              "id": "analysis-py",
+              "label": "analysis.py",
+              "href": "05_advanced_nlp_llm/06_rlhf_and_reasoning_rl/analysis.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "analysis script"
+            },
+            {
+              "id": "analysis-md",
+              "label": "analysis.md",
+              "href": "05_advanced_nlp_llm/06_rlhf_and_reasoning_rl/analysis.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "analysis note"
+            },
+            {
+              "id": "reflection-md",
+              "label": "reflection.md",
+              "href": "05_advanced_nlp_llm/06_rlhf_and_reasoning_rl/reflection.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "reflection"
+            }
           ],
           "checkpoints": [
             "README",
@@ -1415,6 +3209,72 @@
             "retrieval metrics와 answer grounding metrics는 왜 따로 봐야 하며 offline/online metric split은 어디서 필요해지는가?",
             "evidence가 부족하거나 source가 충돌할 때 answer, abstain, ask-back 중 무엇을 어떻게 평가해야 하는가?"
           ],
+          "resources": [
+            {
+              "id": "README-md",
+              "label": "README",
+              "href": "05_advanced_nlp_llm/07_retrieval_augmented_generation_and_eval/README.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "README"
+            },
+            {
+              "id": "THEORY-md",
+              "label": "THEORY",
+              "href": "05_advanced_nlp_llm/07_retrieval_augmented_generation_and_eval/THEORY.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "THEORY"
+            },
+            {
+              "id": "PREREQS-md",
+              "label": "PREREQS",
+              "href": "05_advanced_nlp_llm/07_retrieval_augmented_generation_and_eval/PREREQS.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "PREREQS"
+            },
+            {
+              "id": "scratch-lab-py",
+              "label": "scratch_lab.py",
+              "href": "05_advanced_nlp_llm/07_retrieval_augmented_generation_and_eval/scratch_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "scratch lab"
+            },
+            {
+              "id": "framework-lab-py",
+              "label": "framework_lab.py",
+              "href": "05_advanced_nlp_llm/07_retrieval_augmented_generation_and_eval/framework_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "framework lab"
+            },
+            {
+              "id": "analysis-py",
+              "label": "analysis.py",
+              "href": "05_advanced_nlp_llm/07_retrieval_augmented_generation_and_eval/analysis.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "analysis script"
+            },
+            {
+              "id": "analysis-md",
+              "label": "analysis.md",
+              "href": "05_advanced_nlp_llm/07_retrieval_augmented_generation_and_eval/analysis.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "analysis note"
+            },
+            {
+              "id": "reflection-md",
+              "label": "reflection.md",
+              "href": "05_advanced_nlp_llm/07_retrieval_augmented_generation_and_eval/reflection.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "reflection"
+            }
+          ],
           "checkpoints": [
             "README",
             "THEORY",
@@ -1484,6 +3344,72 @@
             "jailbreak-style prompt뿐 아니라 paraphrase와 noisy prompt를 robustness 평가에 넣어야 하는 이유는 무엇인가?",
             "policy vs system-level safety 관점에서 model policy와 system guardrail은 각각 어떤 안전 책임을 맡아야 하는가?"
           ],
+          "resources": [
+            {
+              "id": "README-md",
+              "label": "README",
+              "href": "05_advanced_nlp_llm/08_alignment_safety_and_model_behavior/README.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "README"
+            },
+            {
+              "id": "THEORY-md",
+              "label": "THEORY",
+              "href": "05_advanced_nlp_llm/08_alignment_safety_and_model_behavior/THEORY.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "THEORY"
+            },
+            {
+              "id": "PREREQS-md",
+              "label": "PREREQS",
+              "href": "05_advanced_nlp_llm/08_alignment_safety_and_model_behavior/PREREQS.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "PREREQS"
+            },
+            {
+              "id": "scratch-lab-py",
+              "label": "scratch_lab.py",
+              "href": "05_advanced_nlp_llm/08_alignment_safety_and_model_behavior/scratch_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "scratch lab"
+            },
+            {
+              "id": "framework-lab-py",
+              "label": "framework_lab.py",
+              "href": "05_advanced_nlp_llm/08_alignment_safety_and_model_behavior/framework_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "framework lab"
+            },
+            {
+              "id": "analysis-py",
+              "label": "analysis.py",
+              "href": "05_advanced_nlp_llm/08_alignment_safety_and_model_behavior/analysis.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "analysis script"
+            },
+            {
+              "id": "analysis-md",
+              "label": "analysis.md",
+              "href": "05_advanced_nlp_llm/08_alignment_safety_and_model_behavior/analysis.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "analysis note"
+            },
+            {
+              "id": "reflection-md",
+              "label": "reflection.md",
+              "href": "05_advanced_nlp_llm/08_alignment_safety_and_model_behavior/reflection.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "reflection"
+            }
+          ],
           "checkpoints": [
             "README",
             "THEORY",
@@ -1540,6 +3466,72 @@
             "DDP는 무엇을 복제하고 무엇을 평균내는가?",
             "평균 gradient가 parameter update를 어떻게 바꾸는가?"
           ],
+          "resources": [
+            {
+              "id": "README-md",
+              "label": "README",
+              "href": "06_training_systems/01_torchrun_and_ddp_basics/README.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "README"
+            },
+            {
+              "id": "THEORY-md",
+              "label": "THEORY",
+              "href": "06_training_systems/01_torchrun_and_ddp_basics/THEORY.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "THEORY"
+            },
+            {
+              "id": "PREREQS-md",
+              "label": "PREREQS",
+              "href": "06_training_systems/01_torchrun_and_ddp_basics/PREREQS.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "PREREQS"
+            },
+            {
+              "id": "scratch-lab-py",
+              "label": "scratch_lab.py",
+              "href": "06_training_systems/01_torchrun_and_ddp_basics/scratch_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "scratch lab"
+            },
+            {
+              "id": "framework-lab-py",
+              "label": "framework_lab.py",
+              "href": "06_training_systems/01_torchrun_and_ddp_basics/framework_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "framework lab"
+            },
+            {
+              "id": "analysis-py",
+              "label": "analysis.py",
+              "href": "06_training_systems/01_torchrun_and_ddp_basics/analysis.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "analysis script"
+            },
+            {
+              "id": "analysis-md",
+              "label": "analysis.md",
+              "href": "06_training_systems/01_torchrun_and_ddp_basics/analysis.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "analysis note"
+            },
+            {
+              "id": "reflection-md",
+              "label": "reflection.md",
+              "href": "06_training_systems/01_torchrun_and_ddp_basics/reflection.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "reflection"
+            }
+          ],
           "checkpoints": [
             "README",
             "THEORY",
@@ -1587,6 +3579,72 @@
             "`prepare()` 이후에도 사용자가 직접 이해해야 하는 것은 무엇인가?",
             "mixed precision과 backend complexity는 왜 별개로 봐야 하는가?"
           ],
+          "resources": [
+            {
+              "id": "README-md",
+              "label": "README",
+              "href": "06_training_systems/02_accelerate_workflows/README.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "README"
+            },
+            {
+              "id": "THEORY-md",
+              "label": "THEORY",
+              "href": "06_training_systems/02_accelerate_workflows/THEORY.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "THEORY"
+            },
+            {
+              "id": "PREREQS-md",
+              "label": "PREREQS",
+              "href": "06_training_systems/02_accelerate_workflows/PREREQS.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "PREREQS"
+            },
+            {
+              "id": "scratch-lab-py",
+              "label": "scratch_lab.py",
+              "href": "06_training_systems/02_accelerate_workflows/scratch_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "scratch lab"
+            },
+            {
+              "id": "framework-lab-py",
+              "label": "framework_lab.py",
+              "href": "06_training_systems/02_accelerate_workflows/framework_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "framework lab"
+            },
+            {
+              "id": "analysis-py",
+              "label": "analysis.py",
+              "href": "06_training_systems/02_accelerate_workflows/analysis.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "analysis script"
+            },
+            {
+              "id": "analysis-md",
+              "label": "analysis.md",
+              "href": "06_training_systems/02_accelerate_workflows/analysis.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "analysis note"
+            },
+            {
+              "id": "reflection-md",
+              "label": "reflection.md",
+              "href": "06_training_systems/02_accelerate_workflows/reflection.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "reflection"
+            }
+          ],
           "checkpoints": [
             "README",
             "THEORY",
@@ -1633,6 +3691,72 @@
             "ZeRO stage별로 어떤 상태가 shard되는가?",
             "per-rank memory는 얼마나 줄어드는가?",
             "메모리 절약과 통신/복구 복잡도는 어떻게 trade-off를 이루는가?"
+          ],
+          "resources": [
+            {
+              "id": "README-md",
+              "label": "README",
+              "href": "06_training_systems/03_deepspeed_zero/README.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "README"
+            },
+            {
+              "id": "THEORY-md",
+              "label": "THEORY",
+              "href": "06_training_systems/03_deepspeed_zero/THEORY.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "THEORY"
+            },
+            {
+              "id": "PREREQS-md",
+              "label": "PREREQS",
+              "href": "06_training_systems/03_deepspeed_zero/PREREQS.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "PREREQS"
+            },
+            {
+              "id": "scratch-lab-py",
+              "label": "scratch_lab.py",
+              "href": "06_training_systems/03_deepspeed_zero/scratch_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "scratch lab"
+            },
+            {
+              "id": "framework-lab-py",
+              "label": "framework_lab.py",
+              "href": "06_training_systems/03_deepspeed_zero/framework_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "framework lab"
+            },
+            {
+              "id": "analysis-py",
+              "label": "analysis.py",
+              "href": "06_training_systems/03_deepspeed_zero/analysis.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "analysis script"
+            },
+            {
+              "id": "analysis-md",
+              "label": "analysis.md",
+              "href": "06_training_systems/03_deepspeed_zero/analysis.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "analysis note"
+            },
+            {
+              "id": "reflection-md",
+              "label": "reflection.md",
+              "href": "06_training_systems/03_deepspeed_zero/reflection.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "reflection"
+            }
           ],
           "checkpoints": [
             "README",
@@ -1689,6 +3813,72 @@
             "CPU offload는 메모리 절약과 step latency 사이에서 어떤 교환을 만드는가?",
             "full state dict와 sharded state dict는 save/load/resume/export 관점에서 어떤 서로 다른 운영 계약을 가지는가?",
             "이후 tensor parallelism이나 hybrid parallelism을 볼 때 FSDP가 해결하는 문제와 남겨 두는 문제는 무엇인가?"
+          ],
+          "resources": [
+            {
+              "id": "README-md",
+              "label": "README",
+              "href": "06_training_systems/04_fsdp_checkpointing_and_offload/README.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "README"
+            },
+            {
+              "id": "THEORY-md",
+              "label": "THEORY",
+              "href": "06_training_systems/04_fsdp_checkpointing_and_offload/THEORY.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "THEORY"
+            },
+            {
+              "id": "PREREQS-md",
+              "label": "PREREQS",
+              "href": "06_training_systems/04_fsdp_checkpointing_and_offload/PREREQS.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "PREREQS"
+            },
+            {
+              "id": "scratch-lab-py",
+              "label": "scratch_lab.py",
+              "href": "06_training_systems/04_fsdp_checkpointing_and_offload/scratch_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "scratch lab"
+            },
+            {
+              "id": "framework-lab-py",
+              "label": "framework_lab.py",
+              "href": "06_training_systems/04_fsdp_checkpointing_and_offload/framework_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "framework lab"
+            },
+            {
+              "id": "analysis-py",
+              "label": "analysis.py",
+              "href": "06_training_systems/04_fsdp_checkpointing_and_offload/analysis.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "analysis script"
+            },
+            {
+              "id": "analysis-md",
+              "label": "analysis.md",
+              "href": "06_training_systems/04_fsdp_checkpointing_and_offload/analysis.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "analysis note"
+            },
+            {
+              "id": "reflection-md",
+              "label": "reflection.md",
+              "href": "06_training_systems/04_fsdp_checkpointing_and_offload/reflection.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "reflection"
+            }
           ],
           "checkpoints": [
             "README",
@@ -1757,6 +3947,72 @@
             "activation shard를 full tensor로 다시 모으는 시점은 왜 latency와 메모리 둘 다에 영향을 주는가?",
             "tensor parallelism은 메모리를 줄여 주는데도 왜 interconnect bandwidth와 latency에 민감한가?",
             "pipeline parallelism과 hybrid parallelism으로 넘어갈 때 tensor parallel은 어떤 독립 축으로 작동하는가?"
+          ],
+          "resources": [
+            {
+              "id": "README-md",
+              "label": "README",
+              "href": "06_training_systems/05_tensor_parallelism/README.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "README"
+            },
+            {
+              "id": "THEORY-md",
+              "label": "THEORY",
+              "href": "06_training_systems/05_tensor_parallelism/THEORY.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "THEORY"
+            },
+            {
+              "id": "PREREQS-md",
+              "label": "PREREQS",
+              "href": "06_training_systems/05_tensor_parallelism/PREREQS.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "PREREQS"
+            },
+            {
+              "id": "scratch-lab-py",
+              "label": "scratch_lab.py",
+              "href": "06_training_systems/05_tensor_parallelism/scratch_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "scratch lab"
+            },
+            {
+              "id": "framework-lab-py",
+              "label": "framework_lab.py",
+              "href": "06_training_systems/05_tensor_parallelism/framework_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "framework lab"
+            },
+            {
+              "id": "analysis-py",
+              "label": "analysis.py",
+              "href": "06_training_systems/05_tensor_parallelism/analysis.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "analysis script"
+            },
+            {
+              "id": "analysis-md",
+              "label": "analysis.md",
+              "href": "06_training_systems/05_tensor_parallelism/analysis.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "analysis note"
+            },
+            {
+              "id": "reflection-md",
+              "label": "reflection.md",
+              "href": "06_training_systems/05_tensor_parallelism/reflection.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "reflection"
+            }
           ],
           "checkpoints": [
             "README",
@@ -1829,6 +4085,72 @@
             "activation transfer와 partition boundary는 왜 단순 레이어 개수 균등 분할보다 더 중요한 설계 문제가 되는가?",
             "이후 data parallel + grad accumulation, hybrid parallel topologies와 연결할 때 pipeline 축을 어떻게 설명할 수 있는가?"
           ],
+          "resources": [
+            {
+              "id": "README-md",
+              "label": "README",
+              "href": "06_training_systems/06_pipeline_parallelism/README.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "README"
+            },
+            {
+              "id": "THEORY-md",
+              "label": "THEORY",
+              "href": "06_training_systems/06_pipeline_parallelism/THEORY.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "THEORY"
+            },
+            {
+              "id": "PREREQS-md",
+              "label": "PREREQS",
+              "href": "06_training_systems/06_pipeline_parallelism/PREREQS.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "PREREQS"
+            },
+            {
+              "id": "scratch-lab-py",
+              "label": "scratch_lab.py",
+              "href": "06_training_systems/06_pipeline_parallelism/scratch_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "scratch lab"
+            },
+            {
+              "id": "framework-lab-py",
+              "label": "framework_lab.py",
+              "href": "06_training_systems/06_pipeline_parallelism/framework_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "framework lab"
+            },
+            {
+              "id": "analysis-py",
+              "label": "analysis.py",
+              "href": "06_training_systems/06_pipeline_parallelism/analysis.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "analysis script"
+            },
+            {
+              "id": "analysis-md",
+              "label": "analysis.md",
+              "href": "06_training_systems/06_pipeline_parallelism/analysis.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "analysis note"
+            },
+            {
+              "id": "reflection-md",
+              "label": "reflection.md",
+              "href": "06_training_systems/06_pipeline_parallelism/reflection.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "reflection"
+            }
+          ],
           "checkpoints": [
             "README",
             "THEORY",
@@ -1899,6 +4221,72 @@
             "DDP에서 every-step sync와 accumulation-boundary deferred sync는 communication cadence에서 어떻게 다르게 보이는가?",
             "loss normalization, gradient clipping, scheduler step timing은 왜 accumulation boundary와 함께 봐야 하는가?",
             "later hybrid parallel topologies에서 data-parallel 축은 왜 batch budget과 optimizer-step cadence의 기준선으로 남는가?"
+          ],
+          "resources": [
+            {
+              "id": "README-md",
+              "label": "README",
+              "href": "06_training_systems/07_data_parallel_grad_accumulation/README.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "README"
+            },
+            {
+              "id": "THEORY-md",
+              "label": "THEORY",
+              "href": "06_training_systems/07_data_parallel_grad_accumulation/THEORY.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "THEORY"
+            },
+            {
+              "id": "PREREQS-md",
+              "label": "PREREQS",
+              "href": "06_training_systems/07_data_parallel_grad_accumulation/PREREQS.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "PREREQS"
+            },
+            {
+              "id": "scratch-lab-py",
+              "label": "scratch_lab.py",
+              "href": "06_training_systems/07_data_parallel_grad_accumulation/scratch_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "scratch lab"
+            },
+            {
+              "id": "framework-lab-py",
+              "label": "framework_lab.py",
+              "href": "06_training_systems/07_data_parallel_grad_accumulation/framework_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "framework lab"
+            },
+            {
+              "id": "analysis-py",
+              "label": "analysis.py",
+              "href": "06_training_systems/07_data_parallel_grad_accumulation/analysis.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "analysis script"
+            },
+            {
+              "id": "analysis-md",
+              "label": "analysis.md",
+              "href": "06_training_systems/07_data_parallel_grad_accumulation/analysis.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "analysis note"
+            },
+            {
+              "id": "reflection-md",
+              "label": "reflection.md",
+              "href": "06_training_systems/07_data_parallel_grad_accumulation/reflection.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "reflection"
+            }
           ],
           "checkpoints": [
             "README",
@@ -1976,6 +4364,72 @@
             "memory fit, throughput, checkpoint portability, implementation complexity는 왜 동시에 최적화되기 어려운가?",
             "profiling과 failure recovery로 넘어갈 때 topology 설계가 어떤 로그 / metric / failure mode 차이를 남기는가?"
           ],
+          "resources": [
+            {
+              "id": "README-md",
+              "label": "README",
+              "href": "06_training_systems/08_hybrid_parallel_topologies/README.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "README"
+            },
+            {
+              "id": "THEORY-md",
+              "label": "THEORY",
+              "href": "06_training_systems/08_hybrid_parallel_topologies/THEORY.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "THEORY"
+            },
+            {
+              "id": "PREREQS-md",
+              "label": "PREREQS",
+              "href": "06_training_systems/08_hybrid_parallel_topologies/PREREQS.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "PREREQS"
+            },
+            {
+              "id": "scratch-lab-py",
+              "label": "scratch_lab.py",
+              "href": "06_training_systems/08_hybrid_parallel_topologies/scratch_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "scratch lab"
+            },
+            {
+              "id": "framework-lab-py",
+              "label": "framework_lab.py",
+              "href": "06_training_systems/08_hybrid_parallel_topologies/framework_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "framework lab"
+            },
+            {
+              "id": "analysis-py",
+              "label": "analysis.py",
+              "href": "06_training_systems/08_hybrid_parallel_topologies/analysis.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "analysis script"
+            },
+            {
+              "id": "analysis-md",
+              "label": "analysis.md",
+              "href": "06_training_systems/08_hybrid_parallel_topologies/analysis.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "analysis note"
+            },
+            {
+              "id": "reflection-md",
+              "label": "reflection.md",
+              "href": "06_training_systems/08_hybrid_parallel_topologies/reflection.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "reflection"
+            }
+          ],
           "checkpoints": [
             "README",
             "THEORY",
@@ -2052,6 +4506,72 @@
             "retry와 recovery decision은 언제 안전하고, 언제 checkpoint quarantine이나 human escalation이 필요한가?",
             "이 단위의 observability / recoverability 감각이 이후 frontier labs의 paper reproduction과 capstone 운영에 어떻게 이어지는가?"
           ],
+          "resources": [
+            {
+              "id": "README-md",
+              "label": "README",
+              "href": "06_training_systems/09_profiling_monitoring_and_failure_recovery/README.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "README"
+            },
+            {
+              "id": "THEORY-md",
+              "label": "THEORY",
+              "href": "06_training_systems/09_profiling_monitoring_and_failure_recovery/THEORY.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "THEORY"
+            },
+            {
+              "id": "PREREQS-md",
+              "label": "PREREQS",
+              "href": "06_training_systems/09_profiling_monitoring_and_failure_recovery/PREREQS.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "PREREQS"
+            },
+            {
+              "id": "scratch-lab-py",
+              "label": "scratch_lab.py",
+              "href": "06_training_systems/09_profiling_monitoring_and_failure_recovery/scratch_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "scratch lab"
+            },
+            {
+              "id": "framework-lab-py",
+              "label": "framework_lab.py",
+              "href": "06_training_systems/09_profiling_monitoring_and_failure_recovery/framework_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "framework lab"
+            },
+            {
+              "id": "analysis-py",
+              "label": "analysis.py",
+              "href": "06_training_systems/09_profiling_monitoring_and_failure_recovery/analysis.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "analysis script"
+            },
+            {
+              "id": "analysis-md",
+              "label": "analysis.md",
+              "href": "06_training_systems/09_profiling_monitoring_and_failure_recovery/analysis.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "analysis note"
+            },
+            {
+              "id": "reflection-md",
+              "label": "reflection.md",
+              "href": "06_training_systems/09_profiling_monitoring_and_failure_recovery/reflection.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "reflection"
+            }
+          ],
           "checkpoints": [
             "README",
             "THEORY",
@@ -2126,6 +4646,72 @@
             "reported result와 reproduced result가 다를 때 variance, preprocessing, evaluator, hardware 차이를 어떤 순서로 의심해야 하는가?",
             "mismatch hypothesis를 실패 핑계가 아니라 다음 실험 설계로 바꾸려면 어떤 artifact hygiene가 필요한가?"
           ],
+          "resources": [
+            {
+              "id": "README-md",
+              "label": "README",
+              "href": "07_frontier_labs/01_paper_reproduction_playground/README.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "README"
+            },
+            {
+              "id": "THEORY-md",
+              "label": "THEORY",
+              "href": "07_frontier_labs/01_paper_reproduction_playground/THEORY.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "THEORY"
+            },
+            {
+              "id": "PREREQS-md",
+              "label": "PREREQS",
+              "href": "07_frontier_labs/01_paper_reproduction_playground/PREREQS.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "PREREQS"
+            },
+            {
+              "id": "scratch-lab-py",
+              "label": "scratch_lab.py",
+              "href": "07_frontier_labs/01_paper_reproduction_playground/scratch_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "scratch lab"
+            },
+            {
+              "id": "framework-lab-py",
+              "label": "framework_lab.py",
+              "href": "07_frontier_labs/01_paper_reproduction_playground/framework_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "framework lab"
+            },
+            {
+              "id": "analysis-py",
+              "label": "analysis.py",
+              "href": "07_frontier_labs/01_paper_reproduction_playground/analysis.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "analysis script"
+            },
+            {
+              "id": "analysis-md",
+              "label": "analysis.md",
+              "href": "07_frontier_labs/01_paper_reproduction_playground/analysis.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "analysis note"
+            },
+            {
+              "id": "reflection-md",
+              "label": "reflection.md",
+              "href": "07_frontier_labs/01_paper_reproduction_playground/reflection.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "reflection"
+            }
+          ],
           "checkpoints": [
             "README",
             "THEORY",
@@ -2196,6 +4782,72 @@
             "failure analysis는 왜 결과가 나쁜 경우의 부록이 아니라 처음부터 설계해야 하는 핵심 deliverable인가?",
             "risk register는 어떤 관측 signal과 mitigation을 가져야 다음 실험으로 이어지는가?",
             "이 단위의 capstone contract가 다음 agentic training / eval loop 단위에서 어떤 triage 기준과 자동화 경계로 이어지는가?"
+          ],
+          "resources": [
+            {
+              "id": "README-md",
+              "label": "README",
+              "href": "07_frontier_labs/02_capstone_model_building/README.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "README"
+            },
+            {
+              "id": "THEORY-md",
+              "label": "THEORY",
+              "href": "07_frontier_labs/02_capstone_model_building/THEORY.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "THEORY"
+            },
+            {
+              "id": "PREREQS-md",
+              "label": "PREREQS",
+              "href": "07_frontier_labs/02_capstone_model_building/PREREQS.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "PREREQS"
+            },
+            {
+              "id": "scratch-lab-py",
+              "label": "scratch_lab.py",
+              "href": "07_frontier_labs/02_capstone_model_building/scratch_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "scratch lab"
+            },
+            {
+              "id": "framework-lab-py",
+              "label": "framework_lab.py",
+              "href": "07_frontier_labs/02_capstone_model_building/framework_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "framework lab"
+            },
+            {
+              "id": "analysis-py",
+              "label": "analysis.py",
+              "href": "07_frontier_labs/02_capstone_model_building/analysis.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "analysis script"
+            },
+            {
+              "id": "analysis-md",
+              "label": "analysis.md",
+              "href": "07_frontier_labs/02_capstone_model_building/analysis.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "analysis note"
+            },
+            {
+              "id": "reflection-md",
+              "label": "reflection.md",
+              "href": "07_frontier_labs/02_capstone_model_building/reflection.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "reflection"
+            }
           ],
           "checkpoints": [
             "README",
@@ -2268,6 +4920,72 @@
             "critic recommendation이 evidence 기반 triage인지 단순 추측인지 어떻게 판별할 수 있는가?",
             "benchmark drift나 protocol mismatch가 관측되면 stop/escalation rule은 어떻게 작동해야 하는가?"
           ],
+          "resources": [
+            {
+              "id": "README-md",
+              "label": "README",
+              "href": "07_frontier_labs/03_agentic_training_and_eval_loops/README.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "README"
+            },
+            {
+              "id": "THEORY-md",
+              "label": "THEORY",
+              "href": "07_frontier_labs/03_agentic_training_and_eval_loops/THEORY.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "THEORY"
+            },
+            {
+              "id": "PREREQS-md",
+              "label": "PREREQS",
+              "href": "07_frontier_labs/03_agentic_training_and_eval_loops/PREREQS.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "PREREQS"
+            },
+            {
+              "id": "scratch-lab-py",
+              "label": "scratch_lab.py",
+              "href": "07_frontier_labs/03_agentic_training_and_eval_loops/scratch_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "scratch lab"
+            },
+            {
+              "id": "framework-lab-py",
+              "label": "framework_lab.py",
+              "href": "07_frontier_labs/03_agentic_training_and_eval_loops/framework_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "framework lab"
+            },
+            {
+              "id": "analysis-py",
+              "label": "analysis.py",
+              "href": "07_frontier_labs/03_agentic_training_and_eval_loops/analysis.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "analysis script"
+            },
+            {
+              "id": "analysis-md",
+              "label": "analysis.md",
+              "href": "07_frontier_labs/03_agentic_training_and_eval_loops/analysis.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "analysis note"
+            },
+            {
+              "id": "reflection-md",
+              "label": "reflection.md",
+              "href": "07_frontier_labs/03_agentic_training_and_eval_loops/reflection.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "reflection"
+            }
+          ],
           "checkpoints": [
             "README",
             "THEORY",
@@ -2330,6 +5048,72 @@
             "annotation QC는 agreement score 외에 major disagreement와 adjudication rule을 왜 같이 남겨야 하는가?",
             "leakage / contamination / drift audit는 각각 무엇이 다르고 benchmark report에서 어떤 warning으로 이어지는가?",
             "benchmark versioning과 report template가 다음 open-ended research track의 stopping rule과 evidence 기준에 어떻게 연결되는가?"
+          ],
+          "resources": [
+            {
+              "id": "README-md",
+              "label": "README",
+              "href": "07_frontier_labs/04_benchmark_and_dataset_construction/README.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "README"
+            },
+            {
+              "id": "THEORY-md",
+              "label": "THEORY",
+              "href": "07_frontier_labs/04_benchmark_and_dataset_construction/THEORY.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "THEORY"
+            },
+            {
+              "id": "PREREQS-md",
+              "label": "PREREQS",
+              "href": "07_frontier_labs/04_benchmark_and_dataset_construction/PREREQS.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "PREREQS"
+            },
+            {
+              "id": "scratch-lab-py",
+              "label": "scratch_lab.py",
+              "href": "07_frontier_labs/04_benchmark_and_dataset_construction/scratch_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "scratch lab"
+            },
+            {
+              "id": "framework-lab-py",
+              "label": "framework_lab.py",
+              "href": "07_frontier_labs/04_benchmark_and_dataset_construction/framework_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "framework lab"
+            },
+            {
+              "id": "analysis-py",
+              "label": "analysis.py",
+              "href": "07_frontier_labs/04_benchmark_and_dataset_construction/analysis.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "analysis script"
+            },
+            {
+              "id": "analysis-md",
+              "label": "analysis.md",
+              "href": "07_frontier_labs/04_benchmark_and_dataset_construction/analysis.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "analysis note"
+            },
+            {
+              "id": "reflection-md",
+              "label": "reflection.md",
+              "href": "07_frontier_labs/04_benchmark_and_dataset_construction/reflection.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "reflection"
+            }
           ],
           "checkpoints": [
             "README",
@@ -2401,6 +5185,72 @@
             "trust failure가 보이면 왜 더 실험하지 않고 escalate해야 하는가?",
             "archive discipline과 reopen condition이 있어야 다음 사람이 같은 질문을 어떻게 더 싸고 정직하게 다시 열 수 있는가?"
           ],
+          "resources": [
+            {
+              "id": "README-md",
+              "label": "README",
+              "href": "07_frontier_labs/05_open_ended_research_tracks/README.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "README"
+            },
+            {
+              "id": "THEORY-md",
+              "label": "THEORY",
+              "href": "07_frontier_labs/05_open_ended_research_tracks/THEORY.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "THEORY"
+            },
+            {
+              "id": "PREREQS-md",
+              "label": "PREREQS",
+              "href": "07_frontier_labs/05_open_ended_research_tracks/PREREQS.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "PREREQS"
+            },
+            {
+              "id": "scratch-lab-py",
+              "label": "scratch_lab.py",
+              "href": "07_frontier_labs/05_open_ended_research_tracks/scratch_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "scratch lab"
+            },
+            {
+              "id": "framework-lab-py",
+              "label": "framework_lab.py",
+              "href": "07_frontier_labs/05_open_ended_research_tracks/framework_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "framework lab"
+            },
+            {
+              "id": "analysis-py",
+              "label": "analysis.py",
+              "href": "07_frontier_labs/05_open_ended_research_tracks/analysis.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "analysis script"
+            },
+            {
+              "id": "analysis-md",
+              "label": "analysis.md",
+              "href": "07_frontier_labs/05_open_ended_research_tracks/analysis.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "analysis note"
+            },
+            {
+              "id": "reflection-md",
+              "label": "reflection.md",
+              "href": "07_frontier_labs/05_open_ended_research_tracks/reflection.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "reflection"
+            }
+          ],
           "checkpoints": [
             "README",
             "THEORY",
@@ -2457,6 +5307,72 @@
             "temperature를 낮추면 logits와 contrastive loss 해석이 어떻게 달라지는가?",
             "image-to-text와 text-to-image를 둘 다 보는 이유는 무엇인가?"
           ],
+          "resources": [
+            {
+              "id": "README-md",
+              "label": "README",
+              "href": "08_multimodal_bridge/01_contrastive_alignment/README.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "README"
+            },
+            {
+              "id": "THEORY-md",
+              "label": "THEORY",
+              "href": "08_multimodal_bridge/01_contrastive_alignment/THEORY.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "THEORY"
+            },
+            {
+              "id": "PREREQS-md",
+              "label": "PREREQS",
+              "href": "08_multimodal_bridge/01_contrastive_alignment/PREREQS.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "PREREQS"
+            },
+            {
+              "id": "scratch-lab-py",
+              "label": "scratch_lab.py",
+              "href": "08_multimodal_bridge/01_contrastive_alignment/scratch_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "scratch lab"
+            },
+            {
+              "id": "framework-lab-py",
+              "label": "framework_lab.py",
+              "href": "08_multimodal_bridge/01_contrastive_alignment/framework_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "framework lab"
+            },
+            {
+              "id": "analysis-py",
+              "label": "analysis.py",
+              "href": "08_multimodal_bridge/01_contrastive_alignment/analysis.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "analysis script"
+            },
+            {
+              "id": "analysis-md",
+              "label": "analysis.md",
+              "href": "08_multimodal_bridge/01_contrastive_alignment/analysis.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "analysis note"
+            },
+            {
+              "id": "reflection-md",
+              "label": "reflection.md",
+              "href": "08_multimodal_bridge/01_contrastive_alignment/reflection.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "reflection"
+            }
+          ],
           "checkpoints": [
             "README",
             "THEORY",
@@ -2511,6 +5427,72 @@
             "Recall@1과 Recall@2를 함께 읽으면 어떤 ranking 정보를 얻는가?",
             "framework 학습 후 hard negative와 symmetric loss는 어떻게 달라졌는가?"
           ],
+          "resources": [
+            {
+              "id": "README-md",
+              "label": "README",
+              "href": "09_multimodal/01_image_text_retrieval/README.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "README"
+            },
+            {
+              "id": "THEORY-md",
+              "label": "THEORY",
+              "href": "09_multimodal/01_image_text_retrieval/THEORY.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "THEORY"
+            },
+            {
+              "id": "PREREQS-md",
+              "label": "PREREQS",
+              "href": "09_multimodal/01_image_text_retrieval/PREREQS.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "PREREQS"
+            },
+            {
+              "id": "scratch-lab-py",
+              "label": "scratch_lab.py",
+              "href": "09_multimodal/01_image_text_retrieval/scratch_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "scratch lab"
+            },
+            {
+              "id": "framework-lab-py",
+              "label": "framework_lab.py",
+              "href": "09_multimodal/01_image_text_retrieval/framework_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "framework lab"
+            },
+            {
+              "id": "analysis-py",
+              "label": "analysis.py",
+              "href": "09_multimodal/01_image_text_retrieval/analysis.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "analysis script"
+            },
+            {
+              "id": "analysis-md",
+              "label": "analysis.md",
+              "href": "09_multimodal/01_image_text_retrieval/analysis.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "analysis note"
+            },
+            {
+              "id": "reflection-md",
+              "label": "reflection.md",
+              "href": "09_multimodal/01_image_text_retrieval/reflection.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "reflection"
+            }
+          ],
           "checkpoints": [
             "README",
             "THEORY",
@@ -2557,6 +5539,72 @@
             "teacher forcing으로 학습한 decoder를 greedy decoding으로 평가할 때 무엇을 같이 봐야 하는가?",
             "BLEU-1 또는 unigram precision이 높아도 사람이 읽는 품질이 낮을 수 있는 이유는 무엇인가?"
           ],
+          "resources": [
+            {
+              "id": "README-md",
+              "label": "README",
+              "href": "09_multimodal/02_image_captioning/README.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "README"
+            },
+            {
+              "id": "THEORY-md",
+              "label": "THEORY",
+              "href": "09_multimodal/02_image_captioning/THEORY.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "THEORY"
+            },
+            {
+              "id": "PREREQS-md",
+              "label": "PREREQS",
+              "href": "09_multimodal/02_image_captioning/PREREQS.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "PREREQS"
+            },
+            {
+              "id": "scratch-lab-py",
+              "label": "scratch_lab.py",
+              "href": "09_multimodal/02_image_captioning/scratch_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "scratch lab"
+            },
+            {
+              "id": "framework-lab-py",
+              "label": "framework_lab.py",
+              "href": "09_multimodal/02_image_captioning/framework_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "framework lab"
+            },
+            {
+              "id": "analysis-py",
+              "label": "analysis.py",
+              "href": "09_multimodal/02_image_captioning/analysis.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "analysis script"
+            },
+            {
+              "id": "analysis-md",
+              "label": "analysis.md",
+              "href": "09_multimodal/02_image_captioning/analysis.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "analysis note"
+            },
+            {
+              "id": "reflection-md",
+              "label": "reflection.md",
+              "href": "09_multimodal/02_image_captioning/reflection.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "reflection"
+            }
+          ],
           "checkpoints": [
             "README",
             "THEORY",
@@ -2602,6 +5650,72 @@
             "overall accuracy만 보면 놓치는 answer type failure는 무엇인가?",
             "scratch 규칙기는 왜 count 질문에서 shortcut bias를 보였는가?",
             "framework tiny classifier가 count answer type을 회복했다면 어떤 multimodal fusion 신호가 추가된 것인가?"
+          ],
+          "resources": [
+            {
+              "id": "README-md",
+              "label": "README",
+              "href": "09_multimodal/03_visual_question_answering/README.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "README"
+            },
+            {
+              "id": "THEORY-md",
+              "label": "THEORY",
+              "href": "09_multimodal/03_visual_question_answering/THEORY.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "THEORY"
+            },
+            {
+              "id": "PREREQS-md",
+              "label": "PREREQS",
+              "href": "09_multimodal/03_visual_question_answering/PREREQS.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "PREREQS"
+            },
+            {
+              "id": "scratch-lab-py",
+              "label": "scratch_lab.py",
+              "href": "09_multimodal/03_visual_question_answering/scratch_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "scratch lab"
+            },
+            {
+              "id": "framework-lab-py",
+              "label": "framework_lab.py",
+              "href": "09_multimodal/03_visual_question_answering/framework_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "framework lab"
+            },
+            {
+              "id": "analysis-py",
+              "label": "analysis.py",
+              "href": "09_multimodal/03_visual_question_answering/analysis.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "analysis script"
+            },
+            {
+              "id": "analysis-md",
+              "label": "analysis.md",
+              "href": "09_multimodal/03_visual_question_answering/analysis.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "analysis note"
+            },
+            {
+              "id": "reflection-md",
+              "label": "reflection.md",
+              "href": "09_multimodal/03_visual_question_answering/reflection.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "reflection"
+            }
           ],
           "checkpoints": [
             "README",
@@ -2662,6 +5776,72 @@
             "실제 robot trajectory로 확장할 때 어떤 추가 로그가 필요한가?",
             "wrong action but safe와 right action but unsafe는 어떤 수정 방향을 다르게 요구하는가?",
             "ambiguous instruction과 observation noise를 별도 failure probe로 남겨야 하는 이유는 무엇인가?"
+          ],
+          "resources": [
+            {
+              "id": "README-md",
+              "label": "README",
+              "href": "10_vla/01_vision_language_action_grounding/README.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "README"
+            },
+            {
+              "id": "THEORY-md",
+              "label": "THEORY",
+              "href": "10_vla/01_vision_language_action_grounding/THEORY.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "THEORY"
+            },
+            {
+              "id": "PREREQS-md",
+              "label": "PREREQS",
+              "href": "10_vla/01_vision_language_action_grounding/PREREQS.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "PREREQS"
+            },
+            {
+              "id": "scratch-lab-py",
+              "label": "scratch_lab.py",
+              "href": "10_vla/01_vision_language_action_grounding/scratch_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "scratch lab"
+            },
+            {
+              "id": "framework-lab-py",
+              "label": "framework_lab.py",
+              "href": "10_vla/01_vision_language_action_grounding/framework_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "framework lab"
+            },
+            {
+              "id": "analysis-py",
+              "label": "analysis.py",
+              "href": "10_vla/01_vision_language_action_grounding/analysis.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": "analysis script"
+            },
+            {
+              "id": "analysis-md",
+              "label": "analysis.md",
+              "href": "10_vla/01_vision_language_action_grounding/analysis.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "analysis note"
+            },
+            {
+              "id": "reflection-md",
+              "label": "reflection.md",
+              "href": "10_vla/01_vision_language_action_grounding/reflection.md",
+              "type": "markdown",
+              "language": "markdown",
+              "checkpoint": "reflection"
+            }
           ],
           "checkpoints": [
             "README",

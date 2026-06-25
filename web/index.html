@@ -9,11 +9,11 @@
   <body>
     <header class="hero">
       <div>
-        <p class="eyebrow">BTB · NLP 바보에서 박사</p>
-        <h1>학습 로드맵과 개인 진행 체크</h1>
+        <p class="eyebrow">BTB Study Roadmap</p>
+        <h1>읽고, 실행하고, 이어서 공부하기</h1>
         <p class="lead">
-          `catalog.json`으로 커리큘럼을 읽고, 체크/메모/진행률은 이 브라우저의
-          로컬 캐시에만 저장합니다. 이 진행 상태는 GitHub에 공유되지 않습니다.
+          단원 문서와 실습 코드를 한 화면에서 따라가며 완료 표시와 메모를 남깁니다.
+          진행 상태는 이 브라우저에만 저장되고 GitHub에 공유되지 않습니다.
         </p>
       </div>
       <div class="hero-card" aria-live="polite">
@@ -45,7 +45,7 @@
                 <option value="not_started">시작 전</option>
                 <option value="in_progress">진행 중</option>
                 <option value="done">완료</option>
-                <option value="blocked">막힘</option>
+                <option value="blocked">질문 필요</option>
               </select>
             </label>
             <button id="resume" type="button">마지막 단원 열기</button>
@@ -65,7 +65,7 @@
             <button id="add-profile" type="button">프로필 추가</button>
             <button id="export-progress" type="button">내보내기</button>
             <button id="import-progress" type="button">가져오기</button>
-            <button id="reset-progress" type="button" class="danger">로컬 진행 삭제</button>
+            <button id="reset-progress" type="button" class="danger">진행 기록 삭제</button>
           </div>
         </div>
 
@@ -77,8 +77,8 @@
 
     <dialog id="import-dialog">
       <form method="dialog" class="dialog-body">
-        <h2>로컬 진행 가져오기</h2>
-        <p>이 JSON은 브라우저 localStorage에만 병합됩니다. GitHub나 서버로 전송하지 않습니다.</p>
+        <h2>진행 기록 가져오기</h2>
+        <p>가져온 기록은 이 브라우저에만 병합됩니다. GitHub나 서버로 전송하지 않습니다.</p>
         <textarea id="import-json" rows="10" spellcheck="false"></textarea>
         <menu>
           <button value="cancel">취소</button>

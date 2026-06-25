@@ -6,6 +6,16 @@
 
 `04_nlp`까지의 많은 실습은 encoder representation 위에 task head를 붙인다. 반면 LLM 실습은 prompt를 token sequence로 만들고, 매 step마다 logits에서 다음 token을 고른 뒤, 그 token을 다시 context에 붙인다. 이 차이를 모르면 SFT, preference optimization, RLHF에서 “policy가 답변을 만든다”는 문장이 추상적으로 남는다.
 
+## 모델 taxonomy 먼저 정리하기
+
+| 모델 형태 | 대표 감각 | 주로 하는 일 | mask / head 관점 |
+| --- | --- | --- | --- |
+| **encoder-only** | 입력 전체를 양방향으로 읽어 representation을 만든다 | 분류, NER, retrieval embedding | padding mask + task head |
+| **decoder-only** | 지금까지 본 token만 보고 다음 token을 예측한다 | chat, completion, code generation | causal mask + LM head |
+| **encoder-decoder** | 입력을 encoder로 조건화하고 decoder가 출력 sequence를 만든다 | 번역, 요약, captioning | encoder padding mask + decoder causal mask |
+
+LLM 단원에서 “causal LM”이라고 하면 보통 decoder-only 모델을 뜻한다. 이때 학습 label은 입력 token과 한 칸 어긋난 next-token target이다. 예를 들어 `나는 밥을`을 넣고 마지막 위치에서 `먹었다`의 확률을 높이는 식이다. 그래서 `04_nlp`의 classification head와 달리, `05_advanced_nlp_llm`에서는 **LM head가 매 token 위치마다 vocabulary logits를 만든다**는 점을 먼저 잡아야 한다.
+
 ## Autoregressive decoding loop
 
 실무에서는 이 과정을 **autoregressive** generation이라고 부른다.

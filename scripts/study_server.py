@@ -15,7 +15,7 @@ from urllib.parse import unquote
 
 
 ROOT = Path(__file__).resolve().parents[1]
-RUNNABLE_NAMES = {"scratch_lab.py", "framework_lab.py", "analysis.py"}
+RUNNABLE_NAMES = {"scratch_lab.py", "framework_lab.py", "analysis.py", "run_stage.py"}
 DEFAULT_TIMEOUT_SECONDS = 60
 
 
@@ -48,7 +48,7 @@ def _resolve_runnable_path(raw_path: str) -> Path:
         raise PermissionError("repository 밖의 파일은 실행할 수 없습니다.") from exc
 
     if candidate.name not in RUNNABLE_NAMES:
-        raise PermissionError("scratch_lab.py, framework_lab.py, analysis.py만 실행할 수 있습니다.")
+        raise PermissionError("scratch_lab.py, framework_lab.py, analysis.py, run_stage.py만 실행할 수 있습니다.")
     if not candidate.is_file():
         raise FileNotFoundError(cleaned)
     return candidate

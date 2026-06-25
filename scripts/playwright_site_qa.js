@@ -159,12 +159,12 @@ function assertLocalOnlyRequests(externalRequests, label) {
 async function assertInjectedPythonComments(page, tabName) {
   await page.getByRole('tab', { name: tabName }).click();
   const codeText = await page.locator('.code-block code').innerText();
-  for (const token of ['# 핵심 함수', '# 학습 포인트:']) {
+  for (const token of ['# 코드 읽기 힌트:', '# 학습 포인트:']) {
     if (!codeText.includes(token)) {
       throw new Error(`${tabName}: missing inline Korean code hint ${token}`);
     }
   }
-  for (const removed of ['# 학습자용 한글 주석', '# 이 파일은 무엇인가:', '# 어떻게 읽으면 좋은가:', '# 실행하면 남는 결과:', '# 아래부터 원본 Python 코드입니다.']) {
+  for (const removed of ['# 학습자용 한글 주석', '# 이 파일은 무엇인가:', '# 어떻게 읽으면 좋은가:', '# 실행하면 남는 결과:', '# 아래부터 원본 Python 코드입니다.', '# 핵심 함수', '파일을 실행했을 때 전체 흐름이 모이는 진입점입니다.']) {
     if (codeText.includes(removed)) {
       throw new Error(`${tabName}: removed top-level guidance comment is still present: ${removed}`);
     }
@@ -194,10 +194,10 @@ async function assertRunButton(page, tabName, expectedText) {
   await output.waitFor({ state: 'visible' });
   await output.locator(`text=${expectedText}`).waitFor({ state: 'visible', timeout: 30000 });
   const text = await output.innerText();
-  if (!text.includes('exit code: 0')) {
+  if (!text.includes('종료 코드: 0')) {
     throw new Error(`${tabName}: run output did not finish with exit code 0:\n${text}`);
   }
-  if (!text.includes('runner:')) {
+  if (!text.includes('실행 환경:')) {
     throw new Error(`${tabName}: run output should show the selected Python/conda and CPU/GPU runner:\n${text}`);
   }
 }
@@ -217,13 +217,32 @@ async function assertResourceDocument(page, label, expectedText) {
 
 async function assertBridgeResources(page) {
   await selectStudyUnit(page, '05 Advanced NLP + LLM', '01 Language Modeling and Pretraining Objectives');
-  await assertResourceDocument(page, 'Decoder generation bridge', 'KV-cache intuition');
+  await assertResourceDocument(page, 'Decoder 생성 연결', 'KV-cache intuition');
 
   await selectStudyUnit(page, '09 Multimodal', '02 Image Captioning');
-  await assertResourceDocument(page, 'Multimodal generation bridge', 'Grounding failure vs retrieval failure');
+  await assertResourceDocument(page, '멀티모달 생성 연결', 'Grounding failure vs retrieval failure');
 
   await selectStudyUnit(page, '10 VLA', '01 VLA Vision-Language-Action Grounding');
-  await assertResourceDocument(page, 'RL to VLA bridge', 'Behavior cloning vs RL vs offline RL');
+  await assertResourceDocument(page, 'RL→VLA 연결', 'Behavior cloning vs RL vs offline RL');
+}
+
+async function assertMlRunnerResources(page) {
+  await selectStudyUnit(page, '01 ML', '01 Tabular Classification');
+  await assertResourceDocument(page, 'ML→DL 연결 문서', 'DataLoader');
+  await page.getByRole('tab', { name: 'dataset.py' }).waitFor({ state: 'visible' });
+  await page.getByRole('tab', { name: 'experiment.py' }).waitFor({ state: 'visible' });
+  await page.getByRole('tab', { name: 'run_stage.py' }).waitFor({ state: 'visible' });
+  if (await page.getByRole('tab', { name: 'scratch_lab.py' }).count()) {
+    throw new Error('01_ml should not show missing scratch_lab.py tab');
+  }
+  await page.getByRole('tab', { name: 'dataset.py' }).click();
+  await page.locator('.code-explanation', { hasText: 'dataset.py는 ML stage의 입력 표를 만드는 코드입니다.' }).waitFor({ state: 'visible' });
+  await page.getByRole('tab', { name: 'experiment.py' }).click();
+  await page.locator('.code-explanation', { hasText: 'experiment.py는 ML stage의 실제 실험 흐름입니다.' }).waitFor({ state: 'visible' });
+  await page.getByRole('tab', { name: 'run_stage.py' }).click();
+  await page.locator('.code-block code', { hasText: '# 코드 읽기 힌트:' }).waitFor({ state: 'visible' });
+  await page.locator('.code-block code', { hasText: 'run_stage(device)' }).waitFor({ state: 'visible' });
+  await page.locator('[data-run-code]', { hasText: 'run_stage.py 실행' }).waitFor({ state: 'visible' });
 }
 
 async function runDesktopQa(browser, baseUrl) {
@@ -244,7 +263,7 @@ async function runDesktopQa(browser, baseUrl) {
   await page.getByText('코드 읽기 안내').waitFor({ state: 'visible' });
   await page.locator('.code-explanation dt', { hasText: '이 파일은 무엇인가' }).waitFor({ state: 'visible' });
   await page.locator('.code-explanation dt', { hasText: '실행하면 남는 결과' }).waitFor({ state: 'visible' });
-  await page.getByRole('button', { name: /scratch lab 체크/ }).click();
+  await page.getByRole('button', { name: /scratch lab 완료 표시/ }).click();
   await assertInjectedPythonComments(page, 'framework_lab.py');
   await page.getByText('framework_lab.py는 같은 아이디어').waitFor({ state: 'visible' });
   await assertNoHorizontalOverflow(page, 'desktop-framework');
@@ -256,9 +275,10 @@ async function runDesktopQa(browser, baseUrl) {
   await page.reload({ waitUntil: 'domcontentloaded' });
   await page.locator('.track-card[aria-pressed="true"]', { hasText: /10 VLA/ }).waitFor({ state: 'visible' });
   await page.locator('.unit-card[aria-current="true"]', { hasText: /01 VLA Vision-Language-Action Grounding/ }).waitFor({ state: 'visible' });
-  await page.getByRole('button', { name: 'Study guide' }).click();
+  await page.getByRole('button', { name: '학습 안내' }).click();
   await page.getByText('02 Study Guide').waitFor({ state: 'visible' });
   await assertBridgeResources(page);
+  await assertMlRunnerResources(page);
 
   const metrics = await assertNoHorizontalOverflow(page, 'desktop');
   await page.screenshot({ path: path.join(OUT_DIR, 'desktop-study-guide.png'), fullPage: false });
@@ -305,7 +325,7 @@ async function runStaticServerRunHelpQa(browser, baseUrl) {
   await page.getByRole('tab', { name: 'scratch_lab.py' }).click();
   await page.locator('[data-run-code]', { hasText: 'scratch_lab.py 실행' }).click();
   const output = page.locator('[data-run-output]');
-  await output.locator('text=정적 http.server').waitFor({ state: 'visible' });
+  await output.locator('text=읽기 전용 서버').waitFor({ state: 'visible' });
   const text = await output.innerText();
   if (!text.includes('501 Unsupported method')) {
     throw new Error(`static server help should explain the 501 POST failure:\n${text}`);

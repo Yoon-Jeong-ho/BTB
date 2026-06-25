@@ -79,7 +79,7 @@ class WebStudySiteContractTest(unittest.TestCase):
         readme = (WEB / "README.md").read_text(encoding="utf-8")
 
         self.assertIn("BTB", html)
-        self.assertIn("catalog.json", html)
+        self.assertIn("catalog.json", app)
         self.assertIn("progress-storage.js", html)
         self.assertIn("btb.study.progress.v1", storage)
         self.assertIn("localStorage", storage)
@@ -90,6 +90,7 @@ class WebStudySiteContractTest(unittest.TestCase):
         self.assertIn("--conda-env", readme)
         self.assertIn("--device auto", readme)
         self.assertIn("http://localhost:8000/web/", readme)
+        self.assertIn("run_stage.py", readme)
         self.assertNotIn("python -m http.server -d web", readme + app)
 
     def test_progress_code_is_local_only(self) -> None:
@@ -123,6 +124,7 @@ class WebStudySiteContractTest(unittest.TestCase):
         html = (WEB / "index.html").read_text(encoding="utf-8")
         root_readme = (ROOT / "README.md").read_text(encoding="utf-8")
         web_readme = (WEB / "README.md").read_text(encoding="utf-8")
+        ml_dl_bridge = (ROOT / "docs" / "04_feature_matrix_to_neural_training_bridge.md").read_text(encoding="utf-8")
 
         self.assertIn("track.summary", app)
         self.assertIn("renderInlineSummary(track.summary", app)
@@ -130,8 +132,13 @@ class WebStudySiteContractTest(unittest.TestCase):
         self.assertIn("선행 확인", app)
         self.assertIn("학습 방향", app)
         self.assertIn("../docs/02_study_guide.md", app)
+        self.assertIn("../docs/04_feature_matrix_to_neural_training_bridge.md", app)
+        self.assertIn("unit.path.startsWith('01_ml/')", app)
+        self.assertIn("이 ML stage를 끝내고 딥러닝으로 넘어갈 때 읽기", app)
         self.assertIn("../docs/05_rl_primer_for_rlhf.md", app)
-        self.assertIn("09 Multimodal recap", app)
+        self.assertIn("09 멀티모달 복습", app)
+        self.assertIn("scopeGateFor", app)
+        self.assertIn("VLA 범위 확인", app)
         self.assertIn("학습 순서", app)
         self.assertIn("이론 읽기", app)
         self.assertIn("scratch 실행", app)
@@ -144,6 +151,8 @@ class WebStudySiteContractTest(unittest.TestCase):
         self.assertIn("fetchLessonDocument", app)
         self.assertIn("renderMarkdown", app)
         self.assertIn("lessonSectionsFor", app)
+        self.assertIn("unit.resources", app)
+        self.assertIn("실습 구성", app)
         for label in ["README", "THEORY", "PREREQS", "scratch_lab.py", "framework_lab.py", "analysis.py", "reflection.md"]:
             self.assertIn(label, app)
         self.assertNotIn("README 열기", app)
@@ -161,6 +170,19 @@ class WebStudySiteContractTest(unittest.TestCase):
         self.assertNotIn("top: calc(42vh + 2rem)", styles)
         self.assertIn("사이트 안에서", root_readme + web_readme)
         self.assertIn("README 파일을 새 탭으로 직접 여는 방식", root_readme + web_readme)
+        self.assertIn("이 브라우저에만 저장", html)
+        self.assertIn("질문 필요", html + app + (WEB / "progress-storage.js").read_text(encoding="utf-8"))
+        self.assertIn("실행 결과", app)
+        self.assertIn("학습 안내", app)
+        self.assertIn("트랙 안내", app)
+        self.assertNotIn("Study guide", app)
+        self.assertNotIn("Track README", app)
+        self.assertIn("DataLoader", ml_dl_bridge)
+        self.assertIn("epoch", ml_dl_bridge)
+        self.assertIn("zero_grad", ml_dl_bridge)
+        self.assertNotIn("catalog.json으로", html)
+        self.assertNotIn("로컬 캐시", html)
+        self.assertNotIn("막힘", html + app + (WEB / "progress-storage.js").read_text(encoding="utf-8"))
 
     def test_site_has_playwright_qa_and_code_reading_guidance(self) -> None:
         package_path = ROOT / "package.json"
@@ -182,10 +204,12 @@ class WebStudySiteContractTest(unittest.TestCase):
             "이 파일은 무엇인가",
             "어떻게 읽으면 좋은가",
             "실행하면 남는 결과",
-            "핵심 함수",
+            "읽어볼 함수",
             "annotateCodeWithInlineHints",
             "# 학습 포인트:",
-            "# 핵심 함수",
+            "# 코드 읽기 힌트:",
+            "functionRoleHintsFor",
+            "sectionSpecificRunHint",
             "runPythonSection",
             "staticServerHelp",
             "formatRunnerSummary",
@@ -195,6 +219,10 @@ class WebStudySiteContractTest(unittest.TestCase):
             "scratch_lab.py는",
             "framework_lab.py는",
             "analysis.py는",
+            "run_stage.py는",
+            "dataset.py는",
+            "experiment.py는",
+            "formatStaticServerDetail",
         ]:
             self.assertIn(token, app)
 
@@ -204,9 +232,14 @@ class WebStudySiteContractTest(unittest.TestCase):
             "# 어떻게 읽으면 좋은가",
             "# 실행하면 남는 결과",
             "# 아래부터 원본 Python 코드입니다.",
+            "# 핵심 함수",
+            "핵심 함수",
+            "파일을 실행했을 때 전체 흐름이 모이는 진입점입니다.",
             "annotateCodeWithKoreanComments",
+            "functionHint",
         ]:
             self.assertNotIn(removed, app)
+        self.assertNotIn("stdout/stderr", app + readme)
 
         self.assertIn("code-explanation", styles)
         self.assertIn("run-panel", styles)
@@ -369,6 +402,10 @@ assert.strictEqual(recovered.users.carol.lessons['10_vla/01_vision_language_acti
             urllib.request.urlopen(forbidden, timeout=5)
         self.assertEqual(403, ctx.exception.code)
 
+        server_module = self._load_study_server()
+        runnable = server_module._resolve_runnable_path("01_ml/01_tabular_classification/run_stage.py")
+        self.assertEqual(ROOT / "01_ml" / "01_tabular_classification" / "run_stage.py", runnable)
+
     def test_study_server_builds_conda_gpu_and_cpu_fallback_invocations(self) -> None:
         server = self._load_study_server()
         script_path = ROOT / "00_foundations" / "01_tensor_shapes" / "scratch_lab.py"
@@ -415,6 +452,23 @@ assert.strictEqual(recovered.users.carol.lessons['10_vla/01_vision_language_acti
         vla_units = catalog_units["10_vla"]
         self.assertIn("01_vision_language_action_grounding", vla_units)
         self.assertIn("VLA", vla_units["01_vision_language_action_grounding"]["title"])
+
+        ml_unit = catalog_units["01_ml"]["01_tabular_classification"]
+        ml_labels = [resource["label"] for resource in ml_unit["resources"]]
+        self.assertIn("README", ml_labels)
+        self.assertIn("THEORY", ml_labels)
+        self.assertIn("dataset.py", ml_labels)
+        self.assertIn("experiment.py", ml_labels)
+        self.assertIn("run_stage.py", ml_labels)
+        self.assertIn("analysis.py", ml_labels)
+        self.assertNotIn("scratch_lab.py", ml_labels)
+        self.assertNotIn("framework_lab.py", ml_labels)
+        self.assertIn("실습 구성", ml_unit["checkpoints"])
+        self.assertTrue(ml_unit["objective"])
+
+        llm_track = next(track for track in catalog["tracks"] if track["id"] == "05_advanced_nlp_llm")
+        self.assertFalse(llm_track["summary"].endswith("preference optimizat"))
+        self.assertIn("preference optimization", llm_track["summary"])
 
         nlp_tokenization = catalog_units["03_nlp_bridge"]["01_tokenization_and_embeddings"]
         llm_objectives = catalog_units["05_advanced_nlp_llm"]["01_language_modeling_and_pretraining_objectives"]

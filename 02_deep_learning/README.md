@@ -4,6 +4,8 @@
 
 즉 `00 → 01 → 02` 구간에서 공통 수학/실험 습관을 실제 neural architecture 감각으로 바꾸고, 이후 `03_nlp_bridge`, `04_nlp`, `05_advanced_nlp_llm`으로 올라가기 전에 모델 내부 구조를 한 번 정리하는 역할을 맡는다.
 
+`01_ml`에서 바로 넘어오는 학습자는 먼저 [feature matrix to neural training bridge](../docs/04_feature_matrix_to_neural_training_bridge.md)를 읽는다. 이 문서는 sklearn의 `fit/predict`, feature matrix, validation metric 감각이 PyTorch의 batch tensor, `loss.backward()`, optimizer step, learned representation으로 어떻게 바뀌는지 연결한다.
+
 ## 단위 구성
 
 처음 runnable로 따라갈 때는 `01_perceptron_and_mlp -> 03_sequence_models_rnn_lstm_gru -> 04_attention_and_transformers -> 07_training_recipes_and_debugging` 순서를 기본 경로로 권장한다. 이 네 단위가 이후 NLP/LLM 이해를 가장 덜 끊기게 이어 준다.

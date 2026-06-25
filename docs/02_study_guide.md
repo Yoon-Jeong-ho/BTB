@@ -6,6 +6,14 @@
 
 현재 학습 경로와 인덱싱은 `00→10`이 기준이다. 과거 경로명은 migration note에서만 historical reference로 다룬다.
 
+## 용어 정리
+
+- **Track**: `00_foundations`, `01_ml`처럼 큰 학습 구간이다.
+- **Unit**: track 안의 개별 학습 폴더다. 표준 unit은 README/THEORY/실습 코드/analysis/reflection 흐름을 따른다.
+- **Stage**: `01_ml`에서 쓰는 legacy 이름이다. 웹사이트에서는 unit처럼 다루되 `dataset.py`, `experiment.py`, `run_stage.py`를 함께 읽는다.
+- **Bridge 문서**: 다음 개념 세계로 넘어가기 전 읽는 연결 문서다. 항상 별도 실습 파일이 있는 것은 아니지만, 다음 unit의 선행 체크 역할을 한다.
+- **Runnable**: 실행 명령과 산출물 위치가 있는 학습 항목이다. 표준 lesson 실습, ML stage runner, GPU 선택 실험처럼 실행 계약은 서로 다를 수 있다.
+
 ## 표준 1-pass 루트
 
 가장 권장하는 기본 루트는 전체 계단을 순서대로 한 번 통과하는 방식이다.
@@ -22,18 +30,19 @@
 
 1. `00_foundations`에서 tensor, gradient, runtime 관측 습관을 먼저 만든다.
 2. `01_ml`에서 baseline, metric, failure analysis를 실험 discipline으로 굳힌다.
-3. `02_deep_learning`에서 딥러닝 코어인 perceptron·CNN·RNN·transformer·generative model family를 지도처럼 훑는다.
-4. `03_nlp_bridge -> 04_nlp -> 05_advanced_nlp_llm`에서 NLP/LLM 흐름을 연결한다.
-5. `06_training_systems -> 07_frontier_labs`는 큰 실험을 운영하고 재현하는 선택/고급 구간으로 보되, GPU·분산·논문 재현이 당장 필요 없으면 나중으로 미뤄도 된다.
-6. `08_multimodal_bridge -> 09_multimodal`에서 image-text shared representation과 응용 태스크로 넘어간다.
-7. `10_vla`에서 multimodal understanding을 action token과 safety gate로 연결한다.
+3. `02_deep_learning`에 들어가기 전 [feature matrix to neural training bridge](04_feature_matrix_to_neural_training_bridge.md)로 `fit/predict` 감각이 PyTorch training loop로 어떻게 바뀌는지 확인한다.
+4. `02_deep_learning`에서 딥러닝 코어인 perceptron·CNN·RNN·transformer·generative model family를 지도처럼 훑는다.
+5. `03_nlp_bridge -> 04_nlp -> 05_advanced_nlp_llm`에서 NLP/LLM 흐름을 연결한다.
+6. `06_training_systems -> 07_frontier_labs`는 큰 실험을 운영하고 재현하는 선택/고급 구간으로 보되, GPU·분산·논문 재현이 당장 필요 없으면 나중으로 미뤄도 된다.
+7. `08_multimodal_bridge -> 09_multimodal`에서 image-text shared representation과 응용 태스크로 넘어간다.
+8. `10_vla`에서 multimodal understanding을 action token과 safety gate로 연결한다.
 
 ## 무기초 → LLM / RLHF / Multimodal / VLA 루트
 
 LLM과 VLA까지 목표라면 아래 체크포인트를 빠뜨리지 않는다.
 
 1. `00_foundations/01_tensor_shapes`, `02_activation_and_loss`, `03_gradients_and_backpropagation`으로 shape/loss/update 언어를 만든다.
-2. `01_ml`에서 baseline, metric, error analysis를 먼저 익힌다.
+2. `01_ml`에서 baseline, metric, error analysis를 먼저 익히고, [feature matrix to neural training bridge](04_feature_matrix_to_neural_training_bridge.md)로 딥러닝 training loop와 연결한다.
 3. `02_deep_learning/04_attention_and_transformers`와 `03_nlp_bridge/02_attention_and_transformer_block`으로 attention을 숫자 흐름으로 설명한다.
 4. `04_nlp` 전체를 통해 tokenizer/encoder/task head를 applied task에서 확인한다.
 5. `05_advanced_nlp_llm/01~05`로 pretraining objective, data mixture, DAPT, SFT, preference optimization을 본다. 들어가기 전에 [decoder generation bridge](06_decoder_generation_bridge.md) (`docs/06_decoder_generation_bridge.md`)로 autoregressive decoding, temperature/top-p, prompt serialization, KV-cache 감각을 먼저 만든다.
@@ -50,6 +59,7 @@ LLM과 VLA까지 목표라면 아래 체크포인트를 빠뜨리지 않는다.
 학습자가 특정 트랙에서 갑자기 어려워지는 지점을 줄이기 위해 아래 bridge 문서를 먼저 읽는다.
 
 - [Decoder generation bridge](06_decoder_generation_bridge.md) (`docs/06_decoder_generation_bridge.md`): `04_nlp`의 encoder/task-head 감각에서 `05_advanced_nlp_llm`의 autoregressive decoder, sampling, temperature, top-k/top-p, prompt serialization, KV-cache로 넘어가는 다리.
+- [Feature matrix to neural training bridge](04_feature_matrix_to_neural_training_bridge.md) (`docs/04_feature_matrix_to_neural_training_bridge.md`): `01_ml`의 feature matrix, baseline, metric discipline을 `02_deep_learning`의 tensor batch, training loop, learned representation으로 옮기는 다리.
 - [Multimodal generation bridge](07_multimodal_generation_bridge.md) (`docs/07_multimodal_generation_bridge.md`): retrieval-style shared embedding에서 cross-attention, encoder-decoder captioning, VQA fusion, grounding failure로 넘어가는 다리.
 - [RL to VLA bridge](08_rl_to_vla_bridge.md) (`docs/08_rl_to_vla_bridge.md`): RLHF reward/policy 언어와 VLA의 MDP, trajectory, behavior cloning, offline RL, action space design을 구분하는 다리.
 

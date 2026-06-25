@@ -74,7 +74,7 @@ def _first_korean_paragraph(path: Path) -> str:
     for paragraph in paragraphs[1:]:
         if paragraph.startswith("#") or paragraph.startswith("|") or paragraph.startswith("```"):
             continue
-        return " ".join(paragraph.split())[:240]
+        return " ".join(paragraph.split())
     return ""
 
 
@@ -87,17 +87,51 @@ def _as_list(value: LessonValue | None) -> list[str]:
 
 
 def _existing_checkpoints(unit_path: Path) -> list[str]:
-    candidates = [
-        ("README", "README.md"),
-        ("THEORY", "THEORY.md"),
-        ("PREREQS", "PREREQS.md"),
-        ("scratch lab", "scratch_lab.py"),
-        ("framework lab", "framework_lab.py"),
-        ("analysis script", "analysis.py"),
-        ("analysis note", "analysis.md"),
-        ("reflection", "reflection.md"),
+    return [resource["checkpoint"] for resource in _unit_resources(unit_path) if resource.get("checkpoint")]
+
+
+def _resource_type(filename: str) -> str:
+    return "markdown" if filename.endswith(".md") else "code"
+
+
+def _resource_entry(unit_path: Path, filename: str, label: str | None = None, checkpoint: str | None = None) -> dict[str, str]:
+    return {
+        "id": filename.replace(".", "-").replace("_", "-"),
+        "label": label or filename,
+        "href": f"{unit_path.parent.name}/{unit_path.name}/{filename}",
+        "type": _resource_type(filename),
+        "language": "python" if filename.endswith(".py") else "markdown",
+        "checkpoint": checkpoint or "",
+    }
+
+
+def _unit_resources(unit_path: Path) -> list[dict[str, str]]:
+    standard = [
+        ("README.md", "README", "README"),
+        ("THEORY.md", "THEORY", "THEORY"),
+        ("PREREQS.md", "PREREQS", "PREREQS"),
+        ("scratch_lab.py", "scratch_lab.py", "scratch lab"),
+        ("framework_lab.py", "framework_lab.py", "framework lab"),
+        ("analysis.py", "analysis.py", "analysis script"),
+        ("analysis.md", "analysis.md", "analysis note"),
+        ("reflection.md", "reflection.md", "reflection"),
     ]
-    return [label for label, rel in candidates if (unit_path / rel).exists()]
+    ml_runner = [
+        ("README.md", "README", "README"),
+        ("THEORY.md", "THEORY", "THEORY"),
+        ("dataset.py", "dataset.py", "실습 구성"),
+        ("models.py", "models.py", ""),
+        ("experiment.py", "experiment.py", "실험 실행"),
+        ("run_stage.py", "run_stage.py", "실행 명령"),
+        ("analysis.py", "analysis.py", "analysis script"),
+        ("report.py", "report.py", ""),
+    ]
+    candidates = ml_runner if (unit_path / "run_stage.py").exists() and not (unit_path / "scratch_lab.py").exists() else standard
+    return [
+        _resource_entry(unit_path, filename, label, checkpoint)
+        for filename, label, checkpoint in candidates
+        if (unit_path / filename).exists()
+    ]
 
 
 def _unit_entry(root: Path, track_id: str, unit_id: str, status: str) -> dict[str, Any]:
@@ -108,6 +142,7 @@ def _unit_entry(root: Path, track_id: str, unit_id: str, status: str) -> dict[st
 
     objective = str(metadata.get("objective") or _first_korean_paragraph(readme_path))
     required_outputs = _as_list(metadata.get("required_outputs"))
+    resources = _unit_resources(unit_path)
 
     return {
         "id": unit_id,
@@ -121,6 +156,7 @@ def _unit_entry(root: Path, track_id: str, unit_id: str, status: str) -> dict[st
         "key_terms": _as_list(metadata.get("key_terms")),
         "required_outputs": required_outputs,
         "analysis_questions": _as_list(metadata.get("analysis_questions")),
+        "resources": resources,
         "checkpoints": _existing_checkpoints(unit_path),
         "cpu_safe": str(metadata.get("cpu_safe", "")).lower() == "true",
         "deterministic": str(metadata.get("deterministic", "")).lower() == "true",

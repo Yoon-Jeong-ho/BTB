@@ -5,7 +5,7 @@
     not_started: '시작 전',
     in_progress: '진행 중',
     done: '완료',
-    blocked: '막힘',
+    blocked: '질문 필요',
   };
 
   function defaultUI() {
@@ -22,7 +22,7 @@
       activeUserId: 'local-default',
       users: {
         'local-default': {
-          displayName: '내 로컬 진행',
+          displayName: '내 학습 기록',
           lessons: {},
           ui: defaultUI(),
         },
@@ -77,7 +77,7 @@
   function ensureUser(store, userId) {
     const resolvedUserId = userId || store.activeUserId || 'local-default';
     if (!store.users[resolvedUserId]) {
-      store.users[resolvedUserId] = { displayName: '새 로컬 진행', lessons: {}, ui: defaultUI() };
+      store.users[resolvedUserId] = { displayName: '새 학습 기록', lessons: {}, ui: defaultUI() };
     }
     if (!store.users[resolvedUserId].lessons) store.users[resolvedUserId].lessons = {};
     if (!store.users[resolvedUserId].ui) store.users[resolvedUserId].ui = defaultUI();
