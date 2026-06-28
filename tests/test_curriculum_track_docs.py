@@ -145,6 +145,8 @@ class TestCurriculumTrackDocs(unittest.TestCase):
         for token in [
             "토큰이라는 말이 항상 discrete vocabulary ID를 뜻하지는 않는다",
             "attention이 처리하는 sequence element",
+            "patch embedding + position embedding",
+            "contextualized visual token",
             "soft image token",
             "discrete image token",
             "PaliGemma",

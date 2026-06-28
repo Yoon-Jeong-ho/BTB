@@ -34,6 +34,8 @@ VLM을 공부할 때 가장 헷갈리는 지점은 “이미지는 연속값인�
 
 여기서 “토큰”이라는 이름은 **어휘 사전의 항목**이라기보다 **attention이 처리하는 sequence element**라는 뜻에 가깝다. Google의 ViT 설명도 이미지를 같은 크기의 패치로 나누고 이것을 language model에서 물려받은 용어인 token이라고 부른다고 설명한다. PaliGemma도 이미지를 SigLIP encoder가 “soft token”으로 바꾼 뒤, multimodal projector를 통해 언어 모델 입력 공간으로 보낸다.
 
+ViT 맥락에서는 encoder에 들어가기 전의 `patch embedding + position embedding`도 patch/visual token이고, encoder를 통과해 주변 패치 문맥을 반영한 출력 벡터도 contextualized visual token이라고 부를 수 있다. 즉 “토큰”이라는 말이 **입력 자리**와 **encoder 출력 feature** 양쪽에서 쓰일 수 있다는 점을 분리해서 읽어야 한다.
+
 ### soft token과 discrete image token을 구분하기
 
 - **soft image token**: vision encoder나 linear projection이 만든 연속 벡터다. 대부분의 VLM 이해 모델에서 말하는 “image token”은 여기에 가깝다.
