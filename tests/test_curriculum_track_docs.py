@@ -153,6 +153,13 @@ class TestCurriculumTrackDocs(unittest.TestCase):
             "encoder-free",
             "single matrix multiplication",
             "vision encoder 없음",
+            "<|vision_start|><|image_pad|><|vision_end|>",
+            "special token이라서 실제 token ID를 가진다",
+            "4~16384",
+            "256~1280",
+            "258 tokens",
+            "sequence position",
+            "손잡이(handle)",
         ]:
             self.assertIn(token, bridge)
 
