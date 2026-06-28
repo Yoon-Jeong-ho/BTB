@@ -8,7 +8,7 @@
 
 ## 들어가기 전 브리지
 
-`08_multimodal_bridge/01_contrastive_alignment`만 읽으면 retrieval 감각은 생기지만 captioning/VQA의 cross-attention과 fusion이 갑자기 어려울 수 있다. [multimodal generation bridge](../docs/07_multimodal_generation_bridge.md)를 먼저 읽고 shared embedding retrieval, encoder-decoder generation, VQA answer-type breakdown, grounding failure를 구분한다.
+`08_multimodal_bridge/01_contrastive_alignment`만 읽으면 retrieval 감각은 생기지만 captioning/VQA의 cross-attention과 fusion이 갑자기 어려울 수 있다. [multimodal generation bridge](../docs/07_multimodal_generation_bridge.md)를 먼저 읽고 shared embedding retrieval, 이미지 토큰/soft token, encoder-free VLM, encoder-decoder generation, VQA answer-type breakdown, grounding failure를 구분한다.
 
 ## 단계 구성
 

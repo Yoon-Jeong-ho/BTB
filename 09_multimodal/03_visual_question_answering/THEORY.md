@@ -35,6 +35,18 @@
 - 즉 image feature는 시각 단서를, question embedding은 질의 조건을 나타내고, fusion MLP는 둘을 합쳐 정답 vocabulary를 예측한다.
 - CPU-safe toy demo라도 “이미지 + 질문 + answer vocabulary + answer type별 해석”이라는 VQA 핵심은 충분히 볼 수 있다.
 
+## 이미지 토큰 관점에서 다시 보기
+
+대형 VLM에서는 이미지가 보통 픽셀 그대로 decoder에 들어가지 않는다. 이미지를 패치나 region으로 나눈 뒤, 각 조각을 연속 벡터인 **soft image token**으로 바꿔 sequence에 넣는다. 텍스트 token이 discrete ID에서 embedding lookup으로 만들어지는 것과 달리, image token은 patch projection이나 vision encoder 출력처럼 연속값이다.
+
+이 unit의 tiny VQA demo는 수백 개의 image token을 만들지는 않지만, 같은 질문을 던진다.
+
+- 이미지 표현이 너무 전역적이면 count 정보가 사라지지 않는가?
+- 질문 token이 요구하는 색/개수/존재 단서를 이미지 표현에서 실제로 꺼내 오는가?
+- answer type별 실패가 “언어 추론 실패”인지 “시각 표현/토큰화 실패”인지 구분할 수 있는가?
+
+최근 Google Gemma 4 12B처럼 별도 vision encoder를 제거하고 raw patch projection을 LLM backbone에 직접 맡기는 encoder-free 흐름도 있다. 하지만 이것도 “이미지를 전혀 토큰화하지 않는다”기보다, **무거운 vision encoder를 거치지 않은 patch embedding을 LLM이 직접 문맥화한다**고 읽는 편이 정확하다.
+
 ## 실행 결과 예시
 ```text
 scratch metrics

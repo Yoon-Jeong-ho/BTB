@@ -109,7 +109,15 @@ class TestCurriculumTrackDocs(unittest.TestCase):
 
         bridge_docs = {
             "docs/06_decoder_generation_bridge.md": ["autoregressive", "temperature", "KV-cache"],
-            "docs/07_multimodal_generation_bridge.md": ["cross-attention", "VQA", "grounding failure"],
+            "docs/07_multimodal_generation_bridge.md": [
+                "cross-attention",
+                "VQA",
+                "grounding failure",
+                "이미지 토큰",
+                "soft token",
+                "Gemma 4 12B",
+                "encoder-free",
+            ],
             "docs/08_rl_to_vla_bridge.md": ["MDP", "trajectory", "behavior cloning", "offline RL"],
         }
         for rel, tokens in bridge_docs.items():
@@ -126,6 +134,31 @@ class TestCurriculumTrackDocs(unittest.TestCase):
         self.assertIn("../docs/06_decoder_generation_bridge.md", app)
         self.assertIn("../docs/07_multimodal_generation_bridge.md", app)
         self.assertIn("../docs/08_rl_to_vla_bridge.md", app)
+
+    def test_multimodal_docs_clarify_image_tokens_and_encoder_free_vlm(self) -> None:
+        bridge = (ROOT / "docs" / "07_multimodal_generation_bridge.md").read_text(encoding="utf-8")
+        multimodal = (ROOT / "09_multimodal" / "README.md").read_text(encoding="utf-8")
+        vqa_theory = (
+            ROOT / "09_multimodal" / "03_visual_question_answering" / "THEORY.md"
+        ).read_text(encoding="utf-8")
+
+        for token in [
+            "토큰이라는 말이 항상 discrete vocabulary ID를 뜻하지는 않는다",
+            "attention이 처리하는 sequence element",
+            "soft image token",
+            "discrete image token",
+            "PaliGemma",
+            "SigLIP",
+            "Gemma 4 12B",
+            "encoder-free",
+            "single matrix multiplication",
+            "vision encoder 없음",
+        ]:
+            self.assertIn(token, bridge)
+
+        self.assertIn("이미지 토큰/soft token", multimodal)
+        self.assertIn("encoder-free VLM", multimodal)
+        self.assertIn("무거운 vision encoder를 거치지 않은 patch embedding", vqa_theory)
 
 
 if __name__ == "__main__":
