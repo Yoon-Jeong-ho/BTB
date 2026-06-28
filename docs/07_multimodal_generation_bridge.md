@@ -49,13 +49,13 @@ VLM을 공부할 때 가장 헷갈리는 지점은 “이미지는 연속값인�
 
 1. **텍스트 tokenizer vocabulary에 있는 control token**
    - 예: Qwen2-VL의 chat template에는 `<|vision_start|><|image_pad|><|vision_end|>` 같은 문자열이 들어간다.
-   - 이 문자열들은 tokenizer vocabulary 안에 있는 special token이라서 실제 token ID를 가진다.
-   - 하지만 `<|image_pad|>` 하나가 “이미지 전체의 모든 패치 정보”를 담는다는 뜻은 아니다. processor가 이 placeholder 위치를 보고, 별도로 계산한 image feature sequence를 그 자리에 맞춰 넣는다.
+   - Hugging Face `Qwen2VLProcessor` 코드도 `<|image_pad|>`를 `image_token`으로 두고 `image_token_id`를 tokenizer에서 가져온다. 즉 이 문자열은 실제 token ID가 있다.
+   - 더 정확히는 processor가 이미지 크기에 맞춰 `<|image_pad|>`를 N번 반복한다. 코드상 `num_image_tokens = image_grid_thw.prod() // merge_size**2`로 필요한 개수를 계산하고 `self.image_token * num_image_tokens`를 반환한다.
 
-2. **모델 내부에서 LLM context 자리를 차지하는 visual token**
+2. **같은 image token ID가 반복되어 만든 visual token 자리**
    - Qwen2-VL은 arbitrary resolution 이미지를 dynamic number of visual tokens로 매핑한다고 설명한다.
    - Hugging Face model card도 visual token 수를 기본 `4~16384` 범위로 보고, `min_pixels`, `max_pixels`로 예를 들어 `256~1280` token 범위를 맞출 수 있다고 안내한다.
-   - 이 수는 “서로 다른 vocabulary ID가 1280개 생긴다”가 아니라, 이미지 feature가 LLM 앞에서 **1280개의 sequence position**을 차지한다는 뜻에 가깝다.
+   - 여기서 중요한 점은 “서로 다른 vocabulary ID가 1280개 생긴다”가 아니라, 보통 **같은 `<|image_pad|>` ID가 1280번 반복되어 1280개의 sequence position을 예약**하고, 별도로 계산된 image feature들이 그 위치들과 대응된다는 것이다.
 
 3. **API 사용량/과금에서 세는 image token**
    - Gemini API 문서는 이미지도 tokenized input으로 계산하며, 작은 이미지는 258 tokens, 큰 이미지는 `768x768` tile마다 258 tokens로 계산한다고 설명한다.
@@ -66,17 +66,15 @@ VLM을 공부할 때 가장 헷갈리는 지점은 “이미지는 연속값인�
 ```text
 Qwen식 입력을 단순화하면:
 
-텍스트 tokenizer:
-<|vision_start|> <|image_pad|> <|vision_end|> Describe this image
-        │              │
-        │              └─ processor/model이 이 위치에 N개의 visual embeddings를 대응시킴
-        └─ 실제 vocabulary ID가 있는 control token
+텍스트 tokenizer / processor가 만든 입력:
+<|vision_start|> <|image_pad|> <|image_pad|> ... <|image_pad|> <|vision_end|> Describe this image
+                  └────────────── 같은 image_token_id가 N번 반복됨 ──────────────┘
 
-모델 내부:
-[vision token 1] [vision token 2] ... [vision token N] [Describe] [this] [image]
+모델 내부 대응:
+[visual feature 1] [visual feature 2] ... [visual feature N] [Describe] [this] [image]
 ```
 
-여기서 `<|image_pad|>`는 실제 vocabulary ID가 있는 “손잡이(handle)”이고, `vision token 1..N`은 이미지 해상도와 processor 설정에 따라 늘어나는 내부 visual token sequence라고 이해하면 가장 덜 헷갈린다.
+여기서 `<|image_pad|>` 반복은 실제 vocabulary ID가 있는 “자리 표시자/손잡이(handle)”이고, 각 자리의 시각적 내용은 같은 ID 자체가 아니라 image processor와 vision encoder가 만든 feature에서 온다. 그래서 “토큰 번호가 있다”는 말은 맞지만, “패치마다 고유한 단어 ID가 있다”는 뜻은 아니다.
 
 ## Google Gemma 4 12B: “이미지 토큰 없음”이 아니라 “vision encoder 없음”
 
