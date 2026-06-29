@@ -11,6 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 UNIT = ROOT / '06_training_systems/01_torchrun_and_ddp_basics'
 ARTIFACTS = UNIT / 'artifacts'
 SCRATCH = ARTIFACTS / 'scratch-manual' / 'metrics.json'
+SVG = ARTIFACTS / 'scratch-manual' / 'rank_gradients.svg'
 FRAMEWORK = ARTIFACTS / 'framework-manual' / 'metrics.json'
 OBSERVED = ARTIFACTS / 'analysis-manual' / 'latest_report.md'
 ANALYSIS = UNIT / 'analysis.md'
@@ -63,12 +64,17 @@ class TestTorchrunUnitContract(unittest.TestCase):
             result = self._run(str((UNIT / script).relative_to(ROOT)))
             self.assertEqual(0, result.returncode, result.stderr)
         self.assertTrue(SCRATCH.exists())
+        self.assertTrue(SVG.exists())
         self.assertTrue(FRAMEWORK.exists())
         self.assertTrue(OBSERVED.exists())
         scratch = json.loads(SCRATCH.read_text(encoding='utf-8'))
         framework = json.loads(FRAMEWORK.read_text(encoding='utf-8'))
+        figure = SVG.read_text(encoding='utf-8')
         self.assertIn('averaged_gradient', scratch)
         self.assertIn('backend', framework)
+        self.assertIn('Local gradient before sync', figure)
+        self.assertIn('All-reduce mean', figure)
+        self.assertIn('node 0 / local 0', figure)
         self.assertEqual(stable_before, ANALYSIS.read_text(encoding='utf-8'))
         self.assertIn('## 한국어 해석', OBSERVED.read_text(encoding='utf-8'))
 

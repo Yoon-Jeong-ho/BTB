@@ -411,6 +411,9 @@ class TestFoundationsUnitContract(unittest.TestCase):
 
         self.assertIn('<svg', figure_text)
         self.assertIn('Loss curve around w (scratch backprop)', figure_text)
+        self.assertIn('weight w', figure_text)
+        self.assertIn('loss before update', figure_text)
+        self.assertIn('lower after one step', figure_text)
         self.assertIn('# 03 Gradients and Backpropagation 실행 관측', observed_text)
         self.assertIn('## 한국어 해석', observed_text)
         self.assertIn('loss_curve.svg', observed_text)
@@ -463,6 +466,10 @@ class TestFoundationsUnitContract(unittest.TestCase):
 
         self.assertIn('<svg', figure_text)
         self.assertIn('Training dynamics: normalization and regularization', figure_text)
+        self.assertIn('Same scale: raw input explodes', figure_text)
+        self.assertIn('Zoom: normalized runs stay readable', figure_text)
+        self.assertIn('Initial |grad_w|', figure_text)
+        self.assertIn('L2 lowers |w|', figure_text)
         self.assertIn('# 04 Regularization and Normalization 실행 관측', observed_text)
         self.assertIn('## 한국어 해석', observed_text)
         self.assertIn('training_dynamics.svg', observed_text)

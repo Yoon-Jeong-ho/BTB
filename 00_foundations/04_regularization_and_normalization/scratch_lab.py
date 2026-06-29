@@ -67,63 +67,276 @@ def run_training(
     }
 
 
-def _polyline(points: list[tuple[float, float]], color: str) -> str:
+def _polyline(
+    points: list[tuple[float, float]],
+    color: str,
+    *,
+    width: int = 3,
+    dash: str = '',
+) -> str:
     point_text = ' '.join(f'{x:.2f},{y:.2f}' for x, y in points)
+    dash_attr = f' stroke-dasharray="{dash}"' if dash else ''
     return (
-        f'<polyline fill="none" stroke="{color}" stroke-width="3" '
-        f'points="{point_text}" />'
+        f'<polyline fill="none" stroke="{color}" stroke-width="{width}"'
+        f'{dash_attr} stroke-linejoin="round" stroke-linecap="round" points="{point_text}" />'
     )
 
 
-def save_svg(series: dict[str, list[float]]) -> None:
-    width, height = 760, 440
-    left, right = 70, 690
-    top, bottom = 50, 360
-    x_min, x_max = 0, STEPS - 1
-    all_values = [value for values in series.values() for value in values]
-    y_min = min(all_values) - 0.2
-    y_max = max(all_values) + 0.2
+def _format_loss(value: object) -> str:
+    numeric = float(value)
+    if abs(numeric) >= 100000:
+        return f'{numeric:.2e}'
+    return f'{numeric:.1f}'
 
-    def map_x(value: float) -> float:
-        return left + ((value - x_min) / (x_max - x_min)) * (right - left)
 
-    def map_y(value: float) -> float:
-        return bottom - ((value - y_min) / (y_max - y_min)) * (bottom - top)
-
+def save_svg(series: dict[str, list[float]], runs: dict[str, dict[str, object]]) -> None:
+    width, height = 1040, 660
+    x_min, x_max = 0.0, float(STEPS - 1)
     colors = {
         'raw/no-reg': '#d94841',
         'normalized/no-reg': '#1c7ed6',
         'normalized+l2': '#2b8a3e',
     }
-    lines = []
-    legend = []
-    legend_y = 74
-    for label, values in series.items():
-        points = [(map_x(float(step)), map_y(float(loss))) for step, loss in enumerate(values)]
-        lines.append(_polyline(points, colors[label]))
-        legend.append(
-            f'<rect x="{right - 170}" y="{legend_y - 11}" width="12" height="12" fill="{colors[label]}" />'
-            f'<text x="{right - 150}" y="{legend_y}" font-size="14" font-family="Arial, sans-serif" fill="#222">{label}</text>'
-        )
-        legend_y += 26
+    labels = {
+        'raw/no-reg': 'Raw features, no weight decay',
+        'normalized/no-reg': 'Z-score normalized',
+        'normalized+l2': 'Z-score normalized + L2',
+    }
 
-    grid_lines = []
-    for step in range(STEPS):
-        x = map_x(float(step))
-        grid_lines.append(
-            f'<line x1="{x}" y1="{top}" x2="{x}" y2="{bottom}" stroke="#e9ecef" stroke-width="1" />'
+    def map_point(
+        x_value: float,
+        y_value: float,
+        *,
+        left: float,
+        right: float,
+        top: float,
+        bottom: float,
+        y_min: float,
+        y_max: float,
+    ) -> tuple[float, float]:
+        x = left + ((x_value - x_min) / (x_max - x_min)) * (right - left)
+        y = bottom - ((y_value - y_min) / (y_max - y_min)) * (bottom - top)
+        return x, y
+
+    def ticks(y_min: float, y_max: float, count: int) -> list[float]:
+        if count <= 1:
+            return [y_min]
+        step = (y_max - y_min) / (count - 1)
+        return [y_min + (step * index) for index in range(count)]
+
+    def draw_axes(
+        *,
+        left: float,
+        right: float,
+        top: float,
+        bottom: float,
+        y_min: float,
+        y_max: float,
+        y_tick_values: list[float],
+        title: str,
+        y_label: str,
+    ) -> list[str]:
+        parts = [
+            f'<text x="{left}" y="{top - 18}" font-size="15" font-weight="700" '
+            f'font-family="Arial, sans-serif" fill="#212529">{title}</text>',
+            f'<line x1="{left}" y1="{bottom}" x2="{right}" y2="{bottom}" stroke="#222" stroke-width="2" />',
+            f'<line x1="{left}" y1="{top}" x2="{left}" y2="{bottom}" stroke="#222" stroke-width="2" />',
+            f'<text x="{(left + right) / 2 - 35:.2f}" y="{bottom + 44}" font-size="12" '
+            f'font-family="Arial, sans-serif" fill="#495057">SGD step</text>',
+            f'<text transform="rotate(-90 {left - 54:.2f} {(top + bottom) / 2:.2f})" '
+            f'x="{left - 54:.2f}" y="{(top + bottom) / 2:.2f}" font-size="12" '
+            f'font-family="Arial, sans-serif" fill="#495057">{y_label}</text>',
+        ]
+        for y_value in y_tick_values:
+            _, y = map_point(0.0, y_value, left=left, right=right, top=top, bottom=bottom, y_min=y_min, y_max=y_max)
+            tick_label = f'{y_value:.2f}' if (y_max - y_min) < 5 else f'{y_value:.0f}'
+            parts.extend(
+                [
+                    f'<line x1="{left}" y1="{y:.2f}" x2="{right}" y2="{y:.2f}" stroke="#edf2f7" stroke-width="1" />',
+                    f'<line x1="{left - 5}" y1="{y:.2f}" x2="{left}" y2="{y:.2f}" stroke="#222" stroke-width="1" />',
+                    f'<text x="{left - 12}" y="{y + 4:.2f}" font-size="11" text-anchor="end" '
+                    f'font-family="Arial, sans-serif" fill="#495057">{tick_label}</text>',
+                ]
+            )
+        for step in range(STEPS):
+            x, _ = map_point(float(step), y_min, left=left, right=right, top=top, bottom=bottom, y_min=y_min, y_max=y_max)
+            parts.extend(
+                [
+                    f'<line x1="{x:.2f}" y1="{bottom}" x2="{x:.2f}" y2="{bottom + 5}" stroke="#222" stroke-width="1" />',
+                    f'<text x="{x:.2f}" y="{bottom + 20}" font-size="11" text-anchor="middle" '
+                    f'font-family="Arial, sans-serif" fill="#495057">{step}</text>',
+                ]
+            )
+        return parts
+
+    def draw_series(
+        keys: list[str],
+        *,
+        left: float,
+        right: float,
+        top: float,
+        bottom: float,
+        y_min: float,
+        y_max: float,
+    ) -> list[str]:
+        parts: list[str] = []
+        for key in keys:
+            points = [
+                map_point(float(step), float(loss), left=left, right=right, top=top, bottom=bottom, y_min=y_min, y_max=y_max)
+                for step, loss in enumerate(series[key])
+            ]
+            parts.append(_polyline(points, colors[key], width=3, dash='5 4' if key == 'normalized+l2' else ''))
+            for x, y in points:
+                parts.append(f'<circle cx="{x:.2f}" cy="{y:.2f}" r="3.8" fill="#ffffff" stroke="{colors[key]}" stroke-width="2" />')
+        return parts
+
+    main_left, main_right = 82.0, 555.0
+    zoom_left, zoom_right = 658.0, 982.0
+    panel_top, panel_bottom = 105.0, 330.0
+    all_values = [value for values in series.values() for value in values]
+    main_y_min = 0.0
+    main_y_max = math.ceil((max(all_values) + 1.0) / 5.0) * 5.0
+    normalized_values = series['normalized/no-reg'] + series['normalized+l2']
+    zoom_min = min(normalized_values)
+    zoom_max = max(normalized_values)
+    zoom_padding = max(0.04, (zoom_max - zoom_min) * 0.15)
+    zoom_y_min = math.floor((zoom_min - zoom_padding) * 10.0) / 10.0
+    zoom_y_max = math.ceil((zoom_max + zoom_padding) * 10.0) / 10.0
+
+    main_parts = draw_axes(
+        left=main_left,
+        right=main_right,
+        top=panel_top,
+        bottom=panel_bottom,
+        y_min=main_y_min,
+        y_max=main_y_max,
+        y_tick_values=[0, 5, 10, 15, 20, 25, main_y_max],
+        title='A. Same scale: raw input explodes',
+        y_label='log10(loss)',
+    )
+    main_parts.extend(
+        draw_series(
+            ['raw/no-reg', 'normalized/no-reg', 'normalized+l2'],
+            left=main_left,
+            right=main_right,
+            top=panel_top,
+            bottom=panel_bottom,
+            y_min=main_y_min,
+            y_max=main_y_max,
         )
+    )
+    raw_end_x, raw_end_y = map_point(
+        float(STEPS - 1),
+        series['raw/no-reg'][-1],
+        left=main_left,
+        right=main_right,
+        top=panel_top,
+        bottom=panel_bottom,
+        y_min=main_y_min,
+        y_max=main_y_max,
+    )
+    main_parts.extend(
+        [
+            f'<text x="{raw_end_x - 144:.2f}" y="{raw_end_y - 12:.2f}" font-size="12" font-weight="700" '
+            f'font-family="Arial, sans-serif" fill="{colors["raw/no-reg"]}">raw final loss {_format_loss(runs["raw/no-reg"]["loss_history"][-1])}</text>',
+            f'<rect x="{main_left + 12}" y="{panel_top + 12}" width="290" height="26" rx="8" fill="#ffffff" stroke="#e9ecef" />',
+            f'<text x="{main_left + 24}" y="{panel_top + 30}" font-size="11.5" '
+            f'font-family="Arial, sans-serif" fill="#495057">blue/green are visible in the zoom panel</text>',
+        ]
+    )
+
+    zoom_parts = draw_axes(
+        left=zoom_left,
+        right=zoom_right,
+        top=panel_top,
+        bottom=panel_bottom,
+        y_min=zoom_y_min,
+        y_max=zoom_y_max,
+        y_tick_values=ticks(zoom_y_min, zoom_y_max, 5),
+        title='B. Zoom: normalized runs stay readable',
+        y_label='log10(loss)',
+    )
+    zoom_parts.extend(
+        draw_series(
+            ['normalized/no-reg', 'normalized+l2'],
+            left=zoom_left,
+            right=zoom_right,
+            top=panel_top,
+            bottom=panel_bottom,
+            y_min=zoom_y_min,
+            y_max=zoom_y_max,
+        )
+    )
+    for index, key in enumerate(['normalized/no-reg', 'normalized+l2']):
+        label_y = 126 + (index * 24)
+        zoom_parts.append(
+            f'<rect x="{zoom_right - 170}" y="{label_y - 11}" width="13" height="13" rx="2" fill="{colors[key]}" />'
+        )
+        zoom_parts.append(
+            f'<text x="{zoom_right - 150}" y="{label_y}" font-size="12" font-family="Arial, sans-serif" '
+            f'fill="#212529">{labels[key]}</text>'
+        )
+
+    card_top = 435
+    card_width = 292
+    cards = [
+        (
+            82,
+            colors['raw/no-reg'],
+            'Raw features',
+            [
+                f'Initial |grad_w|: {runs["raw/no-reg"]["grad_history"][0]:.1f}',
+                f'Final loss: {_format_loss(runs["raw/no-reg"]["loss_history"][-1])}',
+                'Takeaway: update scale diverges',
+            ],
+        ),
+        (
+            374,
+            colors['normalized/no-reg'],
+            'Z-score normalized',
+            [
+                f'Initial |grad_w|: {runs["normalized/no-reg"]["grad_history"][0]:.2f}',
+                f'Final loss: {_format_loss(runs["normalized/no-reg"]["loss_history"][-1])}',
+                f'Final |w|: {runs["normalized/no-reg"]["final_weight_norm"]:.2f}',
+            ],
+        ),
+        (
+            666,
+            colors['normalized+l2'],
+            'Z-score + L2 decay',
+            [
+                f'Initial |grad_w|: {runs["normalized+l2"]["grad_history"][0]:.2f}',
+                f'Final loss: {_format_loss(runs["normalized+l2"]["loss_history"][-1])}',
+                f'L2 lowers |w| to {runs["normalized+l2"]["final_weight_norm"]:.2f}',
+            ],
+        ),
+    ]
+    card_parts: list[str] = []
+    for x, color, title, rows in cards:
+        card_parts.extend(
+            [
+                f'<rect x="{x}" y="{card_top}" width="{card_width}" height="124" rx="14" fill="#ffffff" '
+                f'stroke="{color}" stroke-width="2" />',
+                f'<text x="{x + 16}" y="{card_top + 28}" font-size="15" font-weight="700" '
+                f'font-family="Arial, sans-serif" fill="{color}">{title}</text>',
+            ]
+        )
+        for row_index, row in enumerate(rows):
+            card_parts.append(
+                f'<text x="{x + 16}" y="{card_top + 56 + (row_index * 22)}" font-size="13" '
+                f'font-family="Arial, sans-serif" fill="#212529">{row}</text>'
+            )
 
     svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">
   <rect width="100%" height="100%" fill="#ffffff" />
-  <text x="{left}" y="26" font-size="20" font-family="Arial, sans-serif">Training dynamics: normalization and regularization</text>
-  <text x="{left}" y="44" font-size="13" font-family="Arial, sans-serif" fill="#495057">y-axis = log10(loss), same learning rate for every scenario</text>
-  {''.join(grid_lines)}
-  <line x1="{left}" y1="{bottom}" x2="{right}" y2="{bottom}" stroke="#222" stroke-width="2" />
-  <line x1="{left}" y1="{top}" x2="{left}" y2="{bottom}" stroke="#222" stroke-width="2" />
-  {''.join(lines)}
-  {''.join(legend)}
-  <text x="{right - 175}" y="{legend_y + 12}" font-size="12" font-family="Arial, sans-serif" fill="#666">raw input scale explodes; normalized curves stay readable</text>
+  <text x="46" y="34" font-size="22" font-weight="700" font-family="Arial, sans-serif" fill="#111827">Training dynamics: normalization and regularization</text>
+  <text x="46" y="58" font-size="13" font-family="Arial, sans-serif" fill="#495057">Same learning rate (eta = {LEARNING_RATE}); normalization stabilizes updates, while L2 mostly controls weight size.</text>
+  <rect x="52" y="76" width="956" height="548" rx="20" fill="#f8fafc" stroke="#e9ecef" />
+  {''.join(main_parts)}
+  {''.join(zoom_parts)}
+  <text x="82" y="410" font-size="14" font-weight="700" font-family="Arial, sans-serif" fill="#212529">How to read the result</text>
+  <text x="250" y="410" font-size="12" font-family="Arial, sans-serif" fill="#495057">First compare raw vs normalized scale, then compare the regularizer's effect on final |w|.</text>
+  {''.join(card_parts)}
 </svg>
 '''
     FIGURE_PATH.write_text(svg, encoding='utf-8')
@@ -147,7 +360,12 @@ def run() -> None:
             'raw/no-reg': raw_run['log10_loss_history'],
             'normalized/no-reg': normalized_run['log10_loss_history'],
             'normalized+l2': normalized_l2_run['log10_loss_history'],
-        }
+        },
+        {
+            'raw/no-reg': raw_run,
+            'normalized/no-reg': normalized_run,
+            'normalized+l2': normalized_l2_run,
+        },
     )
 
     metrics = {

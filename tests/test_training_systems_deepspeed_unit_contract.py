@@ -11,6 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 UNIT = ROOT / '06_training_systems/03_deepspeed_zero'
 ARTIFACTS = UNIT / 'artifacts'
 SCRATCH = ARTIFACTS / 'scratch-manual' / 'metrics.json'
+SVG = ARTIFACTS / 'scratch-manual' / 'zero_memory_stages.svg'
 FRAMEWORK = ARTIFACTS / 'framework-manual' / 'metrics.json'
 OBSERVED = ARTIFACTS / 'analysis-manual' / 'latest_report.md'
 ANALYSIS = UNIT / 'analysis.md'
@@ -63,12 +64,17 @@ class TestDeepSpeedZeroUnitContract(unittest.TestCase):
             result = self._run(str((UNIT / script).relative_to(ROOT)))
             self.assertEqual(0, result.returncode, result.stderr)
         self.assertTrue(SCRATCH.exists())
+        self.assertTrue(SVG.exists())
         self.assertTrue(FRAMEWORK.exists())
         self.assertTrue(OBSERVED.exists())
         scratch = json.loads(SCRATCH.read_text(encoding='utf-8'))
         framework = json.loads(FRAMEWORK.read_text(encoding='utf-8'))
+        figure = SVG.read_text(encoding='utf-8')
         self.assertIn('zero_stage_3_mb', scratch)
         self.assertIn('backend', framework)
+        self.assertIn('Memory per rank (MB)', figure)
+        self.assertIn('Stage 3 = 75% less memory', figure)
+        self.assertIn('shards params + grads + optimizer', figure)
         self.assertEqual(stable_before, ANALYSIS.read_text(encoding='utf-8'))
         self.assertIn('## 한국어 해석', OBSERVED.read_text(encoding='utf-8'))
 
