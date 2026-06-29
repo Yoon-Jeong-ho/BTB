@@ -68,6 +68,12 @@ def run() -> None:
 
     weight_decay_after = float(framework['weight_decay_weight_norm_after_step'])
     no_weight_decay_after = float(framework['no_weight_decay_weight_norm_after_step'])
+    data_loss_before = float(framework['weight_decay_data_loss_before_step'])
+    no_decay_data_loss_before = float(framework['no_weight_decay_data_loss_before_step'])
+    decay_objective = float(framework['weight_decay_regularized_objective_before_step'])
+    no_decay_objective = float(framework['no_weight_decay_regularized_objective_before_step'])
+    decay_term_norm = float(framework['weight_decay_decay_term_norm'])
+    post_step_delta = float(framework['post_step_data_loss_delta'])
     if weight_decay_after < no_weight_decay_after:
         regularization_comment = (
             'framework step에서 weight decay를 켠 쪽의 weight norm이 더 작게 남아, '
@@ -75,6 +81,15 @@ def run() -> None:
         )
     else:
         regularization_comment = 'framework step에서 weight decay가 weight norm을 줄이지 못했으므로 실험 설정을 다시 봐야 한다.'
+    if data_loss_before == no_decay_data_loss_before and decay_objective > no_decay_objective and decay_term_norm > 0:
+        decay_loss_comment = (
+            'PyTorch SGD의 `weight_decay`는 `loss = F.mse_loss(...)` 값 자체를 바꾸지 않고 '
+            '`optimizer.step()`에서 weight gradient에 decay 항을 더한다. 그래서 step 전 data loss와 data gradient norm은 같지만, '
+            f'L2까지 포함한 objective는 `{no_decay_objective}` → `{decay_objective}`로 달라지고 '
+            f'post-step data loss 차이는 `{post_step_delta}`로 관측된다.'
+        )
+    else:
+        decay_loss_comment = 'weight decay 전후 data loss / objective / decay term 관계가 예상과 다르므로 framework 실습 설정을 다시 확인해야 한다.'
 
     observed_report = f'''# 04 Regularization and Normalization 실행 관측
 
@@ -88,6 +103,16 @@ def run() -> None:
 - framework layernorm_row_means: `{framework["layernorm_row_means"]}`
 - framework layernorm_row_vars: `{framework["layernorm_row_vars"]}`
 - framework dropout_train_zero_fraction: `{framework["dropout_train_zero_fraction"]}`
+- framework no_weight_decay_data_loss_before_step: `{framework["no_weight_decay_data_loss_before_step"]}`
+- framework weight_decay_data_loss_before_step: `{framework["weight_decay_data_loss_before_step"]}`
+- framework no_weight_decay_regularized_objective_before_step: `{framework["no_weight_decay_regularized_objective_before_step"]}`
+- framework weight_decay_regularized_objective_before_step: `{framework["weight_decay_regularized_objective_before_step"]}`
+- framework no_weight_decay_grad_norm: `{framework["no_weight_decay_grad_norm"]}`
+- framework weight_decay_grad_norm: `{framework["weight_decay_grad_norm"]}`
+- framework weight_decay_decay_term_norm: `{framework["weight_decay_decay_term_norm"]}`
+- framework weight_decay_effective_weight_grad_norm: `{framework["weight_decay_effective_weight_grad_norm"]}`
+- framework no_weight_decay_post_step_data_loss: `{framework["no_weight_decay_post_step_data_loss"]}`
+- framework weight_decay_post_step_data_loss: `{framework["weight_decay_post_step_data_loss"]}`
 - framework weight_decay_weight_norm_after_step: `{framework["weight_decay_weight_norm_after_step"]}`
 - framework no_weight_decay_weight_norm_after_step: `{framework["no_weight_decay_weight_norm_after_step"]}`
 
@@ -96,6 +121,7 @@ def run() -> None:
 - normalized + L2 실험의 최종 weight norm이 `{scratch["normalized_l2_weight_norm"]}`로 기록되어, regularization이 loss만 보는 것이 아니라 파라미터 크기도 함께 제어한다는 점을 보여줬다.
 - LayerNorm 출력 row mean/variance가 `{framework["layernorm_row_means"]}` / `{framework["layernorm_row_vars"]}`로 남아, 샘플 내부 feature scale이 정렬되는 모습을 tiny tensor에서도 확인했다.
 - dropout train zero fraction이 `{framework["dropout_train_zero_fraction"]}`이고 eval에서는 입력 보존이 확인되어, stochastic regularization은 train/eval 해석을 분리해야 함을 다시 보여줬다.
+- {decay_loss_comment}
 - {regularization_comment}
 - 더 자세한 개념 정리는 [THEORY.md](../../THEORY.md)를, loss 곡선은 `artifacts/scratch-manual/training_dynamics.svg`를 함께 보면 가장 빠르다.
 '''

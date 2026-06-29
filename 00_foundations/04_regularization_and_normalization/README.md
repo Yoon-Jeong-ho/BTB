@@ -34,9 +34,16 @@ $ python 00_foundations/04_regularization_and_normalization/framework_lab.py
   "layernorm_row_means": [0.0, 0.0],
   "layernorm_row_vars": [1.0, 1.0],
   "dropout_train_zero_fraction": 0.5,
+  "no_weight_decay_data_loss_before_step": 0.222667,
+  "weight_decay_data_loss_before_step": 0.222667,
+  "weight_decay_regularized_objective_before_step": 0.302667,
+  "no_weight_decay_post_step_data_loss": 0.125769,
+  "weight_decay_post_step_data_loss": 0.114139,
   "weight_decay_weight_norm_after_step": 0.805621
 }
 ```
+여기서 `*_data_loss_before_step`이 같은 것은 정상이다. PyTorch `SGD(weight_decay=...)`는 `F.mse_loss(...)`로 만든 data loss 값을 직접 바꾸지 않고, `optimizer.step()`에서 weight gradient에 decay 항을 더한다. 그래서 `regularized_objective_before_step`, `post_step_data_loss`, `weight_norm_after_step`을 함께 봐야 decay가 실제로 들어갔는지 구분할 수 있다.
+
 실행 후에는 SVG figure와 metrics JSON이 `artifacts/` 아래에 쌓여, **정규화가 gradient scale을 줄이고, regularization이 weight norm을 눌러주는 흐름**을 바로 확인할 수 있다.
 
 ## 문서를 읽을 때 볼 포인트

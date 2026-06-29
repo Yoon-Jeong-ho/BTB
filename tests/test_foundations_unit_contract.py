@@ -459,6 +459,23 @@ class TestFoundationsUnitContract(unittest.TestCase):
         self.assertEqual([1.0, 1.0], framework['layernorm_row_vars'])
         self.assertEqual(0.5, framework['dropout_train_zero_fraction'])
         self.assertTrue(framework['dropout_eval_matches_input'])
+        self.assertEqual(
+            framework['no_weight_decay_data_loss_before_step'],
+            framework['weight_decay_data_loss_before_step'],
+        )
+        self.assertGreater(
+            framework['weight_decay_regularized_objective_before_step'],
+            framework['no_weight_decay_regularized_objective_before_step'],
+        )
+        self.assertGreater(framework['weight_decay_decay_term_norm'], 0.0)
+        self.assertGreater(
+            framework['weight_decay_effective_weight_grad_norm'],
+            framework['no_weight_decay_effective_weight_grad_norm'],
+        )
+        self.assertLess(
+            framework['weight_decay_post_step_data_loss'],
+            framework['no_weight_decay_post_step_data_loss'],
+        )
         self.assertLess(
             framework['weight_decay_weight_norm_after_step'],
             framework['no_weight_decay_weight_norm_after_step'],
@@ -472,6 +489,8 @@ class TestFoundationsUnitContract(unittest.TestCase):
         self.assertIn('L2 lowers |w|', figure_text)
         self.assertIn('# 04 Regularization and Normalization 실행 관측', observed_text)
         self.assertIn('## 한국어 해석', observed_text)
+        self.assertIn('data loss와 data gradient norm은 같지만', observed_text)
+        self.assertIn('regularized_objective_before_step', observed_text)
         self.assertIn('training_dynamics.svg', observed_text)
         self.assertIn('latest_report.md', analysis_text)
         self.assertIn('반복 실행 시 불필요한 diff', analysis_text)

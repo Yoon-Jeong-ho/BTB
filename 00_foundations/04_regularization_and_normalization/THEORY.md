@@ -25,6 +25,8 @@
 
 ## weight decay와 dropout을 실행에서 어떻게 읽을까
 - weight decay를 켠 optimizer step 후에는, 같은 gradient 조건에서도 **weight norm이 더 작아지는지** 본다.
+- PyTorch `SGD(weight_decay=...)`에서 `loss = F.mse_loss(...)`로 출력한 data loss는 decay 유무와 같을 수 있다. decay는 `loss` 변수에 자동으로 더해지는 것이 아니라, `optimizer.step()` 때 weight gradient에 더해지는 항이기 때문이다.
+- 그래서 framework metrics는 `data_loss_before_step`만 보지 말고, `regularized_objective_before_step`, `decay_term_norm`, `post_step_data_loss`, `weight_norm_after_step`을 함께 읽어야 한다.
 - dropout은 `train()` 모드에서만 랜덤하게 activation을 0으로 만들고, `eval()` 모드에서는 꺼진다.
 - 그래서 dropout을 해석할 때는 “zero fraction이 얼마나 나왔는가”보다, **train/eval 모드가 정말 다르게 동작했는가** 를 먼저 확인해야 한다.
 
@@ -39,7 +41,7 @@
 - scratch metrics에서 raw feature와 normalized feature의 초기 gradient norm 차이를 본다.
 - `training_dynamics.svg`에서 raw/no-regularization, normalized/no-regularization, normalized+L2의 log-loss 곡선을 함께 본다.
 - framework metrics에서 `LayerNorm` 출력의 row mean/variance가 어떻게 기록되는지 본다.
-- `weight_decay_weight_norm_after_step`과 `no_weight_decay_weight_norm_after_step`을 비교해 weight shrinkage를 확인한다.
+- `weight_decay_data_loss_before_step`과 `no_weight_decay_data_loss_before_step`이 같더라도 정상인지 확인하고, `weight_decay_regularized_objective_before_step`, `weight_decay_decay_term_norm`, `weight_decay_weight_norm_after_step`을 비교해 decay가 들어갔는지 확인한다.
 - dropout이 `train()`에서는 0을 만들고 `eval()`에서는 입력을 그대로 통과시키는지 확인한다.
 
 ## 실행 결과 예시
@@ -55,6 +57,11 @@ framework metrics
 - layernorm_row_means: [0.0, 0.0]
 - layernorm_row_vars: [1.0, 1.0]
 - dropout_train_zero_fraction: 0.5
+- no_weight_decay_data_loss_before_step: 0.222667
+- weight_decay_data_loss_before_step: 0.222667
+- weight_decay_regularized_objective_before_step: 0.302667
+- no_weight_decay_post_step_data_loss: 0.125769
+- weight_decay_post_step_data_loss: 0.114139
 - weight_decay_weight_norm_after_step: 0.805621
 ```
-이 숫자는 **정규화가 update scale을 안정화하고, regularization이 weight growth를 억제한다** 는 점을 아주 작은 예제로 보여준다.
+이 숫자는 **data loss 표시만 보면 decay 유무가 같아 보일 수 있지만, regularized objective와 optimizer step 이후 결과를 보면 regularization이 weight growth를 억제한다** 는 점을 아주 작은 예제로 보여준다.

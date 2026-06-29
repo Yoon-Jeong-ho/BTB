@@ -770,6 +770,9 @@ function importantNumbersForRun(section, unit) {
   const terms = unit?.key_terms || [];
   if (path.endsWith('run_stage.py')) return ['주요 평가 지표', '기준 모델 대비 좋은 모델', '학습/평가 데이터 수'];
   if (path.endsWith('analysis.py')) return ['빠진 결과물 수', '실패 사례 수', '해석 노트가 강조한 핵심 지표'];
+  if (path.endsWith('framework_lab.py') && unit?.path === '00_foundations/04_regularization_and_normalization') {
+    return ['data_loss_before_step은 같을 수 있음', 'regularized_objective_before_step', 'post_step_data_loss와 weight_norm_after_step'];
+  }
   if (path.endsWith('framework_lab.py')) return ['loss 또는 accuracy 추세', '기초 실습과 같은 모양/지표인지', '실행 장치와 재실행 기준값'];
   if (path.endsWith('scratch_lab.py')) return ['입력/출력 모양', '핵심 계산 결과', terms[0] ? `${terms[0]} 관측값` : '작은 예제 지표'];
   return ['종료 코드', '지표', '결과물 위치'];
@@ -780,6 +783,9 @@ function goodOutcomeForRun(section, unit) {
   const deterministic = unit?.deterministic ? ' 같은 설정으로 재실행해도 핵심 숫자가 유지되어야 합니다.' : '';
   if (path.endsWith('run_stage.py')) return `종료 코드 0, 지표·그림·예측 샘플이 생기고 단원 안내의 기준 모델 질문에 답할 수 있으면 좋습니다.${deterministic}`;
   if (path.endsWith('analysis.py')) return `기초 실습 코드와 프레임워크 실습 코드를 먼저 실행한 뒤, 이전 실행 결과물을 빠짐없이 읽고 해석 노트에 실패 사례와 다음 실험 질문이 남으면 좋습니다.${deterministic}`;
+  if (path.endsWith('framework_lab.py') && unit?.path === '00_foundations/04_regularization_and_normalization') {
+    return `step 전 data loss가 같아도 regularized objective, effective gradient, post-step loss, weight norm에서 decay 효과가 분리되어 보이면 좋습니다.${deterministic}`;
+  }
   if (path.endsWith('framework_lab.py')) return `프레임워크 결과가 기초 실습 기준선과 설명 가능한 차이만 보이고, 실행 환경과 재실행 기준값이 출력에 남으면 좋습니다.${deterministic}`;
   if (path.endsWith('scratch_lab.py')) return `작은 입력에서 모양과 계산값을 직접 설명할 수 있고, 지표 파일/그림이 해석 기준선으로 남으면 좋습니다.${deterministic}`;
   return `종료 코드 0과 다시 확인할 수 있는 결과물 위치가 남으면 좋습니다.${deterministic}`;
@@ -1235,12 +1241,13 @@ function regularizationFrameworkCoreGuide(source) {
         ]),
       },
       {
-        label: '4. weight norm 차이로 regularization 효과 읽기',
-        note: '이 단원의 비교 기준은 loss 하나가 아니라 weight norm이 얼마나 눌렸는지도 함께 보는 것입니다.',
+        label: '4. 같은 data loss 뒤에 달라지는 objective와 step 결과 읽기',
+        note: 'PyTorch의 data loss는 decay 유무가 같게 보일 수 있습니다. regularized objective, post-step loss, weight norm을 함께 봐야 합니다.',
         code: compactCodeLines(source, [
           'no_weight_decay = run_weight_decay_step(weight_decay=0.0)',
           'with_weight_decay = run_weight_decay_step(weight_decay=0.2)',
-          "'weight_decay_delta': _round_float(",
+          "'weight_decay_regularized_objective_before_step': with_weight_decay['regularized_objective_before_step'],",
+          "'weight_decay_post_step_data_loss': with_weight_decay['post_step_data_loss'],",
         ]),
       },
     ],
