@@ -282,6 +282,7 @@ class WebStudySiteContractTest(unittest.TestCase):
             "코드 읽기 안내",
             "renderCoreCodeSummary",
             "coreCodeGuideFor",
+            "coreStepLabelText",
             "automaticCoreCodeSteps",
             "extractPythonSymbolNames",
             "extractFunctionExcerpt",

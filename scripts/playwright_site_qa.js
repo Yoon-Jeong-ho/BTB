@@ -364,15 +364,25 @@ async function assertCoreCodeSummaries(page) {
   await page.locator('.core-code-summary', { hasText: 'Normalization/Regularization 실습은 이 네 부분이 핵심입니다' }).waitFor({ state: 'visible' });
   await page.locator('.core-code-summary', { hasText: 'z-score normalization으로 입력 스케일 맞추기' }).waitFor({ state: 'visible' });
   await page.locator('.mini-code', { hasText: 'centered = values - values.mean()' }).waitFor({ state: 'visible' });
+  await assertCoreCodeStepLabelsAreNotManuallyNumbered(page);
   await page.getByRole('tab', { name: '프레임워크 실습 코드' }).click();
   await page.locator('.core-code-summary', { hasText: 'LayerNorm·Dropout·Weight Decay' }).waitFor({ state: 'visible' });
   await page.locator('.mini-code', { hasText: 'optimizer = torch.optim.SGD(model.parameters(), lr=0.1, weight_decay=weight_decay)' }).waitFor({ state: 'visible' });
+  await assertCoreCodeStepLabelsAreNotManuallyNumbered(page);
 
   await selectStudyUnit(page, '04 NLP', '03 Machine Reading Comprehension');
   await page.getByRole('tab', { name: '프레임워크 실습 코드' }).click();
   await page.locator('.core-code-summary', { hasText: '긴 프레임워크 실습은 데이터→모델→평가 흐름만 먼저 보세요' }).waitFor({ state: 'visible' });
   await page.locator('.core-code-summary', { hasText: 'loss·metric·판정 기준' }).waitFor({ state: 'visible' });
   await page.locator('.mini-code', { hasText: 'def token_f1' }).waitFor({ state: 'visible' });
+}
+
+async function assertCoreCodeStepLabelsAreNotManuallyNumbered(page) {
+  const labels = await page.locator('.core-code-summary li strong').evaluateAll((nodes) => nodes.map((node) => node.textContent.trim()));
+  const duplicated = labels.filter((label) => /^\d+[.)]\s+/.test(label));
+  if (duplicated.length) {
+    throw new Error(`Core code labels should rely on <ol> numbering only, but found manual labels: ${duplicated.join(', ')}`);
+  }
 }
 
 async function assertLearningRouteAndSelfChecks(page) {

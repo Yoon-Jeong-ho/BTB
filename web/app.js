@@ -1080,12 +1080,16 @@ function renderCoreCodeSummary(section, source, unit = null) {
     </div>
     <ol>
       ${guide.steps.map((step) => `<li>
-        <strong>${escapeHtml(step.label)}</strong>
+        <strong>${escapeHtml(coreStepLabelText(step.label))}</strong>
         <span>${escapeHtml(step.note)}</span>
         ${step.code ? `<pre class="mini-code"><code>${escapeHtml(step.code)}</code></pre>` : ''}
       </li>`).join('')}
     </ol>
   </section>`;
+}
+
+function coreStepLabelText(label) {
+  return String(label || '').replace(/^\s*\d+[.)]\s+/, '');
 }
 
 const CORE_CODE_GUIDE_OVERRIDES = {
