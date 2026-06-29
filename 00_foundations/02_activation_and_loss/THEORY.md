@@ -29,7 +29,8 @@
 - ReLU의 0 출력이 “계산 실패”라고 오해하는 실수
 
 ## 실행에서 확인할 포인트
-- `artifacts/scratch-manual/activation_curves.svg`에서 ReLU / sigmoid / tanh 곡선이 어떻게 다르게 생겼는지 본다.
+- `artifacts/scratch-manual/activation_curves.svg`에서 ReLU / sigmoid / tanh 곡선이 어떻게 다르게 생겼는지 본다. 왼쪽은 ReLU까지 포함한 공통 y축이라 sigmoid가 눌려 보일 수 있고, 오른쪽 확대 패널에서 sigmoid의 S-curve 곡률을 확인한다.
+- `framework_lab.py` 실행 결과의 `activation_rows`를 한 줄씩 읽어, 같은 입력이 ReLU / sigmoid / tanh를 지나며 어떤 값으로 바뀌는지 비교한다.
 - scratch와 framework 결과 모두에서 softmax 행 합이 1인지 확인한다.
 - BCE와 cross entropy가 각각 어떤 정답 형식(binary / class index)을 기대하는지 비교한다.
 

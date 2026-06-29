@@ -13,7 +13,7 @@ activation과 loss를 구분하지 못하면 `logits -> probabilities -> error s
 
 ## 실습 흐름
 1. `scratch_lab.py`에서 ReLU / sigmoid / tanh / softmax를 직접 계산하고 toy loss를 수식 수준에서 확인한다.
-2. `framework_lab.py`에서 PyTorch activation/loss API가 같은 개념을 어떻게 계산하는지 tiny tensor로 확인한다.
+2. `framework_lab.py`에서 같은 입력값을 ReLU / sigmoid / tanh에 나란히 넣고, `activation_rows`와 `activation_summary`로 각 함수가 숫자를 어떻게 바꿨는지 확인한다.
 3. `analysis.py`로 관측치를 한국어 문장으로 정리하고, 안정적인 해석 문서와 실행별 리포트를 분리한다.
 
 ## 실행 결과 예시
@@ -28,6 +28,8 @@ $ python 00_foundations/02_activation_and_loss/scratch_lab.py
 
 $ python 00_foundations/02_activation_and_loss/framework_lab.py
 {
+  "activation_reading_guide": "같은 input에 대해 ReLU는 음수를 0으로 자르고...",
+  "activation_rows": [{"input": -2.0, "relu": 0.0, "sigmoid": 0.119203, "tanh": -0.964028}],
   "row_probability_sums": [1.0, 1.0],
   "cross_entropy_loss": 0.217482,
   "binary_cross_entropy_loss": 0.359588
