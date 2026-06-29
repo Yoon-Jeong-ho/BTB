@@ -24,7 +24,7 @@
 - `lesson.yaml` — runnable 상태와 required outputs를 고정한다.
 
 ## 실행 방법
-프로젝트 루트(`/data_x/aa007878/projects/BTB`)에서 실행한다.
+clone한 저장소 루트에서 실행한다.
 
 ```bash
 python3 06_training_systems/04_fsdp_checkpointing_and_offload/scratch_lab.py

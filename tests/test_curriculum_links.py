@@ -34,6 +34,18 @@ class TestCurriculumLinks(unittest.TestCase):
 
         self.assertEqual(["figures/example.svg", "README.md"], links)
 
+    def test_tracked_docs_do_not_embed_machine_absolute_paths(self) -> None:
+        local_path_pattern = "|".join(["/" + "data_x", r"/home/[^ ]*/", r"/Users/", r"C:\\\\"])
+        result = subprocess.run(
+            ["git", "grep", "-n", "-E", local_path_pattern, "--", ".", ":!tests/test_curriculum_links.py"],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+
+        self.assertEqual(result.returncode, 1, msg=result.stdout)
+
 
 if __name__ == "__main__":
     unittest.main()

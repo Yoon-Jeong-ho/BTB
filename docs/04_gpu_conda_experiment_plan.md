@@ -4,7 +4,7 @@
 
 2026-06-24 현재 이 작업 세션에서 확인한 내용:
 
-- conda 사용 가능: `/data_x/aa007878/miniconda3/bin/conda`
+- conda 사용 가능 여부는 환경마다 다르므로 `which conda` 또는 `conda info --envs`로 확인한다.
 - 현재 Python: 3.12 계열
 - 핵심 패키지: `numpy`, `torch 2.8.0+cu128`, `sklearn`, `yaml` 사용 가능
 - `matplotlib`은 현재 base 환경에 없음. 기존 runnable unit 다수는 직접 SVG를 쓰므로 필수는 아니다.

@@ -537,11 +537,17 @@ assert.strictEqual(recovered.users.carol.lessons['10_vla/01_vision_language_acti
             payload = json.loads(response.read().decode("utf-8"))
         self.assertEqual(0, payload["returncode"])
         self.assertIn("00_foundations/01_tensor_shapes/scratch_lab.py", payload["path"])
+        self.assertFalse(Path(payload["path"]).is_absolute(), payload["path"])
+        self.assertEqual("00_foundations/01_tensor_shapes/scratch_lab.py", payload["command"][-1])
+        self.assertFalse(Path(payload["command"][-1]).is_absolute(), payload["command"])
+        self.assertNotIn(str(ROOT), json.dumps(payload, ensure_ascii=False))
         self.assertIn("matmul_shape", payload["stdout"])
         self.assertIn(payload["runner"]["device"], {"cpu", "cuda"})
         self.assertIn("python", payload["runner"])
         self.assertIn("environment", payload["runner"])
         artifact_paths = [artifact["path"] for artifact in payload["artifacts"]]
+        self.assertTrue(artifact_paths, "run-python should report changed artifacts")
+        self.assertTrue(all(not Path(path).is_absolute() for path in artifact_paths), artifact_paths)
         self.assertTrue(
             any(path.endswith("metrics.json") for path in artifact_paths),
             f"run-python should return previewable artifacts, got: {artifact_paths}",
@@ -599,6 +605,8 @@ assert.strictEqual(recovered.users.carol.lessons['10_vla/01_vision_language_acti
         cpu_config = server.RunnerConfig(device="auto")
         command, env, runner = server._build_runner_invocation(script_path, cpu_config, [])
         self.assertEqual(sys.executable, command[0])
+        self.assertEqual("python", runner["python"])
+        self.assertEqual("python:current", runner["environment"])
         self.assertEqual("cpu", runner["device"])
         self.assertEqual("", env["CUDA_VISIBLE_DEVICES"])
         self.assertEqual("cpu", env["BTB_DEVICE"])

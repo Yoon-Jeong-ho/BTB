@@ -306,7 +306,14 @@ def _python_prefix(config: RunnerConfig) -> tuple[list[str], str]:
     if config.conda_prefix:
         return ["conda", "run", "--no-capture-output", "-p", config.conda_prefix, "python"], f"conda-prefix:{config.conda_prefix}"
     python = config.python or sys.executable
-    return [python], f"python:{python}"
+    return [python], "python:current"
+
+
+def _public_command(command: list[str]) -> list[str]:
+    public = list(command)
+    if public and Path(public[0]).is_absolute():
+        public[0] = "python" if "python" in Path(public[0]).name.lower() else Path(public[0]).name
+    return public
 
 
 def _build_runner_invocation(
@@ -354,7 +361,7 @@ def _build_runner_invocation(
         env_overlay["CUDA_VISIBLE_DEVICES"] = str(selected_gpu["index"])
 
     runner = {
-        "python": " ".join(command_prefix),
+        "python": " ".join(_public_command(command_prefix)),
         "environment": environment_label,
         "device": device,
         "gpu_index": str(selected_gpu["index"]) if selected_gpu is not None else None,
@@ -422,7 +429,7 @@ class StudyRequestHandler(SimpleHTTPRequestHandler):
             status = HTTPStatus.OK
             payload = {
                 "path": str(script_path.relative_to(ROOT)),
-                "command": command,
+                "command": _public_command(command),
                 "returncode": completed.returncode,
                 "stdout": completed.stdout,
                 "stderr": completed.stderr,
@@ -434,7 +441,7 @@ class StudyRequestHandler(SimpleHTTPRequestHandler):
             status = HTTPStatus.INTERNAL_SERVER_ERROR
             payload = {
                 "path": str(script_path.relative_to(ROOT)),
-                "command": command,
+                "command": _public_command(command),
                 "returncode": 127,
                 "stdout": "",
                 "stderr": f"실행기를 찾을 수 없습니다: {exc.filename}",
@@ -446,7 +453,7 @@ class StudyRequestHandler(SimpleHTTPRequestHandler):
             status = HTTPStatus.REQUEST_TIMEOUT
             payload = {
                 "path": str(script_path.relative_to(ROOT)),
-                "command": command,
+                "command": _public_command(command),
                 "returncode": 124,
                 "stdout": exc.stdout or "",
                 "stderr": f"실행 시간이 {timeout}초를 넘었습니다.",

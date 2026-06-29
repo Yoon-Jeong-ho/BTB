@@ -22,7 +22,7 @@
 - `THEORY.md`, `PREREQS.md`, `reflection.md`, `lesson.yaml`: 한국어 우선 개념·선행지식·회고 질문·메타데이터를 고정한다.
 
 ## 실행 방법
-프로젝트 루트(`/data_x/aa007878/projects/BTB`)에서 아래 순서로 실행한다.
+clone한 저장소 루트에서 아래 순서로 실행한다.
 
 ```bash
 python 05_advanced_nlp_llm/08_alignment_safety_and_model_behavior/scratch_lab.py
