@@ -250,6 +250,15 @@ function displayOutputList(items) {
   return (items || []).map(displayOutputLabel);
 }
 
+function sectionIsComplete(section, checked) {
+  return Boolean(section?.checkpoint && checked?.[section.checkpoint]);
+}
+
+function renderSectionTab(section, selectedSection, checked) {
+  const complete = sectionIsComplete(section, checked);
+  return `<button type="button" role="tab" data-section-href="${escapeHtml(section.href)}" data-complete="${complete}" aria-selected="${hrefEquals(section.href, selectedSection.href)}" title="${complete ? '읽음 표시됨' : '아직 읽음 표시 전'}">${escapeHtml(displaySectionLabel(section))}${complete ? '<span class="tab-done-mark" aria-hidden="true">✓</span>' : ''}</button>`;
+}
+
 function renderTracks() {
   trackList.innerHTML = catalog.tracks.map((track) => {
     const stats = trackStats(track);
@@ -378,7 +387,7 @@ function renderDetail() {
           <button id="mark-section-complete" type="button">읽음으로 표시</button>
         </div>
         <div class="document-tabs" role="tablist" aria-label="단원 자료">
-          ${sections.map((section) => `<button type="button" role="tab" data-section-href="${escapeHtml(section.href)}" aria-selected="${hrefEquals(section.href, selectedSection.href)}">${escapeHtml(displaySectionLabel(section))}</button>`).join('')}
+          ${sections.map((section) => renderSectionTab(section, selectedSection, checked)).join('')}
         </div>
         <article id="lesson-content" class="lesson-content"><p class="empty">자료를 불러오는 중입니다.</p></article>
       </section>

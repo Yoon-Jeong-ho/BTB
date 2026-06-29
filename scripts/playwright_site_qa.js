@@ -363,6 +363,7 @@ async function runDesktopQa(browser, baseUrl) {
   await page.locator('.code-explanation dt', { hasText: '이 파일은 무엇인가' }).waitFor({ state: 'visible' });
   await page.locator('.code-explanation dt', { hasText: '실행하면 남는 결과' }).waitFor({ state: 'visible' });
   await page.getByRole('button', { name: /기초 실습 실행 완료로 표시/ }).click();
+  await expectTabComplete(page, '기초 실습 코드');
   await assertInjectedPythonComments(page, '프레임워크 실습 코드');
   await page.getByText('프레임워크 실습 코드: 실제 도구').waitFor({ state: 'visible' });
   await assertNoHorizontalOverflow(page, 'desktop-framework');
@@ -388,6 +389,24 @@ async function runDesktopQa(browser, baseUrl) {
     throw new Error(`Console errors during desktop QA:\n${consoleErrors.join('\n')}`);
   }
   return metrics;
+}
+
+async function expectTabComplete(page, tabName) {
+  const tab = page.getByRole('tab', { name: tabName });
+  await tab.waitFor({ state: 'visible' });
+  await expectAttribute(tab, 'data-complete', 'true');
+  await tab.locator('.tab-done-mark', { hasText: '✓' }).waitFor({ state: 'visible' });
+}
+
+async function expectAttribute(locator, name, value) {
+  await locator.evaluate(
+    (element, [attributeName, expected]) => {
+      if (element.getAttribute(attributeName) !== expected) {
+        throw new Error(`${attributeName} expected ${expected}, got ${element.getAttribute(attributeName)}`);
+      }
+    },
+    [name, value],
+  );
 }
 
 async function runResponsiveQa(browser, baseUrl) {

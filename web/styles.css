@@ -98,7 +98,10 @@ textarea { width: 100%; font-family: inherit; }
 .reader-header { display: flex; justify-content: space-between; gap: 1rem; align-items: center; margin-bottom: 0.75rem; }
 .reader-header h3 { margin-top: 0; }
 .document-tabs { display: flex; flex-wrap: wrap; gap: 0.45rem; margin: 0.75rem 0 1rem; }
+.document-tabs button[data-complete="true"] { background: color-mix(in srgb, var(--good) 14%, white); color: color-mix(in srgb, var(--good) 72%, var(--ink)); border-color: color-mix(in srgb, var(--good) 48%, var(--line)); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--good) 14%, transparent); }
 .document-tabs button[aria-selected="true"] { background: var(--accent-2); color: white; border-color: var(--accent-2); }
+.tab-done-mark { display: inline-flex; align-items: center; justify-content: center; width: 1.15em; height: 1.15em; margin-left: 0.35rem; border-radius: 999px; background: color-mix(in srgb, var(--good) 16%, white); color: var(--good); font-weight: 950; font-size: 0.86em; }
+.document-tabs button[aria-selected="true"] .tab-done-mark { background: color-mix(in srgb, white 18%, var(--accent-2)); color: white; }
 .document-title { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.75rem; color: var(--muted); border-bottom: 1px solid var(--line); padding-bottom: 0.65rem; margin-bottom: 1rem; }
 .document-title span { min-width: 0; color: var(--accent-2); font-weight: 900; overflow-wrap: anywhere; }
 .document-title code { min-width: 0; overflow-wrap: anywhere; word-break: break-word; white-space: normal; }

@@ -159,6 +159,10 @@ class WebStudySiteContractTest(unittest.TestCase):
             self.assertIn(display_label, app)
         self.assertNotIn("README 열기", app)
         self.assertNotIn('target="_blank"', app)
+        self.assertIn("renderSectionTab", app)
+        self.assertIn('data-complete="${complete}"', app)
+        self.assertIn("tab-done-mark", app + styles)
+        self.assertIn('.document-tabs button[data-complete="true"]', styles)
 
         self.assertIn("reader-panel", html)
         self.assertIn("study-sidebar", html)
