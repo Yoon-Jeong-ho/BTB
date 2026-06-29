@@ -359,6 +359,15 @@ async function assertCoreCodeSummaries(page) {
   await page.locator('.core-code-summary', { hasText: 'finite difference로 미분값 검산하기' }).waitFor({ state: 'visible' });
   await page.locator('.mini-code', { hasText: 'updated_weight = WEIGHT - (LEARNING_RATE * grad_w)' }).waitFor({ state: 'visible' });
 
+  await selectStudyUnit(page, '00 Foundations', '04 Regularization and Normalization');
+  await page.getByRole('tab', { name: '기초 실습 코드' }).click();
+  await page.locator('.core-code-summary', { hasText: 'Normalization/Regularization 실습은 이 네 부분이 핵심입니다' }).waitFor({ state: 'visible' });
+  await page.locator('.core-code-summary', { hasText: 'z-score normalization으로 입력 스케일 맞추기' }).waitFor({ state: 'visible' });
+  await page.locator('.mini-code', { hasText: 'centered = values - values.mean()' }).waitFor({ state: 'visible' });
+  await page.getByRole('tab', { name: '프레임워크 실습 코드' }).click();
+  await page.locator('.core-code-summary', { hasText: 'LayerNorm·Dropout·Weight Decay' }).waitFor({ state: 'visible' });
+  await page.locator('.mini-code', { hasText: 'optimizer = torch.optim.SGD(model.parameters(), lr=0.1, weight_decay=weight_decay)' }).waitFor({ state: 'visible' });
+
   await selectStudyUnit(page, '04 NLP', '03 Machine Reading Comprehension');
   await page.getByRole('tab', { name: '프레임워크 실습 코드' }).click();
   await page.locator('.core-code-summary', { hasText: '긴 프레임워크 실습은 데이터→모델→평가 흐름만 먼저 보세요' }).waitFor({ state: 'visible' });

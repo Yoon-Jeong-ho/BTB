@@ -572,7 +572,7 @@ async function loadLessonSection(unit, section) {
     const text = await fetchLessonDocument(section.href);
     if (requestId !== contentRequestId) return;
     if (section.type === 'code') {
-      content.innerHTML = `<div class="document-title"><span>${escapeHtml(sectionLabel)}</span><span class="source-badge">${escapeHtml(documentSourceLabel(section))}</span></div>${renderCodeExplanation(section, text)}${renderCoreCodeSummary(section, text)}<pre class="code-block"><code>${escapeHtml(annotateCodeWithInlineHints(section, text))}</code></pre>${renderRunPanel(section, unit, text)}`;
+      content.innerHTML = `<div class="document-title"><span>${escapeHtml(sectionLabel)}</span><span class="source-badge">${escapeHtml(documentSourceLabel(section))}</span></div>${renderCodeExplanation(section, text)}${renderCoreCodeSummary(section, text, unit)}<pre class="code-block"><code>${escapeHtml(annotateCodeWithInlineHints(section, text))}</code></pre>${renderRunPanel(section, unit, text)}`;
       bindRunButton(section, unit);
       bindCellProbeButton(section, unit);
     } else {
@@ -1063,8 +1063,8 @@ function renderCodeExplanation(section, source) {
   </section>`;
 }
 
-function renderCoreCodeSummary(section, source) {
-  const guide = coreCodeGuideFor(section, source);
+function renderCoreCodeSummary(section, source, unit = null) {
+  const guide = coreCodeGuideFor(section, source, unit);
   if (!guide) return '';
   return `<section class="core-code-summary" aria-label="핵심 코드 먼저 보기">
     <div>
@@ -1084,20 +1084,24 @@ function renderCoreCodeSummary(section, source) {
 
 const CORE_CODE_GUIDE_OVERRIDES = {
   '00_foundations/03_gradients_and_backpropagation/scratch_lab.py': gradientBackpropCoreGuide,
+  '00_foundations/04_regularization_and_normalization/scratch_lab.py': regularizationScratchCoreGuide,
+  '00_foundations/04_regularization_and_normalization/framework_lab.py': regularizationFrameworkCoreGuide,
 };
 
-function coreCodeGuideFor(section, source) {
+function coreCodeGuideFor(section, source, unit = null) {
   const path = cleanHref(section.href);
   const lines = source.split('\n');
   if (CORE_CODE_GUIDE_OVERRIDES[path]) return CORE_CODE_GUIDE_OVERRIDES[path](source);
   if (!path.endsWith('.py')) return null;
   const symbols = extractPythonSymbolNames(source);
-  if (!isLongOrDensePythonSource(lines, symbols)) return null;
-  const steps = automaticCoreCodeSteps(section, source, symbols).slice(0, 4);
+  const steps = automaticCoreCodeSteps(section, source, symbols, unit).slice(0, 4);
+  if (!isLongOrDensePythonSource(lines, symbols) && steps.length < 2) return null;
   if (!steps.length) return null;
   return {
-    title: coreCodeGuideTitleFor(path),
-    summary: '전체 코드를 한 번에 읽기 어렵다면, 아래 핵심 발췌에서 데이터가 들어와 계산·학습·평가·저장으로 이어지는 흐름만 먼저 잡고 전체 코드로 내려가면 됩니다.',
+    title: coreCodeGuideTitleFor(path, lines.length),
+    summary: unit
+      ? `${unit.title}의 목표(${stripMarkdownLinks(unit.objective || '단원 핵심')})와 직접 연결되는 코드만 먼저 모았습니다.`
+      : '전체 코드를 한 번에 읽기 어렵다면, 아래 핵심 발췌에서 데이터가 들어와 계산·학습·평가·저장으로 이어지는 흐름만 먼저 잡고 전체 코드로 내려가면 됩니다.',
     steps,
   };
 }
@@ -1152,21 +1156,178 @@ function isLongOrDensePythonSource(lines, symbols) {
   return lines.length >= 160 || (lines.length >= 110 && symbols.length >= 3 && hasFlowAnchor);
 }
 
-function coreCodeGuideTitleFor(path) {
-  if (path.endsWith('scratch_lab.py')) return '긴 기초 실습은 핵심 계산만 먼저 훑어보세요';
-  if (path.endsWith('framework_lab.py')) return '긴 프레임워크 실습은 데이터→모델→평가 흐름만 먼저 보세요';
-  if (path.endsWith('analysis.py')) return '긴 해석 코드는 결과 읽기→검증→리포트 저장만 먼저 보세요';
+function regularizationScratchCoreGuide(source) {
+  return {
+    title: 'Normalization/Regularization 실습은 이 네 부분이 핵심입니다',
+    summary: '그림 저장 코드는 뒤로 미루고, 입력 스케일을 바꾸는 정규화와 weight decay가 gradient·loss·weight norm에 들어가는 지점만 먼저 보세요.',
+    steps: [
+      {
+        label: '1. z-score normalization으로 입력 스케일 맞추기',
+        note: 'raw feature의 큰 숫자를 평균 0, 표준편차 1 근처로 바꿔 같은 learning rate가 과하게 튀지 않게 합니다.',
+        code: compactCodeLines(source, [
+          'centered = values - values.mean()',
+          'return centered / values.std()',
+          'normalized_features = zscore(RAW_FEATURES)',
+        ]),
+      },
+      {
+        label: '2. data loss와 L2 regularization loss 분리하기',
+        note: 'loss 자체와 weight를 크게 만들지 않으려는 penalty를 따로 계산한 뒤 더합니다.',
+        code: compactCodeLines(source, [
+          'data_loss = 0.5 * float(np.mean(errors**2))',
+          'reg_loss = 0.5 * weight_decay * (weight**2)',
+          'total_loss = data_loss + reg_loss',
+        ]),
+      },
+      {
+        label: '3. gradient에 weight decay 항을 더하기',
+        note: 'L2 regularization은 loss에만 숫자를 더하는 것이 아니라 weight gradient에도 weight_decay * weight를 추가합니다.',
+        code: compactCodeLines(source, [
+          'grad_w = float(np.mean(errors * features) + (weight_decay * weight))',
+          'weight -= learning_rate * grad_w',
+          'bias -= learning_rate * grad_b',
+        ]),
+      },
+      {
+        label: '4. raw / normalized / normalized+L2를 같은 조건에서 비교하기',
+        note: '단원 결론은 세 실행의 log10(loss), gradient scale, final weight norm을 나란히 비교할 때 보입니다.',
+        code: compactCodeLines(source, [
+          'raw_run = run_training(RAW_FEATURES, TARGETS, learning_rate=LEARNING_RATE)',
+          'normalized_run = run_training(normalized_features, TARGETS, learning_rate=LEARNING_RATE)',
+          'weight_decay=WEIGHT_DECAY,',
+        ]),
+      },
+    ],
+  };
+}
+
+function regularizationFrameworkCoreGuide(source) {
+  return {
+    title: '프레임워크 실습은 LayerNorm·Dropout·Weight Decay를 따로 보세요',
+    summary: 'PyTorch가 자동으로 처리하는 부분이 많아서, normalizing layer, train/eval mode, optimizer의 weight_decay 옵션을 분리해서 읽는 것이 핵심입니다.',
+    steps: [
+      {
+        label: '1. LayerNorm이 행마다 평균/분산을 맞추는지 확인하기',
+        note: 'LayerNorm은 batch 전체가 아니라 각 row의 마지막 차원 기준으로 normalize합니다.',
+        code: compactCodeLines(source, [
+          'layer_norm = torch.nn.LayerNorm(4, elementwise_affine=False, eps=0.0)',
+          'normalized = layer_norm(inputs)',
+          "'layernorm_row_means': _rounded_list(normalized.mean(dim=-1)),",
+        ]),
+      },
+      {
+        label: '2. Dropout은 train/eval mode에서 다르게 동작합니다',
+        note: '학습 모드에서는 일부 값을 0으로 만들고, 평가 모드에서는 입력을 그대로 통과시키는 차이를 봅니다.',
+        code: compactCodeLines(source, [
+          'dropout.train()',
+          'dropout_train = dropout(inputs)',
+          'dropout.eval()',
+          'dropout_eval = dropout(inputs)',
+        ]),
+      },
+      {
+        label: '3. optimizer의 weight_decay가 업데이트에 들어가는 지점',
+        note: '프레임워크에서는 L2 항을 손으로 gradient에 더하지 않고 optimizer 옵션으로 전달합니다.',
+        code: compactCodeLines(source, [
+          'optimizer = torch.optim.SGD(model.parameters(), lr=0.1, weight_decay=weight_decay)',
+          'loss.backward()',
+          'optimizer.step()',
+        ]),
+      },
+      {
+        label: '4. weight norm 차이로 regularization 효과 읽기',
+        note: '이 단원의 비교 기준은 loss 하나가 아니라 weight norm이 얼마나 눌렸는지도 함께 보는 것입니다.',
+        code: compactCodeLines(source, [
+          'no_weight_decay = run_weight_decay_step(weight_decay=0.0)',
+          'with_weight_decay = run_weight_decay_step(weight_decay=0.2)',
+          "'weight_decay_delta': _round_float(",
+        ]),
+      },
+    ],
+  };
+}
+
+function coreCodeGuideTitleFor(path, lineCount = 0) {
+  if (path.endsWith('scratch_lab.py')) return lineCount >= 130 ? '긴 기초 실습은 핵심 계산만 먼저 훑어보세요' : '기초 실습은 단원 핵심 계산만 먼저 훑어보세요';
+  if (path.endsWith('framework_lab.py')) return lineCount >= 130 ? '긴 프레임워크 실습은 데이터→모델→평가 흐름만 먼저 보세요' : '프레임워크 실습은 단원 핵심 흐름만 먼저 보세요';
+  if (path.endsWith('analysis.py')) return lineCount >= 130 ? '긴 해석 코드는 결과 읽기→검증→리포트 저장만 먼저 보세요' : '해석 코드는 결과 읽기→검증→저장만 먼저 보세요';
   if (path.endsWith('experiment.py')) return '긴 실험 흐름 코드는 실행 단계만 먼저 따라가세요';
   if (path.endsWith('run_stage.py')) return '긴 실행 코드는 옵션→실험 호출→결과 위치만 먼저 보세요';
   if (path.endsWith('dataset.py')) return '긴 데이터 코드는 입력 표를 만드는 흐름만 먼저 보세요';
   return '긴 파일은 핵심 흐름만 먼저 훑어보세요';
 }
 
-function automaticCoreCodeSteps(section, source, symbols) {
+function unitCoreCategoryFor(unit, section) {
+  if (!unit) return null;
+  const terms = unitCoreTermsFor(unit);
+  if (!terms.length) return null;
+  const readableTerms = terms.slice(0, 3).join(', ');
+  return {
+    label: '단원 핵심 개념',
+    note: `${unit.title}에서 먼저 잡아야 하는 ${readableTerms} 코드입니다. 일반 저장/시각화 보조 코드보다 이 부분을 먼저 보세요.`,
+    terms,
+    patterns: terms.map((term) => flexibleTermPattern(term)),
+  };
+}
+
+function unitCoreTermsFor(unit) {
+  const sourceTerms = [
+    ...(unit.key_terms || []),
+    unit.objective || '',
+    ...(unit.analysis_questions || []),
+  ];
+  const terms = [];
+  const add = (value) => {
+    const text = String(value || '').trim();
+    if (!text) return;
+    text
+      .split(/[^A-Za-z0-9_]+/)
+      .filter((part) => part.length >= 3 || /^l2$/i.test(part))
+      .forEach((part) => terms.push(part));
+  };
+  sourceTerms.forEach(add);
+  const haystack = sourceTerms.join(' ').toLowerCase();
+  const aliasGroups = [
+    [/normalization|normalise|normalize|z-score|layernorm|정규화/, ['normalization', 'normalize', 'normalized', 'zscore', 'z_score', 'LayerNorm', 'layer_norm']],
+    [/regularization|regularisation|weight decay|l2|dropout|규제/, ['regularization', 'weight_decay', 'weight decay', 'l2', 'dropout']],
+    [/gradient|backprop|미분|역전파/, ['gradient', 'grad', 'backward', 'finite_difference']],
+    [/tensor|shape|broadcast|matmul|텐서/, ['shape', 'reshape', 'broadcast', 'matmul', 'softmax']],
+    [/token|tokenization|embedding|토큰|임베딩/, ['tokenize', 'tokenizer', 'token', 'embedding', 'encode']],
+    [/attention|transformer|어텐션/, ['attention', 'query', 'key', 'value', 'softmax']],
+    [/retrieval|rag|검색/, ['retrieve', 'retrieval', 'rank', 'grounding']],
+    [/reward|preference|rlhf|dpo|orpo|kto/, ['reward', 'preference', 'margin', 'policy']],
+    [/distributed|torchrun|ddp|zero|fsdp|parallel|rank/, ['rank', 'world_size', 'all_reduce', 'stage', 'shard', 'parallel']],
+    [/multimodal|vision|image|vlm|vla|action/, ['image', 'vision', 'action', 'alignment', 'embedding']],
+  ];
+  aliasGroups.forEach(([pattern, aliases]) => {
+    if (pattern.test(haystack)) terms.push(...aliases);
+  });
+  return uniqueByNormalized(terms).slice(0, 18);
+}
+
+function uniqueByNormalized(values) {
+  const seen = new Set();
+  return values.filter((value) => {
+    const key = String(value).toLowerCase().replace(/[^a-z0-9]/g, '');
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function flexibleTermPattern(term) {
+  const normalized = String(term).trim();
+  if (!normalized) return /a^/;
+  const body = escapeRegExp(normalized).replace(/[\s_-]+/g, '[_\\s-]*');
+  return new RegExp(body, 'i');
+}
+
+function automaticCoreCodeSteps(section, source, symbols, unit = null) {
   const path = cleanHref(section.href);
   const steps = [];
   const used = new Set();
   const categories = [
+    unitCoreCategoryFor(unit, section),
     {
       label: '입력과 설정 준비',
       note: '데이터, 예제, 설정값이 어떤 형태로 만들어져 뒤 계산으로 들어가는지 확인합니다.',
@@ -1197,7 +1358,7 @@ function automaticCoreCodeSteps(section, source, symbols) {
       terms: ['run', 'save', 'write', 'render', 'report', 'svg', 'main'],
       patterns: [/METRICS_PATH|FIGURE_PATH|write_text|json\.dumps|to_csv|savefig|summary|report|artifact/i],
     },
-  ];
+  ].filter(Boolean);
 
   categories.forEach((category) => {
     const step = coreStepFromFunctionCategory(section, source, symbols, category, used)
