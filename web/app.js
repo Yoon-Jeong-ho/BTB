@@ -1096,6 +1096,7 @@ const CORE_CODE_GUIDE_OVERRIDES = {
   '00_foundations/03_gradients_and_backpropagation/scratch_lab.py': gradientBackpropCoreGuide,
   '00_foundations/04_regularization_and_normalization/scratch_lab.py': regularizationScratchCoreGuide,
   '00_foundations/04_regularization_and_normalization/framework_lab.py': regularizationFrameworkCoreGuide,
+  '00_foundations/04_regularization_and_normalization/analysis.py': regularizationAnalysisCoreGuide,
 };
 
 function coreCodeGuideFor(section, source, unit = null) {
@@ -1109,9 +1110,7 @@ function coreCodeGuideFor(section, source, unit = null) {
   if (!steps.length) return null;
   return {
     title: coreCodeGuideTitleFor(path, lines.length),
-    summary: unit
-      ? `${unit.title}의 목표(${stripMarkdownLinks(unit.objective || '단원 핵심')})와 직접 연결되는 코드만 먼저 모았습니다.`
-      : '전체 코드를 한 번에 읽기 어렵다면, 아래 핵심 발췌에서 데이터가 들어와 계산·학습·평가·저장으로 이어지는 흐름만 먼저 잡고 전체 코드로 내려가면 됩니다.',
+    summary: coreCodeGuideSummaryFor(path, unit),
     steps,
   };
 }
@@ -1258,6 +1257,70 @@ function regularizationFrameworkCoreGuide(source) {
   };
 }
 
+function regularizationAnalysisCoreGuide(source) {
+  return {
+    title: 'Regularization 해석 코드는 지표를 결론으로 바꾸는 흐름입니다',
+    summary: 'scratch/framework 실습 metrics를 다시 읽고, normalization 효과와 weight decay가 “loss는 같아 보여도 업데이트는 달라지는” 이유를 한국어 관측 리포트로 정리합니다.',
+    steps: [
+      {
+        label: '필수 metrics가 있는지 먼저 확인하기',
+        note: 'analysis.py는 단독 계산 파일이 아니라 앞선 두 실습의 결과를 해석합니다. 그래서 scratch/framework metrics가 없으면 바로 멈추고 무엇을 먼저 실행할지 알려줍니다.',
+        code: compactCodeLines(source, [
+          'missing = [path for path in (SCRATCH, FRAMEWORK) if not path.exists()]',
+          'if not missing:',
+          '    return',
+          "missing_list = ', '.join(str(path.relative_to(UNIT_ROOT)) for path in missing)",
+          'raise SystemExit(',
+          "    '필수 metrics 파일이 없습니다: '",
+          "    f'{missing_list}. 먼저 scratch_lab.py와 framework_lab.py를 실행하세요.'",
+          ')',
+        ]),
+      },
+      {
+        label: 'scratch와 framework 결과를 해석 입력으로 읽기',
+        note: '정규화가 gradient scale을 바꾼 증거는 scratch metrics에서, LayerNorm·Dropout·Weight Decay의 프레임워크 관측은 framework metrics에서 가져옵니다.',
+        code: compactCodeLines(source, [
+          'scratch = _load_json(SCRATCH)',
+          'framework = _load_json(FRAMEWORK)',
+          "raw_initial_grad = float(scratch['raw_initial_grad_norm'])",
+          "normalized_initial_grad = float(scratch['normalized_initial_grad_norm'])",
+        ]),
+      },
+      {
+        label: 'weight decay가 같아 보이는 이유를 분리해서 해석하기',
+        note: 'step 전 data loss는 decay 유무와 무관하게 같을 수 있습니다. 대신 regularized objective, decay term, post-step data loss 차이를 함께 읽어야 결론이 보입니다.',
+        code: compactCodeLines(source, [
+          "data_loss_before = float(framework['weight_decay_data_loss_before_step'])",
+          "no_decay_data_loss_before = float(framework['no_weight_decay_data_loss_before_step'])",
+          "decay_objective = float(framework['weight_decay_regularized_objective_before_step'])",
+          "post_step_delta = float(framework['post_step_data_loss_delta'])",
+        ]),
+      },
+      {
+        label: 'stable analysis와 이번 실행 리포트를 나눠 저장하기',
+        note: 'analysis.md는 항상 같은 해석 프레임을 유지하고, 매번 달라질 수 있는 숫자 관측은 artifacts/analysis-manual/latest_report.md에 따로 남깁니다.',
+        code: compactCodeLines(source, [
+          'OBSERVED_REPORT.parent.mkdir(parents=True, exist_ok=True)',
+          "OBSERVED_REPORT.write_text(observed_report, encoding='utf-8')",
+          "ANALYSIS_PATH.write_text(STABLE_ANALYSIS, encoding='utf-8')",
+          'print(observed_report)',
+        ]),
+      },
+    ],
+  };
+}
+
+function coreCodeGuideSummaryFor(path, unit = null) {
+  if (path.endsWith('analysis.py')) {
+    return unit
+      ? `${unit.title}의 실습 산출물을 다시 읽어, 빠진 metrics를 확인하고 핵심 숫자를 해석 문장·리포트로 바꾸는 흐름만 먼저 모았습니다.`
+      : '해석 코드는 새 모델을 학습하는 파일이 아니라, 앞선 실행 산출물을 검증하고 지표를 사람이 읽을 수 있는 결론으로 바꾸는 파일입니다.';
+  }
+  return unit
+    ? `${unit.title}의 목표(${stripMarkdownLinks(unit.objective || '단원 핵심')})와 직접 연결되는 코드만 먼저 모았습니다.`
+    : '전체 코드를 한 번에 읽기 어렵다면, 아래 핵심 발췌에서 데이터가 들어와 계산·학습·평가·저장으로 이어지는 흐름만 먼저 잡고 전체 코드로 내려가면 됩니다.';
+}
+
 function coreCodeGuideTitleFor(path, lineCount = 0) {
   if (path.endsWith('scratch_lab.py')) return lineCount >= 130 ? '긴 기초 실습은 핵심 계산만 먼저 훑어보세요' : '기초 실습은 단원 핵심 계산만 먼저 훑어보세요';
   if (path.endsWith('framework_lab.py')) return lineCount >= 130 ? '긴 프레임워크 실습은 데이터→모델→평가 흐름만 먼저 보세요' : '프레임워크 실습은 단원 핵심 흐름만 먼저 보세요';
@@ -1335,6 +1398,7 @@ function flexibleTermPattern(term) {
 
 function automaticCoreCodeSteps(section, source, symbols, unit = null) {
   const path = cleanHref(section.href);
+  if (path.endsWith('analysis.py')) return analysisCoreCodeSteps(section, source, symbols, unit);
   const steps = [];
   const used = new Set();
   const categories = [
@@ -1390,18 +1454,67 @@ function automaticCoreCodeSteps(section, source, symbols, unit = null) {
     });
   }
 
-  if (path.endsWith('analysis.py')) {
-    steps.sort((left, right) => {
-      const order = ['입력과 설정 준비', 'loss·metric·판정 기준', '결과 저장과 리포트'];
-      return orderIndex(order, left.label) - orderIndex(order, right.label);
-    });
-  }
   return steps;
 }
 
-function orderIndex(order, label) {
-  const index = order.findIndex((item) => label.includes(item));
-  return index === -1 ? order.length : index;
+function analysisCoreCodeSteps(section, source, symbols, unit = null) {
+  const steps = [];
+  const used = new Set();
+  const categories = [
+    {
+      label: '필수 산출물 확인',
+      note: 'analysis.py는 앞선 실습 결과가 있어야 의미가 있습니다. 누락된 metrics나 report를 먼저 확인하는 방어 코드부터 보세요.',
+      terms: ['ensure', 'missing', 'required', 'exists'],
+      patterns: [/_ensure|missing\s*=|\.exists\(\)|raise\s+SystemExit|FileNotFoundError/],
+    },
+    {
+      label: '실습 결과 읽기',
+      note: 'scratch/framework/experiment가 만든 JSON·표·리포트를 해석 입력으로 다시 읽는 구간입니다.',
+      terms: ['load', 'read', 'json'],
+      patterns: [/_load_json|json\.loads|json\.load|read_text|pd\.read_|metrics\s*=/],
+    },
+    {
+      label: '핵심 지표 비교',
+      note: unit
+        ? `${unit.title}의 결론을 만들 숫자입니다. ratio, delta, loss, accuracy 같은 비교값이 어떤 원자료에서 나왔는지 확인하세요.`
+        : 'ratio, delta, loss, accuracy 같은 비교값이 어떤 원자료에서 나왔는지 확인하세요.',
+      terms: ['ratio', 'delta', 'loss', 'accuracy', 'f1', 'score', 'metric'],
+      patterns: [/ratio\s*=|delta\s*=|accuracy\s*=|f1\s*=|score\s*=|loss\s*=|metric/],
+    },
+    {
+      label: '해석 문장 만들기',
+      note: '숫자를 그대로 나열하지 않고, 학습자가 가져가야 할 결론·주의점·다음 질문으로 바꾸는 구간입니다.',
+      terms: ['comment', 'summary', 'interpret', 'report'],
+      patterns: [/comment\s*=|summary\s*=|interpret|observed_report\s*=|report\s*=/],
+    },
+    {
+      label: '해석 리포트 저장',
+      note: '사이트와 다음 학습 단계에서 다시 열어볼 analysis/report 파일을 쓰는 마지막 구간입니다.',
+      terms: ['write', 'save', 'report'],
+      patterns: [/write_text|json\.dumps|to_markdown|to_csv|savefig/],
+    },
+  ];
+
+  categories.forEach((category) => {
+    const step = coreStepFromFunctionCategory(section, source, symbols, category, used)
+      || coreStepFromPatternCategory(source, category, used);
+    if (step) steps.push(step);
+  });
+
+  if (!steps.length && symbols.length) {
+    symbols.slice(0, 4).forEach((name) => {
+      const code = extractFunctionExcerpt(source, name);
+      if (!code || used.has(code)) return;
+      used.add(code);
+      steps.push({
+        label: `${name}() 먼저 보기`,
+        note: roleHintForFunction(name, section) || '해석 코드에서 어떤 결과물을 읽어 어떤 문장이나 리포트로 바꾸는지 확인하세요.',
+        code,
+      });
+    });
+  }
+
+  return steps.slice(0, 4);
 }
 
 function coreStepFromFunctionCategory(section, source, symbols, category, used) {
@@ -1533,6 +1646,7 @@ function functionRoleHintsFor(section, source) {
 function roleHintForFunction(name, section) {
   const normalized = name.toLowerCase();
   if (normalized === 'run' || normalized === 'main') return sectionSpecificRunHint(section);
+  if (normalized.includes('ensure') || normalized.includes('exists') || normalized.includes('missing')) return '앞선 실행 산출물이 빠졌는지 확인하고, 없으면 무엇을 먼저 실행해야 하는지 알려주는 방어 코드입니다.';
   if (normalized.includes('forward')) return 'tensor 입력이 logit·embedding·action 같은 모델 출력으로 바뀌는 계산 경로입니다.';
   if (normalized.includes('train')) return 'batch → loss → optimizer step이 연결되는 학습 루프입니다.';
   if (normalized.includes('evaluate') || normalized.includes('metric') || normalized.includes('score')) return '단원에서 비교할 지표를 계산하므로 단원 안내의 성공 기준과 나란히 확인하세요.';

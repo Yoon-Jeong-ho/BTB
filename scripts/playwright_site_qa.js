@@ -369,6 +369,12 @@ async function assertCoreCodeSummaries(page) {
   await page.locator('.core-code-summary', { hasText: 'LayerNorm·Dropout·Weight Decay' }).waitFor({ state: 'visible' });
   await page.locator('.mini-code', { hasText: 'optimizer = torch.optim.SGD(model.parameters(), lr=0.1, weight_decay=weight_decay)' }).waitFor({ state: 'visible' });
   await assertCoreCodeStepLabelsAreNotManuallyNumbered(page);
+  await page.getByRole('tab', { name: '결과 해석 코드' }).click();
+  await page.locator('.core-code-summary', { hasText: 'Regularization 해석 코드는 지표를 결론으로 바꾸는 흐름입니다' }).waitFor({ state: 'visible' });
+  await page.locator('.core-code-summary', { hasText: 'weight decay가 같아 보이는 이유를 분리해서 해석하기' }).waitFor({ state: 'visible' });
+  await page.locator('.mini-code', { hasText: "decay_objective = float(framework['weight_decay_regularized_objective_before_step'])" }).waitFor({ state: 'visible' });
+  await page.locator('.mini-code', { hasText: 'OBSERVED_REPORT.write_text(observed_report' }).waitFor({ state: 'visible' });
+  await assertCoreCodeStepLabelsAreNotManuallyNumbered(page);
 
   await selectStudyUnit(page, '04 NLP', '03 Machine Reading Comprehension');
   await page.getByRole('tab', { name: '프레임워크 실습 코드' }).click();
