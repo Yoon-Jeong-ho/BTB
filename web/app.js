@@ -8,6 +8,7 @@ let selectedResourceHref = '';
 let progressStore = Progress.loadProgress();
 let activeUserId = progressStore.activeUserId;
 let contentRequestId = 0;
+let runtimeInfo = { canRunPython: false, environment: 'static', device: 'read-only' };
 
 
 const SECTION_DISPLAY_LABELS = {
@@ -48,6 +49,7 @@ const searchInput = $('#search');
 const progressFilter = $('#progress-filter');
 const profileSelect = $('#profile-select');
 const routeSelect = $('#route-select');
+const runtimeBadge = $('#runtime-badge');
 
 init();
 
@@ -57,14 +59,36 @@ async function init() {
     if (!response.ok) throw new Error(`catalog load failed: ${response.status}`);
     catalog = await response.json();
   } catch (error) {
-    detail.innerHTML = `<p class="empty">학습 자료 목록을 읽지 못했습니다. 저장소 루트에서 <code>python -m http.server 8000</code>를 실행한 뒤 <code>http://localhost:8000/web/</code>을 열어 주세요.</p>`;
+    detail.innerHTML = `<p class="empty">학습 자료 목록을 읽지 못했습니다. 저장소 루트에서 <code>python scripts/study_server.py --port 8000 --device auto</code>를 실행한 뒤 <code>http://localhost:8000/web/</code>을 열어 주세요. 읽기 전용으로만 볼 때는 <code>python -m http.server 8000</code>도 사용할 수 있습니다.</p>`;
     return;
   }
 
+  await detectRuntimeMode();
   restoreActiveView();
   renderProfiles();
   bindEvents();
   render();
+}
+
+async function detectRuntimeMode() {
+  if (!runtimeBadge) return;
+  runtimeBadge.className = 'runtime-badge checking';
+  runtimeBadge.textContent = '실행 환경 확인 중';
+  try {
+    const response = await fetch('/api/runtime-info', { cache: 'no-store' });
+    const contentType = response.headers.get('content-type') || '';
+    if (!response.ok || !contentType.includes('application/json')) throw new Error(`runtime check failed: ${response.status}`);
+    runtimeInfo = await response.json();
+    runtimeBadge.className = 'runtime-badge ready';
+    const env = runtimeInfo.environment || 'python';
+    const device = runtimeInfo.device || 'auto';
+    const gpu = runtimeInfo.gpu_index && runtimeInfo.gpu_index !== 'auto' ? ` · GPU ${runtimeInfo.gpu_index}` : '';
+    runtimeBadge.textContent = `실행 가능 · ${env} · ${device}${gpu}`;
+  } catch (error) {
+    runtimeInfo = { canRunPython: false, environment: 'static', device: 'read-only' };
+    runtimeBadge.className = 'runtime-badge readonly';
+    runtimeBadge.textContent = '읽기 전용 · 실행은 study_server.py';
+  }
 }
 
 function persistProgress() {
@@ -208,6 +232,23 @@ function humanUnitPath(unitPath) {
     .join(' › ');
 }
 
+function trackLearnerDescriptor(track) {
+  const descriptors = {
+    '00_foundations': '공통 기초 다지기',
+    '01_ml': '표형 데이터와 baseline',
+    '02_deep_learning': '딥러닝 핵심 루프',
+    '03_computer_vision': '비전 모델 기초',
+    '04_nlp_sequence': '언어·시퀀스 모델',
+    '05_advanced_nlp_llm': 'LLM·RLHF 확장',
+    '06_training_systems': '학습 시스템 심화',
+    '07_frontier_labs': '최신 실험 랩',
+    '08_multimodal_bridge': '멀티모달 연결 다리',
+    '09_multimodal': 'VLM·멀티모달 실습',
+    '10_vla': 'VLA와 로봇 행동',
+  };
+  return descriptors[track?.id] || '학습 트랙';
+}
+
 function friendlyDocumentLabel(label, href) {
   const raw = String(label || '').trim();
   const file = String(href || '').split('#')[0].split('/').pop();
@@ -264,7 +305,7 @@ function renderTracks() {
     const stats = trackStats(track);
     return `<button class="track-card" type="button" aria-pressed="${track.id === selectedTrackId}" data-track="${escapeHtml(track.id)}">
       <div class="track-top"><span class="track-title">${escapeHtml(track.title)}</span><span class="track-meta">${stats.done}/${stats.total}</span></div>
-      <div class="track-meta">${escapeHtml(track.id)}</div>
+      <div class="track-meta">${escapeHtml(trackLearnerDescriptor(track))}</div>
       <p>${renderInlineSummary(track.summary || '이 트랙에서 무엇을 익히는지 확인합니다.')}</p>
       <div class="progress-bar" aria-hidden="true"><span style="width:${stats.percent}%"></span></div>
     </button>`;
@@ -581,7 +622,7 @@ async function loadLessonSection(unit, section) {
     }
   } catch (error) {
     if (requestId !== contentRequestId) return;
-    content.innerHTML = `<p class="empty">${escapeHtml(sectionLabel)}을 사이트 안에서 불러오지 못했습니다. 저장소 루트에서 <code>python -m http.server 8000</code>을 실행했는지 확인하세요.<br><code>${escapeHtml(cleanHref(section.href))}</code></p>`;
+    content.innerHTML = `<p class="empty">${escapeHtml(sectionLabel)}을 사이트 안에서 불러오지 못했습니다. 저장소 루트에서 <code>python scripts/study_server.py --port 8000 --device auto</code>를 실행한 뒤 다시 열어 주세요. 문서만 읽는 경우에는 <code>python -m http.server 8000</code>도 사용할 수 있습니다.</p>`;
   }
 }
 
@@ -603,7 +644,7 @@ function renderRunPanel(section, unit, source = '') {
       <p class="eyebrow">읽은 뒤 실행</p>
       <h4>이 코드를 내 환경에서 확인하기</h4>
       <p>위 코드를 먼저 훑은 다음 실행해 보세요. 종료 코드, 선택된 CPU/GPU, 출력과 산출물이 아래에 정리됩니다.</p>
-      ${mappedToStage ? `<p class="run-target-note">이 탭은 실험의 일부입니다. 버튼은 같은 단원의 <code>${escapeHtml(runPath)}</code>를 실행해 데이터 준비·모델 학습·평가 결과를 함께 만듭니다.</p>` : ''}
+      ${mappedToStage ? '<p class="run-target-note">이 탭은 실험의 일부입니다. 버튼은 같은 단원의 <strong>실험 실행 코드</strong>를 실행해 데이터 준비·모델 학습·평가 결과를 함께 만듭니다.</p>' : ''}
     </div>
     <div class="run-actions">
       <button type="button" data-run-code data-run-path="${escapeHtml(runPath)}" data-run-source-path="${escapeHtml(sourcePath)}">${escapeHtml(runButtonLabel(section, unit))}</button>
@@ -737,6 +778,7 @@ async function runPythonSection(section, button, unit) {
     if (artifactViewer) {
       artifactViewer.innerHTML = renderArtifactViewer(payload, section, unit);
       artifactViewer.hidden = false;
+      bindInlineDocLinks(unit, section.href, artifactViewer);
     }
     status.textContent = payload.returncode === 0 ? '실행 완료' : `종료 코드 ${payload.returncode}`;
   } catch (error) {
@@ -776,15 +818,21 @@ async function runCodeCellProbe(section, button, unit) {
 function formatRunResult(payload) {
   const command = Array.isArray(payload.command) ? payload.command.join(' ') : `python ${payload.path || ''}`.trim();
   const lines = [
-    `명령: ${command}`,
+    `실행한 코드: ${learnerRunTargetLabel(payload.path || '')}`,
     `종료 코드: ${payload.returncode}`,
   ];
   if (payload.runner) lines.push(`실행 환경: ${formatRunnerSummary(payload.runner)}`);
   if (payload.duration_seconds !== undefined) lines.push(`실행 시간: ${payload.duration_seconds}s`);
   if (payload.stdout) lines.push('', '[표준 출력]', payload.stdout.trimEnd());
   if (payload.stderr) lines.push('', '[오류 출력]', payload.stderr.trimEnd());
+  if (payload.returncode !== 0 && command) lines.push('', '[문제 해결용 내부 명령]', command);
   if (!payload.stdout && !payload.stderr) lines.push('', '(출력 없음)');
   return lines.join('\n');
+}
+
+function learnerRunTargetLabel(path) {
+  const file = String(path || '').split('/').pop();
+  return SECTION_DISPLAY_LABELS[file] || file || '선택한 코드';
 }
 
 function formatRunnerSummary(runner) {
@@ -898,13 +946,14 @@ function artifactLabel(artifact) {
 
 function renderArtifactCard(artifact) {
   const preview = artifact.preview || {};
+  const fileName = String(artifact.path || '').split('/').pop() || '실행 산출물';
   return `<article class="artifact-card">
     <div class="artifact-head">
       <strong>${escapeHtml(artifactLabel(artifact))}</strong>
-      <code>${escapeHtml(artifact.path || '')}</code>
+      <code title="${escapeHtml(artifact.path || '')}">${escapeHtml(fileName)}</code>
     </div>
     <p>${escapeHtml(artifact.type || 'file')} · ${escapeHtml(formatBytes(artifact.size_bytes || 0))}</p>
-    ${renderArtifactPreview(preview)}
+    ${renderArtifactPreview(preview, artifact)}
   </article>`;
 }
 
@@ -915,7 +964,7 @@ function formatBytes(size) {
   return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
 }
 
-function renderArtifactPreview(preview) {
+function renderArtifactPreview(preview, artifact = {}) {
   if (preview.kind === 'json') {
     return `<pre class="artifact-json">${escapeHtml(JSON.stringify(preview.json, null, 2).slice(0, 5000))}</pre>`;
   }
@@ -924,6 +973,10 @@ function renderArtifactPreview(preview) {
   }
   if (preview.kind === 'text') {
     const text = String(preview.text || '');
+    const artifactPath = String(artifact.path || '');
+    if (artifact.type === 'markdown' || /\.md$/i.test(artifactPath)) {
+      return `<div class="artifact-markdown">${renderMarkdown(text.slice(0, 3000), artifactPath)}</div>`;
+    }
     if (text.includes(',') && text.includes('\n')) return renderCsvPreview(text);
     return `<pre class="artifact-text">${escapeHtml(text.slice(0, 3000))}</pre>`;
   }
@@ -2081,8 +2134,9 @@ function markSectionComplete(unit, section) {
   updateLesson(unit.path, { checkpoints: next, percent: nextPercent, state: nextState });
 }
 
-function bindInlineDocLinks(unit, baseHref) {
-  $('#lesson-content').querySelectorAll('[data-doc-href]').forEach((button) => {
+function bindInlineDocLinks(unit, baseHref, root = $('#lesson-content')) {
+  if (!root) return;
+  root.querySelectorAll('[data-doc-href]').forEach((button) => {
     button.addEventListener('click', () => {
       const section = {
         id: `inline-${button.dataset.docLabel}`,
@@ -2386,11 +2440,20 @@ function renderRouteCard() {
 
 function learningStepsFor(unit) {
   const hasMlRunner = (unit.resources || []).some((resource) => resource.label === 'run_stage.py');
+  const resourceLabels = new Set((unit.resources || []).map((resource) => resource.label));
+  const mlSetupParts = [
+    resourceLabels.has('dataset.py') ? '데이터 준비 코드' : '',
+    resourceLabels.has('models.py') ? '모델 코드' : '',
+    resourceLabels.has('experiment.py') ? '실험 흐름 코드' : '',
+  ].filter(Boolean);
+  const mlSetupDescription = mlSetupParts.length
+    ? `${mlSetupParts.join(' · ')}에서 이번 실험의 입력, 후보 모델, 평가 지표가 어떻게 이어지는지 본다.`
+    : '실험 흐름 코드에서 이번 실험의 입력, 후보 모델, 평가 지표가 어떻게 이어지는지 본다.';
   const steps = hasMlRunner ? [
     { key: 'theory', label: '이론 읽기', description: '단원 안내와 핵심 이론으로 데이터셋, 기준 모델, 평가 지표의 역할을 먼저 잡는다.' },
-    { key: 'lab-setup', label: '실습 구성 살펴보기', description: '데이터 준비 코드와 실험 흐름 코드에서 데이터 생성, 모델, 평가 지표가 어떻게 연결되는지 본다.' },
+    { key: 'lab-setup', label: '실습 구성 살펴보기', description: mlSetupDescription },
     { key: 'run-stage', label: '실험 실행하기', description: '실험 실행 코드에서 어떤 단계가 어떤 결과물을 만드는지 확인한다.' },
-    { key: 'analysis', label: '결과 정리하기', description: '결과 해석 코드와 리포트 코드로 결과를 해석하고 다음 실험 질문을 남긴다.' },
+    { key: 'analysis', label: '결과 정리하기', description: '결과 해석 코드나 해석 노트가 보이는 단원에서는 산출물의 숫자·그림을 읽고 다음 실험 질문을 남긴다.' },
   ] : [
     { key: 'theory', label: '이론 읽기', description: '단원 안내, 핵심 이론, 준비 확인으로 왜 배우는지와 선행 개념을 잡는다.' },
     { key: 'scratch', label: '기초 실습하기', description: '기초 실습 코드로 작은 수치와 직접 계산을 확인한다.' },

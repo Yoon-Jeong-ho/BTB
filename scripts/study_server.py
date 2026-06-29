@@ -9,6 +9,7 @@ import subprocess
 import sys
 import time
 from dataclasses import dataclass
+from functools import lru_cache
 from http import HTTPStatus
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -18,6 +19,7 @@ from urllib.parse import unquote
 
 ROOT = Path(__file__).resolve().parents[1]
 RUNNABLE_NAMES = {"scratch_lab.py", "framework_lab.py", "analysis.py", "run_stage.py"}
+INSPECTABLE_NAMES = RUNNABLE_NAMES | {"dataset.py", "models.py", "experiment.py", "report.py"}
 DEFAULT_TIMEOUT_SECONDS = 60
 MAX_ARTIFACTS = 12
 MAX_ARTIFACT_PREVIEW_BYTES = 96_000
@@ -38,23 +40,64 @@ def _json_bytes(payload: dict[str, Any]) -> bytes:
     return json.dumps(payload, ensure_ascii=False, indent=2).encode("utf-8")
 
 
-def _resolve_runnable_path(raw_path: str) -> Path:
+def _clean_repo_relative_path(raw_path: str) -> str:
     cleaned = unquote(str(raw_path or "")).strip()
     if cleaned.startswith("/"):
         cleaned = cleaned.lstrip("/")
     while cleaned.startswith("../"):
         cleaned = cleaned[3:]
+    return cleaned
 
+
+@lru_cache(maxsize=1)
+def _catalog_resource_paths() -> frozenset[str]:
+    catalog_path = ROOT / "web" / "catalog.json"
+    try:
+        catalog = json.loads(catalog_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return frozenset()
+
+    exposed: set[str] = set()
+    for track in catalog.get("tracks", []):
+        for unit in track.get("units", []):
+            for resource in unit.get("resources", []):
+                href = _clean_repo_relative_path(str(resource.get("href", "")))
+                if href:
+                    exposed.add(href)
+    return frozenset(exposed)
+
+
+def _resolve_repo_file(raw_path: str) -> tuple[Path, str]:
+    cleaned = _clean_repo_relative_path(raw_path)
     candidate = (ROOT / cleaned).resolve()
     try:
         candidate.relative_to(ROOT)
     except ValueError as exc:
-        raise PermissionError("repository 밖의 파일은 실행할 수 없습니다.") from exc
-
-    if candidate.name not in RUNNABLE_NAMES:
-        raise PermissionError("scratch_lab.py, framework_lab.py, analysis.py, run_stage.py만 실행할 수 있습니다.")
+        raise PermissionError("repository 밖의 파일은 열 수 없습니다.") from exc
     if not candidate.is_file():
         raise FileNotFoundError(cleaned)
+    relative = str(candidate.relative_to(ROOT)).replace(os.sep, "/")
+    return candidate, relative
+
+
+def _require_catalog_exposed(relative_path: str, action: str) -> None:
+    if relative_path not in _catalog_resource_paths():
+        raise PermissionError(f"사이트에 노출된 코드만 {action}할 수 있습니다.")
+
+
+def _resolve_runnable_path(raw_path: str) -> Path:
+    candidate, relative = _resolve_repo_file(raw_path)
+    if candidate.name not in RUNNABLE_NAMES:
+        raise PermissionError("scratch_lab.py, framework_lab.py, analysis.py, run_stage.py만 실행할 수 있습니다.")
+    _require_catalog_exposed(relative, "실행")
+    return candidate
+
+
+def _resolve_inspectable_path(raw_path: str) -> Path:
+    candidate, relative = _resolve_repo_file(raw_path)
+    if candidate.name not in INSPECTABLE_NAMES:
+        raise PermissionError("사이트에 노출된 Python 실습 코드만 분석할 수 있습니다.")
+    _require_catalog_exposed(relative, "분석")
     return candidate
 
 
@@ -135,6 +178,22 @@ def _safe_artifact_files(script_path: Path) -> list[Path]:
     return files
 
 
+def _artifact_priority(path: Path) -> int:
+    name = path.name.lower()
+    parts = {part.lower() for part in path.parts}
+    if name == "metrics.json":
+        return 0
+    if name in {"summary.md", "readme.md"}:
+        return 1
+    if path.suffix.lower() == ".csv":
+        return 2
+    if "results" in parts:
+        return 3
+    if "analysis" in parts:
+        return 4
+    return 5
+
+
 def _collect_artifacts(
     script_path: Path,
     *,
@@ -153,7 +212,7 @@ def _collect_artifacts(
             if previous_snapshot.get(key) != (stat.st_mtime_ns, stat.st_size):
                 changed_files.append(path)
         files = changed_files
-    files.sort(key=lambda path: path.stat().st_mtime, reverse=True)
+    files.sort(key=lambda path: (_artifact_priority(path), -path.stat().st_mtime))
     collected = []
     for path in files[:MAX_ARTIFACTS]:
         relative = path.relative_to(ROOT)
@@ -385,6 +444,27 @@ class StudyRequestHandler(SimpleHTTPRequestHandler):
         self.send_header("Cache-Control", "no-store")
         super().end_headers()
 
+    def do_GET(self) -> None:  # noqa: N802 - http.server API
+        if self.path != "/api/runtime-info":
+            super().do_GET()
+            return
+
+        config: RunnerConfig = getattr(self.server, "runner_config", RunnerConfig())  # type: ignore[attr-defined]
+        self._send_json(
+            HTTPStatus.OK,
+            {
+                "server": "BTBStudyServer",
+                "can_run_python": True,
+                "environment": _python_prefix(config)[1],
+                "device": config.device,
+                "gpu_index": config.gpu_index or "auto",
+                "gpu_policy": {
+                    "max_used_mb": config.gpu_max_used_mb,
+                    "max_util_percent": config.gpu_max_util_percent,
+                },
+            },
+        )
+
     def do_POST(self) -> None:  # noqa: N802 - http.server API
         if self.path in {"/api/run-code-cell", "/api/partial-experiment"}:
             self._handle_code_cell()
@@ -469,7 +549,7 @@ class StudyRequestHandler(SimpleHTTPRequestHandler):
             length = int(self.headers.get("Content-Length", "0"))
             body = self.rfile.read(length).decode("utf-8")
             request = json.loads(body or "{}")
-            script_path = _resolve_runnable_path(str(request.get("path", "")))
+            script_path = _resolve_inspectable_path(str(request.get("path", "")))
             symbol = str(request.get("symbol") or "").strip() or None
             cell = _inspect_python_cell(script_path, symbol)
         except PermissionError as exc:

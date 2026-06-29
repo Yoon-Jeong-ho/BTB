@@ -4,18 +4,25 @@
 
 ```bash
 python scripts/build_web_catalog.py
-python -m http.server 8000
-# http://localhost:8000 또는 http://localhost:8000/web/ 열기
+python scripts/study_server.py --port 8000 --device auto
+# http://localhost:8000/web/ 열기
 ```
 
 > 주의: 저장소 루트에서 실행해야 사이트 안에서 단원 문서와 실습 코드가 함께 열린다. `web/` 폴더 안에서 서버를 띄우면 커리큘럼 문서 fetch 경로가 깨질 수 있다.
 
 ## Python 버튼 실행까지 쓰기
 
-일반 `python -m http.server 8000`은 정적 파일만 보여 주므로 브라우저 버튼으로 Python을 실행할 수 없다. 이미 정적 서버로 열었다면 그 터미널에서 `Ctrl+C`로 멈춘 뒤, 저장소 루트에서 아래 실행 서버로 다시 띄운다.
+위의 `study_server.py`가 기본 실행 경로다. 일반 `python -m http.server 8000`은 정적 파일만 보여 주므로 브라우저 버튼으로 Python을 실행할 수 없다. 이미 정적 서버로 열었다면 그 터미널에서 `Ctrl+C`로 멈춘 뒤, 저장소 루트에서 아래 실행 서버로 다시 띄운다.
 
 ```bash
 python scripts/study_server.py --port 8000 --device auto
+# http://localhost:8000/web/ 열기
+```
+
+읽기 전용으로 문서만 확인할 때만 아래 정적 서버를 fallback으로 쓴다.
+
+```bash
+python -m http.server 8000
 # http://localhost:8000/web/ 열기
 ```
 

@@ -79,6 +79,7 @@ class WebStudySiteContractTest(unittest.TestCase):
         readme = (WEB / "README.md").read_text(encoding="utf-8")
 
         self.assertIn("BTB", html)
+        self.assertIn("runtime-badge", html)
         self.assertIn("catalog.json", app)
         self.assertIn("progress-storage.js", html)
         self.assertIn("btb.study.progress.v1", storage)
@@ -87,6 +88,7 @@ class WebStudySiteContractTest(unittest.TestCase):
         self.assertIn("사용자별", html + readme)
         self.assertIn("python -m http.server 8000", readme)
         self.assertIn("python scripts/study_server.py --port 8000", readme)
+        self.assertLess(readme.find("python scripts/study_server.py --port 8000"), readme.find("python -m http.server 8000"))
         self.assertIn("--conda-env", readme)
         self.assertIn("--device auto", readme)
         self.assertIn("http://localhost:8000/web/", readme)
@@ -122,6 +124,7 @@ class WebStudySiteContractTest(unittest.TestCase):
         app = (WEB / "app.js").read_text(encoding="utf-8")
         styles = (WEB / "styles.css").read_text(encoding="utf-8")
         html = (WEB / "index.html").read_text(encoding="utf-8")
+        builder = (ROOT / "scripts" / "build_web_catalog.py").read_text(encoding="utf-8")
         root_readme = (ROOT / "README.md").read_text(encoding="utf-8")
         web_readme = (WEB / "README.md").read_text(encoding="utf-8")
         ml_dl_bridge = (ROOT / "docs" / "04_feature_matrix_to_neural_training_bridge.md").read_text(encoding="utf-8")
@@ -167,6 +170,12 @@ class WebStudySiteContractTest(unittest.TestCase):
         self.assertIn('.document-tabs button[data-complete="true"]', styles)
 
         self.assertIn("reader-panel", html)
+        self.assertIn("runtime-info", app)
+        self.assertIn("실행 가능 ·", app)
+        self.assertIn("읽기 전용 · 실행은 study_server.py", app)
+        self.assertIn("runtime-badge", styles)
+        self.assertIn("trackLearnerDescriptor", app)
+        self.assertNotIn("${escapeHtml(track.id)}</div>", app)
         self.assertIn("study-sidebar", html)
         self.assertIn("grid-template-areas", styles)
         self.assertIn('"sidebar reader"', styles)
@@ -192,6 +201,7 @@ class WebStudySiteContractTest(unittest.TestCase):
         self.assertIn("질문 필요", html + app + (WEB / "progress-storage.js").read_text(encoding="utf-8"))
         self.assertIn("읽은 뒤 실행", app)
         self.assertIn("이 코드를 내 환경에서 확인하기", app)
+        self.assertIn("_is_substantive_ml_helper", builder)
         self.assertIn("기초 실습 코드와 프레임워크 실습 코드를 먼저 실행", app)
         self.assertIn("서버 재시작이 자동 삭제하지는 않지만", app)
         code_branch = app.split("if (section.type === 'code')", 1)[1].split("} else", 1)[0]
@@ -371,6 +381,9 @@ class WebStudySiteContractTest(unittest.TestCase):
         self.assertIn("mini-code", styles)
         self.assertIn("run-panel", styles)
         self.assertIn("run-output", styles)
+        self.assertIn("artifact-markdown", app)
+        self.assertIn("renderMarkdown(text.slice", app)
+        self.assertIn("bindInlineDocLinks(unit, section.href, artifactViewer)", app)
         self.assertIn("reader-shell", styles)
         self.assertIn("sticky", styles)
         self.assertNotIn("learner-comment", app + styles)
@@ -574,6 +587,14 @@ assert.strictEqual(recovered.users.carol.lessons['10_vla/01_vision_language_acti
         else:
             self.fail(f"study_server.py did not start: {last_error}; stderr={server.stderr.read() if server.stderr else ''}")
 
+        with urllib.request.urlopen(f"{base}/api/runtime-info", timeout=5) as response:
+            self.assertEqual(200, response.status)
+            runtime_payload = json.loads(response.read().decode("utf-8"))
+        self.assertTrue(runtime_payload["can_run_python"])
+        self.assertEqual("BTBStudyServer", runtime_payload["server"])
+        self.assertIn("environment", runtime_payload)
+        self.assertIn("device", runtime_payload)
+
         artifact_dir = ROOT / "00_foundations" / "01_tensor_shapes" / "artifacts"
         artifact_dir.mkdir(exist_ok=True)
         stale_artifact = artifact_dir / "stale-from-test.txt"
@@ -637,6 +658,36 @@ assert.strictEqual(recovered.users.carol.lessons['10_vla/01_vision_language_acti
         self.assertIn("source_excerpt", cell_payload["cell"])
         self.assertIn("ARTIFACT_DIR", cell_payload["cell"]["artifact_names"])
 
+        helper_probe = urllib.request.Request(
+            f"{base}/api/partial-experiment",
+            data=json.dumps({"path": "01_ml/01_tabular_classification/models.py", "symbol": "build_sklearn_models"}).encode("utf-8"),
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        with urllib.request.urlopen(helper_probe, timeout=10) as response:
+            self.assertEqual(200, response.status)
+            helper_payload = json.loads(response.read().decode("utf-8"))
+        self.assertEqual(0, helper_payload["returncode"])
+        self.assertEqual("function_probe", helper_payload["cell"]["mode"])
+        self.assertEqual("build_sklearn_models", helper_payload["cell"]["symbol"])
+
+        stage_run = urllib.request.Request(
+            f"{base}/api/run-python",
+            data=json.dumps({"path": "01_ml/01_tabular_classification/run_stage.py"}).encode("utf-8"),
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        with urllib.request.urlopen(stage_run, timeout=90) as response:
+            self.assertEqual(200, response.status)
+            stage_payload = json.loads(response.read().decode("utf-8"))
+        self.assertEqual(0, stage_payload["returncode"])
+        self.assertEqual("01_ml/01_tabular_classification/run_stage.py", stage_payload["path"])
+        self.assertIn("best_model", stage_payload["stdout"])
+        self.assertTrue(
+            any(artifact["path"].endswith("metrics.json") for artifact in stage_payload["artifacts"]),
+            [artifact["path"] for artifact in stage_payload["artifacts"]],
+        )
+
         forbidden = urllib.request.Request(
             f"{base}/api/run-python",
             data=json.dumps({"path": "README.md"}).encode("utf-8"),
@@ -650,6 +701,16 @@ assert.strictEqual(recovered.users.carol.lessons['10_vla/01_vision_language_acti
         server_module = self._load_study_server()
         runnable = server_module._resolve_runnable_path("01_ml/01_tabular_classification/run_stage.py")
         self.assertEqual(ROOT / "01_ml" / "01_tabular_classification" / "run_stage.py", runnable)
+        inspectable = server_module._resolve_inspectable_path("01_ml/01_tabular_classification/models.py")
+        self.assertEqual(ROOT / "01_ml" / "01_tabular_classification" / "models.py", inspectable)
+
+        hidden_analysis = ROOT / "01_ml" / "01_tabular_classification" / "analysis.py"
+        hidden_analysis.write_text("print('hidden runner')\n", encoding="utf-8")
+        self.addCleanup(lambda: hidden_analysis.exists() and hidden_analysis.unlink())
+        with self.assertRaises(PermissionError):
+            server_module._resolve_runnable_path("01_ml/01_tabular_classification/analysis.py")
+        with self.assertRaises(PermissionError):
+            server_module._resolve_inspectable_path("01_ml/01_tabular_classification/analysis.py")
 
     def test_ml_helper_tabs_must_execute_via_run_stage_allowlist_only(self) -> None:
         server_module = self._load_study_server()
@@ -658,10 +719,15 @@ assert.strictEqual(recovered.users.carol.lessons['10_vla/01_vision_language_acti
         runnable = server_module._resolve_runnable_path("01_ml/01_tabular_classification/run_stage.py")
         self.assertEqual(stage_root / "run_stage.py", runnable)
 
-        for helper_name in ["dataset.py", "models.py", "experiment.py", "report.py"]:
+        for helper_name in ["dataset.py", "models.py", "experiment.py"]:
             with self.subTest(helper_name=helper_name):
                 with self.assertRaises(PermissionError):
                     server_module._resolve_runnable_path(f"01_ml/01_tabular_classification/{helper_name}")
+                inspectable = server_module._resolve_inspectable_path(f"01_ml/01_tabular_classification/{helper_name}")
+                self.assertEqual(stage_root / helper_name, inspectable)
+
+        with self.assertRaises(FileNotFoundError):
+            server_module._resolve_runnable_path("01_ml/01_tabular_classification/report.py")
 
     def test_study_server_builds_conda_gpu_and_cpu_fallback_invocations(self) -> None:
         server = self._load_study_server()
@@ -732,11 +798,21 @@ assert.strictEqual(recovered.users.carol.lessons['10_vla/01_vision_language_acti
         self.assertIn("dataset.py", ml_labels)
         self.assertIn("experiment.py", ml_labels)
         self.assertIn("run_stage.py", ml_labels)
-        self.assertIn("analysis.py", ml_labels)
+        self.assertIn("models.py", ml_labels)
+        self.assertNotIn("analysis.py", ml_labels)
+        self.assertNotIn("report.py", ml_labels)
         self.assertNotIn("scratch_lab.py", ml_labels)
         self.assertNotIn("framework_lab.py", ml_labels)
         self.assertIn("실습 구성", ml_unit["checkpoints"])
         self.assertTrue(ml_unit["objective"])
+        shallow_hidden_units = [
+            catalog_units["01_ml"]["02_tabular_regression"],
+            catalog_units["01_ml"]["03_model_selection_and_interpretation"],
+            catalog_units["01_ml"]["04_large_scale_tabular"],
+        ]
+        for unit in shallow_hidden_units:
+            labels = [resource["label"] for resource in unit["resources"]]
+            self.assertEqual(["README", "THEORY", "experiment.py", "run_stage.py"], labels)
         for unit in catalog_units["01_ml"].values():
             for field in ["prereqs", "key_terms", "required_outputs", "analysis_questions"]:
                 self.assertTrue(unit[field], f"{unit['path']} needs learner-facing metadata for {field}")

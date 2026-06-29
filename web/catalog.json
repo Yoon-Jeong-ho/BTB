@@ -660,22 +660,6 @@
               "type": "code",
               "language": "python",
               "checkpoint": "실행 명령"
-            },
-            {
-              "id": "analysis-py",
-              "label": "analysis.py",
-              "href": "01_ml/01_tabular_classification/analysis.py",
-              "type": "code",
-              "language": "python",
-              "checkpoint": "analysis script"
-            },
-            {
-              "id": "report-py",
-              "label": "report.py",
-              "href": "01_ml/01_tabular_classification/report.py",
-              "type": "code",
-              "language": "python",
-              "checkpoint": ""
             }
           ],
           "checkpoints": [
@@ -683,8 +667,7 @@
             "THEORY",
             "실습 구성",
             "실험 실행",
-            "실행 명령",
-            "analysis script"
+            "실행 명령"
           ],
           "cpu_safe": false,
           "deterministic": false
@@ -743,22 +726,6 @@
               "checkpoint": "THEORY"
             },
             {
-              "id": "dataset-py",
-              "label": "dataset.py",
-              "href": "01_ml/02_tabular_regression/dataset.py",
-              "type": "code",
-              "language": "python",
-              "checkpoint": "실습 구성"
-            },
-            {
-              "id": "models-py",
-              "label": "models.py",
-              "href": "01_ml/02_tabular_regression/models.py",
-              "type": "code",
-              "language": "python",
-              "checkpoint": ""
-            },
-            {
               "id": "experiment-py",
               "label": "experiment.py",
               "href": "01_ml/02_tabular_regression/experiment.py",
@@ -773,31 +740,13 @@
               "type": "code",
               "language": "python",
               "checkpoint": "실행 명령"
-            },
-            {
-              "id": "analysis-py",
-              "label": "analysis.py",
-              "href": "01_ml/02_tabular_regression/analysis.py",
-              "type": "code",
-              "language": "python",
-              "checkpoint": "analysis script"
-            },
-            {
-              "id": "report-py",
-              "label": "report.py",
-              "href": "01_ml/02_tabular_regression/report.py",
-              "type": "code",
-              "language": "python",
-              "checkpoint": ""
             }
           ],
           "checkpoints": [
             "README",
             "THEORY",
-            "실습 구성",
             "실험 실행",
-            "실행 명령",
-            "analysis script"
+            "실행 명령"
           ],
           "cpu_safe": false,
           "deterministic": false
@@ -855,22 +804,6 @@
               "checkpoint": "THEORY"
             },
             {
-              "id": "dataset-py",
-              "label": "dataset.py",
-              "href": "01_ml/03_model_selection_and_interpretation/dataset.py",
-              "type": "code",
-              "language": "python",
-              "checkpoint": "실습 구성"
-            },
-            {
-              "id": "models-py",
-              "label": "models.py",
-              "href": "01_ml/03_model_selection_and_interpretation/models.py",
-              "type": "code",
-              "language": "python",
-              "checkpoint": ""
-            },
-            {
               "id": "experiment-py",
               "label": "experiment.py",
               "href": "01_ml/03_model_selection_and_interpretation/experiment.py",
@@ -885,31 +818,13 @@
               "type": "code",
               "language": "python",
               "checkpoint": "실행 명령"
-            },
-            {
-              "id": "analysis-py",
-              "label": "analysis.py",
-              "href": "01_ml/03_model_selection_and_interpretation/analysis.py",
-              "type": "code",
-              "language": "python",
-              "checkpoint": "analysis script"
-            },
-            {
-              "id": "report-py",
-              "label": "report.py",
-              "href": "01_ml/03_model_selection_and_interpretation/report.py",
-              "type": "code",
-              "language": "python",
-              "checkpoint": ""
             }
           ],
           "checkpoints": [
             "README",
             "THEORY",
-            "실습 구성",
             "실험 실행",
-            "실행 명령",
-            "analysis script"
+            "실행 명령"
           ],
           "cpu_safe": false,
           "deterministic": false
@@ -967,22 +882,6 @@
               "checkpoint": "THEORY"
             },
             {
-              "id": "dataset-py",
-              "label": "dataset.py",
-              "href": "01_ml/04_large_scale_tabular/dataset.py",
-              "type": "code",
-              "language": "python",
-              "checkpoint": "실습 구성"
-            },
-            {
-              "id": "models-py",
-              "label": "models.py",
-              "href": "01_ml/04_large_scale_tabular/models.py",
-              "type": "code",
-              "language": "python",
-              "checkpoint": ""
-            },
-            {
               "id": "experiment-py",
               "label": "experiment.py",
               "href": "01_ml/04_large_scale_tabular/experiment.py",
@@ -997,31 +896,13 @@
               "type": "code",
               "language": "python",
               "checkpoint": "실행 명령"
-            },
-            {
-              "id": "analysis-py",
-              "label": "analysis.py",
-              "href": "01_ml/04_large_scale_tabular/analysis.py",
-              "type": "code",
-              "language": "python",
-              "checkpoint": "analysis script"
-            },
-            {
-              "id": "report-py",
-              "label": "report.py",
-              "href": "01_ml/04_large_scale_tabular/report.py",
-              "type": "code",
-              "language": "python",
-              "checkpoint": ""
             }
           ],
           "checkpoints": [
             "README",
             "THEORY",
-            "실습 구성",
             "실험 실행",
-            "실행 명령",
-            "analysis script"
+            "실행 명령"
           ],
           "cpu_safe": false,
           "deterministic": false

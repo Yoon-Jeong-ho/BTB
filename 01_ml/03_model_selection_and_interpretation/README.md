@@ -56,9 +56,10 @@ y = bike.data.targets
 
 ## 코드 구조
 
-- `dataset.py`: Bike Sharing 로딩과 leakage 방지용 feature 정리
+웹 학습 화면에서는 `experiment.py`와 `run_stage.py`를 중심으로 읽고, `dataset.py`는 실험 흐름 안에서 호출되는 내부 보조 코드로 둔다.
+
+- `dataset.py`: Bike Sharing 로딩과 leakage 방지용 feature 정리 보조
 - `experiment.py`: TimeSeriesSplit, 후보 비교, tuning, slice figure 생성
-- `report.py`: 최신 artifact 경로 보조
 - `run_stage.py`: 이 stage만 실행하는 entrypoint
 
 ## 이 데이터에서 꼭 기억할 것

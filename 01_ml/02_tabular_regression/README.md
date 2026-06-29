@@ -73,11 +73,10 @@ df = frame.frame
 
 ## 코드 구조
 
-이 stage의 코드는 이제 이 폴더 안에서 바로 읽힌다.
+웹 학습 화면에서는 `experiment.py`와 `run_stage.py`를 중심으로 읽고, `dataset.py`는 실험 흐름 안에서 호출되는 내부 보조 코드로 둔다.
 
-- `dataset.py`: California Housing 로딩
+- `dataset.py`: California Housing 로딩 보조
 - `experiment.py`: 전처리, 모델 비교, residual 분석, figure 생성
-- `report.py`: 최신 artifact 경로 보조
 - `run_stage.py`: 이 stage만 실행하는 entrypoint
 
 ## 결과를 읽을 때 봐야 할 것

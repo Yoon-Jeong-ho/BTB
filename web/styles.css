@@ -39,6 +39,10 @@ h1 { margin: 0; font-size: clamp(1.55rem, 3vw, 2.4rem); line-height: 1.08; }
 .hero-card { min-width: 160px; border: 1px solid var(--line); border-radius: 20px; background: var(--panel); padding: 1.1rem; display: grid; place-content: center; text-align: center; box-shadow: 0 12px 30px rgb(77 48 20 / 0.08); }
 .hero-card span { font-size: 1.9rem; font-weight: 900; color: var(--accent-2); }
 .hero-card small { color: var(--muted); }
+.runtime-badge { margin-top: 0.55rem; border-radius: 999px; padding: 0.28rem 0.55rem; font-size: 0.74rem; font-weight: 900; border: 1px solid var(--line); background: var(--soft); color: var(--muted); }
+.runtime-badge.ready { border-color: color-mix(in srgb, var(--good) 36%, var(--line)); background: color-mix(in srgb, var(--good) 12%, white); color: var(--good); }
+.runtime-badge.readonly { border-color: color-mix(in srgb, var(--warn) 36%, var(--line)); background: color-mix(in srgb, var(--warn) 10%, white); color: var(--warn); }
+.runtime-badge.checking { background: color-mix(in srgb, var(--accent-2) 8%, white); color: var(--accent-2); }
 
 .layout { display: grid; grid-template-columns: clamp(15rem, 22vw, 20rem) minmax(0, 1fr); grid-template-areas: "sidebar reader"; gap: 1rem; padding: 1rem; align-items: start; overflow-x: clip; }
 .study-sidebar { grid-area: sidebar; position: sticky; top: 1rem; display: grid; min-width: 0; max-height: calc(100vh - 2rem); overflow: auto; align-self: start; }
@@ -128,7 +132,7 @@ textarea { width: 100%; font-family: inherit; }
 .run-panel h4 { margin: 0.15rem 0 0.4rem; }
 .run-panel p { margin: 0; color: var(--muted); }
 .run-target-note { margin-top: 0.65rem !important; border-radius: 12px; background: white; border: 1px solid color-mix(in srgb, var(--good) 20%, var(--line)); padding: 0.6rem; overflow-wrap: anywhere; }
-.run-target-note code { background: color-mix(in srgb, var(--good) 12%, white); color: var(--good); }
+.run-target-note strong { color: var(--good); }
 .run-actions { display: grid; gap: 0.55rem; align-content: start; }
 .run-actions button { justify-self: start; background: var(--good); color: white; border-color: var(--good); }
 .run-actions button:disabled { opacity: 0.65; cursor: wait; }
@@ -162,6 +166,10 @@ textarea { width: 100%; font-family: inherit; }
 .artifact-head { display: grid; gap: 0.25rem; }
 .artifact-head code { overflow-wrap: anywhere; white-space: normal; }
 .artifact-json, .artifact-text { max-height: 260px; overflow: auto; border-radius: 12px; background: #201a17; color: #fff4e8; padding: 0.75rem; white-space: pre-wrap; overflow-wrap: anywhere; }
+.artifact-markdown { max-height: 320px; overflow: auto; border-radius: 12px; background: white; color: #201a17; border: 1px solid var(--line); padding: 0.75rem; }
+.artifact-markdown h1, .artifact-markdown h2, .artifact-markdown h3 { margin-top: 0.35rem; }
+.artifact-markdown table { width: 100%; border-collapse: collapse; }
+.artifact-markdown th, .artifact-markdown td { border: 1px solid var(--line); padding: 0.35rem; vertical-align: top; }
 .artifact-image { display: block; width: 100%; max-height: 280px; object-fit: contain; border-radius: 12px; background: white; border: 1px solid var(--line); }
 .artifact-missing { display: grid; gap: 0.25rem; border: 1px solid color-mix(in srgb, var(--warn) 30%, var(--line)); background: color-mix(in srgb, var(--warn) 8%, white); border-radius: 12px; padding: 0.65rem; }
 .artifact-missing strong { color: var(--warn); }

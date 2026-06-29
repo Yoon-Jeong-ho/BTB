@@ -297,14 +297,17 @@ async function assertMlRunnerResources(page) {
   await page.getByRole('tab', { name: '모델 코드' }).waitFor({ state: 'visible' });
   await page.getByRole('tab', { name: '실험 흐름 코드' }).waitFor({ state: 'visible' });
   await page.getByRole('tab', { name: '실험 실행 코드' }).waitFor({ state: 'visible' });
-  await page.getByRole('tab', { name: '리포트 코드' }).waitFor({ state: 'visible' });
   if (await page.getByRole('tab', { name: '기초 실습 코드' }).count()) {
     throw new Error('01_ml should not show missing scratch_lab.py tab');
   }
-  await assertMlHelperRunsStage(page, '데이터 준비 코드', '데이터 준비 코드: 실험에 넣을 표 만들기', 'dataset.py');
+  await assertMlHelperRunsStage(page, '데이터 준비 코드', '데이터 준비 코드: 실험에 넣을 표 만들기', 'dataset.py', { executeStage: true });
   await assertMlHelperRunsStage(page, '모델 코드', '모델 코드: 후보 모델을 비교 가능하게 만들기', 'models.py');
   await assertMlHelperRunsStage(page, '실험 흐름 코드', '실험 흐름 코드: 준비·학습·평가 연결하기', 'experiment.py');
-  await assertMlHelperRunsStage(page, '리포트 코드', '리포트 코드', 'report.py');
+  for (const hiddenLabel of ['리포트 코드', '결과 해석 코드']) {
+    if (await page.getByRole('tab', { name: hiddenLabel }).count()) {
+      throw new Error(`01_ml should not expose shallow helper tab: ${hiddenLabel}`);
+    }
+  }
   await page.getByRole('tab', { name: '실험 실행 코드' }).click();
   await page.locator('.code-block code', { hasText: '# 코드 읽기 힌트:' }).waitFor({ state: 'visible' });
   await page.locator('.code-block code', { hasText: 'run_stage(device)' }).waitFor({ state: 'visible' });
@@ -314,12 +317,27 @@ async function assertMlRunnerResources(page) {
   if (runStagePath !== '01_ml/01_tabular_classification/run_stage.py') {
     throw new Error(`run_stage tab should keep its own runnable path, got ${runStagePath}`);
   }
+
+  await selectStudyUnit(page, '01 ML', '02 표형 회귀');
+  for (const hiddenLabel of ['데이터 준비 코드', '모델 코드', '리포트 코드', '결과 해석 코드']) {
+    if (await page.getByRole('tab', { name: hiddenLabel }).count()) {
+      throw new Error(`02_ml should hide shallow helper tab: ${hiddenLabel}`);
+    }
+  }
+  await page.getByRole('tab', { name: '실험 흐름 코드' }).waitFor({ state: 'visible' });
+  await page.getByRole('tab', { name: '실험 실행 코드' }).waitFor({ state: 'visible' });
 }
 
-async function assertMlHelperRunsStage(page, tabName, explanationText, sourceFile) {
+async function assertMlHelperRunsStage(page, tabName, explanationText, sourceFile, options = {}) {
   await page.getByRole('tab', { name: tabName }).click();
   await page.locator('.code-explanation', { hasText: explanationText }).waitFor({ state: 'visible' });
-  await page.locator('.run-target-note', { hasText: 'run_stage.py' }).waitFor({ state: 'visible' });
+  await page.locator('.run-target-note', { hasText: '실험 실행 코드' }).waitFor({ state: 'visible' });
+  await page.locator('[data-run-cell]', { hasText: '함수 구조 보기' }).click();
+  await page.locator('[data-cell-output]', { hasText: '선택 함수 미리보기' }).waitFor({ state: 'visible' });
+  const probeText = await page.locator('[data-cell-output]').innerText();
+  if (probeText.includes('실행 서버 필요') || probeText.includes('Unsupported method') || probeText.includes('403')) {
+    throw new Error(`${tabName}: helper cell probe should work without execution errors:\n${probeText}`);
+  }
   const button = page.locator('[data-run-code]', { hasText: '전체 ML 실험 실행' });
   await button.waitFor({ state: 'visible' });
   const data = await button.evaluate((element) => ({
@@ -331,6 +349,19 @@ async function assertMlHelperRunsStage(page, tabName, explanationText, sourceFil
   }
   if (data.sourcePath !== `01_ml/01_tabular_classification/${sourceFile}`) {
     throw new Error(`${tabName}: helper tab should preserve source path ${sourceFile}, got ${data.sourcePath}`);
+  }
+  if (options.executeStage) {
+    await button.click();
+    const output = page.locator('[data-run-output]');
+    await output.locator('text=종료 코드:').waitFor({ state: 'visible', timeout: 150000 });
+    const text = await output.innerText();
+    if (!text.includes('종료 코드: 0')) {
+      throw new Error(`${tabName}: helper run did not finish successfully:\n${text}`);
+    }
+    if (!text.includes('실행한 코드: 실험 실행 코드') || !text.includes('실행 환경:')) {
+      throw new Error(`${tabName}: helper run should show learner-friendly target and runner summary:\n${text}`);
+    }
+    await page.locator('.artifact-viewer', { hasText: '실행 산출물 바로 보기' }).waitFor({ state: 'visible' });
   }
 }
 
@@ -459,6 +490,7 @@ async function runDesktopQa(browser, baseUrl) {
 
   await page.goto(`${baseUrl}/web/`, { waitUntil: 'domcontentloaded' });
   await page.evaluate(() => document.fonts?.ready);
+  await page.locator('#runtime-badge', { hasText: '실행 가능' }).waitFor({ state: 'visible' });
   await assertTrackMarkdownRendered(page);
   await assertNoHorizontalOverflow(page, 'desktop-readme');
   await assertLearningRouteAndSelfChecks(page);

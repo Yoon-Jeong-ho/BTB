@@ -159,9 +159,7 @@ df = ds.to_pandas()
 
 - `dataset.py` — Adult 데이터 로드, split, 전처리 준비
 - `models.py` — baseline / strong baseline / GPU MLP 학습 로직
-- `analysis.py` — prediction sample, result figure, analysis figure 생성
-- `report.py` — artifact README / summary 생성
-- `experiment.py` — Stage 1 전체 실행 orchestration
+- `experiment.py` — Stage 1 전체 실행 orchestration, prediction sample, figure, artifact README/summary 생성
 - `run_stage.py` — CLI entrypoint
 
 실행 예시는 다음과 같다.

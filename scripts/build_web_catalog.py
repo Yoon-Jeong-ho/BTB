@@ -105,6 +105,33 @@ def _resource_entry(unit_path: Path, filename: str, label: str | None = None, ch
     }
 
 
+def _is_substantive_ml_helper(path: Path) -> bool:
+    if not path.exists():
+        return False
+    text = path.read_text(encoding="utf-8")
+    executable_lines = [
+        line.strip()
+        for line in text.splitlines()
+        if line.strip()
+        and not line.strip().startswith("#")
+        and not line.strip().startswith("from __future__")
+    ]
+    definitions = re.findall(r"^(?:def|class)\s+\w+", text, flags=re.MULTILINE)
+    model_or_pipeline_terms = [
+        "Pipeline(",
+        "Dummy",
+        "LogisticRegression",
+        "RandomForest",
+        "HistGradientBoosting",
+        "train_torch",
+        "ModelResult",
+        "ColumnTransformer",
+        "OneHotEncoder",
+        "StratifiedShuffleSplit",
+    ]
+    return len(executable_lines) >= 20 and (len(definitions) >= 2 or any(term in text for term in model_or_pipeline_terms))
+
+
 def _unit_resources(unit_path: Path) -> list[dict[str, str]]:
     standard = [
         ("README.md", "README", "README"),
@@ -127,10 +154,12 @@ def _unit_resources(unit_path: Path) -> list[dict[str, str]]:
         ("report.py", "report.py", ""),
     ]
     candidates = ml_runner if (unit_path / "run_stage.py").exists() and not (unit_path / "scratch_lab.py").exists() else standard
+    optional_ml_helpers = {"dataset.py", "models.py", "analysis.py", "report.py"}
     return [
         _resource_entry(unit_path, filename, label, checkpoint)
         for filename, label, checkpoint in candidates
         if (unit_path / filename).exists()
+        and (candidates is not ml_runner or filename not in optional_ml_helpers or _is_substantive_ml_helper(unit_path / filename))
     ]
 
 

@@ -50,11 +50,10 @@
 
 ## 코드 구조
 
-이 stage는 이제 thin wrapper가 아니라 stage 내부에서 바로 읽히는 코드 구조를 사용한다.
+웹 학습 화면에서는 `experiment.py`와 `run_stage.py`를 중심으로 읽고, `dataset.py`는 실험 흐름 안에서 호출되는 내부 보조 코드로 둔다.
 
 - `dataset.py`: Covertype 로딩과 전처리 보조
 - `experiment.py`: 모델 비교, 비용-성능 계산, class-wise figure 생성
-- `report.py`: 최신 artifact 경로 보조 함수
 - `run_stage.py`: stage 단독 실행 진입점
 
 ## artifact 구조
