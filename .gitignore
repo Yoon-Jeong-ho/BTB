@@ -48,6 +48,12 @@ events.out.tfevents*
 artifacts/staging/*
 !artifacts/staging/README.md
 
+# Local lesson runs. These are regenerated per learner/browser session and
+# should not be shared to GitHub unless intentionally force-added.
+**/artifacts/scratch-manual/
+**/artifacts/framework-manual/
+**/artifacts/analysis-manual/
+
 # Model files: only allow promoted small models under artifacts/promoted/
 *.pt
 *.pth

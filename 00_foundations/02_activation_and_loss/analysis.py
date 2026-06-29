@@ -45,7 +45,8 @@ def _ensure_metrics_exist() -> None:
     missing_list = ', '.join(str(path.relative_to(UNIT_ROOT)) for path in missing)
     raise SystemExit(
         '필수 metrics 파일이 없습니다: '
-        f'{missing_list}. 먼저 scratch_lab.py와 framework_lab.py를 실행하세요.'
+        f'{missing_list}. 먼저 scratch_lab.py와 framework_lab.py를 실행하세요. '
+        '서버 재시작이 산출물을 자동 삭제하지는 않지만, 새 clone이나 수동 정리 뒤에는 artifacts가 비어 있을 수 있습니다.'
     )
 
 

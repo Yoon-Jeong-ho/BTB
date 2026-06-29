@@ -190,6 +190,8 @@ class WebStudySiteContractTest(unittest.TestCase):
         self.assertIn("질문 필요", html + app + (WEB / "progress-storage.js").read_text(encoding="utf-8"))
         self.assertIn("읽은 뒤 실행", app)
         self.assertIn("이 코드를 내 환경에서 확인하기", app)
+        self.assertIn("기초 실습 코드와 프레임워크 실습 코드를 먼저 실행", app)
+        self.assertIn("서버 재시작이 자동 삭제하지는 않지만", app)
         code_branch = app.split("if (section.type === 'code')", 1)[1].split("} else", 1)[0]
         self.assertIn('<span class="source-badge">${escapeHtml(documentSourceLabel(section))}</span>', code_branch)
         self.assertNotIn("<span>${escapeHtml(sectionLabel)}</span><code>${escapeHtml(cleanHref(section.href))}</code>", code_branch)

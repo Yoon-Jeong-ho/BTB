@@ -256,6 +256,7 @@ class TestFoundationsUnitContract(unittest.TestCase):
         error_text = result.stdout + result.stderr
         self.assertIn('필수 metrics 파일이 없습니다', error_text)
         self.assertIn('먼저 scratch_lab.py와 framework_lab.py를 실행하세요', error_text)
+        self.assertIn('서버 재시작이 산출물을 자동 삭제하지는 않지만', error_text)
 
     def test_gradient_analysis_requires_metrics_with_actionable_error(self) -> None:
         self.addCleanup(self._cleanup_gradient_generated_artifacts)

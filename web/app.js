@@ -783,7 +783,7 @@ function goodOutcomeForRun(section, unit) {
   const path = cleanHref(section.href);
   const deterministic = unit?.deterministic ? ' 같은 설정으로 재실행해도 핵심 숫자가 유지되어야 합니다.' : '';
   if (path.endsWith('run_stage.py')) return `종료 코드 0, 지표·그림·예측 샘플이 생기고 단원 안내의 기준 모델 질문에 답할 수 있으면 좋습니다.${deterministic}`;
-  if (path.endsWith('analysis.py')) return `이전 실행 결과물을 빠짐없이 읽고 해석 노트에 실패 사례와 다음 실험 질문이 남으면 좋습니다.${deterministic}`;
+  if (path.endsWith('analysis.py')) return `기초 실습 코드와 프레임워크 실습 코드를 먼저 실행한 뒤, 이전 실행 결과물을 빠짐없이 읽고 해석 노트에 실패 사례와 다음 실험 질문이 남으면 좋습니다.${deterministic}`;
   if (path.endsWith('framework_lab.py')) return `프레임워크 결과가 기초 실습 기준선과 설명 가능한 차이만 보이고, 실행 환경과 재실행 기준값이 출력에 남으면 좋습니다.${deterministic}`;
   if (path.endsWith('scratch_lab.py')) return `작은 입력에서 모양과 계산값을 직접 설명할 수 있고, 지표 파일/그림이 해석 기준선으로 남으면 좋습니다.${deterministic}`;
   return `종료 코드 0과 다시 확인할 수 있는 결과물 위치가 남으면 좋습니다.${deterministic}`;
@@ -975,6 +975,12 @@ function parseJsonFromStdout(stdout) {
 
 function artifactHintForRun(section, payload, unit) {
   const path = cleanHref(section.href);
+  if (path.endsWith('analysis.py') && Number(payload.returncode) !== 0) {
+    const text = `${payload.stdout || ''}\n${payload.stderr || ''}`;
+    if (text.includes('필수 metrics 파일이 없습니다')) {
+      return '기초/프레임워크 metrics가 빠졌습니다. 서버 재시작이 자동 삭제하지는 않지만, scratch_lab.py와 framework_lab.py를 먼저 다시 실행하세요.';
+    }
+  }
   if (path.endsWith('analysis.py')) return '해석 노트나 관찰 지표가 갱신됐는지 확인하세요.';
   if (path.endsWith('run_stage.py')) return '결과 폴더에서 지표, 그림, 예측 샘플, 요약을 확인하세요.';
   if (path.endsWith('framework_lab.py')) return '프레임워크 지표와 그림을 기초 실습 결과와 나란히 비교하세요.';
@@ -988,7 +994,11 @@ function runFollowupQuestions(section, payload, highlights, unit) {
   const path = cleanHref(section.href);
   const questions = [];
   if (Number(payload.returncode) !== 0) {
-    questions.push('오류 출력에서 missing file, dependency, timeout 중 무엇이 원인인지 분류하세요.');
+    if (path.endsWith('analysis.py')) {
+      questions.push('분석 코드는 앞선 metrics를 읽는 단계입니다. scratch_lab.py와 framework_lab.py가 먼저 성공했는지 확인하세요.');
+    } else {
+      questions.push('오류 출력에서 missing file, dependency, timeout 중 무엇이 원인인지 분류하세요.');
+    }
     questions.push('CPU/GPU/conda 환경을 바꿔 재실행해야 하는지 확인하세요.');
     return questions;
   }
