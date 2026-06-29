@@ -1,99 +1,35 @@
 from __future__ import annotations
 
 import os
-import time
 from typing import Any
 
 import numpy as np
 import pandas as pd
-from sklearn.base import clone
 from sklearn.calibration import calibration_curve
-from sklearn.dummy import DummyClassifier
-from sklearn.ensemble import RandomForestClassifier
 from sklearn.inspection import permutation_importance
-from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import confusion_matrix, precision_recall_curve, roc_curve
-from sklearn.pipeline import Pipeline
 
 from _runtime import *  # noqa: F401,F403
 from dataset import make_split
+from models import (
+    build_sklearn_models,
+    choose_best_model,
+    fit_analysis_pipeline,
+    fit_sklearn_model_suite,
+    train_mlp_candidate,
+)
 
 
 def run_stage(device: str) -> dict[str, Any]:
     ctx = build_stage_context('01_tabular_classification', '01 Tabular Classification', 'adult-census-income', 'auprc', 'model-suite', device)
     split = make_split()
 
-    sklearn_models = {
-        'dummy_prior': DummyClassifier(strategy='prior'),
-        'logistic_regression': Pipeline([
-            ('preprocessor', clone(split.preprocessor)),
-            ('model', LogisticRegression(max_iter=1200, class_weight='balanced', n_jobs=-1)),
-        ]),
-        'random_forest': Pipeline([
-            ('preprocessor', clone(split.preprocessor)),
-            ('model', RandomForestClassifier(
-                n_estimators=260,
-                min_samples_leaf=2,
-                class_weight='balanced_subsample',
-                n_jobs=-1,
-                random_state=SEED,
-            )),
-        ]),
-    }
+    sklearn_models = build_sklearn_models(split.preprocessor)
+    results = fit_sklearn_model_suite(sklearn_models, split)
+    results['gpu_mlp'] = train_mlp_candidate(split, device)
 
-    results: dict[str, ModelResult] = {}
-    for name, model in sklearn_models.items():
-        model, y_pred, y_score, fit_time, predict_time, peak_rss = timed_fit_predict(model, split.X_train, split.y_train, split.X_test)
-        if y_score is None:
-            y_score = y_pred.astype(float)
-        results[name] = ModelResult(
-            name=name,
-            metrics=binary_metrics(split.y_test, y_pred, np.asarray(y_score)),
-            fit_time_sec=fit_time,
-            predict_time_sec=predict_time,
-            peak_rss_mb=peak_rss,
-            y_pred=np.asarray(y_pred),
-            y_score=np.asarray(y_score),
-        )
-
-    mlp_transformer = clone(split.mlp_preprocessor)
-    X_train_mlp = to_dense_float32(mlp_transformer.fit_transform(split.X_train))
-    X_valid_mlp = to_dense_float32(mlp_transformer.transform(split.X_valid))
-    X_test_mlp = to_dense_float32(mlp_transformer.transform(split.X_test))
-    rss_before = process.memory_info().rss
-    t0 = time.perf_counter()
-    y_pred_mlp, y_prob_mlp, extras = train_torch_classifier(
-        X_train_mlp,
-        split.y_train,
-        X_valid_mlp,
-        split.y_valid,
-        X_test_mlp,
-        n_classes=2,
-        device=device,
-        epochs=14,
-        batch_size=768,
-    )
-    fit_time = time.perf_counter() - t0
-    peak_rss = max(rss_before, process.memory_info().rss) / (1024 ** 2)
-    results['gpu_mlp'] = ModelResult(
-        name='gpu_mlp',
-        metrics=binary_metrics(split.y_test, y_pred_mlp, y_prob_mlp[:, 1]),
-        fit_time_sec=fit_time,
-        predict_time_sec=0.0,
-        peak_rss_mb=peak_rss,
-        y_pred=y_pred_mlp,
-        y_score=y_prob_mlp[:, 1],
-        extras=extras,
-    )
-
-    best_name = max(results, key=lambda model_name: results[model_name].metrics[ctx.primary_metric])
-    best = results[best_name]
-    if best_name == 'gpu_mlp':
-        analysis_name = max((name for name in results if name != 'gpu_mlp'), key=lambda model_name: results[model_name].metrics[ctx.primary_metric])
-        analysis_pipeline = sklearn_models[analysis_name].fit(split.X_train, split.y_train)
-    else:
-        analysis_name = best_name
-        analysis_pipeline = sklearn_models[best_name].fit(split.X_train, split.y_train)
+    best_name, best = choose_best_model(results, ctx.primary_metric)
+    analysis_name, analysis_pipeline = fit_analysis_pipeline(results, sklearn_models, split, ctx.primary_metric)
 
     yaml_dump(ctx.run_paths.run_dir / 'config.yaml', {
         'track': TRACK,

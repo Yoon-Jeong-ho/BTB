@@ -1150,6 +1150,7 @@ function coreCodeGuideFor(section, source, unit = null) {
   if (CORE_CODE_GUIDE_OVERRIDES[path]) return CORE_CODE_GUIDE_OVERRIDES[path](source);
   if (path.endsWith('run_stage.py')) return runStageCoreGuide(source);
   if (path.startsWith('01_ml/') && path.endsWith('dataset.py')) return mlDatasetCoreGuide(source);
+  if (path.startsWith('01_ml/') && path.endsWith('models.py')) return mlModelsCoreGuide(source);
   if (path.startsWith('01_ml/') && path.endsWith('experiment.py')) return mlExperimentCoreGuide(source);
   if (!path.endsWith('.py')) return null;
   const symbols = extractPythonSymbolNames(source);
@@ -1386,6 +1387,50 @@ function mlDatasetCoreGuide(source) {
     title: '데이터 준비 코드는 원본 표→전처리→split 계약만 먼저 보세요',
     summary: '모델보다 먼저 데이터 계약이 고정되어야 합니다. 어떤 표를 읽고, feature를 어떻게 바꾸며, train/valid/test가 어디서 나뉘는지 확인하세요.',
     steps,
+  };
+}
+
+function mlModelsCoreGuide(source) {
+  return {
+    title: '모델 코드는 baseline→선형 모델→트리 모델→MLP 후보를 비교하는 부분입니다',
+    summary: '이 파일은 단순 이름 목록이 아니라, 같은 데이터 split에서 비교할 모델 후보와 평가용 ModelResult를 만드는 학습 대상입니다. 각 후보가 왜 필요한지 먼저 보세요.',
+    steps: [
+      {
+        label: '가장 낮은 기준선 만들기',
+        note: 'dummy_prior는 feature를 보지 않고 다수/사전 분포만 따르는 baseline입니다. 이보다 못하면 모델이 feature를 제대로 쓰지 못한 것입니다.',
+        code: compactCodeLines(source, [
+          "'dummy_prior': DummyClassifier(strategy='prior')",
+        ]),
+      },
+      {
+        label: '해석 가능한 선형 분류기 만들기',
+        note: 'LogisticRegression은 전처리 pipeline 뒤에 붙어 feature와 logit의 관계를 비교적 해석하기 쉬운 기준 모델입니다.',
+        code: compactCodeLines(source, [
+          "'logistic_regression': Pipeline([",
+          "('preprocessor', clone(preprocessor))",
+          "('model', LogisticRegression(max_iter=1200, class_weight='balanced', n_jobs=-1))",
+        ]),
+      },
+      {
+        label: '비선형 tabular 모델 만들기',
+        note: 'RandomForest는 feature 상호작용과 비선형 분기를 잡는 후보입니다. 단순 선형 모델보다 좋아지는지 비교합니다.',
+        code: compactCodeLines(source, [
+          "'random_forest': Pipeline([",
+          "RandomForestClassifier(",
+          'n_estimators=260',
+          "class_weight='balanced_subsample'",
+        ]),
+      },
+      {
+        label: 'MLP 후보와 같은 지표 구조로 비교하기',
+        note: 'dense tensor로 바꾼 뒤 작은 MLP를 학습하고, 모든 후보를 ModelResult로 모아 같은 primary metric으로 고릅니다.',
+        code: compactCodeLines(source, [
+          'y_pred_mlp, y_prob_mlp, extras = train_torch_classifier(',
+          'return ModelResult(',
+          'best_name = max(results, key=lambda model_name: results[model_name].metrics[primary_metric])',
+        ]),
+      },
+    ],
   };
 }
 
@@ -1960,6 +2005,16 @@ function codeExplanationFor(section, source) {
       what: '이 단계는 데이터 불러오기, 학습/평가 나누기, 입력/정답 구성, 결측·범주형 처리 준비를 담당합니다.',
       howToRead: '데이터를 불러오는 함수 → 입력 열 선택 → 정답 생성 → 나누기/전처리 입력 형태 순서로 읽으세요. 마지막에 다음 실험 단계가 기대하는 반환 모양을 확인합니다.',
       outputs: '대개 직접 결과 파일을 저장하기보다, 다음 실험 단계가 학습과 평가에 사용할 입력 묶음을 넘깁니다.',
+      functions,
+    };
+  }
+  if (path.endsWith('models.py')) {
+    return {
+      title: '모델 코드: 후보 모델을 비교 가능하게 만들기',
+      summary: 'baseline, Logistic Regression, Random Forest, 작은 MLP 후보를 같은 데이터 split과 같은 지표 구조로 비교하도록 정의합니다.',
+      what: '이 단계는 어떤 모델 후보를 둘지, 각 후보가 어떤 전처리와 하이퍼파라미터를 쓰는지, 결과를 ModelResult로 어떻게 맞출지 담당합니다.',
+      howToRead: 'baseline → 선형 모델 → 비선형 트리 모델 → MLP 후보 → best model 선택 순서로 읽으세요. 각 모델이 왜 비교군에 필요한지 단원 이론과 연결하면 좋습니다.',
+      outputs: '직접 파일을 저장하기보다 experiment.py가 이 함수를 호출해 metrics, 예측 샘플, figure를 만들 때 사용할 모델 결과 구조를 돌려줍니다.',
       functions,
     };
   }

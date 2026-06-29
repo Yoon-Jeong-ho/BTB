@@ -59,6 +59,27 @@ class TestMLStageLayout(unittest.TestCase):
             self.assertIn(data['best_model'], data['models'])
             self.assertTrue(data['models'], f'empty models in {metrics_path}')
 
+    def test_tabular_classification_models_file_contains_actual_model_contract(self) -> None:
+        stage_dir = ML_ROOT / '01_tabular_classification'
+        models_text = (stage_dir / 'models.py').read_text(encoding='utf-8')
+        experiment_text = (stage_dir / 'experiment.py').read_text(encoding='utf-8')
+
+        for token in [
+            'def build_sklearn_models',
+            'DummyClassifier',
+            'LogisticRegression',
+            'RandomForestClassifier',
+            'def train_mlp_candidate',
+            'train_torch_classifier',
+            'def choose_best_model',
+            'def fit_analysis_pipeline',
+        ]:
+            self.assertIn(token, models_text)
+        self.assertGreater(len(models_text.splitlines()), 80)
+        self.assertIn('build_sklearn_models(split.preprocessor)', experiment_text)
+        self.assertIn('train_mlp_candidate(split, device)', experiment_text)
+        self.assertIn('fit_analysis_pipeline(results, sklearn_models, split, ctx.primary_metric)', experiment_text)
+
     def test_results_index_links_local_artifacts(self) -> None:
         index_text = (ML_ROOT / 'RESULTS.md').read_text(encoding='utf-8')
         self.assertIn('01 ML 결과 인덱스', index_text)

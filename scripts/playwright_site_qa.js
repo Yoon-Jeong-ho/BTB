@@ -302,7 +302,7 @@ async function assertMlRunnerResources(page) {
     throw new Error('01_ml should not show missing scratch_lab.py tab');
   }
   await assertMlHelperRunsStage(page, '데이터 준비 코드', '데이터 준비 코드: 실험에 넣을 표 만들기', 'dataset.py');
-  await assertMlHelperRunsStage(page, '모델 코드', '모델 코드', 'models.py');
+  await assertMlHelperRunsStage(page, '모델 코드', '모델 코드: 후보 모델을 비교 가능하게 만들기', 'models.py');
   await assertMlHelperRunsStage(page, '실험 흐름 코드', '실험 흐름 코드: 준비·학습·평가 연결하기', 'experiment.py');
   await assertMlHelperRunsStage(page, '리포트 코드', '리포트 코드', 'report.py');
   await page.getByRole('tab', { name: '실험 실행 코드' }).click();
