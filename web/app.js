@@ -1086,63 +1086,178 @@ function renderCoreCodeSummary(section, source) {
   </section>`;
 }
 
+const CORE_CODE_GUIDE_OVERRIDES = {
+  '00_foundations/03_gradients_and_backpropagation/scratch_lab.py': gradientBackpropCoreGuide,
+};
+
 function coreCodeGuideFor(section, source) {
   const path = cleanHref(section.href);
-  if (path.endsWith('00_foundations/03_gradients_and_backpropagation/scratch_lab.py')) {
-    return {
-      title: 'Gradient 실습은 이 네 덩어리만 먼저 읽으면 됩니다',
-      summary: '전체 파일에는 그림 저장과 JSON 저장 코드도 섞여 있습니다. 처음에는 아래 계산 흐름만 보고, 나머지는 결과를 보기 좋게 남기는 주변 코드로 미뤄도 됩니다.',
-      steps: [
-        {
-          label: '1. 예측값과 loss 만들기',
-          note: '선형 모델의 출력과 정답 차이를 하나의 loss 숫자로 압축합니다.',
-          code: compactCodeLines(source, [
-            'prediction = (weight * x_value) + bias',
-            'error = prediction - target',
-            'loss = 0.5 * (error**2)',
-          ]),
-        },
-        {
-          label: '2. chain rule로 손미분 gradient 계산하기',
-          note: 'loss가 prediction을 얼마나 밀어야 하는지 구한 뒤, weight와 bias 쪽으로 나눠 보냅니다.',
-          code: compactCodeLines(source, [
-            'dloss_dprediction = prediction - target',
-            'grad_w = dloss_dprediction * x_value',
-            'grad_b = dloss_dprediction',
-          ]),
-        },
-        {
-          label: '3. finite difference로 미분값 검산하기',
-          note: '아주 작은 epsilon만큼 양쪽으로 움직여 loss 기울기를 근사하고, 손미분 결과와 비교합니다.',
-          code: compactCodeLines(source, [
-            'loss_plus = forward_loss(weight + epsilon, bias)',
-            'loss_minus = forward_loss(weight - epsilon, bias)',
-            'return (loss_plus - loss_minus) / (2.0 * epsilon)',
-          ]),
-        },
-        {
-          label: '4. gradient 방향으로 파라미터 업데이트하기',
-          note: 'loss를 줄이는 방향으로 weight와 bias를 한 걸음 이동시킨 뒤, updated_loss가 줄었는지 확인합니다.',
-          code: compactCodeLines(source, [
-            'updated_weight = WEIGHT - (LEARNING_RATE * grad_w)',
-            'updated_bias = BIAS - (LEARNING_RATE * grad_b)',
-            'updated_prediction, updated_loss = forward_loss(updated_weight, updated_bias)',
-          ]),
-        },
-      ],
-    };
-  }
-  if (!section.href.endsWith('.py') || source.split('\n').length < 160) return null;
-  const symbols = extractPythonSymbols(source).slice(0, 4).map((name) => name.replace(/\(\)$/, ''));
-  if (!symbols.length) return null;
+  const lines = source.split('\n');
+  if (CORE_CODE_GUIDE_OVERRIDES[path]) return CORE_CODE_GUIDE_OVERRIDES[path](source);
+  if (!path.endsWith('.py')) return null;
+  const symbols = extractPythonSymbolNames(source);
+  if (!isLongOrDensePythonSource(lines, symbols)) return null;
+  const steps = automaticCoreCodeSteps(section, source, symbols).slice(0, 4);
+  if (!steps.length) return null;
   return {
-    title: '긴 파일은 대표 함수만 먼저 훑어보세요',
-    summary: '전체 코드를 한 번에 읽기 어렵다면, 아래 함수들의 입력·출력·저장 위치를 먼저 확인한 뒤 전체 코드로 내려가면 됩니다.',
-    steps: symbols.map((name, index) => ({
-      label: `${index + 1}. ${name}()`,
-      note: roleHintForFunction(name, section) || '단원 실행 흐름에서 어떤 입력을 받아 어떤 결과로 바꾸는지 확인하세요.',
-      code: extractFunctionSignature(source, name),
-    })),
+    title: coreCodeGuideTitleFor(path),
+    summary: '전체 코드를 한 번에 읽기 어렵다면, 아래 핵심 발췌에서 데이터가 들어와 계산·학습·평가·저장으로 이어지는 흐름만 먼저 잡고 전체 코드로 내려가면 됩니다.',
+    steps,
+  };
+}
+
+function gradientBackpropCoreGuide(source) {
+  return {
+    title: 'Gradient 실습은 이 네 덩어리만 먼저 읽으면 됩니다',
+    summary: '전체 파일에는 그림 저장과 JSON 저장 코드도 섞여 있습니다. 처음에는 아래 계산 흐름만 보고, 나머지는 결과를 보기 좋게 남기는 주변 코드로 미뤄도 됩니다.',
+    steps: [
+      {
+        label: '1. 예측값과 loss 만들기',
+        note: '선형 모델의 출력과 정답 차이를 하나의 loss 숫자로 압축합니다.',
+        code: compactCodeLines(source, [
+          'prediction = (weight * x_value) + bias',
+          'error = prediction - target',
+          'loss = 0.5 * (error**2)',
+        ]),
+      },
+      {
+        label: '2. chain rule로 손미분 gradient 계산하기',
+        note: 'loss가 prediction을 얼마나 밀어야 하는지 구한 뒤, weight와 bias 쪽으로 나눠 보냅니다.',
+        code: compactCodeLines(source, [
+          'dloss_dprediction = prediction - target',
+          'grad_w = dloss_dprediction * x_value',
+          'grad_b = dloss_dprediction',
+        ]),
+      },
+      {
+        label: '3. finite difference로 미분값 검산하기',
+        note: '아주 작은 epsilon만큼 양쪽으로 움직여 loss 기울기를 근사하고, 손미분 결과와 비교합니다.',
+        code: compactCodeLines(source, [
+          'loss_plus = forward_loss(weight + epsilon, bias)',
+          'loss_minus = forward_loss(weight - epsilon, bias)',
+          'return (loss_plus - loss_minus) / (2.0 * epsilon)',
+        ]),
+      },
+      {
+        label: '4. gradient 방향으로 파라미터 업데이트하기',
+        note: 'loss를 줄이는 방향으로 weight와 bias를 한 걸음 이동시킨 뒤, updated_loss가 줄었는지 확인합니다.',
+        code: compactCodeLines(source, [
+          'updated_weight = WEIGHT - (LEARNING_RATE * grad_w)',
+          'updated_bias = BIAS - (LEARNING_RATE * grad_b)',
+          'updated_prediction, updated_loss = forward_loss(updated_weight, updated_bias)',
+        ]),
+      },
+    ],
+  };
+}
+
+function isLongOrDensePythonSource(lines, symbols) {
+  const hasFlowAnchor = symbols.some((name) => /run|main|train|evaluate|forward|fit|step|metric|loss|score/i.test(name));
+  return lines.length >= 160 || (lines.length >= 110 && symbols.length >= 3 && hasFlowAnchor);
+}
+
+function coreCodeGuideTitleFor(path) {
+  if (path.endsWith('scratch_lab.py')) return '긴 기초 실습은 핵심 계산만 먼저 훑어보세요';
+  if (path.endsWith('framework_lab.py')) return '긴 프레임워크 실습은 데이터→모델→평가 흐름만 먼저 보세요';
+  if (path.endsWith('analysis.py')) return '긴 해석 코드는 결과 읽기→검증→리포트 저장만 먼저 보세요';
+  if (path.endsWith('experiment.py')) return '긴 실험 흐름 코드는 실행 단계만 먼저 따라가세요';
+  if (path.endsWith('run_stage.py')) return '긴 실행 코드는 옵션→실험 호출→결과 위치만 먼저 보세요';
+  if (path.endsWith('dataset.py')) return '긴 데이터 코드는 입력 표를 만드는 흐름만 먼저 보세요';
+  return '긴 파일은 핵심 흐름만 먼저 훑어보세요';
+}
+
+function automaticCoreCodeSteps(section, source, symbols) {
+  const path = cleanHref(section.href);
+  const steps = [];
+  const used = new Set();
+  const categories = [
+    {
+      label: '입력과 설정 준비',
+      note: '데이터, 예제, 설정값이 어떤 형태로 만들어져 뒤 계산으로 들어가는지 확인합니다.',
+      terms: ['load', 'prepare', 'build_dataset', 'dataset', 'make_', 'generate', 'tokenize', 'split', 'sample', 'contract', 'context'],
+      patterns: [/DataLoader|Dataset|train_test_split|build_dataset|load_|read_csv|EXAMPLES|SAMPLES|CONFIG/],
+    },
+    {
+      label: '모델·변환·핵심 계산',
+      note: '입력이 logit, score, embedding, action, reconstruction 같은 중간 결과로 바뀌는 핵심 계산입니다.',
+      terms: ['forward', 'model', 'encode', 'decode', 'attention', 'logit', 'score', 'compute', 'simulate', 'retrieve', 'rank'],
+      patterns: [/model\s*=|logits?\s*=|scores?\s*=|softmax|forward\(|encode|decode|attention|retrieve|rank/],
+    },
+    {
+      label: 'loss·metric·판정 기준',
+      note: '실험이 잘 됐는지 판단하는 loss, reward, accuracy, F1, ranking metric 같은 기준입니다.',
+      terms: ['loss', 'metric', 'accuracy', 'f1', 'reward', 'evaluate', 'score', 'select', 'threshold', 'coverage'],
+      patterns: [/loss|accuracy|f1|reward|metric|threshold|select_|evaluate|roc_auc|mean_squared_error/],
+    },
+    {
+      label: '학습·업데이트·반복 루프',
+      note: '파라미터나 후보가 반복적으로 바뀌는 구간입니다. optimizer, epoch, step, update를 먼저 찾으세요.',
+      terms: ['train', 'step', 'update', 'adapt', 'optimize', 'epoch', 'fit', 'accumulate'],
+      patterns: [/for\s+epoch|optimizer|backward\(|\.step\(|\.fit\(|train_recipe|train_epoch|_train|update|adapt/],
+    },
+    {
+      label: '결과 저장과 리포트',
+      note: '브라우저에서 다시 볼 지표, 그림, 해석 노트가 어디에 저장되는지 확인합니다.',
+      terms: ['run', 'save', 'write', 'render', 'report', 'svg', 'main'],
+      patterns: [/METRICS_PATH|FIGURE_PATH|write_text|json\.dumps|to_csv|savefig|summary|report|artifact/i],
+    },
+  ];
+
+  categories.forEach((category) => {
+    const step = coreStepFromFunctionCategory(section, source, symbols, category, used)
+      || coreStepFromPatternCategory(source, category, used);
+    if (step) steps.push(step);
+  });
+
+  if (!steps.length && symbols.length) {
+    symbols.slice(0, 4).forEach((name) => {
+      const code = extractFunctionExcerpt(source, name);
+      if (!code || used.has(code)) return;
+      used.add(code);
+      steps.push({
+        label: `${name}() 먼저 보기`,
+        note: roleHintForFunction(name, section) || '단원 실행 흐름에서 어떤 입력을 받아 어떤 결과로 바꾸는지 확인하세요.',
+        code,
+      });
+    });
+  }
+
+  if (path.endsWith('analysis.py')) {
+    steps.sort((left, right) => {
+      const order = ['입력과 설정 준비', 'loss·metric·판정 기준', '결과 저장과 리포트'];
+      return orderIndex(order, left.label) - orderIndex(order, right.label);
+    });
+  }
+  return steps;
+}
+
+function orderIndex(order, label) {
+  const index = order.findIndex((item) => label.includes(item));
+  return index === -1 ? order.length : index;
+}
+
+function coreStepFromFunctionCategory(section, source, symbols, category, used) {
+  const name = symbols.find((symbol) => category.terms.some((term) => symbol.toLowerCase().includes(term)) && !used.has(`fn:${symbol}`));
+  if (!name) return null;
+  const code = extractFunctionExcerpt(source, name);
+  if (!code || used.has(code)) return null;
+  used.add(`fn:${name}`);
+  used.add(code);
+  return {
+    label: `${category.label}: ${name}()`,
+    note: roleHintForFunction(name, section) || category.note,
+    code,
+  };
+}
+
+function coreStepFromPatternCategory(source, category, used) {
+  const code = extractPatternExcerpt(source, category.patterns);
+  if (!code || used.has(code)) return null;
+  used.add(code);
+  return {
+    label: category.label,
+    note: category.note,
+    code,
   };
 }
 
@@ -1162,6 +1277,41 @@ function compactCodeLines(source, preferredLines) {
 function extractFunctionSignature(source, name) {
   const match = source.match(new RegExp(`^def\\s+${escapeRegExp(name)}\\s*\\([^\\n]*\\):`, 'm'));
   return match ? match[0] : `${name}(...)`;
+}
+
+function extractFunctionExcerpt(source, name) {
+  const lines = source.split('\n');
+  const start = lines.findIndex((line) => new RegExp(`^def\\s+${escapeRegExp(name)}\\s*\\(`).test(line));
+  if (start < 0) return extractFunctionSignature(source, name);
+  const snippet = [lines[start]];
+  for (let index = start + 1; index < lines.length && snippet.length < 5; index += 1) {
+    const line = lines[index];
+    const trimmed = line.trim();
+    if (/^(def|class)\s+/.test(line)) break;
+    if (!trimmed || trimmed.startsWith('#')) continue;
+    if (trimmed.startsWith('"""') || trimmed.startsWith("'''")) continue;
+    snippet.push(line);
+  }
+  if (snippet.length === 1) return extractFunctionSignature(source, name);
+  if (!/^(def|class)\s+/.test(lines[start + snippet.length] || '')) snippet.push('    ...');
+  return trimCommonIndent(snippet).join('\n');
+}
+
+function extractPatternExcerpt(source, patterns) {
+  const lines = source.split('\n');
+  const index = lines.findIndex((line) => patterns.some((pattern) => pattern.test(line)));
+  if (index < 0) return '';
+  const start = Math.max(0, index - 2);
+  const end = Math.min(lines.length, index + 3);
+  return trimCommonIndent(lines.slice(start, end).filter((line) => line.trim())).join('\n');
+}
+
+function trimCommonIndent(lines) {
+  const indents = lines
+    .filter((line) => line.trim())
+    .map((line) => (line.match(/^\s*/) || [''])[0].length);
+  const minIndent = indents.length ? Math.min(...indents) : 0;
+  return lines.map((line) => line.slice(minIndent).trimEnd());
 }
 
 function annotateCodeWithInlineHints(section, source) {
@@ -1313,9 +1463,12 @@ function codeExplanationFor(section, source) {
 }
 
 function extractPythonSymbols(source) {
+  return extractPythonSymbolNames(source).map((name) => `${name}()`).slice(0, 8);
+}
+
+function extractPythonSymbolNames(source) {
   return Array.from(source.matchAll(/^def\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(/gm))
-    .map((match) => `${match[1]}()`)
-    .slice(0, 8);
+    .map((match) => match[1]);
 }
 
 function updateMarkSectionButton(unit, section, button) {

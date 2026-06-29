@@ -309,6 +309,20 @@ async function assertMlRunnerResources(page) {
   await page.locator('[data-run-code]', { hasText: '실험 실행 코드 실행' }).waitFor({ state: 'visible' });
 }
 
+async function assertCoreCodeSummaries(page) {
+  await selectStudyUnit(page, '00 Foundations', '03 Gradients and Backpropagation');
+  await page.getByRole('tab', { name: '기초 실습 코드' }).click();
+  await page.locator('.core-code-summary', { hasText: 'Gradient 실습은 이 네 덩어리만 먼저 읽으면 됩니다' }).waitFor({ state: 'visible' });
+  await page.locator('.core-code-summary', { hasText: 'finite difference로 미분값 검산하기' }).waitFor({ state: 'visible' });
+  await page.locator('.mini-code', { hasText: 'updated_weight = WEIGHT - (LEARNING_RATE * grad_w)' }).waitFor({ state: 'visible' });
+
+  await selectStudyUnit(page, '04 NLP', '03 Machine Reading Comprehension');
+  await page.getByRole('tab', { name: '프레임워크 실습 코드' }).click();
+  await page.locator('.core-code-summary', { hasText: '긴 프레임워크 실습은 데이터→모델→평가 흐름만 먼저 보세요' }).waitFor({ state: 'visible' });
+  await page.locator('.core-code-summary', { hasText: 'loss·metric·판정 기준' }).waitFor({ state: 'visible' });
+  await page.locator('.mini-code', { hasText: 'def token_f1' }).waitFor({ state: 'visible' });
+}
+
 async function assertLearningRouteAndSelfChecks(page) {
   await selectStudyUnit(page, '06 Training Systems', '01 Torchrun and DDP Basics');
   const titleBeforeRouteChange = await page.locator('#detail-title').innerText();
@@ -379,6 +393,7 @@ async function runDesktopQa(browser, baseUrl) {
   await page.getByText('02 Study Guide').waitFor({ state: 'visible' });
   await assertBridgeResources(page);
   await assertMlRunnerResources(page);
+  await assertCoreCodeSummaries(page);
 
   const metrics = await assertNoHorizontalOverflow(page, 'desktop');
   await page.screenshot({ path: path.join(OUT_DIR, 'desktop-study-guide.png'), fullPage: false });
