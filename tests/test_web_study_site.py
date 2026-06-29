@@ -195,6 +195,7 @@ class WebStudySiteContractTest(unittest.TestCase):
         code_branch = app.split("if (section.type === 'code')", 1)[1].split("} else", 1)[0]
         self.assertIn('<span class="source-badge">${escapeHtml(documentSourceLabel(section))}</span>', code_branch)
         self.assertNotIn("<span>${escapeHtml(sectionLabel)}</span><code>${escapeHtml(cleanHref(section.href))}</code>", code_branch)
+        self.assertLess(code_branch.find("${renderCoreCodeSummary"), code_branch.find("<pre class=\"code-block\""))
         self.assertLess(code_branch.find("<pre class=\"code-block\""), code_branch.find("${renderRunPanel"))
         self.assertIn("학습 안내", app)
         self.assertIn("트랙 안내", app)
@@ -277,6 +278,14 @@ class WebStudySiteContractTest(unittest.TestCase):
             "renderCodeExplanation",
             "codeExplanationFor",
             "코드 읽기 안내",
+            "renderCoreCodeSummary",
+            "coreCodeGuideFor",
+            "핵심 코드 먼저 보기",
+            "Gradient 실습은 이 네 덩어리만 먼저 읽으면 됩니다",
+            "예측값과 loss 만들기",
+            "chain rule로 손미분 gradient 계산하기",
+            "finite difference로 미분값 검산하기",
+            "gradient 방향으로 파라미터 업데이트하기",
             "이 파일은 무엇인가",
             "어떻게 읽으면 좋은가",
             "실행하면 남는 결과",
@@ -320,6 +329,8 @@ class WebStudySiteContractTest(unittest.TestCase):
         self.assertNotIn("stdout/stderr", app + readme)
 
         self.assertIn("code-explanation", styles)
+        self.assertIn("core-code-summary", styles)
+        self.assertIn("mini-code", styles)
         self.assertIn("run-panel", styles)
         self.assertIn("run-output", styles)
         self.assertIn("reader-shell", styles)

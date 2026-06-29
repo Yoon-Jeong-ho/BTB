@@ -576,7 +576,7 @@ async function loadLessonSection(unit, section) {
     const text = await fetchLessonDocument(section.href);
     if (requestId !== contentRequestId) return;
     if (section.type === 'code') {
-      content.innerHTML = `<div class="document-title"><span>${escapeHtml(sectionLabel)}</span><span class="source-badge">${escapeHtml(documentSourceLabel(section))}</span></div>${renderCodeExplanation(section, text)}<pre class="code-block"><code>${escapeHtml(annotateCodeWithInlineHints(section, text))}</code></pre>${renderRunPanel(section, unit, text)}`;
+      content.innerHTML = `<div class="document-title"><span>${escapeHtml(sectionLabel)}</span><span class="source-badge">${escapeHtml(documentSourceLabel(section))}</span></div>${renderCodeExplanation(section, text)}${renderCoreCodeSummary(section, text)}<pre class="code-block"><code>${escapeHtml(annotateCodeWithInlineHints(section, text))}</code></pre>${renderRunPanel(section, unit, text)}`;
       bindRunButton(section, unit);
       bindCellProbeButton(section, unit);
     } else {
@@ -1065,6 +1065,103 @@ function renderCodeExplanation(section, source) {
       <div><dt>읽어볼 함수</dt><dd>${escapeHtml(explanation.functions.join(', ') || '상단 설정값과 저장 흐름')}</dd></div>
     </dl>
   </section>`;
+}
+
+function renderCoreCodeSummary(section, source) {
+  const guide = coreCodeGuideFor(section, source);
+  if (!guide) return '';
+  return `<section class="core-code-summary" aria-label="핵심 코드 먼저 보기">
+    <div>
+      <p class="eyebrow">핵심 코드 먼저 보기</p>
+      <h4>${escapeHtml(guide.title)}</h4>
+      <p>${escapeHtml(guide.summary)}</p>
+    </div>
+    <ol>
+      ${guide.steps.map((step) => `<li>
+        <strong>${escapeHtml(step.label)}</strong>
+        <span>${escapeHtml(step.note)}</span>
+        ${step.code ? `<pre class="mini-code"><code>${escapeHtml(step.code)}</code></pre>` : ''}
+      </li>`).join('')}
+    </ol>
+  </section>`;
+}
+
+function coreCodeGuideFor(section, source) {
+  const path = cleanHref(section.href);
+  if (path.endsWith('00_foundations/03_gradients_and_backpropagation/scratch_lab.py')) {
+    return {
+      title: 'Gradient 실습은 이 네 덩어리만 먼저 읽으면 됩니다',
+      summary: '전체 파일에는 그림 저장과 JSON 저장 코드도 섞여 있습니다. 처음에는 아래 계산 흐름만 보고, 나머지는 결과를 보기 좋게 남기는 주변 코드로 미뤄도 됩니다.',
+      steps: [
+        {
+          label: '1. 예측값과 loss 만들기',
+          note: '선형 모델의 출력과 정답 차이를 하나의 loss 숫자로 압축합니다.',
+          code: compactCodeLines(source, [
+            'prediction = (weight * x_value) + bias',
+            'error = prediction - target',
+            'loss = 0.5 * (error**2)',
+          ]),
+        },
+        {
+          label: '2. chain rule로 손미분 gradient 계산하기',
+          note: 'loss가 prediction을 얼마나 밀어야 하는지 구한 뒤, weight와 bias 쪽으로 나눠 보냅니다.',
+          code: compactCodeLines(source, [
+            'dloss_dprediction = prediction - target',
+            'grad_w = dloss_dprediction * x_value',
+            'grad_b = dloss_dprediction',
+          ]),
+        },
+        {
+          label: '3. finite difference로 미분값 검산하기',
+          note: '아주 작은 epsilon만큼 양쪽으로 움직여 loss 기울기를 근사하고, 손미분 결과와 비교합니다.',
+          code: compactCodeLines(source, [
+            'loss_plus = forward_loss(weight + epsilon, bias)',
+            'loss_minus = forward_loss(weight - epsilon, bias)',
+            'return (loss_plus - loss_minus) / (2.0 * epsilon)',
+          ]),
+        },
+        {
+          label: '4. gradient 방향으로 파라미터 업데이트하기',
+          note: 'loss를 줄이는 방향으로 weight와 bias를 한 걸음 이동시킨 뒤, updated_loss가 줄었는지 확인합니다.',
+          code: compactCodeLines(source, [
+            'updated_weight = WEIGHT - (LEARNING_RATE * grad_w)',
+            'updated_bias = BIAS - (LEARNING_RATE * grad_b)',
+            'updated_prediction, updated_loss = forward_loss(updated_weight, updated_bias)',
+          ]),
+        },
+      ],
+    };
+  }
+  if (!section.href.endsWith('.py') || source.split('\n').length < 160) return null;
+  const symbols = extractPythonSymbols(source).slice(0, 4).map((name) => name.replace(/\(\)$/, ''));
+  if (!symbols.length) return null;
+  return {
+    title: '긴 파일은 대표 함수만 먼저 훑어보세요',
+    summary: '전체 코드를 한 번에 읽기 어렵다면, 아래 함수들의 입력·출력·저장 위치를 먼저 확인한 뒤 전체 코드로 내려가면 됩니다.',
+    steps: symbols.map((name, index) => ({
+      label: `${index + 1}. ${name}()`,
+      note: roleHintForFunction(name, section) || '단원 실행 흐름에서 어떤 입력을 받아 어떤 결과로 바꾸는지 확인하세요.',
+      code: extractFunctionSignature(source, name),
+    })),
+  };
+}
+
+function compactCodeLines(source, preferredLines) {
+  const sourceLines = source.split('\n').map((line) => line.trim());
+  return preferredLines
+    .map((preferred) => {
+      const exact = sourceLines.find((line) => line === preferred);
+      if (exact) return exact;
+      if (preferred.includes('loss_plus = forward_loss(weight + epsilon, bias)')) return '_, loss_plus = forward_loss(weight + epsilon, bias)';
+      if (preferred.includes('loss_minus = forward_loss(weight - epsilon, bias)')) return '_, loss_minus = forward_loss(weight - epsilon, bias)';
+      return preferred;
+    })
+    .join('\n');
+}
+
+function extractFunctionSignature(source, name) {
+  const match = source.match(new RegExp(`^def\\s+${escapeRegExp(name)}\\s*\\([^\\n]*\\):`, 'm'));
+  return match ? match[0] : `${name}(...)`;
 }
 
 function annotateCodeWithInlineHints(section, source) {

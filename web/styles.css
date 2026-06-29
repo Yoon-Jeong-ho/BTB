@@ -112,6 +112,15 @@ textarea { width: 100%; font-family: inherit; }
 .code-explanation dl { display: grid; gap: 0.65rem; margin: 0; }
 .code-explanation dt { font-weight: 900; color: var(--accent-2); }
 .code-explanation dd { margin: 0.12rem 0 0; color: var(--ink); line-height: 1.55; }
+.core-code-summary { display: grid; grid-template-columns: minmax(220px, 0.34fr) minmax(0, 1fr); gap: 1rem; border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--line)); border-radius: 18px; background: color-mix(in srgb, var(--accent) 7%, white); padding: 1rem; margin: 0 0 1rem; }
+.core-code-summary h4 { margin: 0.15rem 0 0.4rem; }
+.core-code-summary p { margin: 0; color: var(--muted); }
+.core-code-summary ol { display: grid; gap: 0.75rem; margin: 0; padding-left: 1.25rem; }
+.core-code-summary li { padding-left: 0.2rem; }
+.core-code-summary strong { display: block; color: var(--accent); margin-bottom: 0.18rem; }
+.core-code-summary span { display: block; color: var(--ink); line-height: 1.55; }
+.mini-code { margin: 0.5rem 0 0; border-radius: 12px; background: #fffaf0; color: #3b2b1d; border: 1px solid color-mix(in srgb, var(--accent) 18%, var(--line)); padding: 0.65rem; overflow: auto; white-space: pre-wrap; line-height: 1.45; }
+.mini-code code { background: transparent; color: inherit; padding: 0; font-family: "Noto Sans Mono", "BTB Noto Sans KR", "Noto Sans KR", ui-monospace, SFMono-Regular, Menlo, monospace; }
 .run-panel { display: grid; grid-template-columns: minmax(220px, 0.48fr) minmax(0, 1fr); gap: 1rem; border: 1px solid color-mix(in srgb, var(--good) 28%, var(--line)); border-radius: 18px; background: color-mix(in srgb, var(--good) 6%, white); padding: 1rem; margin: 0 0 1rem; }
 .run-panel h4 { margin: 0.15rem 0 0.4rem; }
 .run-panel p { margin: 0; color: var(--muted); }
@@ -214,7 +223,7 @@ menu { display: flex; justify-content: flex-end; gap: 0.5rem; padding: 0; }
   .lesson-guide { position: static; border-right: 0; border-bottom: 1px solid var(--line); padding-right: 0; padding-bottom: 1rem; max-height: none; }
   .lesson-reader { order: 1; }
   .lesson-guide { order: 2; }
-  .code-explanation, .run-panel, .run-primer dl, .cell-facts, .artifact-grid { grid-template-columns: 1fr; }
+  .code-explanation, .core-code-summary, .run-panel, .run-primer dl, .cell-facts, .artifact-grid { grid-template-columns: 1fr; }
   .lesson-content { max-width: none; }
 }
 
