@@ -139,12 +139,14 @@ class WebStudySiteContractTest(unittest.TestCase):
         self.assertIn("09 멀티모달 복습", app)
         self.assertIn("scopeGateFor", app)
         self.assertIn("VLA 범위 확인", app)
-        self.assertIn("학습 순서", app)
-        self.assertIn("이론 읽기", app)
-        self.assertIn("기초 실습하기", app)
-        self.assertIn("도구로 다시 확인하기", app)
-        self.assertIn("결과 정리하기", app)
-        self.assertIn("회고 남기기", app)
+        self.assertIn("renderLessonGuidePlan", app)
+        self.assertIn("처음 학습 순서", app)
+        self.assertIn("이번 단원 브리핑", app)
+        self.assertIn("lessonFocusStepsFor", app)
+        self.assertIn("isIntroLesson", app)
+        self.assertIn("지난 단원과 달라진 점", app)
+        self.assertIn("이번에 꼭 볼 것", app)
+        self.assertIn("자주 틀리는 지점", app)
         self.assertIn("recommendedStartingUnit", app)
 
         self.assertIn("학습 자료", app)
@@ -445,6 +447,8 @@ assert.strictEqual(recovered.users.carol.lessons['10_vla/01_vision_language_acti
             "renderQuizPanel",
             "data-quiz-submit",
             "quizAnswers",
+            "단원 점검 퀴즈",
+            "답하려면 무엇을 확인해야 하나요",
             "wrongNotes",
             "wrong-note-panel",
             "openMistakeReview",
@@ -468,6 +472,13 @@ assert.strictEqual(recovered.users.carol.lessons['10_vla/01_vision_language_acti
             "next-action-card",
         ]:
             self.assertIn(token, app + server + styles + storage)
+        for removed in [
+            "이 단원의 가장 중요한 학습 목표는 무엇인가요?",
+            "실행 후 확인해야 할 산출물을 고르세요.",
+            "자기 말로 한 문장으로 설명해 보세요.",
+            "미니 퀴즈",
+        ]:
+            self.assertNotIn(removed, app)
 
     def test_documented_static_server_resolves_app_and_lesson_links(self) -> None:
         port = self._free_port()

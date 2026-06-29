@@ -239,16 +239,16 @@ async function assertRunButton(page, tabName, expectedText) {
 }
 
 async function assertQuizAndWrongNotes(page) {
-  await page.locator('.quiz-panel', { hasText: '미니 퀴즈' }).waitFor({ state: 'visible' });
-  const goalQuestion = page.locator('.quiz-question', { hasText: '가장 중요한 학습 목표' }).first();
-  await goalQuestion.getByLabel('일단 모든 파일을 순서 없이 실행한다.').check();
-  await goalQuestion.getByRole('button', { name: '정답 확인' }).click();
-  await goalQuestion.locator('text=다시 확인').waitFor({ state: 'visible' });
-  await goalQuestion.locator('[data-wrong-note-memo]').fill('목표보다 실행 순서를 먼저 생각함');
-  await goalQuestion.locator('[data-wrong-note-memo]').dispatchEvent('change');
+  await page.locator('.quiz-panel', { hasText: '단원 점검 퀴즈' }).waitFor({ state: 'visible' });
+  const evidenceQuestion = page.locator('.quiz-question', { hasText: '답하려면 무엇을 확인해야 하나요' }).first();
+  await evidenceQuestion.getByLabel(/터미널 글자만 보고 닫기/).check();
+  await evidenceQuestion.getByRole('button', { name: '정답 확인' }).click();
+  await evidenceQuestion.locator('.quiz-feedback strong', { hasText: '다시 확인' }).waitFor({ state: 'visible' });
+  await evidenceQuestion.locator('[data-wrong-note-memo]').fill('목표보다 실행 순서를 먼저 생각함');
+  await evidenceQuestion.locator('[data-wrong-note-memo]').dispatchEvent('change');
   await page.locator('.wrong-note-panel', { hasText: '목표보다 실행 순서를 먼저 생각함' }).waitFor({ state: 'visible' });
 
-  const conceptQuestion = page.locator('.quiz-question', { hasText: '자기 말로 한 문장' }).first();
+  const conceptQuestion = page.locator('.quiz-question', { hasText: '분석 질문에 자기 말로 답해 보세요' }).first();
   await conceptQuestion.locator('textarea[data-quiz-id="concept"]').fill('shape가 계산 결과와 연결되는 방식');
   await conceptQuestion.getByRole('button', { name: '예시와 비교 저장' }).click();
   await page.locator('.quiz-feedback.review', { hasText: '자동 채점 대신 예시와 비교하세요' }).waitFor({ state: 'visible' });
@@ -258,7 +258,7 @@ async function assertQuizAndWrongNotes(page) {
   await page.locator('#mistake-dialog button[value="cancel"]').click();
 
   await page.reload({ waitUntil: 'domcontentloaded' });
-  await page.locator('.quiz-panel', { hasText: '미니 퀴즈' }).waitFor({ state: 'visible' });
+  await page.locator('.quiz-panel', { hasText: '단원 점검 퀴즈' }).waitFor({ state: 'visible' });
   await page.locator('#review-mistakes').click();
   await page.locator('#mistake-dialog', { hasText: '목표보다 실행 순서를 먼저 생각함' }).waitFor({ state: 'visible' });
   await page.locator('#mistake-dialog button[value="cancel"]').click();
@@ -307,6 +307,49 @@ async function assertMlRunnerResources(page) {
   await page.locator('.code-block code', { hasText: '# 코드 읽기 힌트:' }).waitFor({ state: 'visible' });
   await page.locator('.code-block code', { hasText: 'run_stage(device)' }).waitFor({ state: 'visible' });
   await page.locator('[data-run-code]', { hasText: '실험 실행 코드 실행' }).waitFor({ state: 'visible' });
+}
+
+async function assertGuideAndQuizPersonalization(page) {
+  await selectStudyUnit(page, '00 Foundations', '01 Tensor Shapes');
+  const introGuide = await page.locator('.lesson-guide').innerText();
+  if (!introGuide.includes('처음 학습 순서') || !introGuide.includes('학습 루프')) {
+    throw new Error(`intro unit should teach the learner workflow:\n${introGuide}`);
+  }
+  if (introGuide.includes('이번 단원 브리핑')) {
+    throw new Error(`intro unit should not use later-unit briefing copy:\n${introGuide}`);
+  }
+  const introQuiz = await page.locator('.quiz-panel').innerText();
+  for (const token of ['tensor', 'shape']) {
+    if (!introQuiz.includes(token)) throw new Error(`intro quiz should be tensor-specific (${token}):\n${introQuiz}`);
+  }
+
+  await selectStudyUnit(page, '01 ML', '01 Tabular Classification');
+  const mlGuide = await page.locator('.lesson-guide').innerText();
+  for (const token of ['이번 단원 브리핑', 'baseline model', 'primary metric', '자주 틀리는 지점']) {
+    if (!mlGuide.includes(token)) throw new Error(`ML guide should include ${token}:\n${mlGuide}`);
+  }
+  if (mlGuide.includes('처음 학습 순서')) {
+    throw new Error(`later unit should not repeat the onboarding order:\n${mlGuide}`);
+  }
+  const mlQuiz = await page.locator('.quiz-panel').innerText();
+  for (const token of ['tabular classification', 'majority baseline', '단계별 실험 지표']) {
+    if (!mlQuiz.includes(token)) throw new Error(`ML quiz should include ${token}:\n${mlQuiz}`);
+  }
+  if (mlQuiz === introQuiz) {
+    throw new Error('ML quiz should not be identical to the intro quiz');
+  }
+
+  await selectStudyUnit(page, '09 Multimodal', '03 Visual Question Answering');
+  const vqaGuide = await page.locator('.lesson-guide').innerText();
+  const vqaQuiz = await page.locator('.quiz-panel').innerText();
+  for (const token of ['answer type', 'shortcut bias', 'grounded reasoning']) {
+    if (!vqaGuide.includes(token) && !vqaQuiz.includes(token)) {
+      throw new Error(`VQA guide/quiz should include ${token}:\nGUIDE:\n${vqaGuide}\nQUIZ:\n${vqaQuiz}`);
+    }
+  }
+  if (vqaQuiz === mlQuiz) {
+    throw new Error('VQA quiz should not be identical to ML quiz');
+  }
 }
 
 async function assertCoreCodeSummaries(page) {
@@ -393,6 +436,7 @@ async function runDesktopQa(browser, baseUrl) {
   await page.getByText('02 Study Guide').waitFor({ state: 'visible' });
   await assertBridgeResources(page);
   await assertMlRunnerResources(page);
+  await assertGuideAndQuizPersonalization(page);
   await assertCoreCodeSummaries(page);
 
   const metrics = await assertNoHorizontalOverflow(page, 'desktop');

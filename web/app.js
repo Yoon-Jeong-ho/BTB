@@ -220,7 +220,7 @@ function friendlyDocumentLabel(label, href) {
 
 function documentSourceLabel(section) {
   const label = displaySectionLabel(section);
-  if (label === '단원 안내') return '목표와 학습 순서';
+  if (label === '단원 안내') return '목표와 진행 안내';
   if (label === '핵심 이론') return '개념 설명';
   if (label === '준비 확인') return '선행 점검';
   if (section?.type === 'code') return '읽고 바로 실행';
@@ -348,12 +348,8 @@ function renderDetail() {
     </section>
     <div class="lesson-workspace reader-shell">
       <aside class="lesson-guide" aria-label="학습 진행 가이드">
-        <div class="start-callout">처음이라면 단원 안내와 핵심 이론으로 목표를 잡고, 코드 읽기 → 실행 → 결과 해석 → 메모 순서로 진행하세요.</div>
+        ${renderLessonGuidePlan(unit)}
         ${prerequisiteReadinessFor(unit)}
-        <h3>학습 순서</h3>
-        <ol class="learning-steps">
-          ${learningStepsFor(unit).map((step) => `<li><strong>${escapeHtml(step.label)}</strong><span>${escapeHtml(step.description)}</span></li>`).join('')}
-        </ol>
         <h3>체크리스트</h3>
         <ul class="checklist">
           ${checkpoints.map((item) => `<li><label><input type="checkbox" data-checkpoint="${escapeHtml(item)}" ${checked[item] ? 'checked' : ''}/> ${escapeHtml(checkpointDisplayLabel(item))}</label></li>`).join('')}
@@ -1823,6 +1819,54 @@ function learningStepsFor(unit) {
   });
 }
 
+function renderLessonGuidePlan(unit) {
+  if (isIntroLesson(unit)) {
+    return `<div class="start-callout">첫 단원에서는 사이트 사용법까지 같이 익힙니다. 읽기 → 실행 → 관찰 → 해석 → 메모로 이어지는 학습 루프를 여기서 한 번만 연습하세요.</div>
+      <h3>처음 학습 순서</h3>
+      <ol class="learning-steps">
+        ${learningStepsFor(unit).map((step) => `<li><strong>${escapeHtml(step.label)}</strong><span>${escapeHtml(step.description)}</span></li>`).join('')}
+      </ol>`;
+  }
+  return `<div class="start-callout">이제 공통 순서를 다시 외우기보다, 이 단원에서 무엇을 비교하고 어떤 증거를 남길지 먼저 정하세요.</div>
+    <h3>이번 단원 브리핑</h3>
+    <ol class="learning-steps focus-steps">
+      ${lessonFocusStepsFor(unit).map((step) => `<li><strong>${escapeHtml(step.label)}</strong><span>${escapeHtml(step.description)}</span></li>`).join('')}
+    </ol>`;
+}
+
+function isIntroLesson(unit) {
+  return unit?.path === '00_foundations/01_tensor_shapes';
+}
+
+function lessonFocusStepsFor(unit) {
+  const terms = unit.key_terms || [];
+  const outputs = displayOutputList(unit.required_outputs || []);
+  const questions = unit.analysis_questions || [];
+  const primaryTerms = terms.slice(0, 3).join(', ') || '핵심 개념';
+  const evidence = outputs.slice(0, 2).join(', ') || '지표와 해석 노트';
+  const firstQuestion = questions[0] || '이번 실행 결과가 다음 단원과 어떻게 이어지는가?';
+  const trap = questions[1] || unit.prereqs?.[0] || firstQuestion;
+  const hasMlRunner = (unit.resources || []).some((resource) => resource.label === 'run_stage.py');
+  return [
+    {
+      label: '지난 단원과 달라진 점',
+      description: unit.objective || `${primaryTerms}를 이전 단원의 실행 감각과 연결하세요.`,
+    },
+    {
+      label: '이번에 꼭 볼 것',
+      description: `${primaryTerms}를 먼저 표시해 두고, 코드와 결과에서 이 용어들이 어디에 나타나는지 찾으세요.`,
+    },
+    {
+      label: hasMlRunner ? '실험을 증명하는 산출물' : '이해를 증명하는 산출물',
+      description: `${evidence}를 확인하고, 숫자나 그림 하나를 골라 “왜 이렇게 나왔는지” 설명하세요.`,
+    },
+    {
+      label: '자주 틀리는 지점',
+      description: `${trap} 이 질문에 답하지 못하면 결과를 봐도 이해가 남지 않습니다.`,
+    },
+  ];
+}
+
 function nextActionFor(unit, progress, selfCheckStats, quizItems, quizAnswers, checkpoints, checked) {
   const firstCode = lessonSectionsFor(unit).find((section) => section.type === 'code');
   const answered = quizItems.filter((question) => quizAnswers?.[question.id]).length;
@@ -1836,10 +1880,10 @@ function nextActionFor(unit, progress, selfCheckStats, quizItems, quizAnswers, c
   let detail = '목표와 선행 개념을 먼저 잡으세요.';
   if (nextCheckpoint) {
     action = checkpointActionLabel(nextCheckpoint, firstCode);
-    detail = checkpointActionDetail(nextCheckpoint);
+    detail = checkpointActionDetail(nextCheckpoint, unit);
   }
   if (!nextCheckpoint && answered < quizItems.length && selfCheckStats.done > 0) {
-    action = '미니 퀴즈 풀기';
+    action = '단원 점검 퀴즈 풀기';
     detail = '틀린 문제는 오답노트에 자동 저장됩니다.';
   }
   if (selfCheckStats.done === selfCheckStats.total && answered === quizItems.length && progress.state !== 'done') {
@@ -1863,13 +1907,19 @@ function checkpointActionLabel(checkpoint, firstCode) {
   return `${checkpoint} 진행`;
 }
 
-function checkpointActionDetail(checkpoint) {
+function checkpointActionDetail(checkpoint, unit) {
   const normalized = String(checkpoint || '').toLowerCase();
-  if (['readme', 'theory', 'prereqs'].includes(normalized)) return '코드를 돌리기 전에 왜 배우는지, 어떤 선행 개념이 필요한지 먼저 확인하세요.';
+  if (['readme', 'theory', 'prereqs'].includes(normalized)) return `${unitFocusSentence(unit)} 코드를 돌리기 전에 이 기준으로 단원 안내와 이론을 읽으세요.`;
   if (normalized.includes('scratch') || normalized.includes('framework') || normalized.includes('실행 명령')) return '실행 후 산출물 뷰어에서 이번 실행이 만든 지표와 그림을 확인하세요.';
   if (normalized.includes('analysis')) return '숫자를 결론으로 바꾸고, 실패 사례와 다음 실험 질문을 남기세요.';
   if (normalized.includes('reflection')) return '헷갈린 개념, 오답 이유, 다음 단원에서 확인할 질문을 한 줄 이상 남기세요.';
   return '완료하지 않은 체크포인트를 하나씩 닫으면 다음 행동이 갱신됩니다.';
+}
+
+function unitFocusSentence(unit) {
+  const terms = (unit?.key_terms || []).slice(0, 2).join(', ') || '핵심 개념';
+  const question = unit?.analysis_questions?.[0] || unit?.objective || '실행 결과가 무엇을 증명하는지';
+  return `${terms}를 보면서 “${question}”에 답할 준비를 하세요.`;
 }
 
 function prerequisiteReadinessFor(unit) {
@@ -1938,34 +1988,28 @@ function quizForUnit(unit) {
   const keyTerms = unit.key_terms || [];
   const outputs = displayOutputList((unit.required_outputs || []).filter((item) => !/^runnable README|theory note|prerequisite checklist$/i.test(item)));
   const analysis = unit.analysis_questions || [];
+  const primaryTerm = keyTerms[0] || '핵심 개념';
+  const secondaryTerm = keyTerms[1] || '실행 결과';
+  const firstOutput = outputs[0] || '지표 파일';
+  const secondOutput = outputs[1] || '해석 노트 또는 그림';
+  const firstQuestion = analysis[0] || `${primaryTerm}이 실행 결과와 어떻게 연결되는가?`;
   return [
     {
-      id: 'goal',
-      type: 'single',
-      prompt: '이 단원의 가장 중요한 학습 목표는 무엇인가요?',
-      explanation: `정답은 단원 목표와 직접 연결됩니다: ${unit.objective || '단원 안내의 첫 설명을 자기 말로 바꾸는 것'}`,
-      options: [
-        { id: 'objective', label: unit.objective || '단원 안내와 핵심 이론의 목표를 코드와 연결해 설명한다.', correct: true, explain: '단원 목표를 먼저 잡아야 실행 결과를 해석할 수 있습니다.' },
-        { id: 'skip', label: '일단 모든 파일을 순서 없이 실행한다.', correct: false, explain: '실행은 중요하지만 목표 없이 돌리면 숫자의 의미를 놓치기 쉽습니다.' },
-        { id: 'memorize', label: '용어를 영어 이름 그대로 외운다.', correct: false, explain: '암기보다 입력 모양, 지표, 결과물로 확인하는 것이 BTB의 흐름입니다.' },
-      ],
-    },
-    {
-      id: 'artifacts',
+      id: 'evidence',
       type: 'multi',
-      prompt: '실행 후 확인해야 할 산출물을 고르세요.',
-      explanation: '결과물은 학습의 증거입니다. 위치·숫자·그림을 함께 확인해야 다음 분석 질문에 답할 수 있습니다.',
+      prompt: `${primaryTerm} 관점에서 “${firstQuestion}”에 답하려면 무엇을 확인해야 하나요?`,
+      explanation: '결과물은 학습의 증거입니다. 위치·숫자·그림을 함께 확인해야 분석 질문에 답할 수 있습니다.',
       options: [
-        { id: 'expected-a', label: outputs[0] || '지표 파일', correct: true, explain: '지표는 이번 실행을 비교할 기준입니다.' },
-        { id: 'expected-b', label: outputs[1] || '해석 노트 또는 그림', correct: true, explain: '그림/분석 문서는 숫자를 사람이 읽는 결론으로 바꿉니다.' },
-        { id: 'terminal-only', label: '터미널 글자만 보고 닫기', correct: false, explain: '원문 로그만 보면 다시 확인할 수 있는 근거가 남지 않습니다.' },
+        { id: 'expected-a', label: firstOutput, correct: true, explain: '지표는 이번 실행을 비교할 기준입니다.' },
+        { id: 'expected-b', label: secondOutput, correct: true, explain: '그림/분석 문서는 숫자를 사람이 읽는 결론으로 바꿉니다.' },
+        { id: 'terminal-only', label: `${primaryTerm}, ${secondaryTerm}는 보지 않고 터미널 글자만 보고 닫기`, correct: false, explain: '원문 로그만 보면 다시 확인할 수 있는 근거가 남지 않습니다.' },
       ],
     },
     {
       id: 'concept',
       type: 'short',
-      prompt: `${keyTerms[0] || '핵심 용어'}를 자기 말로 한 문장으로 설명해 보세요.`,
-      expected: analysis[0] || `${keyTerms[0] || '핵심 개념'}이 실행 결과와 어떻게 연결되는지 설명`,
+      prompt: `분석 질문에 자기 말로 답해 보세요: ${firstQuestion}`,
+      expected: `${primaryTerm} 또는 ${secondaryTerm}를 사용해, ${firstOutput}에서 본 근거와 연결해 설명`,
       explanation: '짧은 답변은 자동 정답 하나로 고정하지 않습니다. 자기 말 설명을 남기고, 아래 기준과 비교하세요.',
       options: [],
     },
@@ -1974,8 +2018,8 @@ function quizForUnit(unit) {
 
 function renderQuizPanel(unit, quizItems, quizAnswers, wrongNotes) {
   const answered = quizItems.filter((item) => quizAnswers[item.id]).length;
-  return `<section class="quiz-panel" aria-label="미니 퀴즈">
-    <h3>미니 퀴즈 <span>${answered}/${quizItems.length} 완료</span></h3>
+  return `<section class="quiz-panel" aria-label="단원 점검 퀴즈">
+    <h3>단원 점검 퀴즈 <span>${answered}/${quizItems.length} 완료</span></h3>
     ${quizItems.map((question) => renderQuizQuestion(question, quizAnswers[question.id], wrongNotes[question.id])).join('')}
   </section>`;
 }
