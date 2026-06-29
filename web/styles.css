@@ -127,6 +127,8 @@ textarea { width: 100%; font-family: inherit; }
 .run-panel { display: grid; grid-template-columns: minmax(220px, 0.48fr) minmax(0, 1fr); gap: 1rem; border: 1px solid color-mix(in srgb, var(--good) 28%, var(--line)); border-radius: 18px; background: color-mix(in srgb, var(--good) 6%, white); padding: 1rem; margin: 0 0 1rem; }
 .run-panel h4 { margin: 0.15rem 0 0.4rem; }
 .run-panel p { margin: 0; color: var(--muted); }
+.run-target-note { margin-top: 0.65rem !important; border-radius: 12px; background: white; border: 1px solid color-mix(in srgb, var(--good) 20%, var(--line)); padding: 0.6rem; overflow-wrap: anywhere; }
+.run-target-note code { background: color-mix(in srgb, var(--good) 12%, white); color: var(--good); }
 .run-actions { display: grid; gap: 0.55rem; align-content: start; }
 .run-actions button { justify-self: start; background: var(--good); color: white; border-color: var(--good); }
 .run-actions button:disabled { opacity: 0.65; cursor: wait; }

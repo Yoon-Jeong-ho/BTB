@@ -592,7 +592,10 @@ async function fetchLessonDocument(href) {
 }
 
 function renderRunPanel(section, unit, source = '') {
-  if (!isRunnableCodeSection(section)) return '';
+  if (!isRunnableCodeSection(section, unit)) return '';
+  const sourcePath = cleanHref(section.href);
+  const runPath = runnablePathForSection(section, unit);
+  const mappedToStage = runPath && runPath !== sourcePath;
   const plan = runPlanFor(section, unit);
   const symbols = extractPythonSymbols(source).map((symbol) => symbol.replace(/\(\)$/, ''));
   return `<section class="run-panel" aria-label="Python 코드 실행">
@@ -600,9 +603,10 @@ function renderRunPanel(section, unit, source = '') {
       <p class="eyebrow">읽은 뒤 실행</p>
       <h4>이 코드를 내 환경에서 확인하기</h4>
       <p>위 코드를 먼저 훑은 다음 실행해 보세요. 종료 코드, 선택된 CPU/GPU, 출력과 산출물이 아래에 정리됩니다.</p>
+      ${mappedToStage ? `<p class="run-target-note">이 탭은 실험의 일부입니다. 버튼은 같은 단원의 <code>${escapeHtml(runPath)}</code>를 실행해 데이터 준비·모델 학습·평가 결과를 함께 만듭니다.</p>` : ''}
     </div>
     <div class="run-actions">
-      <button type="button" data-run-code data-run-path="${escapeHtml(cleanHref(section.href))}">${escapeHtml(displaySectionLabel(section))} 실행</button>
+      <button type="button" data-run-code data-run-path="${escapeHtml(runPath)}" data-run-source-path="${escapeHtml(sourcePath)}">${escapeHtml(runButtonLabel(section, unit))}</button>
       <span class="run-status" data-run-status>아직 실행 전입니다.</span>
     </div>
     <div class="run-primer" aria-label="실행 전 확인">
@@ -630,8 +634,49 @@ function renderRunPanel(section, unit, source = '') {
   </section>`;
 }
 
-function isRunnableCodeSection(section) {
-  return section.type === 'code' && /(?:scratch_lab|framework_lab|analysis|run_stage)\.py$/.test(cleanHref(section.href));
+function isRunnableCodeSection(section, unit = null) {
+  return section?.type === 'code' && Boolean(runnablePathForSection(section, unit));
+}
+
+function runnablePathForSection(section, unit = null) {
+  const path = cleanHref(section?.href || '');
+  if (isDirectRunnableCodePath(path)) return path;
+  if (isMlStageHelperSection(section, unit)) return stageRunnerForUnit(unit);
+  return '';
+}
+
+function isDirectRunnableCodePath(path) {
+  return /(?:scratch_lab|framework_lab|analysis|run_stage)\.py$/.test(cleanHref(path));
+}
+
+function isMlStageHelperSection(section, unit = null) {
+  const path = cleanHref(section?.href || '');
+  return section?.type === 'code'
+    && path.startsWith('01_ml/')
+    && /(?:dataset|models|experiment|report)\.py$/.test(path)
+    && Boolean(stageRunnerForUnit(unit));
+}
+
+function stageRunnerForUnit(unit = null) {
+  const runner = (unit?.resources || [])
+    .map((resource) => repoRelativeResourcePath(resource.href || ''))
+    .find((href) => href.endsWith('/run_stage.py'));
+  return runner || '';
+}
+
+function repoRelativeResourcePath(href) {
+  return String(href || '').trim().replace(/^\/+/, '').replace(/^(?:\.\.?\/)+/, '');
+}
+
+function effectiveRunPath(section, unit = null) {
+  return runnablePathForSection(section, unit) || cleanHref(section?.href || '');
+}
+
+function runButtonLabel(section, unit = null) {
+  const sourcePath = cleanHref(section?.href || '');
+  const runPath = runnablePathForSection(section, unit);
+  if (runPath && runPath !== sourcePath) return '전체 ML 실험 실행';
+  return `${displaySectionLabel(section)} 실행`;
 }
 
 function bindRunButton(section, unit) {
@@ -670,7 +715,7 @@ async function runPythonSection(section, button, unit) {
     const response = await fetch('/api/run-python', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ path: cleanHref(section.href) }),
+      body: JSON.stringify({ path: button.dataset.runPath || runnablePathForSection(section, unit) || cleanHref(section.href) }),
     });
     const contentType = response.headers.get('content-type') || '';
     const payload = contentType.includes('application/json')
@@ -756,7 +801,7 @@ function runPlanFor(section, unit) {
 }
 
 function expectedArtifactsForRun(section, unit) {
-  const path = cleanHref(section.href);
+  const path = effectiveRunPath(section, unit);
   const declared = (unit?.required_outputs || []).filter((item) => !/^runnable README|theory note|prerequisite checklist$/i.test(item));
   if (path.endsWith('run_stage.py')) return declared.length ? declared : ['artifacts/<timestamp>/metrics.json', 'figures/', 'predictions/', 'summary.md'];
   if (path.endsWith('analysis.py')) return ['해석 노트', '관찰 지표', ...declared.filter((item) => /analysis|report|observed/i.test(item))].slice(0, 4);
@@ -766,7 +811,7 @@ function expectedArtifactsForRun(section, unit) {
 }
 
 function importantNumbersForRun(section, unit) {
-  const path = cleanHref(section.href);
+  const path = effectiveRunPath(section, unit);
   const terms = unit?.key_terms || [];
   if (path.endsWith('run_stage.py')) return ['주요 평가 지표', '기준 모델 대비 좋은 모델', '학습/평가 데이터 수'];
   if (path.endsWith('analysis.py')) return ['빠진 결과물 수', '실패 사례 수', '해석 노트가 강조한 핵심 지표'];
@@ -779,7 +824,7 @@ function importantNumbersForRun(section, unit) {
 }
 
 function goodOutcomeForRun(section, unit) {
-  const path = cleanHref(section.href);
+  const path = effectiveRunPath(section, unit);
   const deterministic = unit?.deterministic ? ' 같은 설정으로 재실행해도 핵심 숫자가 유지되어야 합니다.' : '';
   if (path.endsWith('run_stage.py')) return `종료 코드 0, 지표·그림·예측 샘플이 생기고 단원 안내의 기준 모델 질문에 답할 수 있으면 좋습니다.${deterministic}`;
   if (path.endsWith('analysis.py')) return `기초 실습 코드와 프레임워크 실습 코드를 먼저 실행한 뒤, 이전 실행 결과물을 빠짐없이 읽고 해석 노트에 실패 사례와 다음 실험 질문이 남으면 좋습니다.${deterministic}`;
@@ -976,7 +1021,7 @@ function parseJsonFromStdout(stdout) {
 }
 
 function artifactHintForRun(section, payload, unit) {
-  const path = cleanHref(section.href);
+  const path = effectiveRunPath(section, unit);
   if (path.endsWith('analysis.py') && Number(payload.returncode) !== 0) {
     const text = `${payload.stdout || ''}\n${payload.stderr || ''}`;
     if (text.includes('필수 metrics 파일이 없습니다')) {
@@ -993,7 +1038,7 @@ function artifactHintForRun(section, payload, unit) {
 }
 
 function runFollowupQuestions(section, payload, highlights, unit) {
-  const path = cleanHref(section.href);
+  const path = effectiveRunPath(section, unit);
   const questions = [];
   if (Number(payload.returncode) !== 0) {
     if (path.endsWith('analysis.py')) {

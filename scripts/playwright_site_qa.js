@@ -294,19 +294,44 @@ async function assertMlRunnerResources(page) {
   await selectStudyUnit(page, '01 ML', '01 Tabular Classification');
   await assertResourceDocument(page, 'ML→DL 연결 문서', 'DataLoader');
   await page.getByRole('tab', { name: '데이터 준비 코드' }).waitFor({ state: 'visible' });
+  await page.getByRole('tab', { name: '모델 코드' }).waitFor({ state: 'visible' });
   await page.getByRole('tab', { name: '실험 흐름 코드' }).waitFor({ state: 'visible' });
   await page.getByRole('tab', { name: '실험 실행 코드' }).waitFor({ state: 'visible' });
+  await page.getByRole('tab', { name: '리포트 코드' }).waitFor({ state: 'visible' });
   if (await page.getByRole('tab', { name: '기초 실습 코드' }).count()) {
     throw new Error('01_ml should not show missing scratch_lab.py tab');
   }
-  await page.getByRole('tab', { name: '데이터 준비 코드' }).click();
-  await page.locator('.code-explanation', { hasText: '데이터 준비 코드: 실험에 넣을 표 만들기' }).waitFor({ state: 'visible' });
-  await page.getByRole('tab', { name: '실험 흐름 코드' }).click();
-  await page.locator('.code-explanation', { hasText: '실험 흐름 코드: 준비·학습·평가 연결하기' }).waitFor({ state: 'visible' });
+  await assertMlHelperRunsStage(page, '데이터 준비 코드', '데이터 준비 코드: 실험에 넣을 표 만들기', 'dataset.py');
+  await assertMlHelperRunsStage(page, '모델 코드', '모델 코드', 'models.py');
+  await assertMlHelperRunsStage(page, '실험 흐름 코드', '실험 흐름 코드: 준비·학습·평가 연결하기', 'experiment.py');
+  await assertMlHelperRunsStage(page, '리포트 코드', '리포트 코드', 'report.py');
   await page.getByRole('tab', { name: '실험 실행 코드' }).click();
   await page.locator('.code-block code', { hasText: '# 코드 읽기 힌트:' }).waitFor({ state: 'visible' });
   await page.locator('.code-block code', { hasText: 'run_stage(device)' }).waitFor({ state: 'visible' });
-  await page.locator('[data-run-code]', { hasText: '실험 실행 코드 실행' }).waitFor({ state: 'visible' });
+  const runStageButton = page.locator('[data-run-code]', { hasText: '실험 실행 코드 실행' });
+  await runStageButton.waitFor({ state: 'visible' });
+  const runStagePath = await runStageButton.getAttribute('data-run-path');
+  if (runStagePath !== '01_ml/01_tabular_classification/run_stage.py') {
+    throw new Error(`run_stage tab should keep its own runnable path, got ${runStagePath}`);
+  }
+}
+
+async function assertMlHelperRunsStage(page, tabName, explanationText, sourceFile) {
+  await page.getByRole('tab', { name: tabName }).click();
+  await page.locator('.code-explanation', { hasText: explanationText }).waitFor({ state: 'visible' });
+  await page.locator('.run-target-note', { hasText: 'run_stage.py' }).waitFor({ state: 'visible' });
+  const button = page.locator('[data-run-code]', { hasText: '전체 ML 실험 실행' });
+  await button.waitFor({ state: 'visible' });
+  const data = await button.evaluate((element) => ({
+    runPath: element.getAttribute('data-run-path'),
+    sourcePath: element.getAttribute('data-run-source-path'),
+  }));
+  if (data.runPath !== '01_ml/01_tabular_classification/run_stage.py') {
+    throw new Error(`${tabName}: helper tab should execute run_stage.py, got ${data.runPath}`);
+  }
+  if (data.sourcePath !== `01_ml/01_tabular_classification/${sourceFile}`) {
+    throw new Error(`${tabName}: helper tab should preserve source path ${sourceFile}, got ${data.sourcePath}`);
+  }
 }
 
 async function assertGuideAndQuizPersonalization(page) {

@@ -648,6 +648,18 @@ assert.strictEqual(recovered.users.carol.lessons['10_vla/01_vision_language_acti
         runnable = server_module._resolve_runnable_path("01_ml/01_tabular_classification/run_stage.py")
         self.assertEqual(ROOT / "01_ml" / "01_tabular_classification" / "run_stage.py", runnable)
 
+    def test_ml_helper_tabs_must_execute_via_run_stage_allowlist_only(self) -> None:
+        server_module = self._load_study_server()
+        stage_root = ROOT / "01_ml" / "01_tabular_classification"
+
+        runnable = server_module._resolve_runnable_path("01_ml/01_tabular_classification/run_stage.py")
+        self.assertEqual(stage_root / "run_stage.py", runnable)
+
+        for helper_name in ["dataset.py", "models.py", "experiment.py", "report.py"]:
+            with self.subTest(helper_name=helper_name):
+                with self.assertRaises(PermissionError):
+                    server_module._resolve_runnable_path(f"01_ml/01_tabular_classification/{helper_name}")
+
     def test_study_server_builds_conda_gpu_and_cpu_fallback_invocations(self) -> None:
         server = self._load_study_server()
         script_path = ROOT / "00_foundations" / "01_tensor_shapes" / "scratch_lab.py"
