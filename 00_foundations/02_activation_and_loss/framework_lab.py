@@ -25,6 +25,21 @@ def activation_rows(inputs: torch.Tensor, relu: torch.Tensor, sigmoid: torch.Ten
     return rows
 
 
+def numeric_stability_demo() -> dict[str, float | str]:
+    extreme_logits = torch.tensor([1000.0], dtype=torch.float32)
+    wrong_target = torch.tensor([0.0], dtype=torch.float32)
+    stable_loss = F.binary_cross_entropy_with_logits(extreme_logits, wrong_target)
+    saturated_probability = torch.sigmoid(extreme_logits)
+    naive_loss = F.binary_cross_entropy(saturated_probability, wrong_target)
+    return {
+        'extreme_logit': round(float(extreme_logits.item()), 6),
+        'sigmoid_probability': round(float(saturated_probability.item()), 6),
+        'stable_bce_with_logits': round(float(stable_loss.item()), 6),
+        'naive_bce_after_sigmoid': str(float(naive_loss.item())),
+        'why': 'sigmoid를 먼저 적용하면 극단 logit이 0 또는 1로 포화되어 확률 공간에서 정보가 사라진다. BCEWithLogitsLoss는 sigmoid와 log를 합친 안정식으로 계산해 유한한 loss를 유지한다.',
+    }
+
+
 def run() -> None:
     torch.manual_seed(7)
 
@@ -78,6 +93,7 @@ def run() -> None:
         ],
         'cross_entropy_loss': round(float(cross_entropy_loss), 6),
         'loss_reading_guide': '확률을 눈으로 확인할 때는 sigmoid/softmax 값을 보지만, PyTorch loss 함수에는 보통 logits를 직접 넣는다.',
+        'numeric_stability_demo': numeric_stability_demo(),
         'binary_probabilities': [round(float(value), 6) for value in binary_probabilities],
         'binary_cross_entropy_loss': round(float(binary_cross_entropy_loss), 6),
     }

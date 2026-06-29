@@ -46,6 +46,28 @@ def cross_entropy_from_logits(logits: np.ndarray, target_index: int) -> tuple[np
     return probabilities, loss
 
 
+def naive_binary_cross_entropy_from_probability(probability: float, target: float) -> float:
+    return -(target * math.log(probability) + (1.0 - target) * math.log(1.0 - probability))
+
+
+def numeric_stability_demo() -> dict[str, float | str]:
+    extreme_logit = 1000.0
+    _, stable_loss = binary_cross_entropy_from_logit(extreme_logit, target=0.0)
+    probability = sigmoid(np.array([extreme_logit], dtype=np.float64))[0]
+    try:
+        naive_loss: float | str = round(naive_binary_cross_entropy_from_probability(float(probability), target=0.0), 6)
+    except ValueError as exc:
+        naive_loss = f'failed: {exc}'
+
+    return {
+        'extreme_logit': extreme_logit,
+        'sigmoid_probability': round(float(probability), 6),
+        'stable_bce_from_logit': round(stable_loss, 6),
+        'naive_bce_after_sigmoid': naive_loss,
+        'why': 'sigmoid(1000)는 float에서 1.0으로 포화되어 log(1 - p)가 log(0)이 되지만, logits 기반 BCE는 max/log1p 식으로 1000.0이라는 유한한 loss를 계산한다.',
+    }
+
+
 def _polyline(points: list[tuple[float, float]], color: str) -> str:
     point_text = ' '.join(f'{x:.2f},{y:.2f}' for x, y in points)
     return (
@@ -143,6 +165,7 @@ def run() -> None:
     class_logits = np.array([2.2, 0.3, -1.4], dtype=np.float64)
     class_probabilities, cross_entropy = cross_entropy_from_logits(class_logits, target_index=0)
     binary_probability, binary_cross_entropy = binary_cross_entropy_from_logit(1.25, target=1.0)
+    stability_demo = numeric_stability_demo()
 
     ARTIFACT_DIR.mkdir(parents=True, exist_ok=True)
     save_svg(plot_x_values, plot_relu_values, plot_sigmoid_values, plot_tanh_values)
@@ -163,6 +186,7 @@ def run() -> None:
         'binary_probability': round(binary_probability, 6),
         'binary_cross_entropy': round(binary_cross_entropy, 6),
         'cross_entropy': round(cross_entropy, 6),
+        'numeric_stability_demo': stability_demo,
         'figure_path': str(FIGURE_PATH.relative_to(UNIT_ROOT)),
     }
 

@@ -19,11 +19,13 @@ STABLE_ANALYSIS = '''# 02 Activation and Loss 분석
 - activation은 중간 표현을 비선형으로 바꿔 모델이 더 복잡한 패턴을 표현하게 한다.
 - loss는 예측과 정답 사이의 차이를 scalar로 압축해, optimizer가 따라갈 방향을 만든다.
 - BCE와 cross entropy는 각각 다른 target 형식과 입력 가정을 가진다. 실행 결과를 볼 때 “확률을 넣었는지, logits를 넣었는지”를 먼저 확인한다.
+- logits 기반 loss는 sigmoid/softmax와 log를 따로 계산하지 않고 안정식으로 묶어, 극단적인 logit에서도 `log(0)`이나 overflow를 피한다.
 - scratch figure `artifacts/scratch-manual/activation_curves.svg`는 곡선의 모양 차이를 눈으로 보여주고, observed report는 이번 실행의 수치 차이를 문장으로 풀어준다.
 
 ## 확인 질문
 - ReLU / sigmoid / tanh 중 어떤 activation이 입력을 가장 강하게 잘랐는가?
 - BCE와 cross entropy는 각각 어떤 정답 표현을 기대하는가?
+- `numeric_stability_demo`에서 naive probability loss와 logits 기반 loss는 왜 다른 값을 냈는가?
 - 이번 실행에서 관측한 구체적 loss 값과 확률 합은 `artifacts/analysis-manual/latest_report.md`에서 어떻게 해석되었는가?
 
 ## 관련 이론
@@ -51,6 +53,8 @@ def run() -> None:
     _ensure_metrics_exist()
     scratch = _load_json(SCRATCH)
     framework = _load_json(FRAMEWORK)
+    scratch_stability = scratch['numeric_stability_demo']
+    framework_stability = framework['numeric_stability_demo']
 
     relu_zero_fraction = float(scratch['relu_zero_fraction'])
     if relu_zero_fraction >= 0.5:
@@ -69,12 +73,15 @@ def run() -> None:
 - framework row_probability_sums: `{framework["row_probability_sums"]}`
 - framework cross_entropy_loss: `{framework["cross_entropy_loss"]}`
 - framework binary_cross_entropy_loss: `{framework["binary_cross_entropy_loss"]}`
+- scratch numeric_stability_demo: stable `{scratch_stability["stable_bce_from_logit"]}`, naive `{scratch_stability["naive_bce_after_sigmoid"]}`
+- framework numeric_stability_demo: stable `{framework_stability["stable_bce_with_logits"]}`, naive `{framework_stability["naive_bce_after_sigmoid"]}`
 
 ## 한국어 해석
 - {relu_comment}
 - scratch softmax 합이 `{scratch["softmax_probability_sum"]}`이고 framework row sums가 `{framework["row_probability_sums"]}`로 기록되어, probability 분포는 합이 1이 되도록 정규화된다는 점을 다시 확인했다.
 - scratch cross entropy `{scratch["cross_entropy"]}`와 framework cross entropy `{framework["cross_entropy_loss"]}`는 모두 정답 class의 확률이 높을수록 작아지는 방향으로 읽는다.
 - binary cross entropy는 single logit + binary target을 비교하고, multi-class cross entropy는 class logits + class index target을 비교한다. 그래서 두 loss는 숫자뿐 아니라 입력 형식 자체가 다르다.
+- `numeric_stability_demo`에서는 logit `1000`이 sigmoid 뒤에 `1.0`으로 포화된다. scratch의 naive BCE는 `log(0)` 때문에 실패하고, PyTorch의 probability BCE는 내부 clamp로 `100.0`에 머문다. 반면 logits 기반 BCE는 같은 상황을 `1000.0`이라는 유한한 큰 loss로 보존한다.
 - 자세한 개념 설명은 이 단위의 [THEORY.md](../../THEORY.md)와 함께 읽고, 실제 곡선은 `artifacts/scratch-manual/activation_curves.svg`를 열어보는 것이 가장 빠르다.
 '''
 

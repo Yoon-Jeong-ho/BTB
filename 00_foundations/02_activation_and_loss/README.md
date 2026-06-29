@@ -23,6 +23,10 @@ $ python 00_foundations/02_activation_and_loss/scratch_lab.py
   "relu_zero_fraction": 0.555556,
   "binary_cross_entropy": 0.251929,
   "cross_entropy": 0.162877,
+  "numeric_stability_demo": {
+    "stable_bce_from_logit": 1000.0,
+    "naive_bce_after_sigmoid": "failed: math domain error"
+  },
   "figure_path": "artifacts/scratch-manual/activation_curves.svg"
 }
 
@@ -30,6 +34,7 @@ $ python 00_foundations/02_activation_and_loss/framework_lab.py
 {
   "activation_reading_guide": "같은 input에 대해 ReLU는 음수를 0으로 자르고...",
   "activation_rows": [{"input": -2.0, "relu": 0.0, "sigmoid": 0.119203, "tanh": -0.964028}],
+  "numeric_stability_demo": {"stable_bce_with_logits": 1000.0, "naive_bce_after_sigmoid": "100.0"},
   "row_probability_sums": [1.0, 1.0],
   "cross_entropy_loss": 0.217482,
   "binary_cross_entropy_loss": 0.359588
