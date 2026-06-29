@@ -1103,6 +1103,9 @@ function coreCodeGuideFor(section, source, unit = null) {
   const path = cleanHref(section.href);
   const lines = source.split('\n');
   if (CORE_CODE_GUIDE_OVERRIDES[path]) return CORE_CODE_GUIDE_OVERRIDES[path](source);
+  if (path.endsWith('run_stage.py')) return runStageCoreGuide(source);
+  if (path.startsWith('01_ml/') && path.endsWith('dataset.py')) return mlDatasetCoreGuide(source);
+  if (path.startsWith('01_ml/') && path.endsWith('experiment.py')) return mlExperimentCoreGuide(source);
   if (!path.endsWith('.py')) return null;
   const symbols = extractPythonSymbolNames(source);
   const steps = automaticCoreCodeSteps(section, source, symbols, unit).slice(0, 4);
@@ -1310,6 +1313,115 @@ function regularizationAnalysisCoreGuide(source) {
   };
 }
 
+
+
+function mlDatasetCoreGuide(source) {
+  const symbols = extractPythonSymbolNames(source);
+  const loadName = symbols.find((name) => /load|read/.test(name.toLowerCase())) || symbols[0];
+  const preprocessName = symbols.find((name) => /preprocess|transform|feature/.test(name.toLowerCase()));
+  const splitName = symbols.find((name) => /split|make/.test(name.toLowerCase()) && name !== loadName);
+  const steps = [
+    loadName && {
+      label: `원본 표 데이터 읽기: ${loadName}()`,
+      note: '실험의 출발점입니다. 어떤 원본 표를 읽고 결측/타입 같은 기본 정리를 하는지 먼저 확인합니다.',
+      code: extractFunctionExcerpt(source, loadName),
+    },
+    preprocessName && {
+      label: `feature 전처리 계약 만들기: ${preprocessName}()`,
+      note: '숫자/범주형 feature를 어떤 transformer나 pipeline으로 바꾸는지 확인합니다.',
+      code: extractFunctionExcerpt(source, preprocessName),
+    },
+    splitName && {
+      label: `train/valid/test split 만들기: ${splitName}()`,
+      note: '모든 모델 비교가 같은 데이터 분할과 target 정의를 쓰도록 고정하는 부분입니다.',
+      code: extractFunctionExcerpt(source, splitName),
+    },
+  ].filter(Boolean);
+  return {
+    title: '데이터 준비 코드는 원본 표→전처리→split 계약만 먼저 보세요',
+    summary: '모델보다 먼저 데이터 계약이 고정되어야 합니다. 어떤 표를 읽고, feature를 어떻게 바꾸며, train/valid/test가 어디서 나뉘는지 확인하세요.',
+    steps,
+  };
+}
+
+function mlExperimentCoreGuide(source) {
+  return {
+    title: '실험 흐름 코드는 split→모델 비교→best 선택→산출물 저장 순서로 보세요',
+    summary: 'ML 단원의 experiment.py는 단일 모델 코드가 아니라 baseline, 학습 모델, GPU 모델, 지표/그림/CSV 저장을 한 stage 계약으로 묶는 파일입니다.',
+    steps: [
+      {
+        label: 'stage context와 데이터 split 준비',
+        note: '실험 이름, primary metric, device를 고정하고 같은 split을 모든 모델 비교에 사용합니다.',
+        code: compactCodeLines(source, [
+          "ctx = build_stage_context(",
+          'split = make_split()',
+        ]),
+      },
+      {
+        label: 'baseline과 후보 모델을 같은 방식으로 학습·예측하기',
+        note: '각 모델의 prediction, score, fit time, memory를 같은 ModelResult 구조로 모아 비교 가능하게 만듭니다.',
+        code: compactCodeLines(source, [
+          'for name, model in sklearn_models.items():',
+          'model, y_pred, y_score, fit_time, predict_time, peak_rss = timed_fit_predict(model, split.X_train, split.y_train, split.X_test)',
+          'results[name] = ModelResult(',
+        ]),
+      },
+      {
+        label: 'primary metric으로 best model 고르기',
+        note: 'accuracy 하나가 아니라 단원에서 정한 primary metric 기준으로 대표 모델을 선택합니다.',
+        code: compactCodeLines(source, [
+          "best_name = max(results, key=lambda model_name: results[model_name].metrics[ctx.primary_metric])",
+          'best = results[best_name]',
+        ]),
+      },
+      {
+        label: 'metrics, prediction CSV, figure를 저장하기',
+        note: '웹사이트와 analysis.py가 다시 읽을 지표와 오류 사례, 시각화를 파일로 남깁니다.',
+        code: compactCodeLines(source, [
+          "json_dump(ctx.run_paths.run_dir / 'metrics.json', {",
+          "to_csv(ctx.run_paths.predictions_dir /",
+          'bar_chart(',
+        ]),
+      },
+    ],
+  };
+}
+
+function runStageCoreGuide(source) {
+  return {
+    title: '실험 실행 코드는 환경 선택→stage 호출→요약 출력만 먼저 보세요',
+    summary: '이 파일은 모델 내용을 다시 구현하지 않습니다. GPU 번호와 실행 환경을 정하고, 같은 폴더의 experiment.run_stage(device)를 호출해 결과 JSON을 터미널에 요약합니다.',
+    steps: [
+      {
+        label: '실행 옵션에서 GPU 번호 받기',
+        note: '사용자가 넘긴 --gpu 값을 CUDA_VISIBLE_DEVICES 기본값으로 사용해 어느 장치를 볼지 정합니다.',
+        code: compactCodeLines(source, [
+          "parser.add_argument('--gpu', type=int, default=0)",
+          'return parser.parse_args()',
+        ]),
+      },
+      {
+        label: 'seed와 device를 실행 직전에 확정하기',
+        note: '재현성을 위해 seed를 고정하고, CUDA 사용 가능 여부에 따라 cuda/cpu 실행 경로를 선택합니다.',
+        code: compactCodeLines(source, [
+          "os.environ.setdefault('CUDA_VISIBLE_DEVICES', str(args.gpu))",
+          'set_seed()',
+          "device = 'cuda' if torch.cuda.is_available() else 'cpu'",
+        ]),
+      },
+      {
+        label: 'stage 실험을 호출하고 JSON으로 출력하기',
+        note: '실제 데이터 split, 모델 학습, metric/figure 저장은 experiment.py의 run_stage(device)가 담당합니다.',
+        code: compactCodeLines(source, [
+          'print(json.dumps(run_stage(device), indent=2, ensure_ascii=False))',
+          "if __name__ == '__main__':",
+          'main()',
+        ]),
+      },
+    ],
+  };
+}
+
 function coreCodeGuideSummaryFor(path, unit = null) {
   if (path.endsWith('analysis.py')) {
     return unit
@@ -1402,12 +1514,17 @@ function automaticCoreCodeSteps(section, source, symbols, unit = null) {
   const steps = [];
   const used = new Set();
   const categories = [
-    unitCoreCategoryFor(unit, section),
+    {
+      label: '전체 실행 흐름',
+      note: '이 파일의 진입점입니다. 입력 준비, 핵심 계산, metric 저장이 어떤 순서로 이어지는지 먼저 봅니다.',
+      terms: ['run_stage', 'run', 'main'],
+      patterns: [/^def\s+(run_stage|run|main)\s*\(/m],
+    },
     {
       label: '입력과 설정 준비',
       note: '데이터, 예제, 설정값이 어떤 형태로 만들어져 뒤 계산으로 들어가는지 확인합니다.',
-      terms: ['load', 'prepare', 'build_dataset', 'dataset', 'make_', 'generate', 'tokenize', 'split', 'sample', 'contract', 'context'],
-      patterns: [/DataLoader|Dataset|train_test_split|build_dataset|load_|read_csv|EXAMPLES|SAMPLES|CONFIG/],
+      terms: ['load', 'read', 'prepare', 'preprocess', 'preprocessor', 'build_dataset', 'dataset', 'make_', 'generate', 'tokenize', 'split', 'sample', 'batch', 'contract', 'context'],
+      patterns: [/DataLoader|Dataset|train_test_split|build_dataset|load_|read_csv|EXAMPLES|SAMPLES|CONFIG|toy_batch|build_toy|make_split/],
     },
     {
       label: '모델·변환·핵심 계산',
@@ -1419,13 +1536,13 @@ function automaticCoreCodeSteps(section, source, symbols, unit = null) {
       label: 'loss·metric·판정 기준',
       note: '실험이 잘 됐는지 판단하는 loss, reward, accuracy, F1, ranking metric 같은 기준입니다.',
       terms: ['loss', 'metric', 'accuracy', 'f1', 'reward', 'evaluate', 'score', 'select', 'threshold', 'coverage'],
-      patterns: [/loss|accuracy|f1|reward|metric|threshold|select_|evaluate|roc_auc|mean_squared_error/],
+      patterns: [/loss|accuracy|f1|reward|metric|threshold|evaluate|roc_auc|mean_squared_error|precision_recall_curve|confusion_matrix/],
     },
     {
       label: '학습·업데이트·반복 루프',
       note: '파라미터나 후보가 반복적으로 바뀌는 구간입니다. optimizer, epoch, step, update를 먼저 찾으세요.',
       terms: ['train', 'step', 'update', 'adapt', 'optimize', 'epoch', 'fit', 'accumulate'],
-      patterns: [/for\s+epoch|optimizer|backward\(|\.step\(|\.fit\(|train_recipe|train_epoch|_train|update|adapt/],
+      patterns: [/for\s+epoch|optimizer|backward\(|\.step\(|\.fit\(|train_recipe|train_epoch|def\s+train_|update|adapt/],
     },
     {
       label: '결과 저장과 리포트',
@@ -1524,22 +1641,108 @@ function coreStepFromFunctionCategory(section, source, symbols, category, used) 
   if (!code || used.has(code)) return null;
   used.add(`fn:${name}`);
   used.add(code);
+  const presentation = coreFunctionStepPresentation(name, code, category, section);
   return {
-    label: `${category.label}: ${name}()`,
-    note: roleHintForFunction(name, section) || category.note,
+    label: presentation.label,
+    note: presentation.note,
     code,
   };
+}
+
+function coreFunctionStepPresentation(name, code, category, section) {
+  const baseName = `${name}()`;
+  const normalizedName = name.toLowerCase();
+  const lower = `${name}\n${code}`.toLowerCase();
+  const roleHint = roleHintForFunction(name, section);
+  if (/run_stage/.test(normalizedName)) {
+    return { label: `실험 전체를 묶는 ${baseName}`, note: '데이터 split, 모델 비교, best model 선택, 지표/그림 저장이 한 번에 연결되는 stage 실행 진입점입니다.' };
+  }
+  if (/load|read|dataset|split|preprocess|preprocessor|toy_batch|build_.*input|make_split/.test(normalizedName)) {
+    return { label: `입력 데이터 준비: ${baseName}`, note: roleHint || '원본 데이터나 toy batch를 모델이 읽을 수 있는 feature, target, mask, split 형태로 만드는 코드입니다.' };
+  }
+  if (/rank|retriev/.test(normalizedName)) {
+    return { label: `검색 순위 계산: ${baseName}`, note: 'query와 후보의 점수를 정렬해 top-k와 retrieval metric의 입력을 만듭니다.' };
+  }
+  if (/metric|accuracy|f1|recall|mrr|ndcg|score|coverage|loss/.test(normalizedName)) {
+    return { label: `판단 지표 계산: ${baseName}`, note: roleHint || '실행 결과가 좋았는지 판단하는 숫자를 만드는 코드입니다.' };
+  }
+  if (/token|encode|embedding|mask|batch/.test(normalizedName)) {
+    return { label: `입력 표현 만들기: ${baseName}`, note: roleHint || '원본 예제를 token, tensor, batch, mask처럼 모델이 읽을 수 있는 표현으로 바꿉니다.' };
+  }
+  if (/train|fit|adapt|optimizer|step/.test(normalizedName) || /optimizer|backward|loss_history/.test(lower)) {
+    return { label: `학습 루프: ${baseName}`, note: roleHint || 'loss 계산, backward, optimizer step이 실제로 파라미터를 바꾸는 흐름입니다.' };
+  }
+  if (/write|save|report|main/.test(normalizedName)) {
+    return { label: `산출물 저장 흐름: ${baseName}`, note: roleHint || 'metrics, figure, report처럼 사이트에서 다시 확인할 결과를 남기는 부분입니다.' };
+  }
+  return { label: `${category.label}: ${baseName}`, note: roleHint || category.note };
 }
 
 function coreStepFromPatternCategory(source, category, used) {
   const code = extractPatternExcerpt(source, category.patterns);
   if (!code || used.has(code)) return null;
   used.add(code);
+  const presentation = coreStepPresentationFromCode(code, category);
   return {
-    label: category.label,
-    note: category.note,
+    label: presentation.label,
+    note: presentation.note,
     code,
   };
+}
+
+function coreStepPresentationFromCode(code, category) {
+  const text = String(code || '');
+  const lower = text.toLowerCase();
+  const match = (pattern) => pattern.test(lower) || pattern.test(text);
+  if (match(/action_head|safety_head|train_policy|safety_loss|action_loss/)) {
+    return {
+      label: 'action과 safety head가 함께 학습되는 지점',
+      note: 'VLA에서는 action accuracy와 safety gate를 분리해서 봐야 하므로 두 head와 두 loss가 만나는 코드를 먼저 확인합니다.',
+    };
+  }
+  if (match(/rank|retrieval|recall_at|mrr|ndcg|top_k|topk/)) {
+    return {
+      label: 'ranking과 retrieval metric을 만드는 지점',
+      note: 'query-document 점수에서 top-k 순위와 recall/MRR/NDCG 같은 판단 기준이 만들어지는 흐름입니다.',
+    };
+  }
+  if (match(/token|embedding|padding|mask|vocab/)) {
+    return {
+      label: 'token id·embedding·mask가 연결되는 지점',
+      note: '문장이 token id로 바뀌고 embedding/mask를 거쳐 모델 입력 shape가 되는 흐름을 봅니다.',
+    };
+  }
+  if (match(/schedule|microbatch|bubble|pipeline_stage|stage_partition|partition_boundary/)) {
+    return {
+      label: 'stage schedule과 bubble을 계산하는 지점',
+      note: 'pipeline parallelism은 레이어 분할뿐 아니라 microbatch 시간표와 bubble/throughput 해석이 핵심입니다.',
+    };
+  }
+  if (match(/shard|all_gather|reduce_scatter|zero|fsdp|tensor_parallel|collective/)) {
+    return {
+      label: 'shard와 collective trade-off가 드러나는 지점',
+      note: '분산 학습 코드는 무엇을 나누고 언제 다시 모으는지, 그때 memory/communication이 어떻게 바뀌는지 봐야 합니다.',
+    };
+  }
+  if (match(/optimizer|backward|\.step\(|loss\s*=|cross_entropy|binary_cross_entropy|mse_loss/)) {
+    return {
+      label: 'loss에서 optimizer step으로 이어지는 지점',
+      note: '모델 출력이 loss가 되고, backward/step을 통해 파라미터가 바뀌는 학습 루프의 중심입니다.',
+    };
+  }
+  if (match(/metrics\s*=|metrics_path|write_text|json\.dumps|to_csv|savefig|artifact|report/)) {
+    return {
+      label: '지표와 리포트를 저장하는 지점',
+      note: '사이트와 해석 노트에서 다시 볼 숫자·그림·표가 어느 이름으로 저장되는지 확인합니다.',
+    };
+  }
+  if (match(/model\s*=|nn\.|pipeline\(|classifier|regressor|forward\(/)) {
+    return {
+      label: '모델 또는 변환이 정의되는 지점',
+      note: '입력 feature가 logit, score, prediction, embedding 같은 비교 가능한 출력으로 바뀌는 코드입니다.',
+    };
+  }
+  return { label: category.label, note: category.note };
 }
 
 function compactCodeLines(source, preferredLines) {
@@ -1654,6 +1857,7 @@ function roleHintForFunction(name, section) {
   if (normalized.includes('build') || normalized.includes('create') || normalized.includes('prepare') || normalized.includes('make')) return '작은 데이터, 모델, 설정 중 무엇을 고정해 비교 조건을 만드는지 확인하세요.';
   if (normalized.includes('generate') || normalized.includes('sample') || normalized.includes('decode')) return '모델 출력이 사람이 읽을 수 있는 토큰·설명·행동으로 바뀌는 지점입니다.';
   if (normalized.includes('write') || normalized.includes('save')) return '브라우저와 해석 노트가 다시 볼 결과물을 저장하는 지점입니다.';
+  if ((normalized.includes('load') || normalized.includes('read')) && cleanHref(section.href).endsWith('dataset.py')) return '원본 표 데이터를 읽어 실험 입력으로 만드는 지점입니다.';
   if (normalized.includes('load') || normalized.includes('read')) return '이전 실행 산출물을 다시 읽어 분석 입력으로 바꾸는 지점입니다.';
   return '';
 }
@@ -2270,32 +2474,585 @@ function prerequisiteUnitsFor(unit) {
   return base;
 }
 
-function quizForUnit(unit) {
+
+const LESSON_QUIZ_BLUEPRINTS = {
+  '00_foundations/01_tensor_shapes': {
+    prompt: 'matmul shape mismatch를 찾을 때 가장 먼저 맞춰야 하는 축은 무엇인가요?',
+    explanation: 'matmul은 batch 차원보다 먼저 왼쪽 텐서의 마지막 축과 오른쪽 텐서의 마지막에서 두 번째 축이 서로 맞아야 합니다.',
+    options: [
+      { label: '왼쪽 마지막 차원과 오른쪽 마지막에서 두 번째 차원이 같은지 확인한다.', correct: true, explain: '이 축이 내적되는 축이라 mismatch의 핵심 근거입니다.' },
+      { label: 'batch 차원만 같으면 matmul 내부 축은 자동으로 맞춰진다.', correct: false, explain: 'batch broadcasting과 matmul의 내적 축 조건은 서로 다릅니다.' },
+      { label: '출력 shape만 보면 입력 shape 문제를 역추적하지 않아도 된다.', correct: false, explain: '출력만 보면 어떤 입력 축이 틀렸는지 놓치기 쉽습니다.' },
+    ],
+    shortPrompt: 'shape mismatch를 입력 축 기준으로 한 문장으로 설명해 보세요.',
+    expected: '왼쪽 마지막 축과 오른쪽 마지막-두번째 축이 맞아야 하고, batch 축은 별도로 broadcast되는지 확인한다.',
+  },
+  '00_foundations/02_activation_and_loss': {
+    prompt: '극단적인 입력값에서 sigmoid가 학습 신호를 약하게 만들 수 있는 이유는 무엇인가요?',
+    explanation: 'sigmoid는 큰 양수/음수에서 0이나 1 근처로 포화되어 기울기가 작아집니다. 그래서 logits와 안정적 loss 구현을 함께 봐야 합니다.',
+    options: [
+      { label: '출력이 0 또는 1 근처로 포화되면 기울기가 작아져 업데이트 신호가 약해진다.', correct: true, explain: '포화 영역의 작은 gradient가 핵심입니다.' },
+      { label: 'sigmoid는 음수를 모두 0으로 잘라 ReLU와 같은 sparse 출력을 만든다.', correct: false, explain: '음수를 0으로 자르는 것은 ReLU의 성질입니다.' },
+      { label: 'softmax를 쓰면 BCE와 cross entropy의 target 형식 차이가 사라진다.', correct: false, explain: '손실 함수마다 기대하는 target 형식은 여전히 다릅니다.' },
+    ],
+    shortPrompt: 'activation 출력과 loss 입력(logit/probability)을 구분해 설명해 보세요.',
+    expected: 'activation은 표현을 바꾸고 loss는 오차를 scalar로 압축한다. 안정적 loss는 probability 대신 logits를 직접 받기도 한다.',
+  },
+  '00_foundations/03_gradients_and_backpropagation': {
+    prompt: 'analytic gradient와 finite-difference gradient가 거의 같다는 것은 무엇을 뜻하나요?',
+    explanation: '손미분 chain rule이 실제 loss 변화율을 제대로 따라간다는 검산입니다.',
+    options: [
+      { label: 'chain rule로 계산한 gradient가 작은 epsilon 근사와 맞아 구현/미분 방향을 신뢰할 수 있다.', correct: true, explain: '두 값의 차이가 작을수록 미분 흐름이 맞다는 근거가 됩니다.' },
+      { label: 'finite difference가 맞으면 learning rate를 아무리 키워도 loss가 줄어든다.', correct: false, explain: 'gradient 검산과 안정적인 step size는 별도 문제입니다.' },
+      { label: 'bias gradient는 항상 0이므로 weight gradient만 보면 된다.', correct: false, explain: 'bias도 prediction 경로를 통해 loss에 영향을 줍니다.' },
+    ],
+    shortPrompt: 'backpropagation에서 local gradient들이 어떻게 곱해지는지 설명해 보세요.',
+    expected: 'loss에서 출력으로 가는 gradient를 각 연산의 local derivative와 곱해 weight/bias 쪽으로 전달한다.',
+  },
+  '00_foundations/04_regularization_and_normalization': {
+    prompt: '정규화와 weight decay를 같이 볼 때 가장 중요한 구분은 무엇인가요?',
+    explanation: 'normalization은 입력/표현의 scale을 맞추고, weight decay는 파라미터 크기와 업데이트 방향에 제약을 더합니다.',
+    options: [
+      { label: '정규화는 gradient scale을 안정화하고, weight decay는 loss와 별개로 weight norm을 억제한다.', correct: true, explain: '두 기법의 작동 지점이 다릅니다.' },
+      { label: 'weight decay를 켜면 step 전 data loss 값 자체가 반드시 달라진다.', correct: false, explain: 'PyTorch SGD에서는 data loss는 같아 보이고 optimizer step에서 decay가 반영될 수 있습니다.' },
+      { label: 'dropout은 평가 모드에서도 항상 일부 값을 0으로 만든다.', correct: false, explain: 'dropout은 train/eval mode에 따라 동작이 달라집니다.' },
+    ],
+    shortPrompt: 'normalization과 regularization의 작동 위치를 구분해 설명해 보세요.',
+    expected: 'normalization은 입력/표현 scale을 맞추고 regularization은 weight 크기나 경로 의존도를 억제한다.',
+  },
+  '00_foundations/05_gpu_memory_runtime': {
+    prompt: 'training에서 batch size가 커질 때 특히 같이 커지는 메모리 항목은 무엇인가요?',
+    explanation: 'parameter는 모델 크기에 묶이지만 activation은 batch와 sequence/feature 크기에 민감합니다. training은 gradient와 optimizer state도 추가로 필요합니다.',
+    options: [
+      { label: 'activation 메모리는 batch와 함께 커지고, training은 gradient/optimizer state까지 더 필요하다.', correct: true, explain: 'training과 inference의 메모리 차이를 만드는 핵심입니다.' },
+      { label: 'parameter 메모리는 batch size가 커질 때마다 같은 비율로 늘어난다.', correct: false, explain: 'parameter 수는 batch가 아니라 모델 구조에 의해 결정됩니다.' },
+      { label: 'mixed precision은 항상 메모리를 0에 가깝게 만들어 OOM을 없앤다.', correct: false, explain: '도움은 되지만 activation/optimizer/state 병목은 여전히 남습니다.' },
+    ],
+    shortPrompt: 'training과 inference의 메모리 항목 차이를 설명해 보세요.',
+    expected: 'inference는 주로 parameter와 activation이지만 training은 activation 저장, gradient, optimizer state가 추가된다.',
+  },
+  '01_ml/01_tabular_classification': {
+    prompt: 'majority baseline과 학습 모델의 차이를 가장 정직하게 판단하려면 무엇을 봐야 하나요?',
+    explanation: '분류는 단일 정확도보다 class imbalance, AUPRC/F1, confusion matrix, error slice를 같이 봐야 합니다.',
+    options: [
+      { label: 'primary metric과 confusion/error slice를 함께 보고 baseline 대비 개선이 특정 class에만 치우치지 않았는지 확인한다.', correct: true, explain: '지표와 오류 분포를 함께 보는 것이 supervised ML의 기본입니다.' },
+      { label: 'accuracy가 높으면 class imbalance나 error slice는 보지 않아도 된다.', correct: false, explain: '불균형 데이터에서는 accuracy가 baseline 착시를 만들 수 있습니다.' },
+      { label: '가장 복잡한 모델을 고르면 feature 처리 실패는 자동으로 사라진다.', correct: false, explain: '전처리와 slice 오류는 모델 복잡도와 별도로 확인해야 합니다.' },
+    ],
+    shortPrompt: 'baseline, primary metric, error slice를 연결해 모델 선택 근거를 적어 보세요.',
+    expected: 'baseline 대비 primary metric 개선과 confusion/error slice의 실패 패턴을 함께 근거로 삼는다.',
+  },
+  '01_ml/02_tabular_regression': {
+    prompt: 'MAE와 RMSE가 서로 다르게 움직이면 어떤 해석이 필요한가요?',
+    explanation: 'RMSE는 큰 오차에 더 민감하므로 outlier나 특정 구간 residual을 따로 봐야 합니다.',
+    options: [
+      { label: '큰 residual/outlier가 RMSE를 밀어 올리는지 residual summary와 prediction-vs-target을 확인한다.', correct: true, explain: 'MAE/RMSE 차이는 오차 분포 모양의 단서입니다.' },
+      { label: 'RMSE가 MAE보다 크면 모델이 항상 틀렸다는 뜻이다.', correct: false, explain: '스케일과 outlier 민감도 차이를 해석해야 합니다.' },
+      { label: 'R2만 높으면 residual 분포는 볼 필요가 없다.', correct: false, explain: 'R2가 좋아도 특정 구간 bias가 남을 수 있습니다.' },
+    ],
+    shortPrompt: 'MAE, RMSE, residual을 함께 사용해 회귀 모델을 평가해 보세요.',
+    expected: '평균 오차, 큰 오차 민감도, residual 패턴을 함께 보며 baseline 대비 개선을 판단한다.',
+  },
+  '01_ml/03_model_selection_and_interpretation': {
+    prompt: 'validation score가 가장 높은 모델을 바로 선택하면 위험한 이유는 무엇인가요?',
+    explanation: '검증 점수는 leakage, spurious correlation, 해석 가능성, 운영 비용과 함께 봐야 합니다.',
+    options: [
+      { label: 'feature importance와 leakage 의심 신호를 함께 확인해 점수 상승이 믿을 수 있는지 검증해야 한다.', correct: true, explain: '성능과 해석 근거를 함께 남기는 것이 모델 선택입니다.' },
+      { label: 'validation score가 높으면 leakage 가능성은 원천적으로 없다.', correct: false, explain: 'leakage는 오히려 비정상적으로 높은 score로 드러날 수 있습니다.' },
+      { label: 'feature importance는 모델 선택과 무관한 시각화 장식이다.', correct: false, explain: '중요 특징은 해석과 오류 원인 추적의 핵심 근거입니다.' },
+    ],
+    shortPrompt: 'validation score와 feature importance를 함께 쓰는 이유를 설명해 보세요.',
+    expected: 'score만이 아니라 leakage/spurious feature/운영 해석 가능성을 함께 검토하기 위해서다.',
+  },
+  '01_ml/04_large_scale_tabular': {
+    prompt: '큰 표형 데이터에서 chunking을 쓰면 무엇을 반드시 같이 비교해야 하나요?',
+    explanation: 'chunking은 메모리를 줄이지만 metric 일관성, ordering, throughput, reproducibility를 함께 관리해야 합니다.',
+    options: [
+      { label: '메모리/throughput 개선과 metric 재현성, 데이터 순서 보존을 함께 확인한다.', correct: true, explain: '큰 입력에서도 같은 실험 계약을 유지해야 합니다.' },
+      { label: 'chunk를 쓰면 metric은 무조건 동일하므로 메모리만 보면 된다.', correct: false, explain: 'streaming 집계와 데이터 순서가 결과를 흔들 수 있습니다.' },
+      { label: 'throughput이 높아지면 재현성 검사는 생략해도 된다.', correct: false, explain: '속도와 재현성은 별도의 acceptance gate입니다.' },
+    ],
+    shortPrompt: 'chunking, memory budget, streaming metric의 trade-off를 설명해 보세요.',
+    expected: 'chunking은 peak memory를 낮추지만 metric 집계와 ordering/reproducibility를 보존해야 한다.',
+  },
+  '02_deep_learning/01_perceptron_and_mlp': {
+    prompt: 'perceptron이 XOR에서 실패하는 핵심 이유는 무엇인가요?',
+    explanation: '단일 선형 decision boundary는 XOR처럼 선형 분리되지 않는 패턴을 나눌 수 없습니다.',
+    options: [
+      { label: '하나의 직선/초평면 decision rule로는 XOR의 네 점을 올바르게 분리할 수 없다.', correct: true, explain: 'hidden layer와 nonlinearity가 필요한 이유입니다.' },
+      { label: 'XOR은 입력 feature가 너무 많아서 perceptron이 실패한다.', correct: false, explain: '문제는 feature 수가 아니라 선형 분리 가능성입니다.' },
+      { label: 'perceptron은 bias가 없을 때만 작동하고 bias가 있으면 항상 실패한다.', correct: false, explain: 'bias는 boundary 위치를 옮기지만 XOR의 비선형성은 해결하지 못합니다.' },
+    ],
+    shortPrompt: 'linear separability와 hidden layer의 관계를 설명해 보세요.',
+    expected: '선형 분리 가능한 문제는 단일 boundary로 되지만 XOR은 hidden nonlinearity가 필요하다.',
+  },
+  '02_deep_learning/02_cnn_and_image_classification': {
+    prompt: 'convolution을 local pattern detector라고 부를 수 있는 이유는 무엇인가요?',
+    explanation: '작은 kernel이 이미지의 국소 영역을 훑으며 같은 weight로 반복 적용되어 feature map을 만듭니다.',
+    options: [
+      { label: 'kernel이 local receptive field에 반복 적용되어 위치별 feature map 반응을 만든다.', correct: true, explain: 'locality와 parameter sharing이 CNN의 inductive bias입니다.' },
+      { label: 'convolution은 모든 픽셀을 별도 파라미터로 완전히 독립 처리한다.', correct: false, explain: '같은 kernel weight를 공유한다는 점이 중요합니다.' },
+      { label: 'pooling은 channel 정보를 없애므로 classification에는 쓸 수 없다.', correct: false, explain: 'pooling은 공간 정보를 요약해 강건성을 줄 수 있습니다.' },
+    ],
+    shortPrompt: 'local receptive field와 parameter sharing을 이미지 분류 관점에서 설명해 보세요.',
+    expected: '국소 패턴을 같은 kernel로 반복 감지해 위치 변화에 강한 feature map을 만든다.',
+  },
+  '02_deep_learning/03_sequence_models_rnn_lstm_gru': {
+    prompt: '같은 token 집합도 순서가 바뀌면 final hidden state가 달라지는 이유는 무엇인가요?',
+    explanation: 'RNN 계열은 이전 hidden state와 현재 token을 순차적으로 섞기 때문에 같은 원소라도 업데이트 순서가 결과를 바꿉니다.',
+    options: [
+      { label: 'hidden state가 시간 순서대로 갱신되어 이전 token 압축 상태가 다음 계산에 영향을 준다.', correct: true, explain: 'sequence ordering이 recurrent update의 핵심입니다.' },
+      { label: 'RNN은 token 순서를 정렬해서 항상 같은 final state를 만든다.', correct: false, explain: '순서를 보존하는 것이 recurrent model의 중요한 특징입니다.' },
+      { label: 'LSTM/GRU gate는 순서 정보를 완전히 제거하기 위해 존재한다.', correct: false, explain: 'gate는 정보를 선택적으로 보존/삭제하지만 순서성을 없애지는 않습니다.' },
+    ],
+    shortPrompt: 'hidden state 병목과 gating의 역할을 설명해 보세요.',
+    expected: 'hidden state는 과거 정보를 압축하며, gate는 장기 정보 보존과 삭제를 조절한다.',
+  },
+  '02_deep_learning/04_attention_and_transformers': {
+    prompt: 'attention output을 value들의 가중합이라고 말하는 직접 근거는 무엇인가요?',
+    explanation: 'attention weight row가 softmax로 정규화되고 그 weight가 value matrix와 곱해져 sequence mixing 결과를 만듭니다.',
+    options: [
+      { label: '각 query row의 attention weight 합이 1이고 그 weight로 value를 섞어 output을 만든다.', correct: true, explain: 'row-stochastic weight와 value mixing이 핵심입니다.' },
+      { label: 'attention은 value를 보지 않고 query와 key만 출력으로 사용한다.', correct: false, explain: 'query-key는 weight를 만들고 실제 내용은 value에서 옵니다.' },
+      { label: 'causal mask는 padding token만 막고 미래 token은 항상 볼 수 있게 한다.', correct: false, explain: 'causal mask는 미래 위치를 보지 못하게 합니다.' },
+    ],
+    shortPrompt: 'Q/K/V와 mask가 attention output에 들어가는 순서를 설명해 보세요.',
+    expected: 'QK score에 mask를 적용해 softmax weight를 만들고, 그 weight로 V를 섞는다.',
+  },
+  '02_deep_learning/05_autoencoders_and_representation_learning': {
+    prompt: 'autoencoder의 bottleneck이 학습에 주는 압박은 무엇인가요?',
+    explanation: 'encoder가 입력을 작은 latent로 압축하고 decoder가 복원해야 하므로 latent가 중요한 구조를 담아야 합니다.',
+    options: [
+      { label: 'latent 차원을 제한해 입력을 그대로 복사하지 못하게 하고 복원에 필요한 요약 표현을 배우게 한다.', correct: true, explain: 'bottleneck은 representation learning의 핵심 제약입니다.' },
+      { label: 'decoder만 학습하면 encoder는 없어도 같은 latent를 얻는다.', correct: false, explain: 'encoder가 입력을 latent로 매핑해야 합니다.' },
+      { label: 'reconstruction loss는 label이 없으면 계산할 수 없다.', correct: false, explain: '입력 자체를 target으로 삼을 수 있습니다.' },
+    ],
+    shortPrompt: 'encoder-latent-decoder와 reconstruction objective를 설명해 보세요.',
+    expected: 'encoder가 입력을 latent로 압축하고 decoder가 복원하며 reconstruction loss가 학습 신호가 된다.',
+  },
+  '02_deep_learning/06_generative_models_vae_gan': {
+    prompt: 'VAE에서 reparameterization trick이 필요한 이유는 무엇인가요?',
+    explanation: '무작위 샘플링을 μ + σ·ε 형태로 분리해 latent sampling을 하면서도 μ/σ 경로로 gradient가 흐르게 합니다.',
+    options: [
+      { label: 'noise를 분리해 샘플링을 유지하면서 encoder가 만든 μ와 σ로 gradient가 전달되게 한다.', correct: true, explain: 'sampling과 backprop을 함께 가능하게 하는 장치입니다.' },
+      { label: 'KL term을 제거해 reconstruction loss만 최적화하기 위해 필요하다.', correct: false, explain: 'VAE는 reconstruction과 KL 균형을 함께 봅니다.' },
+      { label: 'GAN의 discriminator를 없애기 위해 쓰는 trick이다.', correct: false, explain: 'reparameterization은 VAE latent sampling의 문제입니다.' },
+    ],
+    shortPrompt: 'VAE의 reconstruction/KL 균형과 GAN의 mode coverage를 비교해 보세요.',
+    expected: 'VAE는 복원과 latent prior 정렬을 함께 보며, GAN은 generator/discriminator 경쟁과 mode collapse 위험을 본다.',
+  },
+  '02_deep_learning/07_training_recipes_and_debugging': {
+    prompt: '학습 레시피를 비교할 때 train loss만 보면 안 되는 이유는 무엇인가요?',
+    explanation: 'overfit/underfit/divergence/data bug는 validation 곡선, sanity check, gradient/learning-rate 패턴을 같이 봐야 드러납니다.',
+    options: [
+      { label: 'train/validation 격차와 sanity check를 함께 봐야 overfit, divergence, label bug를 구분할 수 있다.', correct: true, explain: 'debugging은 단일 loss 감소보다 실패 유형 분류가 중요합니다.' },
+      { label: 'train loss가 내려가면 validation과 data bug는 확인하지 않아도 된다.', correct: false, explain: 'train만 좋아지는 전형적 실패가 많습니다.' },
+      { label: 'learning rate가 높을수록 항상 더 빨리 안정적으로 수렴한다.', correct: false, explain: '너무 큰 LR은 divergence를 만들 수 있습니다.' },
+    ],
+    shortPrompt: 'overfit/underfit/divergence/data bug를 어떤 증거로 나눌지 적어 보세요.',
+    expected: 'train/val 곡선, sanity check, gradient/LR 흔적을 함께 보고 실패 유형을 분류한다.',
+  },
+  '03_nlp_bridge/01_tokenization_and_embeddings': {
+    prompt: '공백 단어 수보다 subword token 수가 늘어나는 이유는 무엇인가요?',
+    explanation: 'tokenizer는 단어를 vocabulary에 맞는 subword 조각으로 나누고, unknown/padding/mask 처리가 embedding 입력 길이를 바꿉니다.',
+    options: [
+      { label: '낯선 단어나 형태가 vocabulary subword 조각으로 분해되어 한 단어가 여러 token id가 될 수 있다.', correct: true, explain: 'subword tokenization의 핵심입니다.' },
+      { label: 'embedding lookup이 단어를 문장 개수만큼 복사하기 때문이다.', correct: false, explain: '길이 증가는 lookup이 아니라 tokenization 단계에서 생깁니다.' },
+      { label: 'padding mask는 token 수를 줄이기 위해 실제 token을 삭제한다.', correct: false, explain: 'padding mask는 padding 위치를 계산에서 제외하도록 표시합니다.' },
+    ],
+    shortPrompt: 'token id, embedding tensor, padding mask의 연결을 설명해 보세요.',
+    expected: '문장은 token id sequence가 되고, embedding lookup 후 padding mask로 실제 token 위치만 해석한다.',
+  },
+  '03_nlp_bridge/02_attention_and_transformer_block': {
+    prompt: 'padding mask와 causal mask는 각각 무엇을 막나요?',
+    explanation: 'padding mask는 의미 없는 padding 위치를, causal mask는 현재 위치가 미래 token을 보는 것을 막습니다.',
+    options: [
+      { label: 'padding mask는 pad 위치 attention을 막고, causal mask는 미래 위치 attention을 막는다.', correct: true, explain: '두 mask의 목적이 다릅니다.' },
+      { label: 'padding mask와 causal mask는 모두 embedding 차원을 줄이는 압축 연산이다.', correct: false, explain: 'mask는 attention score에 적용되는 접근 제한입니다.' },
+      { label: 'causal mask는 encoder가 모든 token을 양방향으로 보게 하는 장치다.', correct: false, explain: 'causal mask는 decoder-style 미래 차단에 쓰입니다.' },
+    ],
+    shortPrompt: 'self-attention에서 Q/K/V와 mask가 shape를 어떻게 보존하는지 설명해 보세요.',
+    expected: 'attention weight는 sequence 길이 축에서 섞고 output은 hidden dimension을 유지한다.',
+  },
+  '04_nlp/01_text_classification': {
+    prompt: 'bag-of-words baseline이 긍정/부정 신호를 읽는 방식의 한계는 무엇인가요?',
+    explanation: 'bag-of-words는 token 등장 신호를 보지만 순서, 문맥, 부정 표현의 조합을 놓치기 쉽습니다.',
+    options: [
+      { label: 'token 빈도 신호는 잡지만 순서와 문맥 조합을 잃어 특정 표현에서 오류가 날 수 있다.', correct: true, explain: 'baseline 해석과 neural classifier 비교 포인트입니다.' },
+      { label: 'bag-of-words는 문장 순서를 완벽하게 보존하므로 문맥 오류가 없다.', correct: false, explain: '순서 정보를 버리는 것이 대표 한계입니다.' },
+      { label: 'macro F1은 class별 성능 불균형을 숨기기 위해 쓰는 지표다.', correct: false, explain: 'macro F1은 오히려 class별 균형을 드러내는 데 유용합니다.' },
+    ],
+    shortPrompt: 'accuracy와 macro F1을 함께 봐야 하는 이유를 설명해 보세요.',
+    expected: 'accuracy는 전체 정답률이고 macro F1은 class별 성능 균형을 더 잘 드러낸다.',
+  },
+  '04_nlp/02_named_entity_recognition': {
+    prompt: 'BIO tagging에서 entity-level F1이 token accuracy와 다르게 중요한 이유는 무엇인가요?',
+    explanation: '개체명은 시작/내부/경계가 맞아야 하나의 entity로 인정되므로 token 하나만 맞아도 충분하지 않습니다.',
+    options: [
+      { label: '경계와 label sequence가 맞아야 entity가 맞으므로 token별 정답률만으로는 boundary error를 숨길 수 있다.', correct: true, explain: 'NER의 핵심 오류는 경계와 alignment입니다.' },
+      { label: 'BIO label은 모든 token에 같은 B label만 붙이면 된다.', correct: false, explain: 'B/I/O의 위치 규칙이 있습니다.' },
+      { label: 'entity-level F1은 padding token까지 모두 정답으로 세는 지표다.', correct: false, explain: 'padding은 평가에서 제외되어야 합니다.' },
+    ],
+    shortPrompt: 'label alignment와 BIO boundary error를 설명해 보세요.',
+    expected: 'subword/token 정렬 후 B/I/O 경계가 맞아야 entity-level 정답으로 인정된다.',
+  },
+  '04_nlp/03_machine_reading_comprehension': {
+    prompt: 'exact match와 token F1을 함께 보면 어떤 span extraction 오류가 드러나나요?',
+    explanation: '정답 span이 거의 맞아도 경계가 조금 틀리면 exact match는 실패하고 token F1은 부분 일치를 보여줍니다.',
+    options: [
+      { label: 'span 경계가 일부 틀린 partial match와 완전 오답을 구분할 수 있다.', correct: true, explain: '독해 평가는 boundary error를 따로 읽어야 합니다.' },
+      { label: 'token F1이 있으면 no-answer threshold는 필요 없다.', correct: false, explain: 'answerable/unanswerable 판단은 별도 기준입니다.' },
+      { label: 'question-context overlap은 항상 정답 span을 완벽히 보장한다.', correct: false, explain: 'heuristic overlap은 실패할 수 있습니다.' },
+    ],
+    shortPrompt: 'span extraction과 no-answer 판단을 함께 설명해 보세요.',
+    expected: '모델은 answer span 경계와 답변 가능성/no-answer threshold를 함께 판단해야 한다.',
+  },
+  '05_advanced_nlp_llm/01_language_modeling_and_pretraining_objectives': {
+    prompt: 'causal LM, masked LM, span corruption의 가장 큰 차이는 무엇인가요?',
+    explanation: '각 objective는 입력으로 보이는 token과 loss를 계산하는 target token의 위치가 다릅니다.',
+    options: [
+      { label: '무엇을 가리고/남기고/다음 token으로 예측할지의 target framing과 scored token이 다르다.', correct: true, explain: 'pretraining objective의 핵심 구분입니다.' },
+      { label: '세 objective는 모두 같은 token을 같은 위치에서 loss로 계산한다.', correct: false, explain: 'loss-mask density와 target 위치가 달라집니다.' },
+      { label: 'span corruption은 sentinel token 없이 단어 순서를 무작위로 섞는 작업이다.', correct: false, explain: 'span을 sentinel로 대체하고 복원하는 framing입니다.' },
+    ],
+    shortPrompt: 'target framing과 loss-mask density를 연결해 설명해 보세요.',
+    expected: 'objective마다 입력으로 남기는 context와 loss를 매기는 token 위치/밀도가 다르다.',
+  },
+  '05_advanced_nlp_llm/02_corpus_tokenizer_and_data_mixture': {
+    prompt: 'corpus quality가 단순히 데이터 규모와 같지 않은 이유는 무엇인가요?',
+    explanation: '노이즈, 중복, contamination, domain imbalance, tokenizer coverage가 실제 학습 신호를 바꿉니다.',
+    options: [
+      { label: '중복/오염/도메인 불균형/토큰화 coverage가 token budget의 유효 학습 신호를 바꾼다.', correct: true, explain: 'data pipeline은 양보다 신호 품질이 중요합니다.' },
+      { label: '문서 수가 많으면 contamination과 중복은 자동으로 희석되어 사라진다.', correct: false, explain: '오히려 반복 신호가 학습을 왜곡할 수 있습니다.' },
+      { label: 'vocabulary size를 키우면 multilingual fairness 문제는 항상 해결된다.', correct: false, explain: 'compression과 coverage trade-off가 남습니다.' },
+    ],
+    shortPrompt: 'deduplication, contamination, domain balance를 token budget과 연결해 보세요.',
+    expected: '같은 token budget에서도 품질/중복/오염/도메인 비율이 실제 학습 신호를 결정한다.',
+  },
+  '05_advanced_nlp_llm/03_domain_adaptive_pretraining': {
+    prompt: 'DAPT가 일반 fine-tuning과 다른 핵심은 무엇인가요?',
+    explanation: 'DAPT는 같은 pretraining objective를 유지한 채 domain corpus로 continued pretraining을 하며 specialization과 forgetting을 함께 봅니다.',
+    options: [
+      { label: '기존 LM objective를 유지하면서 domain corpus로 계속 사전학습해 domain gain과 retention을 같이 관리한다.', correct: true, explain: 'DAPT의 핵심 trade-off입니다.' },
+      { label: 'DAPT는 classifier head만 바꾸는 supervised fine-tuning이다.', correct: false, explain: '같은 pretraining objective를 유지하는 것이 다릅니다.' },
+      { label: 'domain loss가 낮아지면 general retention은 확인하지 않아도 된다.', correct: false, explain: 'catastrophic forgetting 위험을 봐야 합니다.' },
+    ],
+    shortPrompt: 'specialization gain과 catastrophic forgetting을 함께 설명해 보세요.',
+    expected: 'domain 성능은 좋아질 수 있지만 일반 능력 유지/retention guardrail을 함께 확인해야 한다.',
+  },
+  '05_advanced_nlp_llm/04_instruction_tuning_and_sft': {
+    prompt: 'SFT가 base LM의 continuation behavior를 assistant interaction으로 바꾸는 방식은 무엇인가요?',
+    explanation: 'instruction/chat template으로 system/user/assistant role을 구성하고 assistant response token에 next-token loss를 적용합니다.',
+    options: [
+      { label: 'role/template로 입력-출력 형식을 만들고 assistant 답변 target을 next-token loss로 모방한다.', correct: true, explain: 'SFT는 objective는 유지하되 target framing을 바꿉니다.' },
+      { label: 'SFT는 reward model 없이도 선호 비교를 직접 최적화하는 RL 알고리즘이다.', correct: false, explain: 'SFT는 supervised imitation 단계입니다.' },
+      { label: 'chat template은 학습과 무관한 출력 꾸미기라 loss mask와 관련 없다.', correct: false, explain: '어떤 token을 target으로 삼을지에 직접 연결됩니다.' },
+    ],
+    shortPrompt: 'instruction format, chat template, assistant target을 연결해 보세요.',
+    expected: 'prompt role framing을 만들고 assistant 응답 token을 supervised target으로 모방한다.',
+  },
+  '05_advanced_nlp_llm/05_preference_optimization_dpo_orpo_kto': {
+    prompt: 'chosen/rejected pair가 일반 정답/오답 label과 다른 점은 무엇인가요?',
+    explanation: 'preference optimization은 한 답만 맞히는 것이 아니라 chosen 답의 log-prob를 rejected보다 더 높이도록 margin을 만듭니다.',
+    options: [
+      { label: '두 후보의 상대 선호를 사용해 chosen-rejected log-prob margin을 키우는 방향을 본다.', correct: true, explain: 'DPO/ORPO/KTO의 공통 감각입니다.' },
+      { label: 'chosen은 정답 token이고 rejected는 항상 문법적으로 불가능한 token이다.', correct: false, explain: '둘 다 그럴듯한 응답일 수 있으며 선호 차이를 학습합니다.' },
+      { label: 'preference optimization은 policy log-prob를 보지 않고 accuracy만 비교한다.', correct: false, explain: 'log-prob margin이 핵심입니다.' },
+    ],
+    shortPrompt: 'DPO/ORPO/KTO가 full RL loop 없이 margin을 움직이는 감각을 설명해 보세요.',
+    expected: '선호 쌍 또는 desirability label로 policy가 선호 응답을 더 높은 확률로 두도록 조정한다.',
+  },
+  '05_advanced_nlp_llm/06_rlhf_and_reasoning_rl': {
+    prompt: 'reward model을 truth engine이 아니라 preference proxy로 읽어야 하는 이유는 무엇인가요?',
+    explanation: 'reward model은 인간/평가자 선호를 근사한 점수 신호이므로 policy update와 regression eval로 오용을 감시해야 합니다.',
+    options: [
+      { label: 'reward는 선호 근사 신호라 rollout, reward scoring, policy update, regression eval을 함께 관리해야 한다.', correct: true, explain: 'RLHF loop의 안전한 해석입니다.' },
+      { label: 'reward가 높으면 답이 항상 사실이며 별도 평가가 필요 없다.', correct: false, explain: 'reward hacking과 preference proxy 오류가 가능합니다.' },
+      { label: 'PPO/RLHF는 rollout 없이 정답 label만으로 끝나는 supervised loop다.', correct: false, explain: 'rollout과 reward scoring이 들어갑니다.' },
+    ],
+    shortPrompt: 'rollout→reward scoring→policy update→regression eval 순서를 설명해 보세요.',
+    expected: '정책이 응답을 만들고 reward/judge가 점수화하며, 업데이트 후 회귀/안전 평가로 drift를 확인한다.',
+  },
+  '05_advanced_nlp_llm/07_retrieval_augmented_generation_and_eval': {
+    prompt: 'RAG에서 citation 개수보다 claim-level evidence support가 중요한 이유는 무엇인가요?',
+    explanation: '인용이 많아도 각 주장과 실제 근거가 맞지 않으면 grounded answer라고 보기 어렵습니다.',
+    options: [
+      { label: '각 claim이 검색된 근거로 실제 지지되는지 봐야 citation-without-support 오류를 잡을 수 있다.', correct: true, explain: 'grounding 평가는 claim 단위 근거 대응이 핵심입니다.' },
+      { label: 'citation 태그가 있으면 문장 내용은 검색 결과와 무관해도 된다.', correct: false, explain: '형식적 인용만으로는 groundedness를 보장하지 않습니다.' },
+      { label: 'retriever recall이 낮아도 generator가 항상 사실을 복구한다.', correct: false, explain: '외부 memory 실패는 hallucination 위험을 키웁니다.' },
+    ],
+    shortPrompt: 'retriever-reader와 retriever-generator의 failure pattern 차이를 설명해 보세요.',
+    expected: 'reader는 근거에서 답을 추출하고 generator는 근거를 문맥으로 생성하므로 retrieval/grounding 실패 양상이 다르다.',
+  },
+  '05_advanced_nlp_llm/08_alignment_safety_and_model_behavior': {
+    prompt: 'alignment와 capability를 분리하지 않으면 어떤 평가 착시가 생기나요?',
+    explanation: '능력 점수가 높아도 unsafe compliance나 over-refusal이 숨을 수 있으므로 behavior slice를 나눠 봐야 합니다.',
+    options: [
+      { label: 'capability score가 높은 모델도 harmful compliance나 over-refusal을 보일 수 있어 slice별 행동 평가가 필요하다.', correct: true, explain: 'alignment-vs-capability 분리의 이유입니다.' },
+      { label: '정답률이 높으면 safety behavior도 자동으로 안전하다고 볼 수 있다.', correct: false, explain: '능력과 안전 행동은 별도 축입니다.' },
+      { label: 'refusal은 많을수록 항상 좋고 benign 요청 거절은 문제가 아니다.', correct: false, explain: 'over-refusal은 사용성/정렬 실패입니다.' },
+    ],
+    shortPrompt: 'refusal, over-refusal, unsafe compliance를 구분해 보세요.',
+    expected: 'harmful 요청 거절은 필요하지만 benign 요청 거절은 over-refusal이고 harmful 수락은 unsafe compliance다.',
+  },
+  '06_training_systems/01_torchrun_and_ddp_basics': {
+    prompt: 'rank와 local rank를 구분해야 하는 이유는 무엇인가요?',
+    explanation: 'global rank는 전체 process identity이고 local rank는 한 노드 안의 device 배치에 연결됩니다. DDP는 replica gradient를 all-reduce로 평균냅니다.',
+    options: [
+      { label: 'global rank는 전체 worker 식별, local rank는 노드 내부 device 배치라 실행/로그/통신 해석이 달라진다.', correct: true, explain: 'torchrun 실행 계약의 기본입니다.' },
+      { label: 'rank와 local rank는 항상 같은 값이므로 구분할 필요가 없다.', correct: false, explain: 'multi-node에서 달라질 수 있습니다.' },
+      { label: 'DDP는 모델을 shard하고 parameter를 rank마다 나눠 저장한다.', correct: false, explain: '기본 DDP는 replica를 두고 gradient를 평균냅니다.' },
+    ],
+    shortPrompt: 'DDP가 무엇을 복제하고 무엇을 평균내는지 설명해 보세요.',
+    expected: '모델 replica는 rank마다 있고 batch를 나눠 계산한 gradient를 all-reduce로 평균낸다.',
+  },
+  '06_training_systems/02_accelerate_workflows': {
+    prompt: 'Accelerate가 줄여 주는 것과 여전히 사용자가 알아야 하는 것은 무엇인가요?',
+    explanation: 'Accelerator는 device placement, prepare, mixed precision, distributed launch boilerplate를 줄이지만 batch/loss/metric 의미는 사용자가 이해해야 합니다.',
+    options: [
+      { label: '장치 배치와 분산 준비 코드를 줄여도 batch, loss scaling, metric 집계 의미는 직접 이해해야 한다.', correct: true, explain: 'prepare 이후에도 훈련 계약은 사라지지 않습니다.' },
+      { label: 'Accelerate를 쓰면 optimizer/loss/metric 정의를 몰라도 자동으로 올바른 실험이 된다.', correct: false, explain: '도구는 boilerplate를 줄일 뿐 의미 해석을 대신하지 않습니다.' },
+      { label: 'mixed precision은 정확도와 overflow 문제를 완전히 제거한다.', correct: false, explain: '스케일링과 안정성 관찰이 필요합니다.' },
+    ],
+    shortPrompt: '`prepare()` 이후에도 남는 사용자 책임을 설명해 보세요.',
+    expected: '모델/optimizer/dataloader는 감싸지지만 batch 의미, loss 정규화, metric 집계는 이해해야 한다.',
+  },
+  '06_training_systems/03_deepspeed_zero': {
+    prompt: 'ZeRO stage를 memory accounting으로 읽을 때 핵심은 무엇인가요?',
+    explanation: 'stage가 올라갈수록 optimizer state, gradient, parameter 중 어떤 상태를 data parallel rank 사이에 shard하는지가 달라집니다.',
+    options: [
+      { label: 'stage별로 optimizer state→gradient→parameter sharding 범위가 넓어져 per-rank memory와 communication trade-off가 바뀐다.', correct: true, explain: 'ZeRO의 핵심은 중복 상태 제거입니다.' },
+      { label: 'ZeRO는 batch를 작게 만들어 activation을 전부 제거하는 기법이다.', correct: false, explain: '주로 data parallel 중복 상태를 shard합니다.' },
+      { label: 'stage가 높을수록 통신 비용은 항상 0이 된다.', correct: false, explain: '메모리를 줄이는 대신 gather/scatter 통신이 늘 수 있습니다.' },
+    ],
+    shortPrompt: 'ZeRO가 shard하는 상태와 trade-off를 설명해 보세요.',
+    expected: 'optimizer/gradient/parameter 상태 중복을 줄여 per-rank memory를 낮추지만 통신/복잡도 비용이 생긴다.',
+  },
+  '06_training_systems/04_fsdp_checkpointing_and_offload': {
+    prompt: 'FSDP runtime을 parameter shard lifecycle로 읽는다는 뜻은 무엇인가요?',
+    explanation: 'FSDP는 필요한 순간 parameter를 all-gather하고 계산 후 다시 shard하며, checkpoint/offload/checkpointing이 memory-compute-I/O trade-off를 만듭니다.',
+    options: [
+      { label: 'forward/backward 계산 때 parameter를 모으고 이후 다시 shard하며 checkpoint/offload 정책이 memory와 I/O를 바꾼다.', correct: true, explain: 'FSDP의 runtime 감각입니다.' },
+      { label: 'FSDP는 parameter를 한 번 모은 뒤 학습 내내 모든 rank에 full copy로 유지한다.', correct: false, explain: 'shard lifecycle을 놓친 설명입니다.' },
+      { label: 'activation checkpointing은 checkpoint 파일 저장만 빠르게 하는 기능이다.', correct: false, explain: 'activation 재계산으로 메모리를 줄이는 기법입니다.' },
+    ],
+    shortPrompt: 'activation checkpointing과 CPU offload의 비용을 설명해 보세요.',
+    expected: 'checkpointing은 activation 저장을 줄이고 recomputation을 늘리며, offload는 GPU 메모리를 줄이는 대신 I/O/전송 비용을 만든다.',
+  },
+  '06_training_systems/05_tensor_parallelism': {
+    prompt: 'tensor parallelism이 state sharding과 다른 점은 무엇인가요?',
+    explanation: 'tensor parallelism은 레이어 내부 행렬/attention head 계산 자체를 나눠 collective로 합칩니다.',
+    options: [
+      { label: 'parameter 상태만 저장 분할하는 것이 아니라 row/column linear나 attention head 같은 intra-layer 계산을 나눈다.', correct: true, explain: 'intra-layer parallelism 감각이 핵심입니다.' },
+      { label: 'tensor parallelism은 batch sample을 rank마다 나누는 data parallel과 같다.', correct: false, explain: 'batch 축이 아니라 모델 내부 tensor 축을 나눕니다.' },
+      { label: 'row/column parallel은 dense 결과와 수치 검산이 필요 없다.', correct: false, explain: 'shard 합산 결과가 dense와 맞는지 확인해야 합니다.' },
+    ],
+    shortPrompt: 'row parallel과 column parallel linear의 검산 기준을 설명해 보세요.',
+    expected: '나눈 weight/activation shard를 collective로 모았을 때 dense matmul과 max diff가 작아야 한다.',
+  },
+  '06_training_systems/06_pipeline_parallelism': {
+    prompt: 'pipeline parallelism이 data/tensor parallel과 다른 축은 무엇인가요?',
+    explanation: 'pipeline parallelism은 레이어 stack을 stage로 나누고 microbatch schedule로 시간축 실행을 채웁니다.',
+    options: [
+      { label: '모델 레이어를 stage로 나누고 microbatch schedule로 bubble/throughput trade-off를 관리한다.', correct: true, explain: 'partition과 schedule이 핵심입니다.' },
+      { label: 'pipeline은 batch sample만 나누며 모델 레이어는 모든 rank에 완전히 복제한다.', correct: false, explain: '레이어 stage partition이 pipeline의 특징입니다.' },
+      { label: 'stage를 나누면 single-batch latency가 항상 줄어든다.', correct: false, explain: 'bubble과 stage imbalance 때문에 latency/throughput을 따로 봐야 합니다.' },
+    ],
+    shortPrompt: 'microbatch, bubble, stage balance를 연결해 설명해 보세요.',
+    expected: 'microbatch로 stage를 채워 throughput을 높이지만 bubble과 imbalance가 효율을 제한한다.',
+  },
+  '06_training_systems/07_data_parallel_grad_accumulation': {
+    prompt: 'data parallel과 gradient accumulation은 batch를 어떻게 다르게 키우나요?',
+    explanation: 'data parallel은 여러 rank의 local batch를 합쳐 global batch를 만들고, grad accumulation은 optimizer step 전에 여러 microbatch gradient를 누적합니다.',
+    options: [
+      { label: 'data parallel은 rank 축으로 global batch를 키우고 accumulation은 optimizer step cadence를 늦춰 effective batch를 키운다.', correct: true, explain: 'local/global/effective batch 구분이 핵심입니다.' },
+      { label: 'grad accumulation은 매 microbatch마다 optimizer step을 더 자주 하게 만든다.', correct: false, explain: '오히려 step을 지연합니다.' },
+      { label: 'no_sync는 gradient 계산 자체를 끄는 기능이다.', correct: false, explain: '동기화를 지연할 뿐 gradient 계산은 계속됩니다.' },
+    ],
+    shortPrompt: 'local batch, global batch, effective batch를 구분해 보세요.',
+    expected: 'local은 rank당 batch, global은 rank 합산 batch, effective는 accumulation step까지 곱한 업데이트 기준 batch다.',
+  },
+  '06_training_systems/08_hybrid_parallel_topologies': {
+    prompt: 'hybrid parallel topology가 단순 옵션 조합이 아닌 이유는 무엇인가요?',
+    explanation: 'DP/TP/PP/FSDP는 각각 나누는 축과 통신 병목이 다르고 hardware link와 checkpoint/recovery 계약까지 함께 결정합니다.',
+    options: [
+      { label: '모델 크기, 메모리 병목, 통신 경로, 하드웨어 링크, checkpoint 계약을 같이 맞추는 배치 설계다.', correct: true, explain: 'hybrid topology는 설계 문제입니다.' },
+      { label: '모든 parallelism 옵션을 켜면 항상 최적 topology가 된다.', correct: false, explain: '서로 다른 통신/메모리 비용이 충돌할 수 있습니다.' },
+      { label: 'TP와 PP를 쓰면 DP/FSDP checkpoint metadata는 필요 없다.', correct: false, explain: '복구와 재배치를 위해 topology-aware metadata가 필요합니다.' },
+    ],
+    shortPrompt: 'DP, TP, PP, FSDP가 각각 무엇을 나누는지 설명해 보세요.',
+    expected: 'DP는 batch/replica, TP는 layer tensor, PP는 layer stage, FSDP는 state shard를 나눈다.',
+  },
+  '06_training_systems/09_profiling_monitoring_and_failure_recovery': {
+    prompt: '느린 학습 run을 time/memory/communication 축으로 나누면 왜 triage가 빨라지나요?',
+    explanation: '병목 가설을 step timeline, memory snapshot, communication wait, heartbeat/failure signal로 분리해 볼 수 있습니다.',
+    options: [
+      { label: 'step timeline과 memory/communication 신호를 분리하면 OOM, hang, divergence, slow phase를 다른 가설로 좁힐 수 있다.', correct: true, explain: 'runbook식 triage의 목적입니다.' },
+      { label: 'average step time 하나만 보면 jitter와 tail latency까지 모두 설명된다.', correct: false, explain: '평균은 phase-boundary slowdown과 tail을 숨깁니다.' },
+      { label: 'checkpoint resume 문제는 profiling/monitoring과 무관하다.', correct: false, explain: 'failure recovery의 핵심 운영 신호입니다.' },
+    ],
+    shortPrompt: 'OOM, hang, divergence, checkpoint resume을 어떤 증거로 나눌지 적어 보세요.',
+    expected: '메모리 snapshot, heartbeat/timeout, loss/gradient 추세, checkpoint metadata와 resume log로 나눠 본다.',
+  },
+  '07_frontier_labs/01_paper_reproduction_playground': {
+    prompt: 'full paper reproduction과 claim-level reproduction은 어떻게 다른가요?',
+    explanation: 'claim-level reproduction은 논문 전체 복제가 아니라 특정 claim을 evidence matrix와 제한된 scope로 검증합니다.',
+    options: [
+      { label: '핵심 claim을 작게 자르고 baseline/reported/reproduced evidence를 나란히 비교한다.', correct: true, explain: '제약 있는 재현에서 정직한 범위 설정입니다.' },
+      { label: '논문 전체를 완전히 복제하지 못하면 어떤 claim도 검증할 수 없다.', correct: false, explain: 'claim-level scope가 바로 이를 해결합니다.' },
+      { label: 'reported result와 reproduced result가 다르면 항상 코드가 틀렸다는 뜻이다.', correct: false, explain: 'variance, 환경, 데이터 차이 가설을 함께 봐야 합니다.' },
+    ],
+    shortPrompt: 'claim/evidence matrix와 scope control을 설명해 보세요.',
+    expected: '검증할 claim, 필요한 evidence, baseline/reported/reproduced 비교, mismatch 가설을 명시한다.',
+  },
+  '07_frontier_labs/02_capstone_model_building': {
+    prompt: 'capstone 아이디어를 어디까지 줄여야 “끝낼 수 있는 scope”가 되나요?',
+    explanation: 'problem statement, non-goal, dataset/model/eval contract, milestone, risk register가 명시될 때 실행 가능한 프로젝트가 됩니다.',
+    options: [
+      { label: '문제, 하지 않을 것, 데이터/모델/평가 계약, acceptance gate와 risk를 한 장으로 고정할 수 있을 만큼 줄인다.', correct: true, explain: 'capstone은 화려함보다 끝낼 수 있는 계약이 중요합니다.' },
+      { label: '가장 큰 모델과 가장 넓은 데이터셋을 쓰면 scope는 자동으로 명확해진다.', correct: false, explain: '범위가 커질수록 실패/해석 위험이 커집니다.' },
+      { label: 'baseline은 멋진 최종 모델이 준비된 뒤에만 정한다.', correct: false, explain: 'baseline은 처음부터 비교선을 제공합니다.' },
+    ],
+    shortPrompt: 'problem statement, non-goal, eval contract를 한 문장으로 연결해 보세요.',
+    expected: '무엇을 풀지/풀지 않을지와 성공 판정 기준을 먼저 고정해야 한다.',
+  },
+  '07_frontier_labs/03_agentic_training_and_eval_loops': {
+    prompt: 'agentic training/eval loop가 단순 job automation과 다른 점은 무엇인가요?',
+    explanation: 'planner/executor/verifier/critic 역할을 나누고 evidence-first stop/escalation 기준을 두어 self-approval을 막습니다.',
+    options: [
+      { label: '실험 계약 아래 역할별 판단과 검증 기준을 분리해 반복의 증거와 중단 조건을 남긴다.', correct: true, explain: 'agentic loop는 자동 반복보다 검증 구조가 핵심입니다.' },
+      { label: 'agent가 있으면 verifier 없이도 모든 반복을 자동 승인해도 된다.', correct: false, explain: 'self-approval 위험이 큽니다.' },
+      { label: 'retry budget과 escalation 기준은 성공률을 낮추므로 제거해야 한다.', correct: false, explain: '무한 반복과 drift를 막는 안전장치입니다.' },
+    ],
+    shortPrompt: 'planner/executor/verifier/critic 분리의 이유를 설명해 보세요.',
+    expected: '계획, 실행, 검증, 비판을 분리해 근거 없는 자기 승인과 반복 drift를 줄인다.',
+  },
+  '07_frontier_labs/04_benchmark_and_dataset_construction': {
+    prompt: 'task contract를 먼저 고정하면 benchmark claim이 왜 선명해지나요?',
+    explanation: 'unit of record, schema, split, annotation rubric, leakage/contamination audit가 score가 말할 수 있는 범위를 정합니다.',
+    options: [
+      { label: '데이터 단위, split, annotation 기준, leakage audit를 고정해 score가 주장할 수 있는 boundary를 제한한다.', correct: true, explain: 'benchmark card가 필요한 이유입니다.' },
+      { label: 'score가 높으면 task definition과 dataset schema는 나중에 써도 된다.', correct: false, explain: '정의 없는 score는 해석할 수 없습니다.' },
+      { label: 'holdout은 데이터가 적을 때 생략해야 leakage 위험이 줄어든다.', correct: false, explain: 'holdout/split hygiene가 leakage 방어의 핵심입니다.' },
+    ],
+    shortPrompt: 'benchmark card에 들어갈 source/split/schema/QC 항목을 설명해 보세요.',
+    expected: 'source boundary, unit of record, split manifest, annotation rubric, leakage/contamination audit를 남긴다.',
+  },
+  '07_frontier_labs/05_open_ended_research_tracks': {
+    prompt: 'open-ended research를 자유 탐색이 아니라 운영 문제로 보는 이유는 무엇인가요?',
+    explanation: 'north-star question, hypothesis registry, iteration boundary, kill criteria, evidence standard가 없으면 탐색이 끝나지 않습니다.',
+    options: [
+      { label: '작은 연구 범위와 keep/kill 기준을 정해야 반복을 증거 기반으로 멈추거나 이어갈 수 있다.', correct: true, explain: 'open-ended일수록 운영 계약이 필요합니다.' },
+      { label: '열린 연구에서는 kill criteria를 두면 창의성이 사라져 쓰면 안 된다.', correct: false, explain: '기준 없이는 끝나지 않는 탐색이 됩니다.' },
+      { label: 'hypothesis registry는 성공한 실험만 기록하는 홍보 문서다.', correct: false, explain: '실패와 반증 조건까지 기록해야 합니다.' },
+    ],
+    shortPrompt: 'hypothesis registry와 kill criteria를 연결해 설명해 보세요.',
+    expected: '가설, mechanism, evidence standard, iteration boundary, kill/keep 판단 기준을 함께 기록한다.',
+  },
+  '08_multimodal_bridge/01_contrastive_alignment': {
+    prompt: 'contrastive alignment에서 정답 이미지-텍스트 쌍이 similarity matrix 대각선에 놓인다는 뜻은 무엇인가요?',
+    explanation: '같은 index의 image/text embedding이 positive pair이고, 나머지는 negative로 비교되어 retrieval ranking을 만듭니다.',
+    options: [
+      { label: '같은 index의 image-text positive similarity가 negative보다 높아져 양방향 retrieval 순위가 좋아져야 한다.', correct: true, explain: 'joint embedding alignment의 핵심입니다.' },
+      { label: '대각선 값은 항상 낮아야 hard negative를 잘 구분한다.', correct: false, explain: 'positive pair는 보통 높아져야 합니다.' },
+      { label: 'temperature는 similarity matrix와 무관한 시각화 색상 설정이다.', correct: false, explain: 'temperature는 softmax/logit scale에 영향을 줍니다.' },
+    ],
+    shortPrompt: 'positive/negative similarity와 Recall@K를 연결해 설명해 보세요.',
+    expected: 'positive pair가 negative보다 높게 rank되어야 image→text/text→image retrieval 성능이 오른다.',
+  },
+  '09_multimodal/01_image_text_retrieval': {
+    prompt: 'Recall@1과 Recall@2를 함께 읽으면 어떤 ranking 정보를 얻나요?',
+    explanation: '정답이 1등인지, 아니면 가까운 후보 안에는 있지만 top-1에서는 밀렸는지 구분할 수 있습니다.',
+    options: [
+      { label: '정답이 top-1에 있는지와 top-k 안에는 들어오는지 구분해 hard negative로 인한 순위 밀림을 볼 수 있다.', correct: true, explain: 'retrieval은 순위 지표를 함께 봐야 합니다.' },
+      { label: 'Recall@2가 높으면 Recall@1은 항상 같은 값이다.', correct: false, explain: 'top-k가 커지면 더 쉬운 기준이 됩니다.' },
+      { label: 'image→text와 text→image 난이도는 항상 완전히 같다.', correct: false, explain: 'query/candidate 구조에 따라 비대칭일 수 있습니다.' },
+    ],
+    shortPrompt: 'hard negative와 bidirectional retrieval 실패를 설명해 보세요.',
+    expected: '유사한 오답이 정답보다 위에 오를 수 있고, image→text/text→image 방향별 ranking 난이도가 다를 수 있다.',
+  },
+  '09_multimodal/02_image_captioning': {
+    prompt: 'captioning에서 자동 지표가 괜찮아도 hallucination 사례를 봐야 하는 이유는 무엇인가요?',
+    explanation: 'BLEU 같은 표면 지표가 일부 n-gram을 맞춰도 이미지에 없는 객체/속성을 생성할 수 있습니다.',
+    options: [
+      { label: '표면 token overlap이 높아도 이미지 근거 없는 객체나 속성을 생성하는지 사람이 사례를 확인해야 한다.', correct: true, explain: 'captioning 평가는 metric과 qualitative failure를 함께 봅니다.' },
+      { label: 'BLEU-1이 높으면 이미지 grounding은 자동으로 보장된다.', correct: false, explain: '토큰 overlap과 시각 근거는 다릅니다.' },
+      { label: 'teacher forcing으로 학습하면 greedy decoding 오류는 생기지 않는다.', correct: false, explain: '학습/평가 decoding gap이 남습니다.' },
+    ],
+    shortPrompt: 'teacher forcing과 greedy decoding gap을 설명해 보세요.',
+    expected: '학습 때는 정답 prefix를 보지만 평가 때는 자기 예측을 이어가므로 오류가 누적될 수 있다.',
+  },
+  '09_multimodal/03_visual_question_answering': {
+    prompt: 'VQA에서 overall accuracy만 보면 놓치는 것은 무엇인가요?',
+    explanation: 'answer type별로 count/color/yes-no 문제가 다르게 실패할 수 있고 shortcut bias가 특정 유형을 숨길 수 있습니다.',
+    options: [
+      { label: 'answer type breakdown을 봐야 count, color, yes/no별 grounded reasoning failure와 shortcut bias를 구분한다.', correct: true, explain: 'VQA는 유형별 실패 분석이 중요합니다.' },
+      { label: 'overall accuracy가 높으면 모든 answer type이 동일하게 잘 된 것이다.', correct: false, explain: '유형별 실패가 평균에 숨을 수 있습니다.' },
+      { label: '질문 token만 보면 이미지 grounding은 필요 없다.', correct: false, explain: 'VQA는 이미지와 질문을 함께 읽어야 합니다.' },
+    ],
+    shortPrompt: 'shortcut bias와 grounded reasoning failure를 구분해 보세요.',
+    expected: '언어/데이터 편향만으로 맞히는 shortcut과 이미지 근거를 실제로 확인하지 못하는 실패를 나눠 본다.',
+  },
+  '10_vla/01_vision_language_action_grounding': {
+    prompt: 'VQA answer와 VLA action token의 핵심 차이는 무엇인가요?',
+    explanation: 'VQA는 질문에 대한 답을 생성/분류하지만 VLA는 시각 상태와 언어 지시를 실제 action 및 safety gate로 바꿉니다.',
+    options: [
+      { label: 'VLA action token은 환경에 영향을 주는 행동 선택이라 safety gate와 trajectory 성공률을 별도 지표로 봐야 한다.', correct: true, explain: '행동은 답변보다 더 강한 안전/성공 계약이 필요합니다.' },
+      { label: 'VLA action token은 VQA의 텍스트 답변과 같아서 safety metric이 필요 없다.', correct: false, explain: '행동은 실행 결과와 안전 위험을 동반합니다.' },
+      { label: 'behavior cloning은 trajectory 없이 단일 정답 단어만 외우는 작업이다.', correct: false, explain: '상태-지시-action trajectory mapping을 학습합니다.' },
+    ],
+    shortPrompt: 'action accuracy와 safety gate accuracy를 분리해야 하는 이유를 설명해 보세요.',
+    expected: '맞는 action을 고르는 것과 위험한 action을 막는 것은 다른 실패를 잡는 별도 지표다.',
+  },
+};
+
+function quizBlueprintForUnit(unit) {
+  return LESSON_QUIZ_BLUEPRINTS[unit.path] || fallbackQuizBlueprint(unit);
+}
+
+function fallbackQuizBlueprint(unit) {
   const keyTerms = unit.key_terms || [];
-  const outputs = displayOutputList((unit.required_outputs || []).filter((item) => !/^runnable README|theory note|prerequisite checklist$/i.test(item)));
   const analysis = unit.analysis_questions || [];
   const primaryTerm = keyTerms[0] || '핵심 개념';
   const secondaryTerm = keyTerms[1] || '실행 결과';
-  const firstOutput = outputs[0] || '지표 파일';
-  const secondOutput = outputs[1] || '해석 노트 또는 그림';
   const firstQuestion = analysis[0] || `${primaryTerm}이 실행 결과와 어떻게 연결되는가?`;
+  return {
+    prompt: `${unit.title}에서 “${firstQuestion}”에 답할 때 가장 먼저 피해야 할 해석은 무엇인가요?`,
+    explanation: '단원별 전용 문항이 없을 때도 파일명 선택이 아니라 개념과 실행 근거를 연결하도록 묻습니다.',
+    options: [
+      { label: `${primaryTerm}와 ${secondaryTerm}를 코드의 지표/그림/해석 노트와 연결해 판단한다.`, correct: true, explain: '개념과 실행 근거를 같이 봐야 합니다.' },
+      { label: '터미널에 글자가 출력됐으면 산출물과 지표는 확인하지 않는다.', correct: false, explain: '재확인 가능한 근거가 남지 않습니다.' },
+      { label: '단원 제목만 외우고 코드의 입력/출력 흐름은 보지 않는다.', correct: false, explain: '코드 흐름 없이 개념이 실행 결과와 연결되지 않습니다.' },
+    ],
+    shortPrompt: `분석 질문에 자기 말로 답해 보세요: ${firstQuestion}`,
+    expected: `${primaryTerm} 또는 ${secondaryTerm}를 사용해 실행 산출물에서 본 근거와 연결해 설명`,
+  };
+}
+
+function quizQuestionFromBlueprint(blueprint) {
+  return {
+    id: 'concept-check',
+    type: blueprint.type || 'single',
+    prompt: blueprint.prompt,
+    explanation: blueprint.explanation,
+    options: (blueprint.options || []).map((option, index) => ({
+      id: option.id || `option-${index}`,
+      label: option.label,
+      correct: Boolean(option.correct),
+      explain: option.explain || '',
+    })),
+  };
+}
+
+function quizForUnit(unit) {
+  const blueprint = quizBlueprintForUnit(unit);
   return [
-    {
-      id: 'evidence',
-      type: 'multi',
-      prompt: `${primaryTerm} 관점에서 “${firstQuestion}”에 답하려면 무엇을 확인해야 하나요?`,
-      explanation: '결과물은 학습의 증거입니다. 위치·숫자·그림을 함께 확인해야 분석 질문에 답할 수 있습니다.',
-      options: [
-        { id: 'expected-a', label: firstOutput, correct: true, explain: '지표는 이번 실행을 비교할 기준입니다.' },
-        { id: 'expected-b', label: secondOutput, correct: true, explain: '그림/분석 문서는 숫자를 사람이 읽는 결론으로 바꿉니다.' },
-        { id: 'terminal-only', label: `${primaryTerm}, ${secondaryTerm}는 보지 않고 터미널 글자만 보고 닫기`, correct: false, explain: '원문 로그만 보면 다시 확인할 수 있는 근거가 남지 않습니다.' },
-      ],
-    },
+    quizQuestionFromBlueprint(blueprint),
     {
       id: 'concept',
       type: 'short',
-      prompt: `분석 질문에 자기 말로 답해 보세요: ${firstQuestion}`,
-      expected: `${primaryTerm} 또는 ${secondaryTerm}를 사용해, ${firstOutput}에서 본 근거와 연결해 설명`,
+      prompt: blueprint.shortPrompt || `분석 질문에 자기 말로 답해 보세요: ${(unit.analysis_questions || [])[0] || unit.objective || unit.title}`,
+      expected: blueprint.expected || '핵심 개념을 실행 결과, 지표, 그림, 해석 노트 중 하나와 연결해 설명',
       explanation: '짧은 답변은 자동 정답 하나로 고정하지 않습니다. 자기 말 설명을 남기고, 아래 기준과 비교하세요.',
       options: [],
     },

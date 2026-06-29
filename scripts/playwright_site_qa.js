@@ -240,27 +240,27 @@ async function assertRunButton(page, tabName, expectedText) {
 
 async function assertQuizAndWrongNotes(page) {
   await page.locator('.quiz-panel', { hasText: '단원 점검 퀴즈' }).waitFor({ state: 'visible' });
-  const evidenceQuestion = page.locator('.quiz-question', { hasText: '답하려면 무엇을 확인해야 하나요' }).first();
-  await evidenceQuestion.getByLabel(/터미널 글자만 보고 닫기/).check();
+  const evidenceQuestion = page.locator('.quiz-question', { hasText: 'matmul shape mismatch를 찾을 때 가장 먼저 맞춰야 하는 축은 무엇인가요?' }).first();
+  await evidenceQuestion.getByLabel(/batch 차원만 같으면/).check();
   await evidenceQuestion.getByRole('button', { name: '정답 확인' }).click();
   await evidenceQuestion.locator('.quiz-feedback strong', { hasText: '다시 확인' }).waitFor({ state: 'visible' });
-  await evidenceQuestion.locator('[data-wrong-note-memo]').fill('목표보다 실행 순서를 먼저 생각함');
+  await evidenceQuestion.locator('[data-wrong-note-memo]').fill('matmul 내적 축 대신 batch 축만 봄');
   await evidenceQuestion.locator('[data-wrong-note-memo]').dispatchEvent('change');
-  await page.locator('.wrong-note-panel', { hasText: '목표보다 실행 순서를 먼저 생각함' }).waitFor({ state: 'visible' });
+  await page.locator('.wrong-note-panel', { hasText: 'matmul 내적 축 대신 batch 축만 봄' }).waitFor({ state: 'visible' });
 
-  const conceptQuestion = page.locator('.quiz-question', { hasText: '분석 질문에 자기 말로 답해 보세요' }).first();
+  const conceptQuestion = page.locator('.quiz-question', { hasText: 'shape mismatch를 입력 축 기준으로' }).first();
   await conceptQuestion.locator('textarea[data-quiz-id="concept"]').fill('shape가 계산 결과와 연결되는 방식');
   await conceptQuestion.getByRole('button', { name: '예시와 비교 저장' }).click();
   await page.locator('.quiz-feedback.review', { hasText: '자동 채점 대신 예시와 비교하세요' }).waitFor({ state: 'visible' });
 
   await page.locator('#review-mistakes').click();
-  await page.locator('#mistake-dialog', { hasText: '목표보다 실행 순서를 먼저 생각함' }).waitFor({ state: 'visible' });
+  await page.locator('#mistake-dialog', { hasText: 'matmul 내적 축 대신 batch 축만 봄' }).waitFor({ state: 'visible' });
   await page.locator('#mistake-dialog button[value="cancel"]').click();
 
   await page.reload({ waitUntil: 'domcontentloaded' });
   await page.locator('.quiz-panel', { hasText: '단원 점검 퀴즈' }).waitFor({ state: 'visible' });
   await page.locator('#review-mistakes').click();
-  await page.locator('#mistake-dialog', { hasText: '목표보다 실행 순서를 먼저 생각함' }).waitFor({ state: 'visible' });
+  await page.locator('#mistake-dialog', { hasText: 'matmul 내적 축 대신 batch 축만 봄' }).waitFor({ state: 'visible' });
   await page.locator('#mistake-dialog button[value="cancel"]').click();
   await page.getByRole('tab', { name: '기초 실습 코드' }).click();
   await page.getByText('코드 읽기 안내').waitFor({ state: 'visible' });
@@ -319,7 +319,7 @@ async function assertGuideAndQuizPersonalization(page) {
     throw new Error(`intro unit should not use later-unit briefing copy:\n${introGuide}`);
   }
   const introQuiz = await page.locator('.quiz-panel').innerText();
-  for (const token of ['tensor', 'shape']) {
+  for (const token of ['matmul shape mismatch', '왼쪽 마지막 차원', 'batch 차원만 같으면']) {
     if (!introQuiz.includes(token)) throw new Error(`intro quiz should be tensor-specific (${token}):\n${introQuiz}`);
   }
 
@@ -332,7 +332,7 @@ async function assertGuideAndQuizPersonalization(page) {
     throw new Error(`later unit should not repeat the onboarding order:\n${mlGuide}`);
   }
   const mlQuiz = await page.locator('.quiz-panel').innerText();
-  for (const token of ['tabular classification', 'majority baseline', '단계별 실험 지표']) {
+  for (const token of ['majority baseline', 'primary metric', 'confusion/error slice']) {
     if (!mlQuiz.includes(token)) throw new Error(`ML quiz should include ${token}:\n${mlQuiz}`);
   }
   if (mlQuiz === introQuiz) {
@@ -379,7 +379,7 @@ async function assertCoreCodeSummaries(page) {
   await selectStudyUnit(page, '04 NLP', '03 Machine Reading Comprehension');
   await page.getByRole('tab', { name: '프레임워크 실습 코드' }).click();
   await page.locator('.core-code-summary', { hasText: '긴 프레임워크 실습은 데이터→모델→평가 흐름만 먼저 보세요' }).waitFor({ state: 'visible' });
-  await page.locator('.core-code-summary', { hasText: 'loss·metric·판정 기준' }).waitFor({ state: 'visible' });
+  await page.locator('.core-code-summary', { hasText: '판단 지표 계산: token_f1()' }).waitFor({ state: 'visible' });
   await page.locator('.mini-code', { hasText: 'def token_f1' }).waitFor({ state: 'visible' });
 }
 

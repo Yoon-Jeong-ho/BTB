@@ -340,6 +340,11 @@ class WebStudySiteContractTest(unittest.TestCase):
             "데이터 준비 코드: 실험에 넣을 표 만들기",
             "실험 흐름 코드: 준비·학습·평가 연결하기",
             "formatStaticServerDetail",
+            "mlDatasetCoreGuide",
+            "mlExperimentCoreGuide",
+            "runStageCoreGuide",
+            "coreStepPresentationFromCode",
+            "coreFunctionStepPresentation",
         ]:
             self.assertIn(token, app)
 
@@ -468,7 +473,10 @@ assert.strictEqual(recovered.users.carol.lessons['10_vla/01_vision_language_acti
             "data-quiz-submit",
             "quizAnswers",
             "단원 점검 퀴즈",
-            "답하려면 무엇을 확인해야 하나요",
+            "LESSON_QUIZ_BLUEPRINTS",
+            "matmul shape mismatch를 찾을 때 가장 먼저 맞춰야 하는 축은 무엇인가요?",
+            "VLA action token은 환경에 영향을 주는 행동 선택",
+            "fallbackQuizBlueprint",
             "wrongNotes",
             "wrong-note-panel",
             "openMistakeReview",
