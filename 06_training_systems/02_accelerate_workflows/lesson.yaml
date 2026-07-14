@@ -1,4 +1,8 @@
 objective: Accelerate를 PyTorch loop와 distributed backend 사이의 실행/장치 적응 계층으로 이해하고, 무엇을 단순화하며 무엇은 남기는지 구분한다.
+fidelity: concept-toy
+difficulty: advanced
+estimated_minutes: 90
+compute: cpu
 status: runnable
 prereqs:
   - torchrun/DDP rank/world-size 기초

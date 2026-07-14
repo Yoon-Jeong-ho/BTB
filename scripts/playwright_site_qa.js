@@ -39,7 +39,7 @@ async function waitForServer(url, timeoutMs = 8000) {
 async function withStaticServer(fn) {
   const port = await freePort();
   const python = process.env.PYTHON || 'python';
-  const server = spawn(python, ['scripts/study_server.py', '--port', String(port), '--bind', '127.0.0.1'], {
+  const server = spawn(python, ['scripts/study_server.py', '--port', String(port), '--bind', '127.0.0.1', '--device', 'cpu'], {
     cwd: ROOT,
     stdio: ['ignore', 'pipe', 'pipe'],
   });
@@ -262,6 +262,35 @@ async function assertQuizAndWrongNotes(page) {
   await page.locator('#review-mistakes').click();
   await page.locator('#mistake-dialog', { hasText: 'matmul 내적 축 대신 batch 축만 봄' }).waitFor({ state: 'visible' });
   await page.locator('#mistake-dialog button[value="cancel"]').click();
+  await page.getByRole('tab', { name: '기초 실습 코드' }).click();
+  await page.getByText('코드 읽기 안내').waitFor({ state: 'visible' });
+}
+
+async function assertMasteryEvidencePersists(page) {
+  for (let guard = 0; guard < 20; guard += 1) {
+    const unchecked = page.locator('[data-checkpoint]:not(:checked)');
+    if (await unchecked.count() === 0) break;
+    await unchecked.first().click();
+  }
+  if (await page.locator('[data-checkpoint]:not(:checked)').count()) {
+    throw new Error('all required checkpoints should be markable before mastery verification');
+  }
+  await page.locator('#unit-note').fill('실행 지표와 shape mismatch 원인을 다음 실험에서 다시 검산한다.');
+  await page.locator('#unit-note').dispatchEvent('change');
+  await page.locator('.mastery-card', { hasText: '숙달 증거 4/4' }).waitFor({ state: 'visible' });
+  await page.locator('.mastery-card', { hasText: '실행과 학습 증거 확인됨' }).waitFor({ state: 'visible' });
+
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await page.locator('#detail-title', { hasText: '01 Tensor Shapes' }).waitFor({ state: 'visible' });
+  await page.locator('.mastery-card', { hasText: '숙달 증거 4/4' }).waitFor({ state: 'visible' });
+  const evidence = await page.evaluate(() => {
+    const raw = localStorage.getItem('btb.study.progress.v1');
+    const store = JSON.parse(raw);
+    return store.users[store.activeUserId].lessons['00_foundations/01_tensor_shapes'].runEvidence;
+  });
+  if (evidence?.returncode !== 0 || !evidence?.artifactNames?.includes('metrics.json') || evidence?.command !== undefined) {
+    throw new Error(`safe run evidence should persist after reload: ${JSON.stringify(evidence)}`);
+  }
   await page.getByRole('tab', { name: '기초 실습 코드' }).click();
   await page.getByText('코드 읽기 안내').waitFor({ state: 'visible' });
 }
@@ -497,11 +526,11 @@ async function runDesktopQa(browser, baseUrl) {
   await assertInjectedPythonComments(page, '기초 실습 코드');
   await assertRunButton(page, '기초 실습 코드', 'matmul_shape');
   await assertQuizAndWrongNotes(page);
+  await assertMasteryEvidencePersists(page);
   await page.screenshot({ path: path.join(OUT_DIR, 'desktop-run-output.png'), fullPage: false });
   await page.getByText('코드 읽기 안내').waitFor({ state: 'visible' });
   await page.locator('.code-explanation dt', { hasText: '이 파일은 무엇인가' }).waitFor({ state: 'visible' });
   await page.locator('.code-explanation dt', { hasText: '실행하면 남는 결과' }).waitFor({ state: 'visible' });
-  await page.getByRole('button', { name: /기초 실습 실행 완료로 표시/ }).click();
   await expectTabComplete(page, '기초 실습 코드');
   await assertInjectedPythonComments(page, '프레임워크 실습 코드');
   await page.getByText('프레임워크 실습 코드: 실제 도구').waitFor({ state: 'visible' });
@@ -603,25 +632,41 @@ async function runStaticServerRunHelpQa(browser, baseUrl) {
 
 async function main() {
   fs.mkdirSync(OUT_DIR, { recursive: true });
-  const staticServerHelp = await withPlainHttpServer(async (baseUrl) => {
-    const browser = await chromium.launch({ headless: true });
-    try {
-      return await runStaticServerRunHelpQa(browser, baseUrl);
-    } finally {
-      await browser.close();
+  const stageArtifactRoot = path.join(ROOT, '01_ml', '01_tabular_classification', 'artifacts');
+  const preexistingStageDirs = new Set(
+    fs.existsSync(stageArtifactRoot)
+      ? fs.readdirSync(stageArtifactRoot, { withFileTypes: true }).filter((entry) => entry.isDirectory()).map((entry) => entry.name)
+      : [],
+  );
+  try {
+    const staticServerHelp = await withPlainHttpServer(async (baseUrl) => {
+      const browser = await chromium.launch({ headless: true });
+      try {
+        return await runStaticServerRunHelpQa(browser, baseUrl);
+      } finally {
+        await browser.close();
+      }
+    });
+    await withStaticServer(async (baseUrl) => {
+      const browser = await chromium.launch({ headless: true });
+      try {
+        const desktop = await runDesktopQa(browser, baseUrl);
+        const tablet = await runResponsiveQa(browser, baseUrl);
+        const mobile = await runMobileQa(browser, baseUrl);
+        console.log(JSON.stringify({ ok: true, baseUrl, outDir: OUT_DIR, staticServerHelp, desktop, tablet, mobile }, null, 2));
+      } finally {
+        await browser.close();
+      }
+    });
+  } finally {
+    if (fs.existsSync(stageArtifactRoot)) {
+      for (const entry of fs.readdirSync(stageArtifactRoot, { withFileTypes: true })) {
+        if (entry.isDirectory() && !preexistingStageDirs.has(entry.name)) {
+          fs.rmSync(path.join(stageArtifactRoot, entry.name), { recursive: true, force: true });
+        }
+      }
     }
-  });
-  await withStaticServer(async (baseUrl) => {
-    const browser = await chromium.launch({ headless: true });
-    try {
-      const desktop = await runDesktopQa(browser, baseUrl);
-      const tablet = await runResponsiveQa(browser, baseUrl);
-      const mobile = await runMobileQa(browser, baseUrl);
-      console.log(JSON.stringify({ ok: true, baseUrl, outDir: OUT_DIR, staticServerHelp, desktop, tablet, mobile }, null, 2));
-    } finally {
-      await browser.close();
-    }
-  });
+  }
 }
 
 main().catch((error) => {

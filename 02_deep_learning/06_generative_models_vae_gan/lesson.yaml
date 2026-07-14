@@ -1,4 +1,8 @@
 objective: VAE와 GAN을 대비해 latent sampling, reparameterization trick, adversarial intuition, posterior collapse, mode collapse를 CPU-safe toy 예제로 직접 관찰한다.
+fidelity: framework-toy
+difficulty: intermediate
+estimated_minutes: 150
+compute: cpu
 status: runnable
 prereqs:
   - encoder/decoder/latent tensor shape 읽기

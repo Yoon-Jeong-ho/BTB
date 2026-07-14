@@ -1,4 +1,8 @@
 objective: reconstruction objective, encoder-latent-decoder 역할, bottleneck 직관, denoising/compression variant를 CPU-safe toy autoencoder로 직접 관찰한다.
+fidelity: framework-toy
+difficulty: intermediate
+estimated_minutes: 120
+compute: cpu
 status: runnable
 prereqs:
   - 입력/출력/latent tensor shape 읽기

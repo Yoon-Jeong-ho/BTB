@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 import unittest
@@ -36,13 +37,14 @@ GENERATED_DIRS = [
 class TestAdvancedLLMSFTUnitContract(unittest.TestCase):
     maxDiff = None
 
-    def _run(self, relative_path: str) -> subprocess.CompletedProcess[str]:
+    def _run(self, relative_path: str, *, env: dict[str, str] | None = None) -> subprocess.CompletedProcess[str]:
         return subprocess.run(
             [sys.executable, relative_path],
             cwd=ROOT,
             text=True,
             capture_output=True,
             check=False,
+            env=env,
         )
 
     def _preserve_path(self, path: Path) -> None:
@@ -145,6 +147,18 @@ class TestAdvancedLLMSFTUnitContract(unittest.TestCase):
         self.assertTrue(gitkeep.exists())
         self.assertEqual('', gitkeep.read_text(encoding='utf-8'))
 
+    def test_framework_rejects_unknown_btb_device(self) -> None:
+        self._preserve_path(FRAMEWORK_METRICS)
+        env = {**os.environ, 'BTB_DEVICE': 'invalid'}
+
+        result = self._run(
+            '05_advanced_nlp_llm/04_instruction_tuning_and_sft/framework_lab.py',
+            env=env,
+        )
+
+        self.assertNotEqual(0, result.returncode)
+        self.assertIn('auto, cpu, or cuda', result.stdout + result.stderr)
+
     def test_analysis_requires_metrics_with_actionable_error(self) -> None:
         for path in (SCRATCH_METRICS, FRAMEWORK_METRICS, OBSERVED_REPORT):
             self._preserve_path(path)
@@ -207,7 +221,7 @@ class TestAdvancedLLMSFTUnitContract(unittest.TestCase):
         self.assertIn('Assistant loss tokens', figure_text)
 
         self.assertEqual('cpu', framework['device'])
-        self.assertEqual('deterministic_numeric_sft', framework['framework'])
+        self.assertEqual('torch_tiny_sft', framework['framework'])
         self.assertEqual(4, framework['dataset_size'])
         self.assertEqual([4, framework['max_sequence_length']], framework['batch_shape']['input_ids'])
         self.assertEqual([4, framework['max_sequence_length']], framework['batch_shape']['labels'])
@@ -215,6 +229,8 @@ class TestAdvancedLLMSFTUnitContract(unittest.TestCase):
         self.assertEqual(0, framework['loss_mask_summary']['prompt_loss_tokens'])
         self.assertGreater(framework['loss_mask_summary']['assistant_loss_tokens'], 0)
         self.assertGreater(framework['loss_mask_summary']['masked_prompt_tokens'], 0)
+        self.assertGreater(framework['parameter_count'], 0)
+        self.assertGreater(framework['initial_loss'], framework['final_loss'])
         self.assertLess(framework['training_curve'][-1]['assistant_loss'], framework['training_curve'][0]['assistant_loss'])
         self.assertGreater(
             framework['training_curve'][-1]['template_adherence'],
@@ -230,7 +246,7 @@ class TestAdvancedLLMSFTUnitContract(unittest.TestCase):
         self.assertIn('system/user/assistant', observed_text)
         self.assertIn('imitation', observed_text)
         self.assertIn('helpfulness', observed_text)
-        self.assertIn('[THEORY.md](./THEORY.md)', observed_text)
+        self.assertIn('[THEORY.md](../../THEORY.md)', observed_text)
         self.assertEqual(stable_before, analysis_text)
         self.assertIn('latest_report.md', analysis_text)
         self.assertIn('## 관련 이론', analysis_text)

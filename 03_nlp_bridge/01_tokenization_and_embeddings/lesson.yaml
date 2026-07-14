@@ -1,4 +1,8 @@
 objective: 한국어 문장이 subword token, token id, embedding tensor, padding mask로 바뀌는 흐름을 구체적으로 이해한다.
+fidelity: framework-toy
+difficulty: intermediate
+estimated_minutes: 90
+compute: cpu
 prereqs:
   - 문자열과 리스트의 차이
   - 인덱스와 lookup table 개념

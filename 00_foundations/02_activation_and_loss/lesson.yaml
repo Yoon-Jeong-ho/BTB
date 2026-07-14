@@ -1,4 +1,8 @@
 objective: activation이 표현을 어떻게 바꾸고, loss가 오차를 어떻게 scalar 학습 신호로 압축하는지 이해한다.
+fidelity: framework-toy
+difficulty: beginner
+estimated_minutes: 75
+compute: cpu
 prereqs:
   - tensor shape와 batch 차원 읽기
   - logits와 probability 구분

@@ -7,6 +7,28 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class TestCurriculumTrackDocs(unittest.TestCase):
+    def test_learner_preflight_diagnoses_entry_skills_and_routes_gaps(self) -> None:
+        path = ROOT / "docs" / "00_learner_preflight.md"
+        self.assertTrue(path.is_file())
+        text = path.read_text(encoding="utf-8")
+
+        for token in [
+            "Python / CLI",
+            "수학",
+            "확률 / metric",
+            "PyTorch / GPU",
+            "진단 결과별 추천 경로",
+            "00_foundations",
+            "01_ml",
+            "02_deep_learning",
+        ]:
+            self.assertIn(token, text)
+
+        for doc in ["README.md", "docs/00_program_map.md", "docs/02_study_guide.md"]:
+            doc_text = (ROOT / doc).read_text(encoding="utf-8")
+            self.assertIn("docs/00_learner_preflight.md", doc_text)
+            self.assertIn("선택형 사이드카", doc_text)
+
     def test_root_readme_removes_placeholder_language(self) -> None:
         text = (ROOT / "README.md").read_text(encoding="utf-8")
 
@@ -98,6 +120,20 @@ class TestCurriculumTrackDocs(unittest.TestCase):
             "03_nlp_bridge/02_attention_and_transformer_block",
         ]:
             self.assertIn(rel, guide)
+
+    def test_gpu_plan_distinguishes_toy_capability_from_real_evidence(self) -> None:
+        plan = (ROOT / "docs" / "04_gpu_conda_experiment_plan.md").read_text(encoding="utf-8")
+        for token in [
+            "BTB_DEVICE=cuda",
+            "00_foundations/05_gpu_memory_runtime",
+            "05_advanced_nlp_llm/04_instruction_tuning_and_sft",
+            "09_multimodal/01_image_text_retrieval",
+            "10_vla/01_vision_language_action_grounding",
+            "artifact",
+            "device",
+        ]:
+            self.assertIn(token, plan)
+        self.assertNotIn("06_rlhf_and_reasoning_rl/framework_lab.py", plan)
 
     def test_study_guide_surfaces_learner_bridge_docs_for_llm_multimodal_and_vla(self) -> None:
         guide = (ROOT / "docs" / "02_study_guide.md").read_text(encoding="utf-8")

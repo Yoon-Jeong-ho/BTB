@@ -1,4 +1,8 @@
 objective: CPU-safe toy corpus를 통해 corpus quality, tokenizer granularity, deduplication, contamination, domain balance, multilingual mixture, token budget이 pretraining data pipeline을 어떻게 바꾸는지 관찰한다.
+fidelity: concept-toy
+difficulty: intermediate
+estimated_minutes: 120
+compute: cpu
 status: runnable
 prereqs:
   - tokenization과 subword/embedding 기본 감각

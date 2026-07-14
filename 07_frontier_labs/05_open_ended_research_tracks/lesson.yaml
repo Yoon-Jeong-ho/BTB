@@ -1,4 +1,8 @@
 objective: open-ended frontier research를 막연한 자유 탐색이 아니라 research scope·north-star question·hypothesis registry·iteration boundary·kill criteria·evidence standard·archive discipline으로 운영하고, negative result와 inconclusive result를 구분해 stop / pause / escalate / archive 결정을 내리는 기준선을 CPU-safe deterministic simulation으로 만든다.
+fidelity: concept-toy
+difficulty: advanced
+estimated_minutes: 180
+compute: cpu
 unit: 05_open_ended_research_tracks
 track: 07_frontier_labs
 status: runnable

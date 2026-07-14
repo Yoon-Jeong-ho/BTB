@@ -1,4 +1,8 @@
 objective: reward model intuition, PPO/RLHF high-level loop, verifier/judge signal, reasoning-oriented reward shaping을 연결해 RLHF와 reasoning RL이 어떤 policy update를 만들고 어떤 failure mode를 낳을 수 있는지 이해한다.
+fidelity: concept-toy
+difficulty: advanced
+estimated_minutes: 150
+compute: cpu
 status: runnable
 prereqs:
   - supervised fine-tuning(SFT) 기본 감각

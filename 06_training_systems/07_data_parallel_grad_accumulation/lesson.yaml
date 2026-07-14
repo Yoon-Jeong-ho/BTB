@@ -1,4 +1,8 @@
 objective: data parallel과 grad accumulation을 함께 실행 가능한 CPU-safe simulation으로 관찰하며 local/global/effective batch, deferred sync/no_sync, optimizer step cadence, loss normalization, gradient clipping, throughput/memory trade-off를 later hybrid parallel 학습의 기준선으로 삼는다.
+fidelity: concept-toy
+difficulty: advanced
+estimated_minutes: 120
+compute: cpu
 unit: 07_data_parallel_grad_accumulation
 track: 06_training_systems
 status: runnable
@@ -42,11 +46,11 @@ required_outputs:
   - theory note
   - prerequisite checklist
   - lesson metadata
-  - scratch data-parallel accumulation metrics json
-  - scratch cadence SVG
-  - framework deterministic accumulation metrics json
+  - artifacts/scratch_metrics.json
+  - artifacts/data_parallel_grad_accumulation.svg
+  - artifacts/framework_metrics.json
   - stable analysis markdown
-  - observed analysis json
+  - artifacts/analysis_observed.json
   - reflection worksheet
 analysis_questions:
   - data parallel은 batch를 어떤 축으로 키우고, grad accumulation은 optimizer step을 어떤 방식으로 늦추는가?

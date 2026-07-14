@@ -1,4 +1,8 @@
 objective: 이미지 조건부 텍스트 생성에서 decoder-style captioning, hallucination, 자동 지표와 사람 해석의 차이를 함께 읽는다.
+fidelity: framework-toy
+difficulty: advanced
+estimated_minutes: 150
+compute: cpu
 prereqs:
   - contrastive alignment와 retrieval 기본 감각
   - teacher forcing과 greedy decoding의 차이

@@ -4,7 +4,7 @@
 
 이 문서는 BTB의 `00→10` 커리큘럼을 어떻게 읽고 들어갈지 정리한 한국어 우선 학습 가이드다. 현재 `docs/curriculum_status.json`에 선언된 전체 unit은 `runnable` 상태다. 그래도 **실행 전에 manifest를 canonical source of truth로 확인하고, 각 track README의 status table을 supplementary context로 참고**해야 한다.
 
-현재 학습 경로와 인덱싱은 `00→10`이 기준이다. 과거 경로명은 migration note에서만 historical reference로 다룬다.
+현재 학습 경로와 인덱싱은 `00→10`이 기준이다. 과거 경로명은 migration note에서만 historical reference로 다룬다. 시작 전에는 [learner preflight](00_learner_preflight.md) (`docs/00_learner_preflight.md`)에서 Python/CLI, 수학, 확률/metric, PyTorch/GPU 준비도를 확인한다.
 
 ## 용어 정리
 
@@ -16,14 +16,16 @@
 
 ## 표준 1-pass 루트
 
-가장 권장하는 기본 루트는 전체 계단을 순서대로 한 번 통과하는 방식이다.
+폴더의 canonical 전체 순서는 아래처럼 그대로 유지한다.
 
 `00_foundations -> 01_ml -> 02_deep_learning -> 03_nlp_bridge -> 04_nlp -> 05_advanced_nlp_llm -> 06_training_systems -> 07_frontier_labs -> 08_multimodal_bridge -> 09_multimodal -> 10_vla`
+
+다만 초심자 **core path**는 `00→05 -> 08_multimodal_bridge -> 09_multimodal -> 10_vla`로 진행한다. `06_training_systems`와 `07_frontier_labs`는 각각 분산/GPU 운영 또는 연구 재현/capstone이 필요할 때 돌아오는 **선택형 사이드카**다.
 
 이 루트는 아래 상황에 적합하다.
 
 - 기초 수학/텐서 감각부터 LLM·멀티모달까지 한 번에 지도처럼 보고 싶은 경우
-- 모델 family, task, training system, frontier experiment 사이의 경계를 분명히 잡고 싶은 경우
+- 모델 family와 applied task의 경계를 먼저 잡고, 이후 training system/frontier experiment를 선택하려는 경우
 - 당장 모든 unit를 실행하지 않더라도 전체 프로그램의 역할 분리를 먼저 이해하고 싶은 경우
 
 ### 1-pass에서 보는 법
@@ -33,7 +35,7 @@
 3. `02_deep_learning`에 들어가기 전 [feature matrix to neural training bridge](04_feature_matrix_to_neural_training_bridge.md)로 `fit/predict` 감각이 PyTorch training loop로 어떻게 바뀌는지 확인한다.
 4. `02_deep_learning`에서 딥러닝 코어인 perceptron·CNN·RNN·transformer·generative model family를 지도처럼 훑는다.
 5. `03_nlp_bridge -> 04_nlp -> 05_advanced_nlp_llm`에서 NLP/LLM 흐름을 연결한다.
-6. `06_training_systems -> 07_frontier_labs`는 큰 실험을 운영하고 재현하는 선택/고급 구간으로 보되, GPU·분산·논문 재현이 당장 필요 없으면 나중으로 미뤄도 된다.
+6. `06_training_systems`와 `07_frontier_labs`는 큰 실험 운영과 재현을 위한 선택형 사이드카다. GPU·분산·논문 재현이 당장 필요 없으면 core path 완료 뒤로 미룬다.
 7. `08_multimodal_bridge -> 09_multimodal`에서 image-text shared representation과 응용 태스크로 넘어간다.
 8. `10_vla`에서 multimodal understanding을 action token과 safety gate로 연결한다.
 

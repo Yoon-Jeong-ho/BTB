@@ -1,4 +1,8 @@
 objective: pipeline parallelism이 모델 레이어 스택을 pipeline stage로 나누고 microbatch schedule로 시간축 실행을 구성하는 방식임을 이해하며, bubble/throughput trade-off·activation transfer·partition balance를 later hybrid parallel 학습의 기준선으로 삼는다.
+fidelity: concept-toy
+difficulty: advanced
+estimated_minutes: 120
+compute: cpu
 unit: 06_pipeline_parallelism
 track: 06_training_systems
 status: runnable
@@ -37,11 +41,11 @@ required_outputs:
   - theory note
   - prerequisite checklist
   - lesson metadata
-  - scratch pipeline schedule metrics json
-  - scratch pipeline schedule SVG
-  - framework deterministic pipeline simulation metrics json
+  - artifacts/scratch_metrics.json
+  - artifacts/pipeline_schedule.svg
+  - artifacts/framework_metrics.json
   - stable analysis markdown
-  - observed analysis json
+  - artifacts/analysis_observed.json
   - reflection worksheet
 analysis_questions:
   - pipeline parallelism은 모델 실행 경로를 stage로 나눈다는 점에서 data parallel / tensor parallel과 어떻게 다른가?

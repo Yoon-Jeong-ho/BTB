@@ -25,6 +25,7 @@ GPU_ARTIFACTS = GPU_UNIT / 'artifacts'
 TENSOR_SCRATCH_METRICS = TENSOR_ARTIFACTS / 'scratch-manual' / 'metrics.json'
 TENSOR_FRAMEWORK_METRICS = TENSOR_ARTIFACTS / 'framework-manual' / 'metrics.json'
 TENSOR_ANALYSIS_MD = TENSOR_UNIT / 'analysis.md'
+TENSOR_OBSERVED_REPORT = TENSOR_ARTIFACTS / 'analysis-manual' / 'latest_report.md'
 ACTIVATION_SCRATCH_METRICS = ACTIVATION_ARTIFACTS / 'scratch-manual' / 'metrics.json'
 ACTIVATION_SCRATCH_FIGURE = ACTIVATION_ARTIFACTS / 'scratch-manual' / 'activation_curves.svg'
 ACTIVATION_FRAMEWORK_METRICS = ACTIVATION_ARTIFACTS / 'framework-manual' / 'metrics.json'
@@ -550,8 +551,9 @@ class TestFoundationsUnitContract(unittest.TestCase):
         self._cleanup_generated_outputs(
             TENSOR_SCRATCH_METRICS,
             TENSOR_FRAMEWORK_METRICS,
-            TENSOR_ANALYSIS_MD,
+            TENSOR_OBSERVED_REPORT,
         )
+        stable_before = TENSOR_ANALYSIS_MD.read_text(encoding='utf-8')
 
         scratch_result = self._run('00_foundations/01_tensor_shapes/scratch_lab.py')
         self.assertEqual(0, scratch_result.returncode, scratch_result.stderr)
@@ -562,11 +564,11 @@ class TestFoundationsUnitContract(unittest.TestCase):
 
         self.assertTrue(TENSOR_SCRATCH_METRICS.exists(), 'scratch metrics missing')
         self.assertTrue(TENSOR_FRAMEWORK_METRICS.exists(), 'framework metrics missing')
-        self.assertTrue(TENSOR_ANALYSIS_MD.exists(), 'analysis.md missing')
+        self.assertTrue(TENSOR_OBSERVED_REPORT.exists(), 'observed analysis report missing')
 
         scratch = json.loads(TENSOR_SCRATCH_METRICS.read_text(encoding='utf-8'))
         framework = json.loads(TENSOR_FRAMEWORK_METRICS.read_text(encoding='utf-8'))
-        analysis_text = TENSOR_ANALYSIS_MD.read_text(encoding='utf-8')
+        analysis_text = TENSOR_OBSERVED_REPORT.read_text(encoding='utf-8')
 
         self.assertEqual([2, 4], scratch['matmul_shape'])
         self.assertEqual([2, 3], scratch['broadcast_result_shape'])
@@ -577,7 +579,8 @@ class TestFoundationsUnitContract(unittest.TestCase):
         self.assertIn('## 해석', analysis_text)
         self.assertIn('shape mismatch', analysis_text)
         self.assertIn('## 관련 이론', analysis_text)
-        self.assertIn('[THEORY.md](./THEORY.md)', analysis_text)
+        self.assertIn('[THEORY.md](../../THEORY.md)', analysis_text)
+        self.assertEqual(stable_before, TENSOR_ANALYSIS_MD.read_text(encoding='utf-8'))
 
     def test_analysis_requires_metrics_with_actionable_error(self) -> None:
         self._cleanup_generated_outputs(

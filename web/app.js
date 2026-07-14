@@ -223,6 +223,24 @@ function unitStatusLabel(status) {
   return status || '상태 확인 전';
 }
 
+function fidelityLabelFor(fidelity) {
+  const labels = {
+    'concept-toy': '개념 미니 실습',
+    'framework-toy': '프레임워크 미니 실습',
+    'real-data': '실제 데이터 실험',
+    'gpu-capable': 'GPU 검증 가능 실험',
+  };
+  return labels[fidelity] || '성격 확인 전';
+}
+
+function difficultyLabelFor(difficulty) {
+  return ({ beginner: '입문', intermediate: '중급', advanced: '심화' })[difficulty] || '난이도 확인 전';
+}
+
+function computeLabelFor(compute) {
+  return ({ cpu: 'CPU', 'cpu-or-cuda': 'CPU 또는 CUDA', 'optional-multiprocess': '선택 멀티프로세스' })[compute] || '실행 환경 확인 전';
+}
+
 function humanUnitPath(unitPath) {
   return String(unitPath || '')
     .split('/')
@@ -347,6 +365,7 @@ function unitCard(unit) {
   return `<button class="unit-card" type="button" data-unit="${escapeHtml(unit.path)}" aria-current="${unit.path === selectedUnitPath}">
     <div class="unit-top"><span class="unit-title">${escapeHtml(unit.title)}</span><span class="chip ${progress.state}">${STATE_LABELS[progress.state]}</span></div>
     <div class="unit-meta">${escapeHtml(humanUnitPath(unit.path))} · ${escapeHtml(unitStatusLabel(unit.status))}</div>
+    <div class="unit-meta">실습 성격: ${escapeHtml(fidelityLabelFor(unit.fidelity))} · ${escapeHtml(difficultyLabelFor(unit.difficulty))} · ${escapeHtml(String(unit.estimated_minutes || '?'))}분</div>
     <p>${renderInlineSummary(unit.objective || '단원 안내에서 목표를 확인하세요.')}</p>
     <div class="chips">${outputChips}</div>
   </button>`;
@@ -367,6 +386,7 @@ function renderDetail() {
   const quizItems = quizForUnit(unit);
   const quizAnswers = progress.quizAnswers || {};
   const wrongNotes = progress.wrongNotes || {};
+  const mastery = Progress.masteryEvidence(progress, checkpoints, quizItems.map((item) => item.id));
   const percent = completionPercent(checkpoints, checked, progress.state);
   const sections = lessonSectionsFor(unit);
   const selectedSection = sections.find((section) => hrefEquals(section.href, selectedResourceHref)) || sections[0];
@@ -376,11 +396,13 @@ function renderDetail() {
       <div>
         <h2 id="detail-title">${escapeHtml(unit.title)}</h2>
         <p class="unit-meta">진행: ${escapeHtml(STATE_LABELS[progress.state])} · 방식: ${escapeHtml(executionLabelFor(unit))} · 위치: ${escapeHtml(humanUnitPath(unit.path))}</p>
+        <p class="unit-meta">실습 성격: ${escapeHtml(fidelityLabelFor(unit.fidelity))} · 난이도: ${escapeHtml(difficultyLabelFor(unit.difficulty))} · 예상 ${escapeHtml(String(unit.estimated_minutes || '?'))}분 · ${escapeHtml(computeLabelFor(unit.compute))}</p>
         <p>${renderInlineSummary(unit.objective || '')}</p>
         ${scopeGateFor(unit)}
       </div>
       <div>
         <div class="next-action-card">${nextActionFor(unit, progress, selfCheckStats, quizItems, quizAnswers, checkpoints, checked)}</div>
+        ${renderMasteryEvidence(progress, mastery)}
         <div class="status-buttons" aria-label="진행 상태 변경">
           ${STATES.map((state) => `<button type="button" data-state="${state}" class="${state === progress.state ? 'active' : ''}">${STATE_LABELS[state]}</button>`).join('')}
         </div>
@@ -500,6 +522,12 @@ function bindQuizEvents(unit, quizItems, quizAnswers, wrongNotes) {
       const question = quizItems.find((item) => item.id === button.dataset.quizSubmit);
       if (!question) return;
       const answer = readQuizAnswer(question);
+      const validation = button.closest('.quiz-question')?.querySelector('[data-quiz-validation]');
+      if (question.type === 'short' && !Progress.hasSubstantiveAnswer(answer)) {
+        if (validation) validation.textContent = '한 문장 이상 자기 말로 적은 뒤 저장하세요.';
+        return;
+      }
+      if (validation) validation.textContent = '';
       const correct = question.type === 'short' ? null : isQuizCorrect(question, answer);
       const now = new Date().toISOString();
       const nextAnswers = {
@@ -648,7 +676,7 @@ function renderRunPanel(section, unit, source = '') {
     </div>
     <div class="run-actions">
       <button type="button" data-run-code data-run-path="${escapeHtml(runPath)}" data-run-source-path="${escapeHtml(sourcePath)}">${escapeHtml(runButtonLabel(section, unit))}</button>
-      <span class="run-status" data-run-status>아직 실행 전입니다.</span>
+      <span class="run-status" data-run-status aria-live="polite">아직 실행 전입니다.</span>
     </div>
     <div class="run-primer" aria-label="실행 전 확인">
       <strong>실행 전에 볼 것</strong>
@@ -780,7 +808,32 @@ async function runPythonSection(section, button, unit) {
       artifactViewer.hidden = false;
       bindInlineDocLinks(unit, section.href, artifactViewer);
     }
-    status.textContent = payload.returncode === 0 ? '실행 완료' : `종료 코드 ${payload.returncode}`;
+    if (payload.returncode === 0) {
+      const artifactNames = (payload.artifacts || [])
+        .map((artifact) => String(artifact.path || '').split('/').pop())
+        .filter(Boolean);
+      const artifactDevice = (payload.artifacts || [])
+        .map((artifact) => artifact.preview?.kind === 'json' ? artifact.preview.json?.device : null)
+        .find(Boolean) || null;
+      const runEvidence = {
+        unitPath: unit.path,
+        resource: button.dataset.runPath || runnablePathForSection(section, unit) || cleanHref(section.href),
+        returncode: 0,
+        device: payload.runner?.device || 'unknown',
+        artifactDevice,
+        timestamp: new Date().toISOString(),
+        artifactNames,
+      };
+      Progress.upsertLessonProgress(progressStore, activeUserId, unit.path, {
+        runEvidence,
+      });
+      persistProgress();
+      status.textContent = Progress.runEvidenceVerified(runEvidence)
+        ? '실행 완료 · 숙달 증거에 저장됨'
+        : '실행 완료 · 새 artifact/device 증거를 확인하세요';
+    } else {
+      status.textContent = `종료 코드 ${payload.returncode}`;
+    }
   } catch (error) {
     output.textContent = staticServerHelp(error.message);
     status.textContent = '실행 서버 필요';
@@ -3237,8 +3290,18 @@ function renderQuizQuestion(question, answerState, wrongNote) {
     <strong>${escapeHtml(question.prompt)}</strong>
     ${renderQuizInputs(question, answerState?.answer)}
     <button type="button" data-quiz-submit="${escapeHtml(question.id)}">${submitLabel}</button>
+    <div class="quiz-validation" data-quiz-validation aria-live="polite"></div>
     ${answerState ? renderQuizFeedback(question, answerState, wrongNote) : ''}
   </article>`;
+}
+
+function renderMasteryEvidence(progress, mastery) {
+  const manual = progress.state === 'done';
+  return `<section class="mastery-card ${mastery.verified ? 'verified' : ''}" aria-label="숙달 증거">
+    <strong>숙달 증거 ${mastery.done}/${mastery.total}</strong>
+    <span>${manual ? '수동 완료 상태' : '수동 완료 전'} · ${mastery.verified ? '실행과 학습 증거 확인됨' : '체크만으로 숙달 완료가 되지는 않습니다.'}</span>
+    <ul>${mastery.items.map((item) => `<li data-done="${item.done}">${item.done ? '✓' : '○'} ${escapeHtml(item.label)}</li>`).join('')}</ul>
+  </section>`;
 }
 
 function renderQuizInputs(question, answer) {

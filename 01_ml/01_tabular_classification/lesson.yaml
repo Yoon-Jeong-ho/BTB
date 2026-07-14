@@ -1,4 +1,8 @@
 objective: 표형 분류 문제에서 데이터 split, baseline 모델, primary metric, error slice를 한 번에 연결해 supervised ML의 기본 실험 루프를 익힌다.
+fidelity: real-data
+difficulty: beginner
+estimated_minutes: 120
+compute: cpu-or-cuda
 status: runnable
 prereqs:
   - train/validation/test split의 목적

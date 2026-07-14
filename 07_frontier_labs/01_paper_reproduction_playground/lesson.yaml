@@ -1,4 +1,8 @@
 objective: 논문 전체를 복제하려 하기보다 핵심 claim을 claim/evidence matrix로 자르고, baseline/reported/reproduced comparison, scope control, variance/mismatch hypotheses, artifact hygiene를 갖춘 runnable paper reproduction playground를 만든다.
+fidelity: concept-toy
+difficulty: advanced
+estimated_minutes: 120
+compute: cpu
 status: runnable
 cpu_safe: true
 deterministic: true

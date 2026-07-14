@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -70,13 +71,14 @@ VQA_GENERATED_DIRS = [VQA_SCRATCH_DIR, VQA_FRAMEWORK_DIR, VQA_ANALYSIS_DIR]
 class TestMultimodalTaskUnitContract(unittest.TestCase):
     maxDiff = None
 
-    def _run(self, relative_path: str) -> subprocess.CompletedProcess[str]:
+    def _run(self, relative_path: str, *, env: dict[str, str] | None = None) -> subprocess.CompletedProcess[str]:
         return subprocess.run(
             [sys.executable, relative_path],
             cwd=ROOT,
             text=True,
             capture_output=True,
             check=False,
+            env=env,
         )
 
     def _cleanup_generated_outputs(self) -> None:
@@ -125,6 +127,18 @@ class TestMultimodalTaskUnitContract(unittest.TestCase):
         gitkeep = ARTIFACTS / '.gitkeep'
         self.assertTrue(gitkeep.exists())
         self.assertEqual('', gitkeep.read_text(encoding='utf-8'))
+
+    def test_retrieval_framework_rejects_unknown_btb_device(self) -> None:
+        self.addCleanup(self._cleanup_generated_outputs)
+        env = {**os.environ, 'BTB_DEVICE': 'invalid'}
+
+        result = self._run(
+            '09_multimodal/01_image_text_retrieval/framework_lab.py',
+            env=env,
+        )
+
+        self.assertNotEqual(0, result.returncode)
+        self.assertIn('auto, cpu, or cuda', result.stdout + result.stderr)
 
     def test_analysis_requires_metrics_with_actionable_error(self) -> None:
         self.addCleanup(self._cleanup_generated_outputs)

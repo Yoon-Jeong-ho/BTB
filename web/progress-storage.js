@@ -111,7 +111,56 @@
       selfChecks: {},
       quizAnswers: {},
       wrongNotes: {},
+      runEvidence: null,
       note: '',
+    };
+  }
+
+  function hasSubstantiveAnswer(value) {
+    if (Array.isArray(value)) return value.some((item) => String(item || '').trim());
+    return Boolean(String(value || '').trim());
+  }
+
+  function runEvidenceVerified(evidence) {
+    if (!evidence || evidence.returncode !== 0) return false;
+    if (!Array.isArray(evidence.artifactNames) || evidence.artifactNames.length === 0) return false;
+    if (evidence.device === 'cuda' && evidence.artifactDevice !== 'cuda') return false;
+    if (evidence.artifactDevice && evidence.device && evidence.artifactDevice !== evidence.device) return false;
+    return true;
+  }
+
+  function masteryEvidence(lesson, requiredCheckpoints, requiredQuizIds) {
+    const progress = lesson || {};
+    const checkpoints = requiredCheckpoints || [];
+    const quizIds = Array.isArray(requiredQuizIds) ? requiredQuizIds : [];
+    const quizAnswers = progress.quizAnswers || {};
+    const items = [
+      {
+        key: 'readings',
+        label: '필수 읽기와 실습 체크',
+        done: checkpoints.length > 0 && checkpoints.every((checkpoint) => progress.checkpoints?.[checkpoint]),
+      },
+      {
+        key: 'run',
+        label: '성공한 실행 증거',
+        done: runEvidenceVerified(progress.runEvidence),
+      },
+      {
+        key: 'quiz',
+        label: '단원 퀴즈 답변',
+        done: quizIds.length > 0 && quizIds.every((id) => hasSubstantiveAnswer(quizAnswers[id]?.answer)),
+      },
+      {
+        key: 'reflection',
+        label: '회고 또는 다음 가설',
+        done: hasSubstantiveAnswer(progress.note),
+      },
+    ];
+    return {
+      items,
+      done: items.filter((item) => item.done).length,
+      total: items.length,
+      verified: items.every((item) => item.done),
     };
   }
 
@@ -178,6 +227,9 @@
     userUI,
     updateUserUI,
     lessonState,
+    hasSubstantiveAnswer,
+    runEvidenceVerified,
+    masteryEvidence,
     upsertLessonProgress,
     mergeImportedProgress,
     createMemoryStorage,

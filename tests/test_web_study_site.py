@@ -281,10 +281,13 @@ class WebStudySiteContractTest(unittest.TestCase):
         styles = (WEB / "styles.css").read_text(encoding="utf-8")
         readme = (WEB / "README.md").read_text(encoding="utf-8") + (ROOT / "README.md").read_text(encoding="utf-8")
         qa_script = ROOT / "scripts" / "playwright_site_qa.js"
+        qa_text = qa_script.read_text(encoding="utf-8")
 
         self.assertIn("playwright", package.get("dependencies", {}) | package.get("devDependencies", {}))
         self.assertEqual("node scripts/playwright_site_qa.js", package["scripts"]["qa:web"])
         self.assertTrue(qa_script.is_file(), "Playwright QA should be runnable by future maintainers")
+        self.assertIn("assertMasteryEvidencePersists", qa_text)
+        self.assertIn("숙달 증거 4/4", qa_text)
 
         for token in [
             "renderCodeExplanation",
@@ -418,7 +421,21 @@ Progress.upsertLessonProgress(store, 'bob', '00_foundations/01_tensor_shapes', {
 Progress.upsertLessonProgress(store, 'alice', '10_vla/01_vision_language_action_grounding', {
   state: 'in_progress',
   percent: 40,
+  checkpoints: { README: true, THEORY: true },
   selfChecks: { goal: true },
+  quizAnswers: {
+    choice: { answer: 'a', correct: true },
+    concept: { answer: 'action token과 safety gate를 분리한다', reviewOnly: true },
+  },
+  runEvidence: {
+    unitPath: '10_vla/01_vision_language_action_grounding',
+    resource: '10_vla/01_vision_language_action_grounding/framework_lab.py',
+    returncode: 0,
+    device: 'cuda',
+    artifactDevice: 'cuda',
+    timestamp: '2026-06-24T00:02:00Z',
+    artifactNames: ['metrics.json'],
+  },
   note: 'wrong-note: action token vs safety gate',
 }, '2026-06-24T00:02:00Z');
 Progress.updateUserUI(store, 'alice', {
@@ -443,6 +460,25 @@ assert.strictEqual(Progress.userUI(store, 'alice').selectedRoute, 'systems');
 assert.strictEqual(Progress.userUI(store, 'bob').selectedRoute, 'multimodal');
 assert.strictEqual(Progress.lessonState(store, 'alice', '10_vla/01_vision_language_action_grounding').selfChecks.goal, true);
 assert.strictEqual(Progress.lessonState(store, 'alice', '10_vla/01_vision_language_action_grounding').note, 'wrong-note: action token vs safety gate');
+assert.strictEqual(Progress.hasSubstantiveAnswer('   '), false);
+assert.strictEqual(Progress.hasSubstantiveAnswer('action과 safety를 분리한다'), true);
+const mastery = Progress.masteryEvidence(
+  Progress.lessonState(store, 'alice', '10_vla/01_vision_language_action_grounding'),
+  ['README', 'THEORY'],
+  ['choice', 'concept'],
+);
+assert.strictEqual(mastery.verified, true);
+assert.deepStrictEqual(mastery.items.map((item) => item.done), [true, true, true, true]);
+assert.strictEqual(Progress.runEvidenceVerified({ returncode: 0, device: 'cuda', artifactDevice: 'cpu', artifactNames: ['metrics.json'] }), false);
+assert.strictEqual(Progress.runEvidenceVerified({ returncode: 0, device: 'cuda', artifactDevice: null, artifactNames: ['metrics.json'] }), false);
+assert.strictEqual(Progress.runEvidenceVerified({ returncode: 0, device: 'cpu', artifactNames: [] }), false);
+const staleQuizMastery = Progress.masteryEvidence({
+  checkpoints: { README: true },
+  quizAnswers: { old1: { answer: 'a' }, old2: { answer: 'b' } },
+  runEvidence: { returncode: 0, device: 'cpu', artifactNames: ['metrics.json'] },
+  note: 'reflection',
+}, ['README'], ['concept-check', 'concept']);
+assert.strictEqual(staleQuizMastery.items.find((item) => item.key === 'quiz').done, false);
 
 const storage = Progress.createMemoryStorage();
 Progress.saveProgress(store, storage);
@@ -450,6 +486,8 @@ const reloaded = Progress.loadProgress(storage);
 assert.strictEqual(reloaded.users.alice.lessons['00_foundations/01_tensor_shapes'].percent, 100);
 assert.strictEqual(reloaded.users.alice.lessons['10_vla/01_vision_language_action_grounding'].selfChecks.goal, true);
 assert.strictEqual(reloaded.users.alice.lessons['10_vla/01_vision_language_action_grounding'].note, 'wrong-note: action token vs safety gate');
+assert.strictEqual(reloaded.users.alice.lessons['10_vla/01_vision_language_action_grounding'].runEvidence.device, 'cuda');
+assert.strictEqual(reloaded.users.alice.lessons['10_vla/01_vision_language_action_grounding'].runEvidence.command, undefined);
 assert.strictEqual(reloaded.users.alice.ui.selectedRoute, 'systems');
 assert.strictEqual(reloaded.users.bob.ui.selectedRoute, 'multimodal');
 
@@ -514,6 +552,14 @@ assert.strictEqual(recovered.users.carol.lessons['10_vla/01_vision_language_acti
             "llmFastPath",
             "!nextCheckpoint && answered < quizItems.length",
             "next-action-card",
+            "runEvidence",
+            "masteryEvidence",
+            "hasSubstantiveAnswer",
+            "숙달 증거",
+            "수동 완료",
+            "aria-live=\"polite\"",
+            "fidelityLabelFor",
+            "실습 성격",
         ]:
             self.assertIn(token, app + server + styles + storage)
         for removed in [
@@ -595,6 +641,26 @@ assert.strictEqual(recovered.users.carol.lessons['10_vla/01_vision_language_acti
         self.assertIn("environment", runtime_payload)
         self.assertIn("device", runtime_payload)
 
+        non_json = urllib.request.Request(
+            f"{base}/api/run-python",
+            data=json.dumps({"path": "00_foundations/01_tensor_shapes/scratch_lab.py"}).encode("utf-8"),
+            headers={"Content-Type": "text/plain"},
+            method="POST",
+        )
+        with self.assertRaises(urllib.error.HTTPError) as ctx:
+            urllib.request.urlopen(non_json, timeout=5)
+        self.assertEqual(415, ctx.exception.code)
+
+        cross_origin = urllib.request.Request(
+            f"{base}/api/run-python",
+            data=json.dumps({"path": "00_foundations/01_tensor_shapes/scratch_lab.py"}).encode("utf-8"),
+            headers={"Content-Type": "application/json", "Origin": "https://example.invalid"},
+            method="POST",
+        )
+        with self.assertRaises(urllib.error.HTTPError) as ctx:
+            urllib.request.urlopen(cross_origin, timeout=5)
+        self.assertEqual(403, ctx.exception.code)
+
         artifact_dir = ROOT / "00_foundations" / "01_tensor_shapes" / "artifacts"
         artifact_dir.mkdir(exist_ok=True)
         stale_artifact = artifact_dir / "stale-from-test.txt"
@@ -671,6 +737,16 @@ assert.strictEqual(recovered.users.carol.lessons['10_vla/01_vision_language_acti
         self.assertEqual("function_probe", helper_payload["cell"]["mode"])
         self.assertEqual("build_sklearn_models", helper_payload["cell"]["symbol"])
 
+        stage_artifact_root = ROOT / "01_ml" / "01_tabular_classification" / "artifacts"
+        stage_artifact_root.mkdir(exist_ok=True)
+        preexisting_stage_dirs = {path.resolve() for path in stage_artifact_root.iterdir() if path.is_dir()}
+
+        def cleanup_stage_runs() -> None:
+            for path in stage_artifact_root.iterdir():
+                if path.is_dir() and path.resolve() not in preexisting_stage_dirs:
+                    shutil.rmtree(path)
+
+        self.addCleanup(cleanup_stage_runs)
         stage_run = urllib.request.Request(
             f"{base}/api/run-python",
             data=json.dumps({"path": "01_ml/01_tabular_classification/run_stage.py"}).encode("utf-8"),
@@ -731,11 +807,13 @@ assert.strictEqual(recovered.users.carol.lessons['10_vla/01_vision_language_acti
 
     def test_study_server_builds_conda_gpu_and_cpu_fallback_invocations(self) -> None:
         server = self._load_study_server()
-        script_path = ROOT / "00_foundations" / "01_tensor_shapes" / "scratch_lab.py"
+        self.assertGreaterEqual(server.DEFAULT_TIMEOUT_SECONDS, 120)
+        cpu_script_path = ROOT / "00_foundations" / "01_tensor_shapes" / "scratch_lab.py"
+        gpu_script_path = ROOT / "05_advanced_nlp_llm" / "04_instruction_tuning_and_sft" / "framework_lab.py"
         gpu_rows = server._parse_nvidia_smi_rows("0, 24000, 128, 0\n1, 16000, 12000, 95\n")
 
         conda_config = server.RunnerConfig(conda_env="btb", device="auto")
-        command, env, runner = server._build_runner_invocation(script_path, conda_config, gpu_rows)
+        command, env, runner = server._build_runner_invocation(gpu_script_path, conda_config, gpu_rows)
         self.assertEqual(["conda", "run", "--no-capture-output", "-n", "btb", "python"], command[:6])
         self.assertEqual("cuda", runner["device"])
         self.assertEqual("0", runner["gpu_index"])
@@ -743,14 +821,40 @@ assert.strictEqual(recovered.users.carol.lessons['10_vla/01_vision_language_acti
         self.assertEqual("cuda", env["BTB_DEVICE"])
         self.assertEqual("conda:btb", runner["environment"])
 
+        _, env, runner = server._build_runner_invocation(cpu_script_path, server.RunnerConfig(device="auto"), gpu_rows)
+        self.assertEqual("cpu", runner["device"])
+        self.assertEqual("cpu", runner["compute_profile"])
+        self.assertEqual("", env["CUDA_VISIBLE_DEVICES"])
+
+        with tempfile.TemporaryDirectory(dir=ROOT) as tmpdir:
+            unknown_script = Path(tmpdir) / "scratch_lab.py"
+            unknown_script.write_text("print('ok')\n", encoding="utf-8")
+            with self.assertRaisesRegex(RuntimeError, "lesson metadata"):
+                server._build_runner_invocation(unknown_script, server.RunnerConfig(device="auto"), gpu_rows)
+
         cpu_config = server.RunnerConfig(device="auto")
-        command, env, runner = server._build_runner_invocation(script_path, cpu_config, [])
+        command, env, runner = server._build_runner_invocation(gpu_script_path, cpu_config, [])
         self.assertEqual(sys.executable, command[0])
         self.assertEqual("python", runner["python"])
         self.assertEqual("python:current", runner["environment"])
         self.assertEqual("cpu", runner["device"])
         self.assertEqual("", env["CUDA_VISIBLE_DEVICES"])
         self.assertEqual("cpu", env["BTB_DEVICE"])
+
+        busy_pinned = server.RunnerConfig(
+            device="auto",
+            gpu_index="1",
+            gpu_max_used_mb=2048,
+            gpu_max_util_percent=25,
+        )
+        _, env, runner = server._build_runner_invocation(gpu_script_path, busy_pinned, gpu_rows)
+        self.assertEqual("cpu", runner["device"])
+        self.assertIsNone(runner["gpu_index"])
+        self.assertEqual("", env["CUDA_VISIBLE_DEVICES"])
+
+        forced_cuda = server.RunnerConfig(device="cuda")
+        with self.assertRaisesRegex(RuntimeError, "CUDA device was requested"):
+            server._build_runner_invocation(gpu_script_path, forced_cuda, [])
 
     def test_study_server_rejects_symlinked_artifact_roots(self) -> None:
         server = self._load_study_server()
@@ -764,6 +868,15 @@ assert.strictEqual(recovered.users.carol.lessons['10_vla/01_vision_language_acti
 
             self.assertEqual({}, server._artifact_snapshot(script_path))
             self.assertEqual([], server._collect_artifacts(script_path))
+
+    def test_study_server_allows_only_one_active_execution_slot(self) -> None:
+        server = self._load_study_server()
+        with server._execution_slot():
+            with self.assertRaisesRegex(RuntimeError, "already running"):
+                with server._execution_slot():
+                    pass
+        with server._execution_slot():
+            pass
 
     def test_catalog_builder_covers_manifest_tracks_and_units(self) -> None:
         module = self._load_builder()
@@ -786,6 +899,10 @@ assert.strictEqual(recovered.users.carol.lessons['10_vla/01_vision_language_acti
                 self.assertTrue(unit["readme"].endswith("README.md"))
                 self.assertIn("checkpoints", unit)
                 self.assertIn("README", unit["checkpoints"])
+                self.assertIn(unit["fidelity"], {"concept-toy", "framework-toy", "real-data", "gpu-capable"})
+                self.assertIn(unit["difficulty"], {"beginner", "intermediate", "advanced"})
+                self.assertGreater(unit["estimated_minutes"], 0)
+                self.assertIn(unit["compute"], {"cpu", "cpu-or-cuda", "optional-multiprocess"})
 
         vla_units = catalog_units["10_vla"]
         self.assertIn("01_vision_language_action_grounding", vla_units)

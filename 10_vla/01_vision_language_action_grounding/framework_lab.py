@@ -1,11 +1,18 @@
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from shared.device_runtime import resolve_torch_device
 
 from vla_probe_utils import failure_probe_payload
 
@@ -86,7 +93,7 @@ def train_policy(device: torch.device) -> dict[str, object]:
 
 def main() -> int:
     ARTIFACT_DIR.mkdir(parents=True, exist_ok=True)
-    device = torch.device("cpu")
+    device = resolve_torch_device()
     payload = train_policy(device)
     (ARTIFACT_DIR / "metrics.json").write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps(payload, ensure_ascii=False, indent=2))

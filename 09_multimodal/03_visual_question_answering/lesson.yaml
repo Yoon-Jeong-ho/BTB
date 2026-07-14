@@ -1,4 +1,8 @@
 objective: 이미지와 질문을 함께 읽는 tiny VQA 예제로 answer type breakdown, shortcut bias, grounded reasoning failure를 함께 해석한다.
+fidelity: framework-toy
+difficulty: advanced
+estimated_minutes: 150
+compute: cpu
 prereqs:
   - image-text grounding과 captioning failure 해석 감각
   - softmax 분류와 answer vocabulary 읽기

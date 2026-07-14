@@ -9,7 +9,7 @@ BTB는 48개 runnable unit에 한글 우선 문서, scratch/framework/analysis/r
 ## 목표
 
 1. manifest에 runnable로 선언된 모든 단원이 공통 parser와 runner에서 실제로 열리고 실행될 수 있게 한다.
-2. 단원 수준을 `concept-toy`, `framework-toy`, `real-data`, `gpu-validated`로 구분한다.
+2. 단원 수준을 `concept-toy`, `framework-toy`, `real-data`, `gpu-capable`로 구분한다.
 3. CPU/GPU 선택이 웹 서버 표시부터 artifact의 `device` 값까지 일치하게 한다.
 4. 실행 성공, 분석, 퀴즈, 회고를 학습 숙달 증거로 분리해 저장한다.
 5. 초심자가 진입 준비도와 선택형 Systems/Frontier 경로를 오해하지 않게 한다.
@@ -55,7 +55,7 @@ parser, runner, report, GPU 전달만 수정한다. 위험과 변경량은 작�
 - `concept-toy`: 개념을 수작업 숫자나 deterministic simulation으로 확인
 - `framework-toy`: 실제 framework tensor/model/update를 작은 입력에서 실행
 - `real-data`: 외부 또는 실제 형태 데이터와 evaluation contract 사용
-- `gpu-validated`: GPU 실행 artifact와 device 증거를 검증함
+- `gpu-capable`: `BTB_DEVICE`를 존중하는 작은 CPU/CUDA 실습. 과거 검증을 과장하지 않고 현재 실행 artifact의 device로 검증함
 
 ### 2. 실행 및 산출물 계약
 

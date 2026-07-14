@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -13,6 +14,7 @@ ARTIFACTS = UNIT / 'artifacts'
 SCRATCH = ARTIFACTS / 'scratch-manual' / 'metrics.json'
 SVG = ARTIFACTS / 'scratch-manual' / 'rank_gradients.svg'
 FRAMEWORK = ARTIFACTS / 'framework-manual' / 'metrics.json'
+TORCHRUN = ARTIFACTS / 'torchrun-manual' / 'metrics.json'
 OBSERVED = ARTIFACTS / 'analysis-manual' / 'latest_report.md'
 ANALYSIS = UNIT / 'analysis.md'
 REQUIRED = [
@@ -28,7 +30,7 @@ class TestTorchrunUnitContract(unittest.TestCase):
         return subprocess.run([sys.executable, rel], cwd=ROOT, text=True, capture_output=True, check=False)
 
     def _cleanup(self) -> None:
-        for d in [ARTIFACTS / 'scratch-manual', ARTIFACTS / 'framework-manual', ARTIFACTS / 'analysis-manual']:
+        for d in [ARTIFACTS / 'scratch-manual', ARTIFACTS / 'framework-manual', ARTIFACTS / 'torchrun-manual', ARTIFACTS / 'analysis-manual']:
             if d.exists():
                 shutil.rmtree(d)
 
@@ -77,6 +79,35 @@ class TestTorchrunUnitContract(unittest.TestCase):
         self.assertIn('node 0 / local 0', figure)
         self.assertEqual(stable_before, ANALYSIS.read_text(encoding='utf-8'))
         self.assertIn('## 한국어 해석', OBSERVED.read_text(encoding='utf-8'))
+
+    def test_optional_torchrun_lab_uses_two_real_processes(self) -> None:
+        self.addCleanup(self._cleanup)
+        self._cleanup()
+        env = os.environ.copy()
+        env['BTB_DEVICE'] = 'cpu'
+        result = subprocess.run(
+            [
+                sys.executable,
+                '-m',
+                'torch.distributed.run',
+                '--standalone',
+                '--nproc-per-node=2',
+                str(UNIT / 'torchrun_lab.py'),
+            ],
+            cwd=ROOT,
+            env=env,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+
+        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+        payload = json.loads(TORCHRUN.read_text(encoding='utf-8'))
+        self.assertEqual('torch.distributed', payload['framework'])
+        self.assertEqual('gloo', payload['backend'])
+        self.assertEqual(2, payload['world_size'])
+        self.assertEqual([0, 1], payload['observed_ranks'])
+        self.assertEqual(1.5, payload['all_reduce_mean'])
 
 if __name__ == '__main__':
     unittest.main()

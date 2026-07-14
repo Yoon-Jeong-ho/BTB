@@ -1,4 +1,8 @@
 objective: "base LM에 같은 pretraining objective를 유지한 채 특정 domain corpus로 continued pretraining을 수행할 때 specialization gain, catastrophic forgetting risk, data selection/stopping trade-off를 runnable toy 비교로 읽는다."
+fidelity: framework-toy
+difficulty: intermediate
+estimated_minutes: 150
+compute: cpu
 status: runnable
 prereqs:
   - causal / masked / span corruption objective 비교 감각

@@ -1,4 +1,8 @@
 objective: 여러 모델과 hyperparameter를 비교하되, validation score와 해석 가능한 feature importance를 함께 보고 선택 근거를 남긴다.
+fidelity: real-data
+difficulty: intermediate
+estimated_minutes: 150
+compute: cpu-or-cuda
 status: runnable
 prereqs:
   - classification/regression baseline 비교 경험

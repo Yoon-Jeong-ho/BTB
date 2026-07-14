@@ -1,4 +1,8 @@
 objective: tensor parallelism이 large Transformer 레이어 내부 행렬 연산을 여러 장치로 어떻게 분할하는지, 그 과정에서 activation/weight shard와 collective communication이 어떤 trade-off를 만드는지 이해해 later pipeline/hybrid parallelism의 기준선을 만든다.
+fidelity: concept-toy
+difficulty: advanced
+estimated_minutes: 120
+compute: cpu
 unit: 05_tensor_parallelism
 track: 06_training_systems
 status: runnable
@@ -34,11 +38,11 @@ required_outputs:
   - theory note
   - prerequisite checklist
   - lesson metadata
-  - scratch metrics json
-  - scratch tensor parallel SVG
-  - framework simulation metrics json
+  - artifacts/scratch_metrics.json
+  - artifacts/tensor_parallelism_shards.svg
+  - artifacts/framework_metrics.json
   - stable analysis markdown
-  - observed analysis json
+  - artifacts/analysis_observed.json
   - reflection worksheet
 analysis_questions:
   - tensor parallelism은 상태 sharding 접근과 무엇이 다르며, 왜 intra-layer parallelism으로 따로 봐야 하는가?

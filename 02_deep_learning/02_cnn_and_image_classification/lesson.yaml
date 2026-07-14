@@ -1,4 +1,8 @@
 objective: convolution, local receptive field, parameter sharing, pooling, channel/feature map 직관을 toy CNN image classification baseline으로 연결한다.
+fidelity: framework-toy
+difficulty: intermediate
+estimated_minutes: 120
+compute: cpu
 status: runnable
 prereqs:
   - batch/channel/height/width shape 읽기

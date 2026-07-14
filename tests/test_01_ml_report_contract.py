@@ -59,6 +59,12 @@ class TestMLStageLayout(unittest.TestCase):
             self.assertIn(data['best_model'], data['models'])
             self.assertTrue(data['models'], f'empty models in {metrics_path}')
 
+    def test_new_stage_metrics_record_actual_device(self) -> None:
+        for stage in STAGES:
+            experiment = (ML_ROOT / stage / 'experiment.py').read_text(encoding='utf-8')
+            metrics_block = experiment.split("metrics.json", 1)[1][:500]
+            self.assertIn("'device': device", metrics_block, stage)
+
     def test_tabular_classification_models_file_contains_actual_model_contract(self) -> None:
         stage_dir = ML_ROOT / '01_tabular_classification'
         models_text = (stage_dir / 'models.py').read_text(encoding='utf-8')

@@ -189,6 +189,7 @@ def run_stage(device: str) -> dict[str, Any]:
         'best_params': best_params,
     })
     json_dump(paths['artifact_dir'] / 'metrics.json', {
+        'device': device,
         'primary_metric': PRIMARY_METRIC,
         'best_model': best_name,
         'models': {name: {**res.metrics, **(res.extras or {})} for name, res in results.items()},

@@ -1,4 +1,8 @@
 objective: 여러 선행 트랙 지식을 묶어 capstone 프로젝트를 막연한 아이디어가 아니라 problem statement / non-goal / dataset-model-eval / milestone / acceptance gate / risk register / failure analysis / report outline 계약으로 고정하고, 다음 agentic training loop에 넘길 수 있는 실행 가능한 프로젝트 보드를 만든다.
+fidelity: concept-toy
+difficulty: advanced
+estimated_minutes: 180
+compute: cpu
 unit: 02_capstone_model_building
 track: 07_frontier_labs
 status: runnable

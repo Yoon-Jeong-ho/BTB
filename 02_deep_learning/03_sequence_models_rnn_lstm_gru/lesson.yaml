@@ -1,4 +1,8 @@
 objective: 시퀀스 순서, hidden state 병목, vanilla RNN의 한계, LSTM/GRU gating 직관, teacher forcing gap을 실행 가능한 toy 실험으로 연결해 이후 transformer 학습의 배경을 만든다.
+fidelity: framework-toy
+difficulty: intermediate
+estimated_minutes: 120
+compute: cpu
 status: runnable
 prereqs:
   - 시퀀스 텐서 shape 읽기

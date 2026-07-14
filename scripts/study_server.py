@@ -3,10 +3,12 @@ from __future__ import annotations
 import argparse
 import ast
 import base64
+from contextlib import contextmanager
 import json
 import os
 import subprocess
 import sys
+import threading
 import time
 from dataclasses import dataclass
 from functools import lru_cache
@@ -14,15 +16,35 @@ from http import HTTPStatus
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any
-from urllib.parse import unquote
+from urllib.parse import unquote, urlsplit
 
+SCRIPTS_DIR = str(Path(__file__).resolve().parent)
+if SCRIPTS_DIR not in sys.path:
+    sys.path.insert(0, SCRIPTS_DIR)
+
+from _lesson_metadata import load_lesson_metadata
 
 ROOT = Path(__file__).resolve().parents[1]
 RUNNABLE_NAMES = {"scratch_lab.py", "framework_lab.py", "analysis.py", "run_stage.py"}
 INSPECTABLE_NAMES = RUNNABLE_NAMES | {"dataset.py", "models.py", "experiment.py", "report.py"}
-DEFAULT_TIMEOUT_SECONDS = 60
+DEFAULT_TIMEOUT_SECONDS = 120
 MAX_ARTIFACTS = 12
 MAX_ARTIFACT_PREVIEW_BYTES = 96_000
+_EXECUTION_SEMAPHORE = threading.BoundedSemaphore(value=1)
+
+
+class ExecutionBusyError(RuntimeError):
+    pass
+
+
+@contextmanager
+def _execution_slot():
+    if not _EXECUTION_SEMAPHORE.acquire(blocking=False):
+        raise ExecutionBusyError("another lesson execution is already running")
+    try:
+        yield
+    finally:
+        _EXECUTION_SEMAPHORE.release()
 
 
 @dataclass(frozen=True)
@@ -342,7 +364,15 @@ def _select_idle_gpu(
     require_idle: bool = True,
 ) -> dict[str, int | str] | None:
     if gpu_index is not None:
-        return next((row for row in gpu_rows if str(row["index"]) == str(gpu_index)), None)
+        selected = next((row for row in gpu_rows if str(row["index"]) == str(gpu_index)), None)
+        if selected is None:
+            return None
+        if require_idle and (
+            int(selected["memory_used_mb"]) > max_used_mb
+            or int(selected["utilization_percent"]) > max_util_percent
+        ):
+            return None
+        return selected
 
     candidates = [
         row
@@ -382,6 +412,13 @@ def _build_runner_invocation(
 ) -> tuple[list[str], dict[str, str], dict[str, Any]]:
     rows = _query_gpu_rows() if gpu_rows is None else gpu_rows
     device = config.device
+    lesson_path = script_path.parent / "lesson.yaml"
+    try:
+        compute_profile = str(load_lesson_metadata(lesson_path).get("compute", ""))
+    except (OSError, ValueError) as exc:
+        raise RuntimeError(f"lesson metadata is missing or invalid: {lesson_path}: {exc}") from exc
+    if compute_profile not in {"cpu", "cpu-or-cuda", "optional-multiprocess"}:
+        raise RuntimeError(f"lesson metadata has an invalid compute profile: {lesson_path}: {compute_profile!r}")
     selected_gpu: dict[str, int | str] | None = None
     reason = ""
 
@@ -395,7 +432,12 @@ def _build_runner_invocation(
             max_util_percent=config.gpu_max_util_percent,
             require_idle=False,
         )
+        if selected_gpu is None:
+            raise RuntimeError("CUDA device was requested but no selectable NVIDIA GPU was found.")
         reason = "CUDA mode requested."
+    elif compute_profile != "cpu-or-cuda":
+        device = "cpu"
+        reason = f"Lesson compute profile is {compute_profile}; auto mode stays on CPU."
     else:
         selected_gpu = _select_idle_gpu(
             rows,
@@ -423,6 +465,7 @@ def _build_runner_invocation(
         "python": " ".join(_public_command(command_prefix)),
         "environment": environment_label,
         "device": device,
+        "compute_profile": compute_profile,
         "gpu_index": str(selected_gpu["index"]) if selected_gpu is not None else None,
         "gpu": selected_gpu,
         "device_reason": reason,
@@ -466,6 +509,17 @@ class StudyRequestHandler(SimpleHTTPRequestHandler):
         )
 
     def do_POST(self) -> None:  # noqa: N802 - http.server API
+        content_type = self.headers.get_content_type()
+        if content_type != "application/json":
+            self._send_json(HTTPStatus.UNSUPPORTED_MEDIA_TYPE, {"error": "Content-Type must be application/json."})
+            return
+        origin = self.headers.get("Origin")
+        if origin:
+            parsed_origin = urlsplit(origin)
+            host = self.headers.get("Host", "")
+            if parsed_origin.scheme != "http" or parsed_origin.netloc != host:
+                self._send_json(HTTPStatus.FORBIDDEN, {"error": "Cross-origin execution requests are not allowed."})
+                return
         if self.path in {"/api/run-code-cell", "/api/partial-experiment"}:
             self._handle_code_cell()
             return
@@ -489,9 +543,20 @@ class StudyRequestHandler(SimpleHTTPRequestHandler):
             self._send_json(HTTPStatus.BAD_REQUEST, {"error": f"요청 형식이 올바르지 않습니다: {exc}"})
             return
 
+        try:
+            with _execution_slot():
+                self._execute_python(script_path, timeout)
+        except ExecutionBusyError as exc:
+            self._send_json(HTTPStatus.CONFLICT, {"error": str(exc)})
+
+    def _execute_python(self, script_path: Path, timeout: int) -> None:
         started = time.monotonic()
         config: RunnerConfig = getattr(self.server, "runner_config", RunnerConfig())  # type: ignore[attr-defined]
-        command, env_overlay, runner = _build_runner_invocation(script_path, config)
+        try:
+            command, env_overlay, runner = _build_runner_invocation(script_path, config)
+        except RuntimeError as exc:
+            self._send_json(HTTPStatus.SERVICE_UNAVAILABLE, {"error": str(exc)})
+            return
         artifact_snapshot = _artifact_snapshot(script_path)
         try:
             env = os.environ.copy()

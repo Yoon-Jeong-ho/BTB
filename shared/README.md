@@ -2,6 +2,12 @@
 
 학습 트랙이 아니라 공통 템플릿과 실험 규약을 두는 번호 없는 공유 공간이다.
 
+`device_runtime.py`는 작은 PyTorch framework lab이 공통으로 쓰는
+`BTB_DEVICE=auto|cpu|cuda` 해석 규약을 제공한다. `cuda`를 강제했는데 CUDA를
+사용할 수 없으면 CPU로 가장하지 않고 실행을 중단한다. 환경 변수를 지정하지
+않고 파일을 직접 실행할 때는 안전한 CPU가 기본이며, runner가 `auto`를 명시한
+경우에만 사용 가능한 CUDA를 자동 선택한다.
+
 ## 공통 Unit Contract
 
 기본 contract는 `README/THEORY/PREREQS/scratch/framework/analysis/reflection` 흐름이다.

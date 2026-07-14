@@ -28,6 +28,8 @@ python -m http.server 8000
 
 `study_server.py`는 임의 명령을 실행하지 않고, 저장소 안의 `scratch_lab.py`, `framework_lab.py`, `analysis.py`, `run_stage.py`만 허용 목록으로 실행한다. 실행 버튼은 코드 블록 아래에 있고, 실행 결과·종료 코드·선택된 실행 환경은 그 아래 결과 패널에 표시된다. 실행이 끝나면 이번 실행에서 새로 만들어지거나 갱신된 JSON/SVG/표 산출물을 “산출물 뷰어”에서 바로 열어 보고, 전체 파일을 돌리기 전에는 “선택 함수 미리보기”로 함수의 입력·호출·저장 단서를 먼저 훑을 수 있다.
 
+브라우저 실행은 한 번에 하나만 허용되고 각 실행은 최대 120초로 제한된다. CPU에서 real-data ML stage는 약 1분이 걸릴 수 있으므로 결과 패널이 갱신될 때까지 기다린다.
+
 conda 환경이나 GPU 선택을 명시하고 싶다면 아래처럼 실행한다.
 
 ```bash
@@ -44,7 +46,7 @@ python scripts/study_server.py --port 8000 --device cpu
 python scripts/study_server.py --port 8000 --device cuda --gpu-index 0
 ```
 
-`--device auto`는 `nvidia-smi`로 idle GPU를 찾고, 조건에 맞는 GPU가 없거나 `nvidia-smi`가 없으면 CPU로 fallback한다.
+`--device auto`는 먼저 단원의 `compute` 메타데이터를 읽는다. `cpu-or-cuda`인 단원만 `nvidia-smi`로 idle GPU를 찾고, `cpu`/`optional-multiprocess`이거나 조건에 맞는 GPU가 없으면 CPU로 실행한다. 메타데이터가 없거나 잘못되었으면 임의로 실행하지 않고 명시적 오류를 낸다.
 
 ## 진행률 저장 방식
 
@@ -71,6 +73,7 @@ python scripts/build_web_catalog.py --output web/catalog.json
 - 산출물 뷰어에서 이번 실행이 갱신한 지표 JSON, SVG 그림, CSV/텍스트 표를 바로 확인하고 분석 질문과 연결한다.
 - 선택 함수 미리보기는 코드를 임의 실행하지 않고 AST로 함수 구조, 호출 이름, 중간 변수, 산출물 단서를 보여준다.
 - 단원별 자가 점검과 미니 퀴즈를 통해 “목표 설명 → 실행 관찰 → 분석 질문 답변”까지 끝났는지 스스로 확인한다. 짧은 서술형은 자동 정답 처리하지 않고 예시 기준과 비교한다.
+- 수동 진행 상태와 별도로 필수 체크, 성공한 실행, 퀴즈 답변, 회고 메모를 묶은 “숙달 증거”를 표시한다. 실행 증거에는 원시 명령이나 환경 변수가 아니라 단원·실행 파일·device·artifact 이름만 현재 브라우저에 저장된다.
 - 틀린 퀴즈와 메모는 오답노트에 저장되며, 사용자 프로필마다 현재 브라우저에만 남는다.
 - 체크리스트와 읽음 표시는 사용자별 localStorage에만 누적된다.
 

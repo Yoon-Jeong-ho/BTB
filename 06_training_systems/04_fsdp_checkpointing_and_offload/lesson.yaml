@@ -1,4 +1,8 @@
 objective: FSDP가 parameter/gradient/optimizer state shard lifecycle을 어떻게 관리하는지, activation checkpointing과 offload가 어떤 memory-compute-I/O trade-off를 만드는지, 그리고 full/sharded checkpoint save-load 계약이 어떻게 달라지는지를 CPU-safe simulation으로 관찰한다.
+fidelity: concept-toy
+difficulty: advanced
+estimated_minutes: 120
+compute: cpu
 status: runnable
 runtime: cpu-safe deterministic simulation
 prereqs:

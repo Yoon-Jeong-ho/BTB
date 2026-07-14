@@ -1,4 +1,8 @@
 objective: 표형 회귀에서 target scale, residual, MAE/RMSE/R2를 비교하며 숫자 예측 baseline을 해석하는 습관을 만든다.
+fidelity: real-data
+difficulty: beginner
+estimated_minutes: 120
+compute: cpu-or-cuda
 status: runnable
 prereqs:
   - feature matrix와 target vector 구분

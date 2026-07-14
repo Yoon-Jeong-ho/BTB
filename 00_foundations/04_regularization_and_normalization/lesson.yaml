@@ -1,4 +1,8 @@
 objective: normalization이 gradient scale과 학습 안정성을 어떻게 바꾸고, regularization이 weight growth를 어떻게 억제하는지 이해한다.
+fidelity: framework-toy
+difficulty: intermediate
+estimated_minutes: 90
+compute: cpu
 prereqs:
   - gradient와 learning rate의 관계
   - 평균 / 분산 / 표준편차 읽기

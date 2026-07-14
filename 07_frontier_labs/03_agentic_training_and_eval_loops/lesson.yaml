@@ -1,4 +1,8 @@
 objective: capstone에서 고정한 문제/평가 계약을 planner-executor-verifier-critic 구조의 agentic training/eval loop로 옮기고, 자동 반복보다 evidence-first 운영과 stop/escalation 기준을 먼저 설계하는 감각을 CPU-safe deterministic simulation으로 만든다.
+fidelity: concept-toy
+difficulty: advanced
+estimated_minutes: 150
+compute: cpu
 unit: 03_agentic_training_and_eval_loops
 track: 07_frontier_labs
 status: runnable

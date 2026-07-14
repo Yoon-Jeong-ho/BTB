@@ -1,4 +1,8 @@
 objective: 이미지-텍스트 retrieval를 Recall@K, hard negative, 양방향 ranking 관점으로 읽는다.
+fidelity: gpu-capable
+difficulty: intermediate
+estimated_minutes: 150
+compute: cpu-or-cuda
 prereqs:
   - cosine similarity 기본 감각
   - shared embedding space 직관
@@ -20,7 +24,8 @@ required_outputs:
   - scratch metrics json
   - scratch svg figure
   - framework metrics json
-  - analysis markdown
+  - stable analysis markdown
+  - observed analysis report
 analysis_questions:
   - 왜 scratch에서는 image→text보다 text→image가 더 어려웠는가?
   - Recall@1과 Recall@2를 함께 읽으면 어떤 ranking 정보를 얻는가?

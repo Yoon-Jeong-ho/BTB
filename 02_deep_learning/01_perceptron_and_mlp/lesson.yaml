@@ -1,4 +1,8 @@
 objective: perceptron decision rule, 선형 분리 가능성, XOR 실패, tiny MLP 개선을 가장 작은 neural baseline 관점에서 이해한다.
+fidelity: framework-toy
+difficulty: beginner
+estimated_minutes: 90
+compute: cpu
 status: runnable
 prereqs:
   - dot product와 weighted sum 기초

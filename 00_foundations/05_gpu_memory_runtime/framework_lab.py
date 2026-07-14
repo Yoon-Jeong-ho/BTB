@@ -1,10 +1,17 @@
 from __future__ import annotations
 
 import json
+import sys
 import time
 from pathlib import Path
 
 import torch
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from shared.device_runtime import resolve_torch_device
 
 UNIT_ROOT = Path(__file__).resolve().parent
 ARTIFACT_DIR = UNIT_ROOT / 'artifacts' / 'framework-manual'
@@ -46,7 +53,7 @@ def warmup(model: torch.nn.Module, batch: torch.Tensor, device: str) -> None:
 def run() -> None:
     torch.manual_seed(7)
 
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    device = resolve_torch_device().type
     model = torch.nn.Sequential(
         torch.nn.Linear(1024, 2048),
         torch.nn.ReLU(),

@@ -2,7 +2,10 @@ from __future__ import annotations
 
 import json
 import re
+import subprocess
+import sys
 import unittest
+import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -11,8 +14,12 @@ import yaml
 from tests.test_curriculum_topology import CANONICAL_CURRICULUM_LADDER
 
 ROOT = Path(__file__).resolve().parents[1]
+SCRIPTS_DIR = ROOT / 'scripts'
 EXPECTED_TRACKS = CANONICAL_CURRICULUM_LADDER
 VALID_STATUSES = {'planned', 'outlined', 'runnable'}
+VALID_FIDELITIES = {'concept-toy', 'framework-toy', 'real-data', 'gpu-capable'}
+VALID_DIFFICULTIES = {'beginner', 'intermediate', 'advanced'}
+VALID_COMPUTE = {'cpu', 'cpu-or-cuda', 'optional-multiprocess'}
 UNIT_DIR_NAME_RE = re.compile(r'^\d+_')
 
 
@@ -95,6 +102,93 @@ class TestCurriculumStatusModel(unittest.TestCase):
                 for key in ['prereqs', 'key_terms', 'required_outputs', 'analysis_questions']:
                     if key in parsed:
                         self.assertIsInstance(parsed[key], list, f'{key} must be a list')
+
+    def test_every_manifest_lesson_uses_runner_parser(self) -> None:
+        sys.path.insert(0, str(SCRIPTS_DIR))
+        self.addCleanup(lambda: sys.path.remove(str(SCRIPTS_DIR)))
+        from _lesson_metadata import load_lesson_metadata
+
+        data = self._load_status()
+        parsed_count = 0
+        for track_name, units in data['tracks'].items():
+            for unit_name in units:
+                lesson_path = ROOT / track_name / unit_name / 'lesson.yaml'
+                with self.subTest(lesson=str(lesson_path.relative_to(ROOT))):
+                    metadata = load_lesson_metadata(lesson_path)
+                    self.assertIsInstance(metadata.get('objective'), str)
+                    parsed_count += 1
+
+        self.assertEqual(48, parsed_count)
+
+    def test_strict_curriculum_audit_reports_all_units_and_no_errors(self) -> None:
+        result = subprocess.run(
+            [sys.executable, 'scripts/audit_curriculum.py', '--strict'],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+
+        self.assertEqual(result.returncode, 0, msg=result.stderr or result.stdout)
+        payload = json.loads(result.stdout)
+        self.assertEqual(48, payload['unit_count'])
+        self.assertEqual([], payload['errors'])
+        self.assertIn('fidelity', payload['coverage'])
+        self.assertIn('compute', payload['coverage'])
+
+    def test_every_declared_unit_exposes_learner_facing_effort_metadata(self) -> None:
+        data = self._load_status()
+
+        for track_name, units in data['tracks'].items():
+            for unit_name in units:
+                lesson_path = ROOT / track_name / unit_name / 'lesson.yaml'
+                self.assertTrue(lesson_path.is_file(), f'missing {lesson_path.relative_to(ROOT)}')
+                parsed = yaml.safe_load(lesson_path.read_text(encoding='utf-8'))
+                lesson = str(lesson_path.relative_to(ROOT))
+
+                self.assertIn(parsed.get('fidelity'), VALID_FIDELITIES, f'{lesson} has invalid fidelity')
+                self.assertIn(
+                    parsed.get('difficulty'),
+                    VALID_DIFFICULTIES,
+                    f'{lesson} has invalid difficulty',
+                )
+                self.assertIsInstance(
+                    parsed.get('estimated_minutes'),
+                    int,
+                    f'{lesson} estimated_minutes must be an integer',
+                )
+                self.assertGreater(
+                    parsed['estimated_minutes'],
+                    0,
+                    f'{lesson} estimated_minutes must be positive',
+                )
+                self.assertIn(parsed.get('compute'), VALID_COMPUTE, f'{lesson} has invalid compute')
+
+    def test_prerequisite_path_references_must_exist(self) -> None:
+        sys.path.insert(0, str(SCRIPTS_DIR))
+        self.addCleanup(lambda: sys.path.remove(str(SCRIPTS_DIR)))
+        from audit_curriculum import _validate_prerequisite_references
+
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            root = Path(tmp_dir)
+            (root / '00_foundations/01_tensor_shapes').mkdir(parents=True)
+            (root / 'docs').mkdir()
+            (root / 'docs/existing.md').write_text('# ok\n', encoding='utf-8')
+            errors = _validate_prerequisite_references(
+                root,
+                root / 'lesson.yaml',
+                {
+                    'prereqs': [
+                        '00_foundations/01_tensor_shapes',
+                        'docs/existing',
+                        'docs/missing 선행 문서',
+                        '일반/자연어 설명은 경로가 아님',
+                    ]
+                },
+            )
+
+        self.assertEqual(1, len(errors))
+        self.assertIn('docs/missing', errors[0])
 
 
 if __name__ == '__main__':

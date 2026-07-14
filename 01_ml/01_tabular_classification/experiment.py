@@ -41,6 +41,7 @@ def run_stage(device: str) -> dict[str, Any]:
         'models': list(results.keys()),
     })
     json_dump(ctx.run_paths.run_dir / 'metrics.json', {
+        'device': device,
         'primary_metric': ctx.primary_metric,
         'best_model': best_name,
         'models': {

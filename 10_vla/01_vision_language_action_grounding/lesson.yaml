@@ -2,6 +2,10 @@ status: runnable
 track: 10_vla
 unit: 01_vision_language_action_grounding
 objective: vision-language-action grounding에서 시각 상태와 언어 지시를 action token 및 safety gate로 바꾸는 최소 흐름을 익힌다.
+fidelity: gpu-capable
+difficulty: advanced
+estimated_minutes: 150
+compute: cpu-or-cuda
 cpu_safe: true
 deterministic: true
 prereqs:
@@ -23,7 +27,8 @@ required_outputs:
   - scratch metrics json
   - scratch svg figure
   - framework metrics json
-  - analysis markdown
+  - stable analysis markdown
+  - observed analysis report
 analysis_questions:
   - VQA answer와 VLA action token은 무엇이 다른가?
   - safety gate가 action accuracy와 별도 지표여야 하는 이유는 무엇인가?

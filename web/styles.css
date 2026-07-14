@@ -90,6 +90,12 @@ textarea { width: 100%; font-family: inherit; }
 .next-action-card { border: 1px solid color-mix(in srgb, var(--accent-2) 26%, var(--line)); border-radius: 16px; background: white; padding: 0.75rem; min-width: min(280px, 100%); }
 .next-action-card strong, .next-action-card span { display: block; }
 .next-action-card span { color: var(--muted); font-size: 0.88rem; line-height: 1.45; margin-top: 0.25rem; }
+.mastery-card { border: 1px solid var(--line); border-radius: 16px; background: #fffaf2; padding: 0.75rem; margin-top: 0.6rem; }
+.mastery-card.verified { border-color: color-mix(in srgb, var(--good) 36%, var(--line)); background: #eaf8f0; }
+.mastery-card strong, .mastery-card span { display: block; }
+.mastery-card span { color: var(--muted); font-size: 0.84rem; margin-top: 0.2rem; }
+.mastery-card ul { display: grid; gap: 0.2rem; list-style: none; padding: 0; margin: 0.55rem 0 0; font-size: 0.86rem; }
+.mastery-card li[data-done="true"] { color: var(--good); font-weight: 700; }
 .scope-gate { display: grid; gap: 0.25rem; margin-top: 0.8rem; border: 1px solid color-mix(in srgb, var(--warn) 32%, var(--line)); border-radius: 16px; background: color-mix(in srgb, var(--warn) 8%, white); padding: 0.8rem 0.95rem; }
 .scope-gate strong { color: var(--warn); }
 .scope-gate span { color: var(--ink); line-height: 1.55; }
@@ -211,6 +217,7 @@ blockquote { margin: 0.75rem 0; border-left: 4px solid var(--accent-2); padding:
 .quiz-feedback.done { background: #eaf8f0; }
 .quiz-feedback.blocked { background: #fff3eb; }
 .quiz-feedback.review { background: #eef5fb; border: 1px solid color-mix(in srgb, var(--accent-2) 22%, var(--line)); }
+.quiz-validation { min-height: 1.2em; color: var(--bad); font-size: 0.86rem; font-weight: 700; }
 .wrong-note-panel article, .mistake-card { border: 1px solid var(--line); border-radius: 14px; padding: 0.75rem; background: white; margin-bottom: 0.6rem; }
 .mistake-review { display: grid; gap: 0.6rem; max-height: min(70vh, 680px); overflow: auto; }
 .resource-list { display: grid; gap: 0.45rem; }

@@ -1,4 +1,8 @@
 objective: alignment vs capability를 구분하고 refusal vs over-refusal, harmlessness and robustness, behavioral eval slice analysis, policy vs system-level safety를 deterministic toy behavior eval로 관찰한다.
+fidelity: concept-toy
+difficulty: advanced
+estimated_minutes: 120
+compute: cpu
 status: runnable
 prereqs:
   - post-training 단계(SFT, preference optimization, RLHF) 큰 그림 이해

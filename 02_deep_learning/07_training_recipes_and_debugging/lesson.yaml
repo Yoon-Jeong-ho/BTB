@@ -1,4 +1,8 @@
 objective: learning rate, batch size, weight decay, scheduler가 tiny supervised 학습 곡선에 남기는 흔적을 읽고, overfit/underfit/divergence/data bug를 sanity check로 빠르게 분류하는 습관을 만든다.
+fidelity: framework-toy
+difficulty: intermediate
+estimated_minutes: 120
+compute: cpu
 status: runnable
 prereqs:
   - loss / metric / gradient 역할 구분

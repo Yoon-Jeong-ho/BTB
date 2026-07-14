@@ -147,6 +147,20 @@ class TensorParallelUnitContractTest(unittest.TestCase):
         self.assertIn("Tensor parallelism is an intra-layer split", stable)
         self.assertEqual(observed, observed_json)
 
+        report = subprocess.run(
+            [sys.executable, "scripts/build_lesson_report.py", "--unit", str(UNIT.relative_to(ROOT))],
+            cwd=ROOT,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=False,
+        )
+        self.assertEqual(0, report.returncode, report.stdout + report.stderr)
+        summary = (ARTIFACTS / "summary.md").read_text(encoding="utf-8")
+        self.assertIn("scratch_metrics.json", summary)
+        self.assertIn("framework_metrics.json", summary)
+        self.assertIn("analysis_observed.json", summary)
+
     def _run_json(self, script: Path) -> dict:
         completed = subprocess.run(
             [sys.executable, str(script)],

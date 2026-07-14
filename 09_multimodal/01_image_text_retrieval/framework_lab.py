@@ -1,10 +1,17 @@
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 
 import torch
 import torch.nn.functional as F
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from shared.device_runtime import resolve_torch_device
 
 UNIT_ROOT = Path(__file__).resolve().parent
 ARTIFACT_DIR = UNIT_ROOT / 'artifacts' / 'framework-manual'
@@ -103,7 +110,7 @@ class TinyDualEncoder(torch.nn.Module):
 
 def run() -> None:
     torch.manual_seed(7)
-    device = torch.device('cpu')
+    device = resolve_torch_device()
 
     image_inputs, text_inputs = build_toy_inputs()
     image_inputs = image_inputs.to(device)

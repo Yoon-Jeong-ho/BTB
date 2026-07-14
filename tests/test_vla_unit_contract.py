@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -40,7 +41,7 @@ class VLAUnitContractTest(unittest.TestCase):
             if directory.exists():
                 shutil.rmtree(directory)
 
-    def _run(self, relative_path: str) -> subprocess.CompletedProcess[str]:
+    def _run(self, relative_path: str, *, env: dict[str, str] | None = None) -> subprocess.CompletedProcess[str]:
         return subprocess.run(
             [sys.executable, relative_path],
             cwd=ROOT,
@@ -48,6 +49,7 @@ class VLAUnitContractTest(unittest.TestCase):
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             check=False,
+            env=env,
         )
 
     def _run_json(self, relative_path: str) -> dict[str, object]:
@@ -96,6 +98,17 @@ class VLAUnitContractTest(unittest.TestCase):
         error_text = result.stdout + result.stderr
         self.assertIn("필수 VLA metrics 파일이 없습니다", error_text)
         self.assertIn("먼저 scratch_lab.py와 framework_lab.py를 실행하세요", error_text)
+
+    def test_framework_rejects_unknown_btb_device(self) -> None:
+        env = {**os.environ, "BTB_DEVICE": "invalid"}
+
+        result = self._run(
+            "10_vla/01_vision_language_action_grounding/framework_lab.py",
+            env=env,
+        )
+
+        self.assertNotEqual(0, result.returncode)
+        self.assertIn("auto, cpu, or cuda", result.stdout + result.stderr)
 
     def test_labs_and_analysis_generate_expected_outputs(self) -> None:
         scratch = self._run_json("10_vla/01_vision_language_action_grounding/scratch_lab.py")

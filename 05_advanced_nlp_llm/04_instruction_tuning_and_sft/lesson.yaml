@@ -1,4 +1,8 @@
 objective: "instruction format, supervised fine-tuning, input-output template, system/user/assistant role framing을 runnable toy SFT로 관찰하고 imitation vs helpfulness tradeoff와 preference optimization 필요성을 이해한다."
+fidelity: gpu-capable
+difficulty: advanced
+estimated_minutes: 150
+compute: cpu-or-cuda
 status: runnable
 prereqs:
   - causal LM과 next-token loss 기본 감각

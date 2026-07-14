@@ -1,4 +1,8 @@
 objective: data parallel, tensor parallel, pipeline parallel, FSDP/state sharding을 한 장의 topology 설계 문제로 묶어 보고, 모델 규모·메모리 병목·통신 경로·하드웨어 링크 구조를 기준으로 hybrid parallel 구성을 선택하는 감각을 CPU-safe deterministic simulation으로 만든다.
+fidelity: concept-toy
+difficulty: advanced
+estimated_minutes: 150
+compute: cpu
 unit: 08_hybrid_parallel_topologies
 track: 06_training_systems
 status: runnable
@@ -47,11 +51,11 @@ required_outputs:
   - theory note
   - prerequisite checklist
   - lesson metadata
-  - scratch hybrid topology metrics json
-  - scratch hybrid topology SVG
-  - framework deterministic topology scoring metrics json
+  - artifacts/scratch_metrics.json
+  - artifacts/hybrid_topology_mesh.svg
+  - artifacts/framework_metrics.json
   - stable analysis markdown
-  - observed analysis json
+  - artifacts/analysis_observed.json
   - reflection worksheet
 analysis_questions:
   - hybrid parallel topology는 왜 여러 parallelism 옵션의 단순 조합이 아니라 모델-하드웨어 배치 설계 문제로 봐야 하는가?

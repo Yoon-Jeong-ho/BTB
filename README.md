@@ -24,13 +24,13 @@
 10. [09_multimodal](09_multimodal/README.md): retrieval, captioning, VQA를 중심으로 multimodal applied track을 실습한다.
 11. [10_vla](10_vla/README.md): vision-language-action grounding, action token, safety gate를 통해 VLA 입구를 만든다.
 
-무기초에서 LLM/RLHF/Multimodal/VLA까지 빠르게 올라가는 루트에서는 `06_training_systems`와 `07_frontier_labs`를 나중 선택 구간으로 미뤄도 된다. 먼저 `00→05`로 언어 모델의 이론·코드·실험 습관을 만들고, `08_multimodal_bridge -> 09_multimodal -> 10_vla`로 넘어간 뒤, 큰 GPU 실험·분산 운영·논문 재현이 필요해질 때 `06_training_systems`와 `07_frontier_labs`를 optional capstone sandbox로 되돌아본다. `10_vla/01_vision_language_action_grounding`은 실제 로봇 제어 전체가 아니라 VLA grounding entry point이므로, 행동 토큰과 safety gate의 최소 감각을 잡는 입구로 읽는다.
+무기초에서 LLM/RLHF/Multimodal/VLA까지 빠르게 올라가는 루트에서는 `06_training_systems`와 `07_frontier_labs`를 **선택형 사이드카**로 두고 나중으로 미뤄도 된다. 폴더 번호와 canonical 전체 순서는 바꾸지 않는다. 먼저 `00→05`로 언어 모델의 이론·코드·실험 습관을 만들고, `08_multimodal_bridge -> 09_multimodal -> 10_vla`로 넘어간 뒤, 큰 GPU 실험·분산 운영·논문 재현이 필요해질 때 `06_training_systems`와 `07_frontier_labs`를 optional capstone sandbox로 되돌아본다. `10_vla/01_vision_language_action_grounding`은 실제 로봇 제어 전체가 아니라 VLA grounding entry point이므로, 행동 토큰과 safety gate의 최소 감각을 잡는 입구로 읽는다.
 
 현재 `docs/curriculum_status.json`에 선언된 모든 unit은 `runnable` 상태다. 그래도 실행 전에는 manifest와 각 track README의 status table을 함께 확인해, 어떤 산출물과 분석 질문을 남겨야 하는지 먼저 읽는 것을 원칙으로 한다.
 
 현재 경로 기준으로 `03_nlp_bridge -> 04_nlp`, `08_multimodal_bridge -> 09_multimodal`이 bridge/applied 흐름을 담당한다. 과거 경로에서 현재 경로로 바뀐 자세한 대응표는 [docs/03_track_migration_map.md](docs/03_track_migration_map.md)에서만 historical reference로 다룬다.
 
-전체 프로그램 개요는 [docs/00_program_map.md](docs/00_program_map.md), 추천 학습 동선은 [docs/02_study_guide.md](docs/02_study_guide.md), 경로 변경 안내는 [docs/03_track_migration_map.md](docs/03_track_migration_map.md), 실험 운영 규칙은 [docs/01_experiment_playbook.md](docs/01_experiment_playbook.md)에 정리했다.
+시작 전 준비도는 [docs/00_learner_preflight.md](docs/00_learner_preflight.md), 전체 프로그램 개요는 [docs/00_program_map.md](docs/00_program_map.md), 추천 학습 동선은 [docs/02_study_guide.md](docs/02_study_guide.md), 경로 변경 안내는 [docs/03_track_migration_map.md](docs/03_track_migration_map.md), 실험 운영 규칙은 [docs/01_experiment_playbook.md](docs/01_experiment_playbook.md)에 정리했다.
 
 ## 저장소 구조
 
@@ -86,12 +86,13 @@ Hugging Face 업로드와 Git LFS 관련 규칙은 루트의 `.gitignore`, `.git
 
 ## 시작 순서
 
-1. [docs/00_program_map.md](docs/00_program_map.md)로 전체 트랙의 역할 경계를 먼저 본다.
-2. [docs/02_study_guide.md](docs/02_study_guide.md)에서 자신에게 맞는 학습 동선을 고른다.
-3. [00_foundations/README.md](00_foundations/README.md)와 [01_ml/README.md](01_ml/README.md)로 공통 기초와 baseline 운영 습관을 먼저 다진다.
-4. 웹에서 전체 커리큘럼과 브라우저별 진행률, Python 실행 버튼까지 쓰려면 저장소 루트에서 `python scripts/study_server.py --port 8000 --device auto`를 실행하고 `http://localhost:8000/web/`을 연다. conda 환경은 `--conda-env btb`, CPU 고정은 `--device cpu`, 특정 GPU는 `--device cuda --gpu-index 0`을 붙인다. 문서만 읽는 읽기 전용 fallback은 `python -m http.server 8000`이다. 이 웹사이트는 문서 파일을 새 탭으로 직접 여는 방식이 아니라 “단원 안내/핵심 이론/준비 확인/실습 코드”를 사이트 안에서 렌더링해 보여주며, 학습 경로 선택·다음 단원 추천·실행 관찰 카드·산출물 뷰어·선택 함수 미리보기·미니 퀴즈·오답노트·자가 점검을 함께 제공한다. 자세한 내용은 `web/README.md`를 따른다. 화면 QA가 필요하면 Playwright 설치 후 `npm run qa:web`을 실행한다.
-5. 각 track에 들어가기 전에는 먼저 [docs/curriculum_status.json](docs/curriculum_status.json)에서 `runnable` 상태와 unit 목록을 확인하고, 해당 track README의 status table을 보조 설명으로 함께 읽는다.
-6. 실험을 돌릴 때는 [shared/templates/run_summary_template.md](shared/templates/run_summary_template.md) 형식으로 요약을 남기고, 다시 볼 가치가 있는 결과만 [reports/README.md](reports/README.md) 규칙에 맞게 승격한다.
+1. [docs/00_learner_preflight.md](docs/00_learner_preflight.md)에서 Python/CLI, 수학, metric, PyTorch/GPU 준비도를 확인한다.
+2. [docs/00_program_map.md](docs/00_program_map.md)로 전체 트랙의 역할 경계를 먼저 본다.
+3. [docs/02_study_guide.md](docs/02_study_guide.md)에서 자신에게 맞는 학습 동선을 고른다.
+4. [00_foundations/README.md](00_foundations/README.md)와 [01_ml/README.md](01_ml/README.md)로 공통 기초와 baseline 운영 습관을 먼저 다진다.
+5. 웹에서 전체 커리큘럼과 브라우저별 진행률, Python 실행 버튼까지 쓰려면 저장소 루트에서 `python scripts/study_server.py --port 8000 --device auto`를 실행하고 `http://localhost:8000/web/`을 연다. conda 환경은 `--conda-env btb`, CPU 고정은 `--device cpu`, 특정 GPU는 `--device cuda --gpu-index 0`을 붙인다. 문서만 읽는 읽기 전용 fallback은 `python -m http.server 8000`이다. 이 웹사이트는 문서 파일을 새 탭으로 직접 여는 방식이 아니라 “단원 안내/핵심 이론/준비 확인/실습 코드”를 사이트 안에서 렌더링해 보여주며, 학습 경로 선택·다음 단원 추천·실행 관찰 카드·산출물 뷰어·선택 함수 미리보기·미니 퀴즈·오답노트·자가 점검을 함께 제공한다. 자세한 내용은 `web/README.md`를 따른다. 화면 QA가 필요하면 Playwright 설치 후 `npm run qa:web`을 실행한다.
+6. 각 track에 들어가기 전에는 먼저 [docs/curriculum_status.json](docs/curriculum_status.json)에서 `runnable` 상태와 unit 목록을 확인하고, 해당 track README의 status table을 보조 설명으로 함께 읽는다.
+7. 실험을 돌릴 때는 [shared/templates/run_summary_template.md](shared/templates/run_summary_template.md) 형식으로 요약을 남기고, 다시 볼 가치가 있는 결과만 [reports/README.md](reports/README.md) 규칙에 맞게 승격한다.
 
 ## 참고 자료
 

@@ -1,4 +1,8 @@
 objective: chosen/rejected pair와 desirable/undesirable label을 이용해 DPO, ORPO, KTO가 full RL loop 없이 policy log-prob margin을 어떻게 움직이는지 이해한다.
+fidelity: concept-toy
+difficulty: advanced
+estimated_minutes: 120
+compute: cpu
 status: runnable
 prereqs:
   - supervised fine-tuning(SFT) 기본 감각

@@ -157,6 +157,7 @@ def run_stage(device: str) -> dict[str, Any]:
         'models': list(results.keys()),
     })
     json_dump(paths['artifact_dir'] / 'metrics.json', {
+        'device': device,
         'primary_metric': PRIMARY_METRIC,
         'best_model': best_name,
         'models': {name: {**res.metrics, 'fit_time_sec': res.fit_time_sec, 'predict_time_sec': res.predict_time_sec, 'peak_rss_mb': res.peak_rss_mb, **(res.extras or {})} for name, res in results.items()},

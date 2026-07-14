@@ -1,4 +1,8 @@
 objective: 작은 한국어 독해 예제로 heuristic span extraction baseline과 tiny PyTorch QA-style model을 비교하며 span extraction과 no-answer 판단의 첫 applied NLP 감각을 만든다.
+fidelity: framework-toy
+difficulty: intermediate
+estimated_minutes: 135
+compute: cpu
 prereqs:
   - 기본 Python 자료구조 읽기
   - tokenization과 padding 기초

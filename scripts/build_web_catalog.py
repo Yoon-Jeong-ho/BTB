@@ -3,58 +3,17 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import sys
 from pathlib import Path
 from typing import Any
 
+SCRIPTS_DIR = str(Path(__file__).resolve().parent)
+if SCRIPTS_DIR not in sys.path:
+    sys.path.insert(0, SCRIPTS_DIR)
 
-LessonValue = str | list[str]
+from _lesson_metadata import LessonValue, load_lesson_metadata
+
 HEADING_RE = re.compile(r"^#\s+(.+?)\s*$", re.MULTILINE)
-
-
-def _parse_scalar(value: str) -> str:
-    if len(value) >= 2 and value[0] == value[-1] and value[0] in {'"', "'"}:
-        return value[1:-1]
-    return value
-
-
-def load_lesson_metadata(path: Path) -> dict[str, LessonValue]:
-    metadata: dict[str, LessonValue] = {}
-    current_key: str | None = None
-
-    for line_number, raw_line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
-        stripped = raw_line.strip()
-        if not stripped or stripped.startswith("#"):
-            continue
-
-        if raw_line.startswith("  - "):
-            if current_key is None:
-                raise ValueError(f"{path}:{line_number}: list item without a preceding key")
-            current_value = metadata.get(current_key)
-            if not isinstance(current_value, list):
-                raise ValueError(f"{path}:{line_number}: key '{current_key}' does not accept list items")
-            current_value.append(_parse_scalar(raw_line[4:].strip()))
-            continue
-
-        if raw_line.startswith(" "):
-            # Some lesson.yaml files contain a shallow nested mapping such as
-            # scripts:
-            #   scratch: scratch_lab.py
-            # The website only needs top-level scalar/list metadata, so nested
-            # mapping lines are deliberately ignored instead of making the
-            # catalog build fail.
-            continue
-
-        key, separator, value = raw_line.partition(":")
-        if separator != ":":
-            raise ValueError(f"{path}:{line_number}: expected 'key: value' format")
-
-        current_key = key.strip()
-        if not current_key:
-            raise ValueError(f"{path}:{line_number}: empty key is not allowed")
-        value = value.strip()
-        metadata[current_key] = [] if value == "" else _parse_scalar(value)
-
-    return metadata
 
 
 def _title_from_readme(path: Path, fallback_id: str) -> str:
@@ -84,6 +43,14 @@ def _as_list(value: LessonValue | None) -> list[str]:
     if isinstance(value, list):
         return [str(item) for item in value]
     return [str(value)]
+
+
+def _as_positive_int(value: LessonValue | None) -> int:
+    try:
+        number = int(str(value))
+    except (TypeError, ValueError):
+        return 0
+    return number if number > 0 else 0
 
 
 def _existing_checkpoints(unit_path: Path) -> list[str]:
@@ -139,6 +106,8 @@ def _unit_resources(unit_path: Path) -> list[dict[str, str]]:
         ("PREREQS.md", "PREREQS", "PREREQS"),
         ("scratch_lab.py", "scratch_lab.py", "scratch lab"),
         ("framework_lab.py", "framework_lab.py", "framework lab"),
+        # Optional sidecar: expose it without making it part of mandatory mastery checkpoints.
+        ("torchrun_lab.py", "torchrun_lab.py", ""),
         ("analysis.py", "analysis.py", "analysis script"),
         ("analysis.md", "analysis.md", "analysis note"),
         ("reflection.md", "reflection.md", "reflection"),
@@ -185,6 +154,10 @@ def _unit_entry(root: Path, track_id: str, unit_id: str, status: str) -> dict[st
         "key_terms": _as_list(metadata.get("key_terms")),
         "required_outputs": required_outputs,
         "analysis_questions": _as_list(metadata.get("analysis_questions")),
+        "fidelity": str(metadata.get("fidelity", "")),
+        "difficulty": str(metadata.get("difficulty", "")),
+        "estimated_minutes": _as_positive_int(metadata.get("estimated_minutes")),
+        "compute": str(metadata.get("compute", "")),
         "resources": resources,
         "checkpoints": _existing_checkpoints(unit_path),
         "cpu_safe": str(metadata.get("cpu_safe", "")).lower() == "true",

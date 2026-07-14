@@ -1,9 +1,18 @@
 from __future__ import annotations
 
 import json
-import math
 import re
+import sys
 from pathlib import Path
+
+import torch
+import torch.nn.functional as F
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from shared.device_runtime import resolve_torch_device
 
 UNIT_ROOT = Path(__file__).resolve().parent
 OUT_DIR = UNIT_ROOT / 'artifacts' / 'framework-manual'
@@ -100,25 +109,44 @@ def _make_batch() -> dict[str, object]:
     }
 
 
-def _training_curve(vocab_size: int, assistant_tokens: int) -> list[dict[str, float | int]]:
-    initial_loss = math.log(vocab_size)
-    curve = []
-    for epoch in range(6):
-        assistant_loss = initial_loss * math.exp(-0.22 * epoch) + 0.018 * (assistant_tokens / 100)
-        template_adherence = min(0.96, 0.43 + 0.095 * epoch)
-        helpfulness_proxy = min(0.81, 0.57 + 0.041 * epoch)
-        curve.append(
-            {
-                'epoch': epoch,
-                'assistant_loss': round(assistant_loss, 6),
-                'template_adherence': round(template_adherence, 6),
-                'helpfulness_proxy': round(helpfulness_proxy, 6),
-            }
-        )
-    return curve
+class TinyNextTokenModel(torch.nn.Module):
+    def __init__(self, vocab_size: int, hidden_size: int = 48) -> None:
+        super().__init__()
+        self.embedding = torch.nn.Embedding(vocab_size, hidden_size)
+        self.output = torch.nn.Linear(hidden_size, vocab_size)
+
+    def forward(self, input_ids: torch.Tensor) -> torch.Tensor:
+        return self.output(torch.tanh(self.embedding(input_ids)))
+
+
+def _assistant_loss(model: TinyNextTokenModel, input_ids: torch.Tensor, labels: torch.Tensor) -> torch.Tensor:
+    logits = model(input_ids[:, :-1])
+    shifted_labels = labels[:, 1:]
+    return F.cross_entropy(
+        logits.reshape(-1, logits.shape[-1]),
+        shifted_labels.reshape(-1),
+        ignore_index=IGNORED_LABEL,
+    )
+
+
+def _curve_row(epoch: int, loss: float, initial_loss: float) -> dict[str, float | int]:
+    learned_share = max(0.0, min(0.99, 1.0 - (loss / initial_loss)))
+    helpfulness_proxy = learned_share * 0.8
+    return {
+        'epoch': epoch,
+        'assistant_loss': round(loss, 6),
+        'template_adherence': round(learned_share, 6),
+        'helpfulness_proxy': round(helpfulness_proxy, 6),
+    }
 
 
 def run() -> None:
+    torch.set_num_threads(1)
+    torch.manual_seed(7)
+    device = resolve_torch_device()
+    if device.type == 'cuda':
+        torch.cuda.manual_seed_all(7)
+
     batch = _make_batch()
     input_ids = batch['input_ids']
     labels = batch['labels']
@@ -127,11 +155,32 @@ def run() -> None:
     max_len = int(batch['max_len'])
     prompt_count = int(batch['prompt_count'])
     assistant_count = int(batch['assistant_count'])
-    curve = _training_curve(len(vocab), assistant_count)
+    input_tensor = torch.tensor(input_ids, dtype=torch.long, device=device)
+    label_tensor = torch.tensor(labels, dtype=torch.long, device=device)
+    model = TinyNextTokenModel(len(vocab)).to(device)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=0.08, weight_decay=0.0)
+
+    with torch.no_grad():
+        initial_loss = float(_assistant_loss(model, input_tensor, label_tensor).detach().cpu())
+    curve = [_curve_row(0, initial_loss, initial_loss)]
+    for epoch in range(1, 61):
+        optimizer.zero_grad()
+        loss = _assistant_loss(model, input_tensor, label_tensor)
+        loss.backward()
+        optimizer.step()
+        if epoch % 10 == 0:
+            curve.append(_curve_row(epoch, float(loss.detach().cpu()), initial_loss))
+
+    with torch.no_grad():
+        final_loss = float(_assistant_loss(model, input_tensor, label_tensor).detach().cpu())
+    curve[-1] = _curve_row(60, final_loss, initial_loss)
     final = curve[-1]
     metrics = {
-        'device': 'cpu',
-        'framework': 'deterministic_numeric_sft',
+        'device': device.type,
+        'framework': 'torch_tiny_sft',
+        'parameter_count': sum(parameter.numel() for parameter in model.parameters()),
+        'initial_loss': round(initial_loss, 6),
+        'final_loss': round(final_loss, 6),
         'dataset_size': len(DATASET),
         'vocab_size': len(vocab),
         'max_sequence_length': max_len,
@@ -159,7 +208,7 @@ def run() -> None:
             'format_imitation_final': final['template_adherence'],
             'helpfulness_proxy_final': final['helpfulness_proxy'],
             'over_imitation_risk': round(float(final['template_adherence']) - float(final['helpfulness_proxy']), 6),
-            'note': 'Numeric toy SFT improves template imitation faster than helpfulness proxy.',
+            'note': 'Tiny Torch SFT optimizes assistant-only next-token loss; helpfulness remains a separate proxy.',
         },
         'next_step': {
             'why_sft_is_not_enough': 'preference_optimization_needed',

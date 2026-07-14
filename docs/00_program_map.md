@@ -18,7 +18,11 @@ BTB는 `00_foundations -> 01_ml -> 02_deep_learning -> 03_nlp_bridge -> 04_nlp -
 10. `09_multimodal` — retrieval, captioning, VQA 중심의 multimodal applied track이다.
 11. `10_vla` — vision-language-action grounding, action token, safety gate로 VLA 입구를 여는 track이다.
 
-초심자 압축 루트에서는 `06_training_systems`와 `07_frontier_labs`를 나중 선택 구간으로 미뤄도 된다. `06`은 GPU/분산 운영이 필요해질 때, `07`은 앞선 실험을 묶는 optional capstone sandbox가 필요할 때 되돌아오는 고급 구간이다.
+초심자 core path는 `00_foundations -> 01_ml -> 02_deep_learning -> 03_nlp_bridge -> 04_nlp -> 05_advanced_nlp_llm -> 08_multimodal_bridge -> 09_multimodal -> 10_vla`로 읽는다. `06_training_systems`와 `07_frontier_labs`는 각각 GPU/분산 운영과 연구 재현이 실제로 필요할 때 core 옆에서 선택하는 **선택형 사이드카**다. 폴더 번호와 canonical 전체 순서는 기존 `00→10` 그대로 유지한다.
+
+## 시작 전 준비도
+
+[docs/00_learner_preflight.md](00_learner_preflight.md)에서 Python/CLI, 수학, 확률/metric, PyTorch/GPU를 확인한다. 진단은 학습을 차단하지 않으며, 약한 영역에 해당하는 Foundations/ML/DL 시작점을 고르는 데만 사용한다.
 
 ## 왜 이 순서인가
 
@@ -49,11 +53,12 @@ BTB는 `00_foundations -> 01_ml -> 02_deep_learning -> 03_nlp_bridge -> 04_nlp -
 
 ## 추천 진행 방식
 
-1. 먼저 [docs/02_study_guide.md](02_study_guide.md)에서 표준 1-pass, 딥러닝 코어 우선, NLP/LLM 압축 루트 중 하나를 고른다.
-2. `00_foundations -> 01_ml`을 끝내며 공통 실험 습관을 만든다.
-3. 각 stage에서는 가장 쉬운 dataset/baseline으로 빠르게 1차 실험을 만든다.
-4. 숫자만 저장하지 말고 figure, failure case, summary를 반드시 같이 남긴다.
-5. 같은 실수를 반복하지 않도록 `summary.md`와 회고를 누적한다.
+1. 먼저 [docs/00_learner_preflight.md](00_learner_preflight.md)에서 준비도를 확인한다.
+2. [docs/02_study_guide.md](02_study_guide.md)에서 표준 1-pass, 딥러닝 코어 우선, NLP/LLM 압축 루트 중 하나를 고른다.
+3. `00_foundations -> 01_ml`을 끝내며 공통 실험 습관을 만든다.
+4. 각 stage에서는 가장 쉬운 dataset/baseline으로 빠르게 1차 실험을 만든다.
+5. 숫자만 저장하지 말고 figure, failure case, summary를 반드시 같이 남긴다.
+6. 같은 실수를 반복하지 않도록 `summary.md`와 회고를 누적한다.
 
 ## 언어 정책
 

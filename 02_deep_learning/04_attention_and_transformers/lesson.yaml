@@ -1,4 +1,8 @@
 objective: attention을 sequence mixing 관점에서 읽고, row sum, multi-head intuition, encoder/decoder 구분, recurrent bottleneck relief를 runnable toy 실험으로 연결한다.
+fidelity: framework-toy
+difficulty: intermediate
+estimated_minutes: 135
+compute: cpu
 status: runnable
 prereqs:
   - batch/seq/dim shape 읽기

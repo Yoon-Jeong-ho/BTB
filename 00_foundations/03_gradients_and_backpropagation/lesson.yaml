@@ -1,4 +1,8 @@
 objective: gradient가 loss 변화 방향을 어떻게 나타내고, backpropagation이 그 신호를 파라미터까지 어떻게 전달하는지 이해한다.
+fidelity: framework-toy
+difficulty: beginner
+estimated_minutes: 90
+compute: cpu
 prereqs:
   - tensor shape와 batch 차원 읽기
   - activation과 loss 구분

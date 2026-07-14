@@ -1,4 +1,8 @@
 objective: retrieval로 외부 근거를 붙인 생성 시스템을 retriever-reader / retriever-generator, retrieval grounding, context injection, citation/evidence expectation, failure modes, eval harness metrics 관점에서 실행 가능한 toy RAG로 이해한다.
+fidelity: concept-toy
+difficulty: advanced
+estimated_minutes: 120
+compute: cpu
 status: runnable
 prereqs:
   - embedding similarity / top-k retrieval / reranking 기초

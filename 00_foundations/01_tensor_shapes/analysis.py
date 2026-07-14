@@ -6,7 +6,7 @@ from pathlib import Path
 UNIT_ROOT = Path(__file__).resolve().parent
 SCRATCH = UNIT_ROOT / 'artifacts' / 'scratch-manual' / 'metrics.json'
 FRAMEWORK = UNIT_ROOT / 'artifacts' / 'framework-manual' / 'metrics.json'
-ANALYSIS_PATH = UNIT_ROOT / 'analysis.md'
+ANALYSIS_PATH = UNIT_ROOT / 'artifacts' / 'analysis-manual' / 'latest_report.md'
 
 
 def _load_json(path: Path) -> dict[str, object]:
@@ -52,7 +52,8 @@ def run() -> None:
 ## 관련 이론
 - [THEORY.md](./THEORY.md): shape, broadcasting, batch dimension 핵심 개념을 다시 확인한다.
 '''
-    ANALYSIS_PATH.write_text(content, encoding='utf-8')
+    ANALYSIS_PATH.parent.mkdir(parents=True, exist_ok=True)
+    ANALYSIS_PATH.write_text(content.replace('[THEORY.md](./THEORY.md)', '[THEORY.md](../../THEORY.md)'), encoding='utf-8')
     print(content)
 
 

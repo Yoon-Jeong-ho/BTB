@@ -1,4 +1,8 @@
 objective: 이미지 임베딩과 텍스트 임베딩을 같은 공간에 놓았을 때 contrastive alignment가 무엇을 최적화하는지 한국어 예제로 이해한다.
+fidelity: framework-toy
+difficulty: intermediate
+estimated_minutes: 90
+compute: cpu
 prereqs:
   - cosine similarity와 dot product의 관계
   - softmax와 cross entropy 기본 개념

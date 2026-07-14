@@ -1,4 +1,8 @@
 objective: ZeRO가 data parallel 중복 상태를 단계별로 shard해 per-rank memory를 줄이는 방식을 toy memory accounting으로 이해한다.
+fidelity: concept-toy
+difficulty: advanced
+estimated_minutes: 90
+compute: cpu
 status: runnable
 prereqs:
   - DDP와 data parallel 기초

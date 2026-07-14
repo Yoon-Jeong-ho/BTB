@@ -31,12 +31,17 @@
           "required_outputs": [
             "scratch metrics json",
             "framework metrics json",
-            "analysis markdown"
+            "stable analysis markdown",
+            "observed analysis report"
           ],
           "analysis_questions": [
             "어떤 연산에서 shape mismatch가 났는가?",
             "broadcasting이 편하지만 위험한 이유는 무엇인가?"
           ],
+          "fidelity": "framework-toy",
+          "difficulty": "beginner",
+          "estimated_minutes": 60,
+          "compute": "cpu",
           "resources": [
             {
               "id": "README-md",
@@ -151,6 +156,10 @@
             "BCE와 cross entropy는 각각 어떤 target 형식을 기대하는가?",
             "logits를 바로 loss에 넣는 이유를 실행 결과와 함께 설명할 수 있는가?"
           ],
+          "fidelity": "framework-toy",
+          "difficulty": "beginner",
+          "estimated_minutes": 75,
+          "compute": "cpu",
           "resources": [
             {
               "id": "README-md",
@@ -264,6 +273,10 @@
             "backpropagation에서 어떤 local gradient들이 곱해졌는가?",
             "한 번의 parameter update 뒤 loss는 어떻게 바뀌었는가?"
           ],
+          "fidelity": "framework-toy",
+          "difficulty": "beginner",
+          "estimated_minutes": 90,
+          "compute": "cpu",
           "resources": [
             {
               "id": "README-md",
@@ -378,6 +391,10 @@
             "weight decay는 loss 감소와 weight norm 사이 균형을 어떻게 바꿨는가?",
             "LayerNorm과 dropout은 tiny tensor에서도 어떤 규칙성을 보여주는가?"
           ],
+          "fidelity": "framework-toy",
+          "difficulty": "intermediate",
+          "estimated_minutes": 90,
+          "compute": "cpu",
           "resources": [
             {
               "id": "README-md",
@@ -481,13 +498,18 @@
           "required_outputs": [
             "scratch metrics json",
             "framework metrics json",
-            "analysis markdown"
+            "stable analysis markdown",
+            "observed analysis report"
           ],
           "analysis_questions": [
             "어떤 항목이 batch size와 함께 증가했는가?",
             "training과 inference의 차이는 무엇인가?",
             "fp32와 fp16 추정 메모리 차이는 얼마나 되는가?"
           ],
+          "fidelity": "gpu-capable",
+          "difficulty": "intermediate",
+          "estimated_minutes": 75,
+          "compute": "cpu-or-cuda",
           "resources": [
             {
               "id": "README-md",
@@ -612,6 +634,10 @@
             "categorical feature 처리가 실패하면 어떤 class나 slice에서 오류가 늘어나는가?",
             "primary metric 하나만 볼 때 놓치는 실패 사례는 무엇인가?"
           ],
+          "fidelity": "real-data",
+          "difficulty": "beginner",
+          "estimated_minutes": 120,
+          "compute": "cpu-or-cuda",
           "resources": [
             {
               "id": "README-md",
@@ -708,6 +734,10 @@
             "평균 baseline 대비 모델이 개선됐다고 말하려면 어떤 residual evidence가 필요한가?",
             "target scale이 바뀌면 metric 해석은 어떻게 달라지는가?"
           ],
+          "fidelity": "real-data",
+          "difficulty": "beginner",
+          "estimated_minutes": 120,
+          "compute": "cpu-or-cuda",
           "resources": [
             {
               "id": "README-md",
@@ -786,6 +816,10 @@
             "feature importance가 데이터 leakage나 spurious correlation을 의심하게 만드는 경우는 무엇인가?",
             "최종 모델 선택 근거를 metric, 안정성, 해석 가능성으로 나누면 어떻게 정리되는가?"
           ],
+          "fidelity": "real-data",
+          "difficulty": "intermediate",
+          "estimated_minutes": 150,
+          "compute": "cpu-or-cuda",
           "resources": [
             {
               "id": "README-md",
@@ -864,6 +898,10 @@
             "throughput을 높일 때 reproducibility나 data ordering이 깨질 수 있는 지점은 어디인가?",
             "작은 데이터 baseline에서 확인한 계약을 큰 입력에서도 유지하려면 어떤 로그가 필요한가?"
           ],
+          "fidelity": "real-data",
+          "difficulty": "intermediate",
+          "estimated_minutes": 180,
+          "compute": "cpu-or-cuda",
           "resources": [
             {
               "id": "README-md",
@@ -956,6 +994,10 @@
             "single neuron의 XOR 실패를 optimizer 문제가 아니라 표현력 한계라고 설명하려면 어떤 관측이 필요한가?",
             "tiny MLP가 같은 toy data에서 개선을 보일 때, hidden layer와 nonlinearity의 역할을 어떻게 말로 설명할 수 있는가?"
           ],
+          "fidelity": "framework-toy",
+          "difficulty": "beginner",
+          "estimated_minutes": 90,
+          "compute": "cpu",
           "resources": [
             {
               "id": "README-md",
@@ -1076,6 +1118,10 @@
             "입력 channel과 출력 feature map 수는 각각 무엇을 의미하는가?",
             "toy image classification baseline에서 pooled feature map 평균을 class score처럼 읽을 수 있는 이유는 무엇인가?"
           ],
+          "fidelity": "framework-toy",
+          "difficulty": "intermediate",
+          "estimated_minutes": 120,
+          "compute": "cpu",
           "resources": [
             {
               "id": "README-md",
@@ -1198,6 +1244,10 @@
             "teacher forcing은 왜 유용하고, inference에서는 어떤 mismatch를 남기는가?",
             "recurrence의 병목을 이해하면 transformer attention을 어떻게 더 자연스럽게 받아들일 수 있는가?"
           ],
+          "fidelity": "framework-toy",
+          "difficulty": "intermediate",
+          "estimated_minutes": 120,
+          "compute": "cpu",
           "resources": [
             {
               "id": "README-md",
@@ -1319,6 +1369,10 @@
             "encoder와 decoder는 각각 어떤 정보 접근 규칙을 가지는가?",
             "transformer는 recurrent bottleneck을 어떤 식으로 줄이고, 대신 어떤 길이 비용을 남기는가?"
           ],
+          "fidelity": "framework-toy",
+          "difficulty": "intermediate",
+          "estimated_minutes": 135,
+          "compute": "cpu",
           "resources": [
             {
               "id": "README-md",
@@ -1440,6 +1494,10 @@
             "denoising autoencoder와 compression-oriented autoencoder는 같은 구조를 어떻게 다르게 활용하는가?",
             "latent representation이 downstream retrieval, clustering, generative modeling에 도움이 되려면 무엇을 더 관찰해야 하는가?"
           ],
+          "fidelity": "framework-toy",
+          "difficulty": "intermediate",
+          "estimated_minutes": 120,
+          "compute": "cpu",
           "resources": [
             {
               "id": "README-md",
@@ -1562,6 +1620,10 @@
             "GAN adversarial loss가 그럴듯해 보여도 mode collapse를 놓칠 수 있는 이유는 무엇인가?",
             "sample realism, coverage, stability 세 축으로 VAE와 GAN을 어떻게 비교할 수 있는가?"
           ],
+          "fidelity": "framework-toy",
+          "difficulty": "intermediate",
+          "estimated_minutes": 150,
+          "compute": "cpu",
           "resources": [
             {
               "id": "README-md",
@@ -1682,6 +1744,10 @@
             "shifted-label bug와 overfit는 로그에서 어떻게 다르게 보였는가?",
             "single-batch overfit sanity check는 왜 디버깅 첫 단계로 유용한가?"
           ],
+          "fidelity": "framework-toy",
+          "difficulty": "intermediate",
+          "estimated_minutes": 120,
+          "compute": "cpu",
           "resources": [
             {
               "id": "README-md",
@@ -1803,6 +1869,10 @@
             "[UNK]가 생기면 어떤 정보 손실이 생기는가?",
             "embedding lookup 이후 shape가 어떻게 바뀌며, padding mask는 어디에 쓰이는가?"
           ],
+          "fidelity": "framework-toy",
+          "difficulty": "intermediate",
+          "estimated_minutes": 90,
+          "compute": "cpu",
           "resources": [
             {
               "id": "README-md",
@@ -1918,6 +1988,10 @@
             "padding mask와 causal mask는 각각 무엇을 막는가?",
             "transformer block 안에서 shape는 유지되는데 표현은 어떻게 달라지는가?"
           ],
+          "fidelity": "framework-toy",
+          "difficulty": "intermediate",
+          "estimated_minutes": 120,
+          "compute": "cpu",
           "resources": [
             {
               "id": "README-md",
@@ -2042,6 +2116,10 @@
             "accuracy와 macro F1을 같이 볼 때 어떤 해석 차이가 생기는가?",
             "tiny PyTorch classifier는 bag-of-words보다 무엇을 더 표현하려고 하는가?"
           ],
+          "fidelity": "framework-toy",
+          "difficulty": "intermediate",
+          "estimated_minutes": 120,
+          "compute": "cpu",
           "resources": [
             {
               "id": "README-md",
@@ -2157,6 +2235,10 @@
             "token accuracy와 entity-level F1을 같이 보면 어떤 경계 오류가 드러나는가?",
             "tiny PyTorch sequence labeler는 scratch baseline보다 어떤 문맥 정보를 더 읽으려 하는가?"
           ],
+          "fidelity": "framework-toy",
+          "difficulty": "intermediate",
+          "estimated_minutes": 135,
+          "compute": "cpu",
           "resources": [
             {
               "id": "README-md",
@@ -2274,6 +2356,10 @@
             "no-answer threshold는 answerable / unanswerable 균형에 어떤 영향을 주는가?",
             "tiny PyTorch QA model이 개선되었다면 그 차이는 질문 조건부 표현 때문인가?"
           ],
+          "fidelity": "framework-toy",
+          "difficulty": "intermediate",
+          "estimated_minutes": 135,
+          "compute": "cpu",
           "resources": [
             {
               "id": "README-md",
@@ -2403,6 +2489,10 @@
             "span corruption에서 sentinel token은 어떤 bookkeeping 역할을 하는가?",
             "이 비교는 다음 단위의 tokenizer/data mixture와 later domain-adaptive pretraining을 어떤 질문으로 바라보게 만드는가?"
           ],
+          "fidelity": "framework-toy",
+          "difficulty": "intermediate",
+          "estimated_minutes": 90,
+          "compute": "cpu",
           "resources": [
             {
               "id": "README-md",
@@ -2527,6 +2617,10 @@
             "mixture 비율을 문서 기준이 아니라 token budget과 품질 가중치 기준으로 읽으면 어떤 판단이 달라지는가?",
             "특정 언어/도메인이 tokenizer와 mixture 설계에서 동시에 불리해질 수 있는 경로는 무엇인가?"
           ],
+          "fidelity": "concept-toy",
+          "difficulty": "intermediate",
+          "estimated_minutes": 120,
+          "compute": "cpu",
           "resources": [
             {
               "id": "README-md",
@@ -2653,6 +2747,10 @@
             "data selection에서 품질, 중복, 라이선스, contamination, 최신성은 왜 문서 수보다 먼저 검토돼야 하는가?",
             "stopping 시점은 in-domain loss, general retention, downstream probe를 함께 볼 때 어떻게 달라지는가?"
           ],
+          "fidelity": "framework-toy",
+          "difficulty": "intermediate",
+          "estimated_minutes": 150,
+          "compute": "cpu",
           "resources": [
             {
               "id": "README-md",
@@ -2782,6 +2880,10 @@
             "system message는 role framing 안에서 응답 톤과 제약을 어떻게 바꾸는가?",
             "imitation을 잘하는 것과 helpfulness가 높은 것은 어디서 갈라지며, 왜 preference optimization이 이어지는가?"
           ],
+          "fidelity": "gpu-capable",
+          "difficulty": "advanced",
+          "estimated_minutes": 150,
+          "compute": "cpu-or-cuda",
           "resources": [
             {
               "id": "README-md",
@@ -2913,6 +3015,10 @@
             "policy update without full RL로 개선된 offline margin이 실제 alignment eval tradeoff까지 해결했다는 뜻이 아닌 이유는 무엇인가?",
             "win rate, factuality, refusal balance, verbosity, style bias를 어떻게 분리해서 평가할 것인가?"
           ],
+          "fidelity": "concept-toy",
+          "difficulty": "advanced",
+          "estimated_minutes": 120,
+          "compute": "cpu",
           "resources": [
             {
               "id": "README-md",
@@ -3048,6 +3154,10 @@
             "reward hacking, verbosity inflation, over-refusal을 어떤 held-out eval slice로 관찰할 것인가?",
             "KL anchor가 없을 때 PPO-family policy update가 어떤 drift 위험을 키울 수 있는가?"
           ],
+          "fidelity": "concept-toy",
+          "difficulty": "advanced",
+          "estimated_minutes": 150,
+          "compute": "cpu",
           "resources": [
             {
               "id": "README-md",
@@ -3184,6 +3294,10 @@
             "retrieval metrics와 answer grounding metrics는 왜 따로 봐야 하며 offline/online metric split은 어디서 필요해지는가?",
             "evidence가 부족하거나 source가 충돌할 때 answer, abstain, ask-back 중 무엇을 어떻게 평가해야 하는가?"
           ],
+          "fidelity": "concept-toy",
+          "difficulty": "advanced",
+          "estimated_minutes": 120,
+          "compute": "cpu",
           "resources": [
             {
               "id": "README-md",
@@ -3319,6 +3433,10 @@
             "jailbreak-style prompt뿐 아니라 paraphrase와 noisy prompt를 robustness 평가에 넣어야 하는 이유는 무엇인가?",
             "policy vs system-level safety 관점에서 model policy와 system guardrail은 각각 어떤 안전 책임을 맡아야 하는가?"
           ],
+          "fidelity": "concept-toy",
+          "difficulty": "advanced",
+          "estimated_minutes": 120,
+          "compute": "cpu",
           "resources": [
             {
               "id": "README-md",
@@ -3412,7 +3530,7 @@
           "title": "01 Torchrun and DDP Basics",
           "path": "06_training_systems/01_torchrun_and_ddp_basics",
           "status": "runnable",
-          "objective": "torchrun이 만드는 rank/world-size 실행 계약과 DDP gradient averaging 직관을 CPU-safe simulation으로 이해한다.",
+          "objective": "CPU-safe simulation과 선택 2-process torchrun 실험으로 rank/world-size 계약과 DDP all-reduce를 이해한다.",
           "readme": "06_training_systems/01_torchrun_and_ddp_basics/README.md",
           "lesson": "06_training_systems/01_torchrun_and_ddp_basics/lesson.yaml",
           "prereqs": [
@@ -3427,7 +3545,9 @@
             "local rank",
             "world size",
             "all-reduce",
-            "gradient averaging"
+            "gradient averaging",
+            "process group",
+            "gloo backend"
           ],
           "required_outputs": [
             "scratch metrics json",
@@ -3441,6 +3561,10 @@
             "DDP는 무엇을 복제하고 무엇을 평균내는가?",
             "평균 gradient가 parameter update를 어떻게 바꾸는가?"
           ],
+          "fidelity": "framework-toy",
+          "difficulty": "advanced",
+          "estimated_minutes": 150,
+          "compute": "optional-multiprocess",
           "resources": [
             {
               "id": "README-md",
@@ -3481,6 +3605,14 @@
               "type": "code",
               "language": "python",
               "checkpoint": "framework lab"
+            },
+            {
+              "id": "torchrun-lab-py",
+              "label": "torchrun_lab.py",
+              "href": "06_training_systems/01_torchrun_and_ddp_basics/torchrun_lab.py",
+              "type": "code",
+              "language": "python",
+              "checkpoint": ""
             },
             {
               "id": "analysis-py",
@@ -3554,6 +3686,10 @@
             "`prepare()` 이후에도 사용자가 직접 이해해야 하는 것은 무엇인가?",
             "mixed precision과 backend complexity는 왜 별개로 봐야 하는가?"
           ],
+          "fidelity": "concept-toy",
+          "difficulty": "advanced",
+          "estimated_minutes": 90,
+          "compute": "cpu",
           "resources": [
             {
               "id": "README-md",
@@ -3667,6 +3803,10 @@
             "per-rank memory는 얼마나 줄어드는가?",
             "메모리 절약과 통신/복구 복잡도는 어떻게 trade-off를 이루는가?"
           ],
+          "fidelity": "concept-toy",
+          "difficulty": "advanced",
+          "estimated_minutes": 90,
+          "compute": "cpu",
           "resources": [
             {
               "id": "README-md",
@@ -3789,6 +3929,10 @@
             "full state dict와 sharded state dict는 save/load/resume/export 관점에서 어떤 서로 다른 운영 계약을 가지는가?",
             "이후 tensor parallelism이나 hybrid parallelism을 볼 때 FSDP가 해결하는 문제와 남겨 두는 문제는 무엇인가?"
           ],
+          "fidelity": "concept-toy",
+          "difficulty": "advanced",
+          "estimated_minutes": 120,
+          "compute": "cpu",
           "resources": [
             {
               "id": "README-md",
@@ -3908,11 +4052,11 @@
             "theory note",
             "prerequisite checklist",
             "lesson metadata",
-            "scratch metrics json",
-            "scratch tensor parallel SVG",
-            "framework simulation metrics json",
+            "artifacts/scratch_metrics.json",
+            "artifacts/tensor_parallelism_shards.svg",
+            "artifacts/framework_metrics.json",
             "stable analysis markdown",
-            "observed analysis json",
+            "artifacts/analysis_observed.json",
             "reflection worksheet"
           ],
           "analysis_questions": [
@@ -3923,6 +4067,10 @@
             "tensor parallelism은 메모리를 줄여 주는데도 왜 interconnect bandwidth와 latency에 민감한가?",
             "pipeline parallelism과 hybrid parallelism으로 넘어갈 때 tensor parallel은 어떤 독립 축으로 작동하는가?"
           ],
+          "fidelity": "concept-toy",
+          "difficulty": "advanced",
+          "estimated_minutes": 120,
+          "compute": "cpu",
           "resources": [
             {
               "id": "README-md",
@@ -4045,11 +4193,11 @@
             "theory note",
             "prerequisite checklist",
             "lesson metadata",
-            "scratch pipeline schedule metrics json",
-            "scratch pipeline schedule SVG",
-            "framework deterministic pipeline simulation metrics json",
+            "artifacts/scratch_metrics.json",
+            "artifacts/pipeline_schedule.svg",
+            "artifacts/framework_metrics.json",
             "stable analysis markdown",
-            "observed analysis json",
+            "artifacts/analysis_observed.json",
             "reflection worksheet"
           ],
           "analysis_questions": [
@@ -4060,6 +4208,10 @@
             "activation transfer와 partition boundary는 왜 단순 레이어 개수 균등 분할보다 더 중요한 설계 문제가 되는가?",
             "이후 data parallel + grad accumulation, hybrid parallel topologies와 연결할 때 pipeline 축을 어떻게 설명할 수 있는가?"
           ],
+          "fidelity": "concept-toy",
+          "difficulty": "advanced",
+          "estimated_minutes": 120,
+          "compute": "cpu",
           "resources": [
             {
               "id": "README-md",
@@ -4182,11 +4334,11 @@
             "theory note",
             "prerequisite checklist",
             "lesson metadata",
-            "scratch data-parallel accumulation metrics json",
-            "scratch cadence SVG",
-            "framework deterministic accumulation metrics json",
+            "artifacts/scratch_metrics.json",
+            "artifacts/data_parallel_grad_accumulation.svg",
+            "artifacts/framework_metrics.json",
             "stable analysis markdown",
-            "observed analysis json",
+            "artifacts/analysis_observed.json",
             "reflection worksheet"
           ],
           "analysis_questions": [
@@ -4197,6 +4349,10 @@
             "loss normalization, gradient clipping, scheduler step timing은 왜 accumulation boundary와 함께 봐야 하는가?",
             "later hybrid parallel topologies에서 data-parallel 축은 왜 batch budget과 optimizer-step cadence의 기준선으로 남는가?"
           ],
+          "fidelity": "concept-toy",
+          "difficulty": "advanced",
+          "estimated_minutes": 120,
+          "compute": "cpu",
           "resources": [
             {
               "id": "README-md",
@@ -4324,11 +4480,11 @@
             "theory note",
             "prerequisite checklist",
             "lesson metadata",
-            "scratch hybrid topology metrics json",
-            "scratch hybrid topology SVG",
-            "framework deterministic topology scoring metrics json",
+            "artifacts/scratch_metrics.json",
+            "artifacts/hybrid_topology_mesh.svg",
+            "artifacts/framework_metrics.json",
             "stable analysis markdown",
-            "observed analysis json",
+            "artifacts/analysis_observed.json",
             "reflection worksheet"
           ],
           "analysis_questions": [
@@ -4339,6 +4495,10 @@
             "memory fit, throughput, checkpoint portability, implementation complexity는 왜 동시에 최적화되기 어려운가?",
             "profiling과 failure recovery로 넘어갈 때 topology 설계가 어떤 로그 / metric / failure mode 차이를 남기는가?"
           ],
+          "fidelity": "concept-toy",
+          "difficulty": "advanced",
+          "estimated_minutes": 150,
+          "compute": "cpu",
           "resources": [
             {
               "id": "README-md",
@@ -4481,6 +4641,10 @@
             "retry와 recovery decision은 언제 안전하고, 언제 checkpoint quarantine이나 human escalation이 필요한가?",
             "이 단위의 observability / recoverability 감각이 이후 frontier labs의 paper reproduction과 capstone 운영에 어떻게 이어지는가?"
           ],
+          "fidelity": "concept-toy",
+          "difficulty": "advanced",
+          "estimated_minutes": 150,
+          "compute": "cpu",
           "resources": [
             {
               "id": "README-md",
@@ -4621,6 +4785,10 @@
             "reported result와 reproduced result가 다를 때 variance, preprocessing, evaluator, hardware 차이를 어떤 순서로 의심해야 하는가?",
             "mismatch hypothesis를 실패 핑계가 아니라 다음 실험 설계로 바꾸려면 어떤 artifact hygiene가 필요한가?"
           ],
+          "fidelity": "concept-toy",
+          "difficulty": "advanced",
+          "estimated_minutes": 120,
+          "compute": "cpu",
           "resources": [
             {
               "id": "README-md",
@@ -4758,6 +4926,10 @@
             "risk register는 어떤 관측 signal과 mitigation을 가져야 다음 실험으로 이어지는가?",
             "이 단위의 capstone contract가 다음 agentic training / eval loop 단위에서 어떤 triage 기준과 자동화 경계로 이어지는가?"
           ],
+          "fidelity": "concept-toy",
+          "difficulty": "advanced",
+          "estimated_minutes": 180,
+          "compute": "cpu",
           "resources": [
             {
               "id": "README-md",
@@ -4895,6 +5067,10 @@
             "critic recommendation이 evidence 기반 triage인지 단순 추측인지 어떻게 판별할 수 있는가?",
             "benchmark drift나 protocol mismatch가 관측되면 stop/escalation rule은 어떻게 작동해야 하는가?"
           ],
+          "fidelity": "concept-toy",
+          "difficulty": "advanced",
+          "estimated_minutes": 150,
+          "compute": "cpu",
           "resources": [
             {
               "id": "README-md",
@@ -5024,6 +5200,10 @@
             "leakage / contamination / drift audit는 각각 무엇이 다르고 benchmark report에서 어떤 warning으로 이어지는가?",
             "benchmark versioning과 report template가 다음 open-ended research track의 stopping rule과 evidence 기준에 어떻게 연결되는가?"
           ],
+          "fidelity": "concept-toy",
+          "difficulty": "advanced",
+          "estimated_minutes": 150,
+          "compute": "cpu",
           "resources": [
             {
               "id": "README-md",
@@ -5160,6 +5340,10 @@
             "trust failure가 보이면 왜 더 실험하지 않고 escalate해야 하는가?",
             "archive discipline과 reopen condition이 있어야 다음 사람이 같은 질문을 어떻게 더 싸고 정직하게 다시 열 수 있는가?"
           ],
+          "fidelity": "concept-toy",
+          "difficulty": "advanced",
+          "estimated_minutes": 180,
+          "compute": "cpu",
           "resources": [
             {
               "id": "README-md",
@@ -5282,6 +5466,10 @@
             "temperature를 낮추면 logits와 contrastive loss 해석이 어떻게 달라지는가?",
             "image-to-text와 text-to-image를 둘 다 보는 이유는 무엇인가?"
           ],
+          "fidelity": "framework-toy",
+          "difficulty": "intermediate",
+          "estimated_minutes": 90,
+          "compute": "cpu",
           "resources": [
             {
               "id": "README-md",
@@ -5395,13 +5583,18 @@
             "scratch metrics json",
             "scratch svg figure",
             "framework metrics json",
-            "analysis markdown"
+            "stable analysis markdown",
+            "observed analysis report"
           ],
           "analysis_questions": [
             "왜 scratch에서는 image→text보다 text→image가 더 어려웠는가?",
             "Recall@1과 Recall@2를 함께 읽으면 어떤 ranking 정보를 얻는가?",
             "framework 학습 후 hard negative와 symmetric loss는 어떻게 달라졌는가?"
           ],
+          "fidelity": "gpu-capable",
+          "difficulty": "intermediate",
+          "estimated_minutes": 150,
+          "compute": "cpu-or-cuda",
           "resources": [
             {
               "id": "README-md",
@@ -5514,6 +5707,10 @@
             "teacher forcing으로 학습한 decoder를 greedy decoding으로 평가할 때 무엇을 같이 봐야 하는가?",
             "BLEU-1 또는 unigram precision이 높아도 사람이 읽는 품질이 낮을 수 있는 이유는 무엇인가?"
           ],
+          "fidelity": "framework-toy",
+          "difficulty": "advanced",
+          "estimated_minutes": 150,
+          "compute": "cpu",
           "resources": [
             {
               "id": "README-md",
@@ -5626,6 +5823,10 @@
             "scratch 규칙기는 왜 count 질문에서 shortcut bias를 보였는가?",
             "framework tiny classifier가 count answer type을 회복했다면 어떤 multimodal fusion 신호가 추가된 것인가?"
           ],
+          "fidelity": "framework-toy",
+          "difficulty": "advanced",
+          "estimated_minutes": 150,
+          "compute": "cpu",
           "resources": [
             {
               "id": "README-md",
@@ -5743,7 +5944,8 @@
             "scratch metrics json",
             "scratch svg figure",
             "framework metrics json",
-            "analysis markdown"
+            "stable analysis markdown",
+            "observed analysis report"
           ],
           "analysis_questions": [
             "VQA answer와 VLA action token은 무엇이 다른가?",
@@ -5752,6 +5954,10 @@
             "wrong action but safe와 right action but unsafe는 어떤 수정 방향을 다르게 요구하는가?",
             "ambiguous instruction과 observation noise를 별도 failure probe로 남겨야 하는 이유는 무엇인가?"
           ],
+          "fidelity": "gpu-capable",
+          "difficulty": "advanced",
+          "estimated_minutes": 150,
+          "compute": "cpu-or-cuda",
           "resources": [
             {
               "id": "README-md",

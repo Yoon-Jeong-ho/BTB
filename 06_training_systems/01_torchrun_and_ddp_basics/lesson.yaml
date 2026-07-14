@@ -1,4 +1,8 @@
-objective: torchrun이 만드는 rank/world-size 실행 계약과 DDP gradient averaging 직관을 CPU-safe simulation으로 이해한다.
+objective: CPU-safe simulation과 선택 2-process torchrun 실험으로 rank/world-size 계약과 DDP all-reduce를 이해한다.
+fidelity: framework-toy
+difficulty: advanced
+estimated_minutes: 150
+compute: optional-multiprocess
 status: runnable
 prereqs:
   - mini-batch와 gradient 기본 감각
@@ -12,6 +16,8 @@ key_terms:
   - world size
   - all-reduce
   - gradient averaging
+  - process group
+  - gloo backend
 required_outputs:
   - scratch metrics json
   - scratch svg figure

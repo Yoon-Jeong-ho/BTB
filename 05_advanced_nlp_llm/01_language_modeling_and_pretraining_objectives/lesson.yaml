@@ -1,4 +1,8 @@
 objective: causal LM, masked LM, span corruption을 target framing 관점에서 비교하고, loss-mask density와 context window intuition이 objective별로 어떻게 달라지는지 runnable toy 실험으로 이해한다.
+fidelity: framework-toy
+difficulty: intermediate
+estimated_minutes: 90
+compute: cpu
 status: runnable
 prereqs:
   - token, vocabulary, logit, cross entropy 기본 감각
