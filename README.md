@@ -10,6 +10,53 @@
 2. 모든 실험은 `로그`, `결과 figure`, `분석 figure`, `실패 사례`, `summary.md`를 남긴다.
 3. Git에는 이해와 재현에 필요한 산출물만 남기고, 큰 가중치는 Hugging Face Hub로 분리한다.
 
+## 10분 시작
+
+**GPU가 없어도 시작할 수 있다.** 첫 단원과 대부분의 기본 실습은 CPU에서 동작하며, GPU는 `gpu-capable` 단원에서만 선택적으로 쓴다. 먼저 현재 환경을 확인하고 텐서 단원 하나를 끝까지 실행해 보는 것이 가장 빠르다.
+
+```bash
+# 1) 저장소 루트에서 현재 Python·핵심 패키지·GPU 상태를 확인한다.
+python scripts/check_experiment_environment.py
+
+# 2) 첫 단원의 scratch → framework → analysis를 CPU로 실행한다.
+python scripts/run_lesson.py --unit 00_foundations/01_tensor_shapes --mode all --device cpu
+
+# 3) 이번 실행에서 생긴 지표·분석 질문·artifact 링크를 한 장으로 확인한다.
+python scripts/build_lesson_report.py --unit 00_foundations/01_tensor_shapes
+```
+
+명령이 끝나면 `00_foundations/01_tensor_shapes/artifacts/summary.md`를 열어 `metrics.json`, 생성된 그림, 분석 질문을 함께 확인한다. 패키지가 없거나 CUDA를 쓸 수 없다는 메시지가 나오면 먼저 GPU 설치를 고치려 하지 말고, [learner preflight](docs/00_learner_preflight.md)의 해당 항목과 CPU 실습을 계속 진행한다.
+
+### 브라우저에서 따라가기
+
+문서·코드·실행 결과·체크리스트를 한 화면에서 보려면 다음 서버를 사용한다.
+
+```bash
+python scripts/study_server.py --port 8000 --device auto
+# 브라우저에서 http://localhost:8000/web/ 열기
+```
+
+| 원하는 일 | 사용할 방법 | 알아둘 점 |
+| --- | --- | --- |
+| 문서만 읽기 | `python -m http.server 8000` | Python 실행 버튼은 작동하지 않는다. |
+| 코드도 실행하기 | `python scripts/study_server.py --port 8000 --device auto` | `cpu-or-cuda` 단원만 유휴 GPU를 자동 탐색한다. |
+| GPU를 쓰지 않기 | `--device cpu` | 공유 GPU를 잡지 않는 가장 안전한 기본값이다. |
+| 특정 GPU를 명시하기 | `--device cuda --gpu-index 0` | 본인이 사용할 수 있는 유휴 GPU인지 먼저 확인한다. |
+
+웹사이트는 체크 표시만으로 완료 처리하지 않는다. 필수 체크포인트, 성공한 실행 artifact, 현재 퀴즈 답변, 짧은 회고 메모가 모두 있을 때 숙달 증거로 표시된다. Node/Playwright는 학습에 필요하지 않고, 웹사이트를 수정한 뒤 `npm run qa:web`으로 화면 QA를 할 때만 필요하다.
+
+## 내 시작점 고르기
+
+| 현재 상태 | 추천 첫 경로 | 첫 목표 |
+| --- | --- | --- |
+| Python·행렬·tensor가 낯설다 | [preflight](docs/00_learner_preflight.md) → `00_foundations/01` → `00_foundations/03` | shape, loss, gradient를 말과 코드로 연결한다. |
+| sklearn은 써 봤지만 딥러닝은 처음이다 | `01_ml/01` → `02_deep_learning/01` → `02_deep_learning/04` | baseline·metric·오류 분석을 training loop와 attention으로 옮긴다. |
+| LLM만 빠르게 이해하고 싶다 | `00_foundations` 핵심 → `03_nlp_bridge` → `05_advanced_nlp_llm` | token/embedding/attention을 SFT·RAG·alignment와 연결한다. |
+| Multimodal/VLA가 목표다 | LLM 경로 → `08_multimodal_bridge` → `09_multimodal` → `10_vla` | retrieval·grounding·safety gate를 순서대로 확인한다. |
+| 분산 학습·논문 재현이 필요하다 | 위 경로 뒤 `06_training_systems`, `07_frontier_labs` | `torchrun`, shard, 재현성, capstone으로 확장한다. |
+
+`06_training_systems`와 `07_frontier_labs`는 초심자에게 **선택형 사이드카**다. 폴더 순서는 전체 지도를 보여 주지만, LLM·Multimodal·VLA 입문 전에 반드시 끝낼 관문은 아니다.
+
 ## 학습 순서
 
 1. [00_foundations](00_foundations/README.md): 공통 수치/텐서/실행 감각을 먼저 고정한다.
@@ -84,15 +131,16 @@ BTB/
 
 Hugging Face 업로드와 Git LFS 관련 규칙은 루트의 `.gitignore`, `.gitattributes`, 그리고 [artifacts/README.md](artifacts/README.md)에 정리했다.
 
-## 시작 순서
+## 한 단원을 끝내는 방법
 
-1. [docs/00_learner_preflight.md](docs/00_learner_preflight.md)에서 Python/CLI, 수학, metric, PyTorch/GPU 준비도를 확인한다.
-2. [docs/00_program_map.md](docs/00_program_map.md)로 전체 트랙의 역할 경계를 먼저 본다.
-3. [docs/02_study_guide.md](docs/02_study_guide.md)에서 자신에게 맞는 학습 동선을 고른다.
-4. [00_foundations/README.md](00_foundations/README.md)와 [01_ml/README.md](01_ml/README.md)로 공통 기초와 baseline 운영 습관을 먼저 다진다.
-5. 웹에서 전체 커리큘럼과 브라우저별 진행률, Python 실행 버튼까지 쓰려면 저장소 루트에서 `python scripts/study_server.py --port 8000 --device auto`를 실행하고 `http://localhost:8000/web/`을 연다. conda 환경은 `--conda-env btb`, CPU 고정은 `--device cpu`, 특정 GPU는 `--device cuda --gpu-index 0`을 붙인다. 문서만 읽는 읽기 전용 fallback은 `python -m http.server 8000`이다. 이 웹사이트는 문서 파일을 새 탭으로 직접 여는 방식이 아니라 “단원 안내/핵심 이론/준비 확인/실습 코드”를 사이트 안에서 렌더링해 보여주며, 학습 경로 선택·다음 단원 추천·실행 관찰 카드·산출물 뷰어·선택 함수 미리보기·미니 퀴즈·오답노트·자가 점검을 함께 제공한다. 자세한 내용은 `web/README.md`를 따른다. 화면 QA가 필요하면 Playwright 설치 후 `npm run qa:web`을 실행한다.
-6. 각 track에 들어가기 전에는 먼저 [docs/curriculum_status.json](docs/curriculum_status.json)에서 `runnable` 상태와 unit 목록을 확인하고, 해당 track README의 status table을 보조 설명으로 함께 읽는다.
-7. 실험을 돌릴 때는 [shared/templates/run_summary_template.md](shared/templates/run_summary_template.md) 형식으로 요약을 남기고, 다시 볼 가치가 있는 결과만 [reports/README.md](reports/README.md) 규칙에 맞게 승격한다.
+1. [preflight](docs/00_learner_preflight.md)와 [study guide](docs/02_study_guide.md)에서 현재 시작점과 다음 트랙을 고른다. 전체 역할은 [program map](docs/00_program_map.md)에서 확인한다.
+2. 단원의 `README.md`에서 목표·선행지식·예상 시간·실습 성격을 읽고, `THEORY.md`와 `PREREQS.md`를 필요한 만큼만 먼저 본다.
+3. `scratch → framework → analysis` 순서로 실행한다. terminal에서는 `scripts/run_lesson.py`, 브라우저에서는 실행 버튼을 사용한다. ML real-data 단원은 `run_stage.py` 하나가 전체 실험 진입점이다.
+4. 실행 뒤 `metrics.json` 숫자 하나, 생성된 figure 하나, failure case 하나를 보고 단원의 분석 질문에 자신의 말로 답한다. `build_lesson_report.py`가 이 증거를 `artifacts/summary.md`로 묶어 준다.
+5. 웹을 쓴다면 체크포인트·퀴즈·회고 메모까지 남겨 숙달 증거를 완성한다. terminal 중심이라면 [run summary template](shared/templates/run_summary_template.md)으로 같은 내용을 남긴다.
+6. 다시 볼 가치가 있는 결과만 [reports/README.md](reports/README.md) 규칙에 맞게 승격한다. 모델 가중치와 대량 실행 로그는 Git에 바로 넣지 않는다.
+
+자세한 웹 동작은 [web/README.md](web/README.md), 모든 실행/검증 명령은 [scripts/README.md](scripts/README.md), GPU/conda 실험 순서는 [docs/04_gpu_conda_experiment_plan.md](docs/04_gpu_conda_experiment_plan.md)를 따른다.
 
 ## 참고 자료
 

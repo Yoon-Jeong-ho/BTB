@@ -40,6 +40,21 @@ class TestCurriculumTrackDocs(unittest.TestCase):
         self.assertIn("08_multimodal_bridge -> 09_multimodal", text)
         self.assertIn("docs/02_study_guide.md", text)
 
+    def test_root_readme_has_a_copyable_first_lesson_path(self) -> None:
+        text = (ROOT / "README.md").read_text(encoding="utf-8")
+
+        for token in [
+            "## 10분 시작",
+            "python scripts/check_experiment_environment.py",
+            "python scripts/run_lesson.py --unit 00_foundations/01_tensor_shapes --mode all --device cpu",
+            "python scripts/build_lesson_report.py --unit 00_foundations/01_tensor_shapes",
+            "python scripts/study_server.py --port 8000 --device auto",
+            "## 내 시작점 고르기",
+            "## 한 단원을 끝내는 방법",
+            "선택형 사이드카",
+        ]:
+            self.assertIn(token, text)
+
     def test_reindexed_track_headings_match_directory_numbers(self) -> None:
         self.assertEqual(
             (ROOT / "04_nlp" / "README.md").read_text(encoding="utf-8").splitlines()[0],
